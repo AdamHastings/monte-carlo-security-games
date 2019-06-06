@@ -1,22 +1,33 @@
 from Agent import Defender, Attacker
-import random
+from scipy.stats import skewnorm
+from sklearn.preprocessing import normalize
 import matplotlib.pyplot as plt
+import numpy as np
+import importlib
+import sys
+import random
 
-num_defenders = 100
-num_attackers = 10
-
-num_iterations = 100000
-cost_to_attack = 10
-loot = 50
+cfg = importlib.import_module("configs." + sys.argv[1])
 
 Defenders = []
 Attackers = []
-
+blue_dist=None
+red_dist=None
 d_iters = []
 a_iters = []
-
 linestyles = ['-', '--', '-.', ':']
 
+
+def get_agent_params(agent):
+    if agent=="blue":
+        assets = random.choice(blue_dist)
+    elif agent=="red":
+        assets = random.choice(red_dist)
+    else:
+        sys.exit(0)
+
+    skills = np.random.normal()
+    return assets, skills
 
 def init_game():
     Defenders.clear()
@@ -24,42 +35,43 @@ def init_game():
     d_iters.clear()
     a_iters.clear()
 
-    for i in range(num_defenders):
-        x = Defender()
+    for _ in range(cfg.game['BLUETEAM_SIZE']):
+        assets, skills = get_agent_params("blue")
+        x = Defender(assets, skills)
         Defenders.append(x)
 
-    for i in range(num_attackers):
-        x = Attacker()
+    for _ in range(cfg.game['REDTEAM_SIZE']):
+        assets, skills = get_agent_params("red")
+        x = Attacker(assets, skills)
         Attackers.append(x)
 
 
 def compute_utility():
-    defenders_money = 0
+    defenders_assets = 0
     for x in Defenders:
-        defenders_money += x.money
-    d_iters.append(defenders_money)
+        defenders_assets += x.assets
+    d_iters.append(defenders_assets)
 
-    attackers_money = 0
+    attackers_assets = 0
     for x in Attackers:
-        attackers_money += x.money
-    a_iters.append(attackers_money)
+        attackers_assets += x.assets
+    a_iters.append(attackers_assets)
 
 def fight(Defender, Attacker):
-    if Defender.protection < Attacker.offenselevel:
-        Defender.lose(loot)
-        real_loot = Defender.lose(loot)
-        Attacker.win(real_loot, cost_to_attack)
+    if ((Defender.skill) < (Attacker.skill)):
+        real_loot = Defender.lose(cfg.game['LOOT'])
+        Attacker.win(real_loot, cfg.game['COST_TO_ATTACK'])
     else:
-        Attacker.lose(cost_to_attack)
+        Attacker.lose(cfg.game['COST_TO_ATTACK'])
     
-    if Defender.get_money() < loot:
+    if Defender.get_assets() < cfg.game['LOOT']:
         Defenders.remove(Defender)
 
-    if Attacker.get_money() < cost_to_attack:
+    if Attacker.get_assets() < cfg.game['COST_TO_ATTACK']:
         Attackers.remove(Attacker)
 
 def run_iterations():
-    for i in range(num_iterations):
+    for i in range(cfg.game['SIM_ITERS']):
         fight(random.choice(Defenders), random.choice(Attackers))
         compute_utility()
         if len(Defenders) is 0:
@@ -68,31 +80,78 @@ def run_iterations():
         if len(Attackers) is 0:
             print("All Attackers dead")
             return i
-            
-
 
 def plot_results(i):
     plt.plot(d_iters, label="defenders, game " + str(i), linewidth=2, linestyle=linestyles[i], color="b")
     plt.plot(a_iters, label="attackers, game " + str(i), linewidth=2, linestyle=linestyles[i], color="r")
+    # plt.xlim([0,5000])
 
-num_games = 4
+
+
+def get_dist(team):
+    if team=="blue":
+        teamparams = cfg.blue
+    elif team=="red":
+        teamparams = cfg.red
+    else:
+        sys.exit(0)
+
+    if teamparams['dist'] == "normal":
+        mu = teamparams['mu']
+        sigma = teamparams['sigma']
+        scale = teamparams['scale']  
+        dist = np.random.normal(mu,sigma,100000)
+    elif teamparams['dist'] == "lognormal":
+        mu = teamparams['mu']
+        sigma = teamparams['sigma']
+        scale = teamparams['scale']  
+        dist = np.random.lognormal(mu,sigma,100000)
+    elif teamparams['dist'] == "skew":
+        a = teamparams['a']
+        dist = skewnorm.rvs(a, size=100000)
+        scale = teamparams['scale']  
+    else:
+        sys.exit(0)
+    dist = dist / np.average(dist)
+    dist = (dist - min(dist))/(max(dist) - min(dist))
+    dist = dist * scale
+
+    return dist
+
 
 def run_games():
-    for i in range(num_games):
+    plt.subplot(3,1,1)
+    global blue_dist
+    blue_dist = get_dist("blue")
+    plt.xlim([0,10000])
+    plt.title("Blue Team")
+    plt.xlabel("assets")
+    plt.hist(blue_dist, bins=500, color="b")
+    plt.subplot(3,1,2)
+    global red_dist
+    red_dist = get_dist("red")
+    plt.xlim([0,10000])
+    plt.title("Red Team")
+    plt.xlabel("assets")
+    plt.hist(red_dist, bins=500, color="r")
+    plt.subplot(3,1,3)
+
+    for i in range(cfg.game['NUM_GAMES']):
         init_game()
         final = run_iterations()
         print("Finished after " + str(final) + " iterations")
         plot_results(i)
 
-
-def main():
-    print("Starting game...")
-    run_games()
     plt.xlabel("iterations")
-    plt.ylabel("assets")
+    plt.ylabel("total assets")
     plt.legend()
     plt.show()
 
+
+def main():
+    # init_env()
+    print("Starting games...")
+    run_games()
     
   
 if __name__== "__main__":
