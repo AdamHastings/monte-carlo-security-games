@@ -6,8 +6,8 @@ import numpy as np
 import importlib
 import sys
 import random
-
-cfg = importlib.import_module("configs." + sys.argv[1])
+import colorama
+from colorama import Fore, Style
 
 Defenders = []
 Attackers = []
@@ -16,6 +16,12 @@ red_dist=None
 d_iters = []
 a_iters = []
 linestyles = ['-', '--', '-.', ':']
+
+try:
+    cfg = importlib.import_module("configs." + sys.argv[1])
+except:
+    print(Fore.RED + "ERROR: Config file not found")
+    sys.exit(0)
 
 
 def get_agent_params(agent):
@@ -30,6 +36,7 @@ def get_agent_params(agent):
     return assets, skills
 
 def init_game():
+
     Defenders.clear()
     Attackers.clear()
     d_iters.clear()
