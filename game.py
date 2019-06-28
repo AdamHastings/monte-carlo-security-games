@@ -78,15 +78,22 @@ def fight(Defender, Attacker):
         Attackers.remove(Attacker)
 
 def run_iterations():
-    for i in range(cfg.game['SIM_ITERS']):
-        fight(random.choice(Defenders), random.choice(Attackers))
+    for iter_num in range(cfg.game['SIM_ITERS']):
+
+        random.shuffle(Defenders)
+
+        for i in range(len(Attackers)):
+            fight(Defenders[i], Attackers[i])
+        
+        Defenders += cfg.blue['E']
+        
         compute_utility()
         if len(Defenders) is 0:
             print("All Defenders dead")
-            return i
+            return iter_num
         if len(Attackers) is 0:
             print("All Attackers dead")
-            return i
+            return iter_num
 
 def plot_results(i):
     plt.plot(d_iters, label="defenders, game " + str(i), linewidth=2, linestyle=linestyles[i], color="b")
@@ -135,6 +142,7 @@ def run_games():
     plt.xlabel("assets")
     plt.hist(blue_dist, bins=500, color="b")
     plt.subplot(3,1,2)
+    
     global red_dist
     red_dist = get_dist("red")
     plt.xlim([0,10000])
