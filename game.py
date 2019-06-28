@@ -26,13 +26,17 @@ except:
 
 def get_agent_params(agent):
     if agent=="blue":
-        assets = random.choice(blue_dist)
+        # skills = random.choice(blue_dist)
+        skills = np.random.normal(0,1)
+        assets = cfg.blue['ASSETS']
     elif agent=="red":
-        assets = random.choice(red_dist)
+        # skills = random.choice(red_dist)
+        skills = np.random.normal(0,1)
+        assets = cfg.red['ASSETS']
+
     else:
         sys.exit(0)
 
-    skills = np.random.normal()
     return assets, skills
 
 def init_game():
@@ -57,12 +61,12 @@ def compute_utility():
     defenders_assets = 0
     for x in Defenders:
         defenders_assets += x.assets
-    d_iters.append(defenders_assets)
+    d_iters.append(defenders_assets/len(Defenders))
 
     attackers_assets = 0
     for x in Attackers:
         attackers_assets += x.assets
-    a_iters.append(attackers_assets)
+    a_iters.append(attackers_assets/len(Attackers))
 
 def fight(Defender, Attacker):
     if ((Defender.skill) < (Attacker.skill)):
@@ -71,21 +75,24 @@ def fight(Defender, Attacker):
     else:
         Attacker.lose(cfg.game['COST_TO_ATTACK'])
     
-    if Defender.get_assets() < cfg.game['LOOT']:
-        Defenders.remove(Defender)
+    # if Defender.get_assets() < cfg.game['LOOT']:
+    #     Defenders.remove(Defender)
 
-    if Attacker.get_assets() < cfg.game['COST_TO_ATTACK']:
-        Attackers.remove(Attacker)
+    # if Attacker.get_assets() < cfg.game['COST_TO_ATTACK']:
+    #     Attackers.remove(Attacker)
 
 def run_iterations():
     for iter_num in range(cfg.game['SIM_ITERS']):
+        global Defenders
 
+        # print(Defenders)
         random.shuffle(Defenders)
 
         for i in range(len(Attackers)):
             fight(Defenders[i], Attackers[i])
         
-        Defenders += cfg.blue['E']
+        for i in range(len(Defenders)):
+            Defenders[i].assets += cfg.blue['EARNINGS']
         
         compute_utility()
         if len(Defenders) is 0:
@@ -114,12 +121,12 @@ def get_dist(team):
         mu = teamparams['mu']
         sigma = teamparams['sigma']
         scale = teamparams['scale']  
-        dist = np.random.normal(mu,sigma,100000)
+        dist = np.random.normal(mu,sigma,1000000)
     elif teamparams['dist'] == "lognormal":
         mu = teamparams['mu']
         sigma = teamparams['sigma']
         scale = teamparams['scale']  
-        dist = np.random.lognormal(mu,sigma,100000)
+        dist = np.random.lognormal(mu,sigma,1000000)
     elif teamparams['dist'] == "skew":
         a = teamparams['a']
         dist = skewnorm.rvs(a, size=100000)
@@ -134,22 +141,22 @@ def get_dist(team):
 
 
 def run_games():
-    plt.subplot(3,1,1)
+    # plt.subplot(3,1,1)
     global blue_dist
     blue_dist = get_dist("blue")
-    plt.xlim([0,10000])
-    plt.title("Blue Team")
-    plt.xlabel("assets")
-    plt.hist(blue_dist, bins=500, color="b")
-    plt.subplot(3,1,2)
+    # plt.xlim([0,10000])
+    # plt.title("Blue Team")
+    # plt.xlabel("assets")
+    # plt.hist(blue_dist, bins=500, color="b")
+    # plt.subplot(3,1,2)
     
     global red_dist
     red_dist = get_dist("red")
-    plt.xlim([0,10000])
-    plt.title("Red Team")
-    plt.xlabel("assets")
-    plt.hist(red_dist, bins=500, color="r")
-    plt.subplot(3,1,3)
+    # plt.xlim([0,10000])
+    # plt.title("Red Team")
+    # plt.xlabel("assets")
+    # plt.hist(red_dist, bins=500, color="r")
+    # plt.subplot(3,1,3)
 
     for i in range(cfg.game['NUM_GAMES']):
         init_game()
@@ -159,6 +166,7 @@ def run_games():
 
     plt.xlabel("iterations")
     plt.ylabel("total assets")
+    plt.ylim(0, 200000)
     plt.legend()
     plt.show()
 
@@ -167,6 +175,15 @@ def main():
     # init_env()
     print("Starting games...")
     run_games()
+
+    count = 0
+    iters = 100000
+    for i in range(iters):
+        b = random.choice(blue_dist)
+        r = random.choice(red_dist)
+        if (b >= r):
+            count +=1
+    print (count / iters)
     
   
 if __name__== "__main__":

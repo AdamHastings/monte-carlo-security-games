@@ -15,11 +15,11 @@ class Defender(Agent):
         self.skill = skill
 
     def lose(self, loot):
-        if (loot > self.assets):
-            amount_lost = self.assets
-            self.assets = 0
-            return amount_lost
-        else:
+        # if (loot > self.assets):
+        #     amount_lost = self.assets
+        #     self.assets = 0
+        #     return amount_lost
+        # else:
             amount_lost = loot
             self.assets -= amount_lost
 

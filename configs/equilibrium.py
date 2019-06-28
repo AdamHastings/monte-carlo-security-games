@@ -5,11 +5,11 @@ import numpy as np
 
 # Parameters of the game itself
 game = dict(
-    BLUETEAM_SIZE = 500,
-    REDTEAM_SIZE = 10,
-    SIM_ITERS = 10000,
-    COST_TO_ATTACK = 500,
-    LOOT = 2500,
+    BLUETEAM_SIZE = 1000,
+    REDTEAM_SIZE = 100,
+    SIM_ITERS = 1000,
+    COST_TO_ATTACK = 950,
+    LOOT = 2000,
     NUM_GAMES =4,
 )
 
@@ -19,7 +19,8 @@ blue = dict(
     mu = 0,
     sigma = 1,
     scale = 1,
-    EARNINGS = 50
+    EARNINGS = 150,
+    ASSETS = 100000
 )
 
 red = dict(
@@ -27,6 +28,7 @@ red = dict(
     mu = 0,
     sigma = 1,
     scale = 1,
+    ASSETS = 10000
 )
 
 # blueteam = dict(
