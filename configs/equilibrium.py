@@ -8,9 +8,9 @@ game = dict(
     BLUETEAM_SIZE = 1000,
     REDTEAM_SIZE = 100,
     SIM_ITERS = 1000,
-    COST_TO_ATTACK = 950,
+    COST_TO_ATTACK = 1000,
     LOOT = 2000,
-    NUM_GAMES =4,
+    NUM_GAMES =10,
 )
 
 # skew of 0 is a normal distribution
@@ -19,7 +19,7 @@ blue = dict(
     mu = 0,
     sigma = 1,
     scale = 1,
-    EARNINGS = 150,
+    EARNINGS = 100,
     ASSETS = 100000
 )
 

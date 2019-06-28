@@ -158,15 +158,29 @@ def run_games():
     # plt.hist(red_dist, bins=500, color="r")
     # plt.subplot(3,1,3)
 
+    bavg = np.empty((cfg.game['NUM_GAMES'], cfg.game['SIM_ITERS']))
+    ravg = np.empty((cfg.game['NUM_GAMES'], cfg.game['SIM_ITERS']))
+
+    # print(bavg[0])
+
     for i in range(cfg.game['NUM_GAMES']):
         init_game()
         final = run_iterations()
         print("Finished after " + str(final) + " iterations")
-        plot_results(i)
+        bavg[i] = d_iters
+        ravg[i] = a_iters
+        # plot_results(i)
+    # print(bavg)
+    bavg = np.mean(bavg, axis=0)
+    ravg = np.mean(ravg, axis=0)
+    print(bavg)
+    plt.plot(bavg, label="Blue Team average", linewidth=2, linestyle="-", color="b")
+    plt.plot(ravg, label="Red Team average", linewidth=2, linestyle="-", color="r")
+
 
     plt.xlabel("iterations")
     plt.ylabel("total assets")
-    plt.ylim(0, 200000)
+    # plt.ylim(0, 200000)
     plt.legend()
     plt.show()
 
@@ -176,14 +190,6 @@ def main():
     print("Starting games...")
     run_games()
 
-    count = 0
-    iters = 100000
-    for i in range(iters):
-        b = random.choice(blue_dist)
-        r = random.choice(red_dist)
-        if (b >= r):
-            count +=1
-    print (count / iters)
     
   
 if __name__== "__main__":
