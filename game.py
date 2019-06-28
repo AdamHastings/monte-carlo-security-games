@@ -161,7 +161,6 @@ def run_games():
     bavg = np.empty((cfg.game['NUM_GAMES'], cfg.game['SIM_ITERS']))
     ravg = np.empty((cfg.game['NUM_GAMES'], cfg.game['SIM_ITERS']))
 
-    # print(bavg[0])
 
     for i in range(cfg.game['NUM_GAMES']):
         init_game()
@@ -169,8 +168,7 @@ def run_games():
         print("Finished after " + str(final) + " iterations")
         bavg[i] = d_iters
         ravg[i] = a_iters
-        # plot_results(i)
-    # print(bavg)
+
     bavg = np.mean(bavg, axis=0)
     ravg = np.mean(ravg, axis=0)
     print(bavg)
