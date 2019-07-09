@@ -8,7 +8,7 @@ game = dict(
     BLUETEAM_SIZE = 1000,
     REDTEAM_SIZE = 100,
     SIM_ITERS = 1000,
-    COST_TO_ATTACK = 1000,
+    COST_TO_ATTACK = 950,
     LOOT = 2000,
     NUM_GAMES =10,
 )
@@ -19,7 +19,7 @@ blue = dict(
     mu = 0,
     sigma = 1,
     scale = 1,
-    EARNINGS = 100,
+    EARNINGS = 1000,
     ASSETS = 100000
 )
 
