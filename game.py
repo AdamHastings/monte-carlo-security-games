@@ -8,6 +8,7 @@ import sys
 import random
 import colorama
 from colorama import Fore, Style
+from numpy.random import choice
 
 Defenders = []
 Attackers = []
@@ -24,15 +25,24 @@ except:
     sys.exit(0)
 
 
+
+
+
 def get_agent_params(agent):
     if agent=="blue":
         # skills = random.choice(blue_dist)
         skills = np.random.normal(0,1)
-        assets = cfg.blue['ASSETS']
+        # assets = cfg.blue['ASSETS']
+        randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
+        assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
+        print(assets)
     elif agent=="red":
         # skills = random.choice(red_dist)
+        randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
         skills = np.random.normal(0,1)
-        assets = cfg.red['ASSETS']
+        # assets = cfg.red['ASSETS']
+        assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.game['WEALTH_GAP']
+
 
     else:
         sys.exit(0)
@@ -46,15 +56,37 @@ def init_game():
     d_iters.clear()
     a_iters.clear()
 
+    #assets_dist = []
+    
     for _ in range(cfg.game['BLUETEAM_SIZE']):
         assets, skills = get_agent_params("blue")
+        #assets_dist.append(assets)
         x = Defender(assets, skills)
         Defenders.append(x)
 
+    #print("plotting hist")
+    #plt.hist(assets_dist, bins=[0, 10000, 100000, 1000000, 10000000])
+    #plt.title("Histogram")
+    #plt.xscale("log")
+    #plt.show()
+    #plt.clf()
+
+
+    #assets_dist = []
     for _ in range(cfg.game['REDTEAM_SIZE']):
         assets, skills = get_agent_params("red")
+        #assets_dist.append(assets)
         x = Attacker(assets, skills)
         Attackers.append(x)
+
+    #print("plotting hist")
+    #plt.hist(assets_dist, bins=[0, 10000 * cfg.game['WEALTH_GAP'], 100000 * cfg.game['WEALTH_GAP'], 1000000 * cfg.game['WEALTH_GAP'], 10000000 * cfg.game['WEALTH_GAP']], color="red")
+    #plt.title("Histogram")
+    #plt.xscale("log")
+    #plt.show()
+    #plt.clf()
+
+
 
 
 def compute_utility():
@@ -71,6 +103,10 @@ def compute_utility():
     a_iters.append(attackers_assets)
 
 def fight(Defender, Attacker):
+
+    # possible_earnings = Defender.assets * cfg.game['PAYOFF']
+    # cost_of_attack = 
+
     if ((Defender.skill) < (Attacker.skill)):
         effective_loot = Defender.assets * cfg.game['LOOT_PCT']
         Defender.lose(effective_loot)
@@ -158,9 +194,6 @@ def get_dist(team):
     dist = dist / np.average(dist)
     dist = (dist - min(dist))/(max(dist) - min(dist))
     dist = dist * scale
-
-    plt.plot(dist)
-    plt.show()
 
     return dist
 
