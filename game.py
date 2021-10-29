@@ -61,25 +61,42 @@ def compute_utility():
     defenders_assets = 0
     for x in Defenders:
         defenders_assets += x.assets
-    d_iters.append(defenders_assets/len(Defenders))
+    # d_iters.append(defenders_assets/len(Defenders))
+    d_iters.append(defenders_assets)
 
     attackers_assets = 0
     for x in Attackers:
         attackers_assets += x.assets
-    a_iters.append(attackers_assets/len(Attackers))
+    # a_iters.append(attackers_assets/len(Attackers))
+    a_iters.append(attackers_assets)
 
 def fight(Defender, Attacker):
     if ((Defender.skill) < (Attacker.skill)):
-        real_loot = Defender.lose(cfg.game['LOOT'])
-        Attacker.win(real_loot, cfg.game['COST_TO_ATTACK'])
+        effective_loot = Defender.assets * cfg.game['LOOT_PCT']
+        Defender.lose(effective_loot)
+        Attacker.win(effective_loot, cfg.game['COST_TO_ATTACK'])
     else:
         Attacker.lose(cfg.game['COST_TO_ATTACK'])
-    
-    # if Defender.get_assets() < cfg.game['LOOT']:
-    #     Defenders.remove(Defender)
 
-    # if Attacker.get_assets() < cfg.game['COST_TO_ATTACK']:
-    #     Attackers.remove(Attacker)
+def prune():
+    global Defenders
+    global Attackers
+
+    Temp = []
+    for i in range(len(Defenders)):
+        #if d.get_assets() <= 0:
+        #    Defenders.remove(Defender)
+        if Defenders[i].get_assets() > 0:
+            Temp.append(Defenders[i])
+
+    Defenders = Temp
+
+    Temp = []
+    for i in range(len(Attackers)):
+        if Attackers[i].get_assets() > cfg.game['COST_TO_ATTACK']:
+            Temp.append(Attackers[i])
+
+    Attackers = Temp
 
 def run_iterations():
     for iter_num in range(cfg.game['SIM_ITERS']):
@@ -89,8 +106,13 @@ def run_iterations():
         random.shuffle(Defenders)
 
         for i in range(len(Attackers)):
+            if (i > len(Defenders)):
+                print("more attackers than defenders!")
+                break
             fight(Defenders[i], Attackers[i])
         
+        prune()
+
         for i in range(len(Defenders)):
             Defenders[i].assets += cfg.blue['EARNINGS']
         
@@ -165,15 +187,30 @@ def run_games():
     for i in range(cfg.game['NUM_GAMES']):
         init_game()
         final = run_iterations()
-        print("Finished after " + str(final) + " iterations")
+        if final is not None:
+            print("Finished after " + str(final) + " iterations")
+        else:
+            print("Num iterations reached. More plunder possible!!!")
+
+        # pad with zeros
+        if (d_iters[-1] == 0):
+            for _ in range(cfg.game['SIM_ITERS'] - final - 1):
+                d_iters.append(0)
+                a_iters.append(a_iters[-1])
+
+        if (a_iters[-1] == 0):
+            for _ in range(cfg.game['SIM_ITERS'] - final - 1):
+                d_iters.append(d_iters[-1])
+                a_iters.append(0)
+
         bavg[i] = d_iters
         ravg[i] = a_iters
 
-    bavg = np.mean(bavg, axis=0)
-    ravg = np.mean(ravg, axis=0)
+    bavg = np.average(bavg, axis=0)
+    ravg = np.average(ravg, axis=0)
     print(bavg)
-    plt.plot(bavg, label="Blue Team average", linewidth=2, linestyle="-", color="b")
-    plt.plot(ravg, label="Red Team average", linewidth=2, linestyle="-", color="r")
+    plt.plot(bavg, label="Blue Team Average", linewidth=2, linestyle="-", color="b")
+    plt.plot(ravg, label="Red Team Average", linewidth=2, linestyle="-", color="r")
 
 
     plt.xlabel("iterations")
