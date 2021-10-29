@@ -3,6 +3,15 @@
 import numpy as np
 
 
+# Parameters:
+# 1. PERCENT_EVIL (percentage of players that are adversaries)
+# 2. WEALTH_GAP (mean difference between two distributions)
+# 3. PAYOFF (percentage of wealth transferred after a sucessful attack)
+
+# Mandate essentially reduces the payoff
+
+# TODO: Simplify so that game_params contains these three (and only these three) params
+
 # Parameters of the game itself
 game = dict(
     BLUETEAM_SIZE = 1000,
@@ -15,7 +24,7 @@ game = dict(
 
 # skew of 0 is a normal distribution
 blue = dict(
-    dist = "normal",
+    dist = "lognormal",
     mu = 0,
     sigma = 1,
     scale = 1,
@@ -24,7 +33,7 @@ blue = dict(
 )
 
 red = dict(
-    dist = "normal",
+    dist = "lognormal",
     mu = 0,
     sigma = 1,
     scale = 1,

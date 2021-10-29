@@ -159,6 +159,9 @@ def get_dist(team):
     dist = (dist - min(dist))/(max(dist) - min(dist))
     dist = dist * scale
 
+    plt.plot(dist)
+    plt.show()
+
     return dist
 
 
