@@ -32,15 +32,17 @@ REDTEAM_SIZE = int(cfg.game_settings['TOTAL_PLAYERS'] * (cfg.params['PERCENT_EVI
 def get_agent_params(agent):
     if agent=="blue":
         # skills = random.choice(blue_dist)
-        skills = np.random.normal(0,1)
+        # skills = np.random.normal(0,1)
         # assets = cfg.blue['ASSETS']
+        skills = np.random.lognormal(0,1,1)[0] +2
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
         assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
     elif agent=="red":
         # skills = random.choice(red_dist)
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
-        skills = np.random.normal(0,1)
+        #skills = np.random.normal(0,1)
         # assets = cfg.red['ASSETS']
+        skills = np.random.lognormal(0,1,1)[0] +1
         assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.params['WEALTH_GAP']
 
 
@@ -105,14 +107,14 @@ def compute_utility():
 def fight(Defender, Attacker):
 
     # possible_earnings = Defender.assets * cfg.game['PAYOFF']
-    # cost_of_attack = 
+    effective_loot = Defender.assets * cfg.params['PAYOFF']
+    cost_of_attack = (effective_loot / cfg.params['ROI'])# * (Defender.skill / Attacker.skill)
 
     if ((Defender.skill) < (Attacker.skill)):
-        effective_loot = Defender.assets * cfg.params['PAYOFF']
         Defender.lose(effective_loot)
-        Attacker.win(effective_loot, cfg.params['COST_TO_ATTACK'])
+        Attacker.win(effective_loot, cost_of_attack)
     else:
-        Attacker.lose(cfg.params['COST_TO_ATTACK'])
+        Attacker.lose(cost_of_attack)
 
 def prune():
     global Defenders
@@ -129,7 +131,7 @@ def prune():
 
     Temp = []
     for i in range(len(Attackers)):
-        if Attackers[i].get_assets() > cfg.params['COST_TO_ATTACK']:
+        if Attackers[i].get_assets() > 0:
             Temp.append(Attackers[i])
 
     Attackers = Temp

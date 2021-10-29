@@ -14,15 +14,15 @@ import numpy as np
 
 # Parameters of the game itself
 params = dict(
-    COST_TO_ATTACK = 500,
-    PERCENT_EVIL = 0.1,
-    PAYOFF = 0.2,
+    ROI = 2,
+    PERCENT_EVIL = 0.01,
+    PAYOFF = 0.05,
     WEALTH_GAP = 0.2
 )
 
 game_settings = dict(
-    TOTAL_PLAYERS = 10000,
-    SIM_ITERS = 6000,
+    TOTAL_PLAYERS = 1000,
+    SIM_ITERS = 10000,
     NUM_GAMES = 1
 )
 
