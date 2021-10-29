@@ -24,7 +24,8 @@ except:
     print(Fore.RED + "ERROR: Config file not found")
     sys.exit(0)
 
-
+BLUETEAM_SIZE = int(cfg.game_settings['TOTAL_PLAYERS'] * (1 - cfg.params['PERCENT_EVIL']))
+REDTEAM_SIZE = int(cfg.game_settings['TOTAL_PLAYERS'] * (cfg.params['PERCENT_EVIL']))
 
 
 
@@ -35,13 +36,12 @@ def get_agent_params(agent):
         # assets = cfg.blue['ASSETS']
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
         assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
-        print(assets)
     elif agent=="red":
         # skills = random.choice(red_dist)
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
         skills = np.random.normal(0,1)
         # assets = cfg.red['ASSETS']
-        assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.game['WEALTH_GAP']
+        assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.params['WEALTH_GAP']
 
 
     else:
@@ -58,7 +58,7 @@ def init_game():
 
     #assets_dist = []
     
-    for _ in range(cfg.game['BLUETEAM_SIZE']):
+    for _ in range(BLUETEAM_SIZE):
         assets, skills = get_agent_params("blue")
         #assets_dist.append(assets)
         x = Defender(assets, skills)
@@ -73,7 +73,7 @@ def init_game():
 
 
     #assets_dist = []
-    for _ in range(cfg.game['REDTEAM_SIZE']):
+    for _ in range(REDTEAM_SIZE):
         assets, skills = get_agent_params("red")
         #assets_dist.append(assets)
         x = Attacker(assets, skills)
@@ -108,11 +108,11 @@ def fight(Defender, Attacker):
     # cost_of_attack = 
 
     if ((Defender.skill) < (Attacker.skill)):
-        effective_loot = Defender.assets * cfg.game['LOOT_PCT']
+        effective_loot = Defender.assets * cfg.params['PAYOFF']
         Defender.lose(effective_loot)
-        Attacker.win(effective_loot, cfg.game['COST_TO_ATTACK'])
+        Attacker.win(effective_loot, cfg.params['COST_TO_ATTACK'])
     else:
-        Attacker.lose(cfg.game['COST_TO_ATTACK'])
+        Attacker.lose(cfg.params['COST_TO_ATTACK'])
 
 def prune():
     global Defenders
@@ -129,13 +129,13 @@ def prune():
 
     Temp = []
     for i in range(len(Attackers)):
-        if Attackers[i].get_assets() > cfg.game['COST_TO_ATTACK']:
+        if Attackers[i].get_assets() > cfg.params['COST_TO_ATTACK']:
             Temp.append(Attackers[i])
 
     Attackers = Temp
 
 def run_iterations():
-    for iter_num in range(cfg.game['SIM_ITERS']):
+    for iter_num in range(cfg.game_settings['SIM_ITERS']):
         global Defenders
 
         # print(Defenders)
@@ -216,11 +216,11 @@ def run_games():
     # plt.hist(red_dist, bins=500, color="r")
     # plt.subplot(3,1,3)
 
-    bavg = np.empty((cfg.game['NUM_GAMES'], cfg.game['SIM_ITERS']))
-    ravg = np.empty((cfg.game['NUM_GAMES'], cfg.game['SIM_ITERS']))
+    bavg = np.empty((cfg.game_settings['NUM_GAMES'], cfg.game_settings['SIM_ITERS']))
+    ravg = np.empty((cfg.game_settings['NUM_GAMES'], cfg.game_settings['SIM_ITERS']))
 
 
-    for i in range(cfg.game['NUM_GAMES']):
+    for i in range(cfg.game_settings['NUM_GAMES']):
         init_game()
         final = run_iterations()
         if final is not None:
@@ -230,12 +230,12 @@ def run_games():
 
         # pad with zeros
         if (d_iters[-1] == 0):
-            for _ in range(cfg.game['SIM_ITERS'] - final - 1):
+            for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
                 d_iters.append(0)
                 a_iters.append(a_iters[-1])
 
         if (a_iters[-1] == 0):
-            for _ in range(cfg.game['SIM_ITERS'] - final - 1):
+            for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
                 d_iters.append(d_iters[-1])
                 a_iters.append(0)
 

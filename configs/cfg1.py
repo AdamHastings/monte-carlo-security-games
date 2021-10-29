@@ -13,20 +13,24 @@ import numpy as np
 # TODO: Simplify so that game_params contains these three (and only these three) params
 
 # Parameters of the game itself
-game = dict(
-    BLUETEAM_SIZE = 1000,
-    REDTEAM_SIZE = 10,
-    SIM_ITERS = 6000,
+params = dict(
     COST_TO_ATTACK = 500,
-    LOOT_PCT = 0.2,
-    NUM_GAMES =1,
+    PERCENT_EVIL = 0.1,
+    PAYOFF = 0.2,
+    WEALTH_GAP = 0.2
+)
+
+game_settings = dict(
+    TOTAL_PLAYERS = 10000,
+    SIM_ITERS = 6000,
+    NUM_GAMES = 1
 )
 
 # skew of 0 is a normal distribution
 blue = dict(
     dist = "lognormal",
     mu = 0,
-    sigma = 1,
+    sigma = 10,
     scale = 1,
     EARNINGS = 0,
     ASSETS = 100000
@@ -40,22 +44,3 @@ red = dict(
     ASSETS = 10000
 )
 
-# blueteam = dict(
-#     assets = np.full(game['BLUETEAM_SIZE'], 1000),
-#     # assets = 1000,
-#     skill = np.random.normal(size=game['BLUETEAM_SIZE'])
-# )
-
-# redteam = dict(
-#     # assets = np.random.normal(game['BLUETEAM_SIZE'])
-#     assets = np.full(game['REDTEAM_SIZE'], 200),
-#     skill = np.random.normal(size=game['REDTEAM_SIZE'])
-# )
-
-# # print(redteam['skill'])
-# # print(np.random.normal(size=100))
-
-# red_agent = dict(
-#     assets = 200,
-#     skill = np.random.normal()
-# )
