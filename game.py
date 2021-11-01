@@ -9,6 +9,7 @@ import random
 import colorama
 from colorama import Fore, Style
 from numpy.random import choice
+import math
 
 Defenders = []
 Attackers = []
@@ -37,6 +38,9 @@ def get_agent_params(agent):
         skills = np.random.lognormal(0,1,1)[0]
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
         assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
+        if (cfg.game_settings['MANDATE']):
+            assets = assets * (1 - cfg.game_settings['SEC_INVESTMENT'])
+            skills = skills * (1 + 50 * cfg.game_settings['SEC_INVESTMENT'])
     elif agent=="red":
         # skills = random.choice(red_dist)
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
@@ -44,7 +48,7 @@ def get_agent_params(agent):
         # assets = cfg.red['ASSETS']
         # skills = np.random.lognormal(0,1,1)[0] +1
         assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.params['WEALTH_GAP']
-        skills = assets / 100000 * 25 
+        skills = assets / 1000 
 
 
     else:
@@ -232,11 +236,15 @@ def run_games():
     # plt.hist(red_dist, bins=500, color="r")
     # plt.subplot(3,1,3)
 
-    bavg = np.empty((cfg.game_settings['NUM_GAMES'], cfg.game_settings['SIM_ITERS']))
-    ravg = np.empty((cfg.game_settings['NUM_GAMES'], cfg.game_settings['SIM_ITERS']))
+    #bavg = np.empty((cfg.game_settings['NUM_GAMES'], cfg.game_settings['SIM_ITERS']))
+    #ravg = np.empty((cfg.game_settings['NUM_GAMES'], cfg.game_settings['SIM_ITERS']))
 
+    
+    root = int(math.sqrt(cfg.game_settings['NUM_GAMES']))
+    fig, axs = plt.subplots(root, root, sharex=True, sharey=True)
 
     for i in range(cfg.game_settings['NUM_GAMES']):
+        print("game " + str(i))
         init_game()
         final = run_iterations()
         if final is not None:
@@ -255,14 +263,15 @@ def run_games():
                 d_iters.append(d_iters[-1])
                 a_iters.append(0)
 
-        bavg[i] = d_iters
-        ravg[i] = a_iters
+        #bavg[i] = d_iters
+        #ravg[i] = a_iters
 
-    bavg = np.average(bavg, axis=0)
-    ravg = np.average(ravg, axis=0)
-    print(bavg)
-    plt.plot(bavg, label="Blue Team Average", linewidth=2, linestyle="-", color="b")
-    plt.plot(ravg, label="Red Team Average", linewidth=2, linestyle="-", color="r")
+        #bavg = np.average(bavg, axis=0)
+        #ravg = np.average(ravg, axis=0)
+        row = int(i / root)
+        col = int(i % root)
+        axs[row, col].plot(d_iters, label="Blue Team Average", linewidth=2, linestyle="-", color="b")
+        axs[row, col].plot(a_iters, label="Red Team Average", linewidth=2, linestyle="-", color="r")
 
 
     plt.xlabel("iterations")

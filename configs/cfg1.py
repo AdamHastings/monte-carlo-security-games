@@ -21,8 +21,10 @@ params = dict(
 
 game_settings = dict(
     TOTAL_PLAYERS = 1000,
-    SIM_ITERS = 50000,
-    NUM_GAMES = 1
+    SIM_ITERS = 20000,
+    NUM_GAMES = 9,
+    MANDATE = False,
+    SEC_INVESTMENT = 0.1
 )
 
 # skew of 0 is a normal distribution
