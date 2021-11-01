@@ -34,16 +34,17 @@ def get_agent_params(agent):
         # skills = random.choice(blue_dist)
         # skills = np.random.normal(0,1)
         # assets = cfg.blue['ASSETS']
-        skills = np.random.lognormal(0,1,1)[0] +2
+        skills = np.random.lognormal(0,1,1)[0]
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
         assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
     elif agent=="red":
         # skills = random.choice(red_dist)
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
-        #skills = np.random.normal(0,1)
+        # skills = np.random.normal(0,1)
         # assets = cfg.red['ASSETS']
-        skills = np.random.lognormal(0,1,1)[0] +1
+        # skills = np.random.lognormal(0,1,1)[0] +1
         assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.params['WEALTH_GAP']
+        skills = assets / 100000 * 25 
 
 
     else:
@@ -59,31 +60,38 @@ def init_game():
     a_iters.clear()
 
     #assets_dist = []
+    blue_power = []
     
     for _ in range(BLUETEAM_SIZE):
         assets, skills = get_agent_params("blue")
+        blue_power.append(skills * assets)
         #assets_dist.append(assets)
         x = Defender(assets, skills)
         Defenders.append(x)
+    
 
     #print("plotting hist")
-    #plt.hist(assets_dist, bins=[0, 10000, 100000, 1000000, 10000000])
+    #plt.hist(skills_dist) #, bins=[0, 10000, 100000, 1000000, 10000000])
     #plt.title("Histogram")
     #plt.xscale("log")
     #plt.show()
     #plt.clf()
 
 
-    #assets_dist = []
+    red_power = []
     for _ in range(REDTEAM_SIZE):
         assets, skills = get_agent_params("red")
         #assets_dist.append(assets)
+        red_power.append(skills * assets)
         x = Attacker(assets, skills)
         Attackers.append(x)
 
     #print("plotting hist")
     #plt.hist(assets_dist, bins=[0, 10000 * cfg.game['WEALTH_GAP'], 100000 * cfg.game['WEALTH_GAP'], 1000000 * cfg.game['WEALTH_GAP'], 10000000 * cfg.game['WEALTH_GAP']], color="red")
     #plt.title("Histogram")
+    #bins = np.linspace(0,1000000)
+    #plt.hist(blue_power, bins, alpha=0.5,  color="blue")
+    #plt.hist(red_power, bins, alpha=0.5, color="red")
     #plt.xscale("log")
     #plt.show()
     #plt.clf()
@@ -108,13 +116,19 @@ def fight(Defender, Attacker):
 
     # possible_earnings = Defender.assets * cfg.game['PAYOFF']
     effective_loot = Defender.assets * cfg.params['PAYOFF']
-    cost_of_attack = (effective_loot / cfg.params['ROI'])# * (Defender.skill / Attacker.skill)
+    #cost_of_attack = (effective_loot / cfg.params['ROI'])# * (Defender.skill / Attacker.skill)
 
-    if ((Defender.skill) < (Attacker.skill)):
-        Defender.lose(effective_loot)
-        Attacker.win(effective_loot, cost_of_attack)
-    else:
-        Attacker.lose(cost_of_attack)
+    red_fight_level = Attacker.skill * Attacker.assets
+    blue_fight_level = Defender.skill * Defender.assets
+    
+
+    if (blue_fight_level < red_fight_level):
+        cost_of_attack = effective_loot * (Defender.skill / Attacker.skill)
+        if (cost_of_attack < effective_loot):
+            Defender.lose(effective_loot)
+            Attacker.win(effective_loot, cost_of_attack)
+    #else:
+    #    Attacker.lose(cost_of_attack)
 
 def prune():
     global Defenders
