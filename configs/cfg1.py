@@ -21,9 +21,9 @@ params = dict(
 
 game_settings = dict(
     TOTAL_PLAYERS = 1000,
-    SIM_ITERS = 20000,
-    NUM_GAMES = 9,
-    MANDATE = False,
+    SIM_ITERS = 200,
+    NUM_GAMES = 1,
+    MANDATE = True,
     SEC_INVESTMENT = 0.1
 )
 
