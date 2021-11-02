@@ -8,9 +8,10 @@ class Agent:
         return self.assets
 
 class Defender(Agent):
-    def __init__(self, assets, ProbOfAttackSuccess):
+    def __init__(self, assets, ProbOfAttackSuccess, costToAttack):
         Agent.__init__(self, assets)
         self.ProbOfAttackSuccess = ProbOfAttackSuccess
+        self.costToAttack = costToAttack
 
     def lose(self, loot):
             amount_lost = loot

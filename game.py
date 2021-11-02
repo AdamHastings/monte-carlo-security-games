@@ -38,7 +38,9 @@ def create_blue_agent():
         print("Wow! Drawing this number is more unlikely than winning the lottery!")
         ProbOfAttackSuccess = 1
 
-    return assets, ProbOfAttackSuccess
+    costToAttack = assets * cfg.params['ATTACK_COST_CONVERSION_RATE'] # TODO discuss later if we want to change this derivation
+
+    return assets, ProbOfAttackSuccess, costToAttack
 
 def create_red_agent():
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
@@ -53,8 +55,8 @@ def init_game():
     Attackers = []
     
     for _ in range(BLUETEAM_SIZE):
-        assets, ProbOfAttackSuccess = create_blue_agent()
-        Defenders.append(Defender(assets, ProbOfAttackSuccess))
+        assets, ProbOfAttackSuccess, costToAttack = create_blue_agent()
+        Defenders.append(Defender(assets, ProbOfAttackSuccess, costToAttack))
     
     for _ in range(REDTEAM_SIZE):
         assets = create_red_agent()
@@ -79,17 +81,16 @@ def compute_utility(Attackers, Defenders, a_iters, d_iters):
 
 def fight(Defender, Attacker):
 
-    # possible_earnings = Defender.assets * cfg.game['PAYOFF']
     effective_loot = Defender.assets * cfg.params['PAYOFF']
- 
-    # cost_of_attack = effective_loot * (Defender.skill / Attacker.skill)
-    if (np.random.uniform(0,1) < Defender.ProbOfAttackSuccess):
-        # if (cost_of_attack < effective_loot): # always true under current conditions
+    cost_of_attack = Defender.costToAttack
+    expected_earnings = effective_loot * Defender.ProbOfAttackSuccess
+
+    if (expected_earnings > cost_of_attack) and (cost_of_attack < Attacker.assets):
+        if (np.random.uniform(0,1) < Defender.ProbOfAttackSuccess):
             Defender.lose(effective_loot)
-            # Attacker.win(effective_loot, cost_of_attack)
-            Attacker.win(effective_loot, 0)
-    # else:
-    #    Attacker.lose(cost_of_attack)
+            Attacker.win(effective_loot, cost_of_attack)
+        else:
+            Attacker.lose(cost_of_attack)
 
 def prune(Attackers, Defenders):
 
@@ -97,13 +98,16 @@ def prune(Attackers, Defenders):
     for i in range(len(Defenders)):
         if Defenders[i].get_assets() > 0:
             Temp.append(Defenders[i])
-
+        
     Defenders = Temp
 
     Temp = []
     for i in range(len(Attackers)):
         if Attackers[i].get_assets() > 0:
             Temp.append(Attackers[i])
+        else:
+            print(Attackers[i].get_assets())
+        
 
     Attackers = Temp
 
@@ -151,12 +155,12 @@ def run_iterations(Attackers, Defenders):
     
     # pad with zeros
     if (d_iters[-1] == 0):
-        for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
+        for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
             d_iters.append(0)
             a_iters.append(a_iters[-1])
 
     if (a_iters[-1] == 0):
-        for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
+        for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
             d_iters.append(d_iters[-1])
             a_iters.append(0)
 
@@ -183,8 +187,8 @@ def run_games():
 
             if (mandate): # apply the mandate
                 for d in Defenders:
-                    d.assets = d.assets * (1 - cfg.game_settings['SEC_INVESTMENT'])
-                    d.ProbOfAttackSuccess = d.ProbOfAttackSuccess * (1 - cfg.game_settings['SEC_INVESTMENT'])
+                    d.assets -= d.assets * cfg.params['SEC_INVESTMENT']
+                    d.costToAttack += (d.assets * cfg.params['SEC_INVESTMENT']) * cfg.params['SEC_INVESTMENT_CONVERSION_RATE']
             
             a_iters, d_iters, crossover, final = run_iterations(Attackers, Defenders)
             
