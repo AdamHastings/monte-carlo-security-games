@@ -60,29 +60,14 @@ def init_game(Mandate=False):
 
     Defenders = []
     Attackers = []
-
-    Defenders.clear()
-    Attackers.clear()
-
-    #assets_dist = []
-    blue_power = []
     
     for _ in range(BLUETEAM_SIZE):
         assets, skills = get_agent_params("blue")
-        blue_power.append(skills * assets)
-        #assets_dist.append(assets)
-        x = Defender(assets, skills)
-        Defenders.append(x)
+        Defenders.append(Defender(assets, skills))
     
-
-
-    red_power = []
     for _ in range(REDTEAM_SIZE):
         assets, skills = get_agent_params("red")
-        #assets_dist.append(assets)
-        red_power.append(skills * assets)
-        x = Attacker(assets, skills)
-        Attackers.append(x)
+        Attackers.append(Attacker(assets, skills))
 
     return Attackers, Defenders
 
@@ -91,13 +76,11 @@ def compute_utility(Attackers, Defenders, a_iters, d_iters):
     defenders_assets = 0
     for x in Defenders:
         defenders_assets += x.assets
-    # d_iters.append(defenders_assets/len(Defenders))
     d_iters.append(defenders_assets)
 
     attackers_assets = 0
     for x in Attackers:
         attackers_assets += x.assets
-    # a_iters.append(attackers_assets/len(Attackers))
     a_iters.append(attackers_assets)
 
     return defenders_assets, attackers_assets
@@ -125,8 +108,6 @@ def prune(Attackers, Defenders):
 
     Temp = []
     for i in range(len(Defenders)):
-        #if d.get_assets() <= 0:
-        #    Defenders.remove(Defender)
         if Defenders[i].get_assets() > 0:
             Temp.append(Defenders[i])
 
@@ -139,8 +120,13 @@ def prune(Attackers, Defenders):
 
     Attackers = Temp
 
-def run_iterations(Attackers, Defenders, a_iters, d_iters):
-    crossover = False
+def run_iterations(Attackers, Defenders):
+    crossover = -1
+    final_iter = -1
+
+    a_iters = []
+    d_iters = []
+
     for iter_num in range(cfg.game_settings['SIM_ITERS']):
 
         # print(Defenders)
@@ -155,21 +141,40 @@ def run_iterations(Attackers, Defenders, a_iters, d_iters):
         
         prune(Attackers, Defenders)
 
-        for i in range(len(Defenders)):
-            Defenders[i].assets += cfg.blue['EARNINGS']
+        # for i in range(len(Defenders)):
+        #     Defenders[i].assets += cfg.blue['EARNINGS']
         
         bsum, rsum = compute_utility(Attackers, Defenders, a_iters, d_iters)
 
-        if ((not crossover) and rsum > bsum):
-            print("Crossover at " + str(iter_num) + " iterations")
-            crossover = True
+        if ((crossover < 0) and rsum > bsum):
+            crossover = iter_num
+            print("Crossover at " + str(crossover) + " iterations")
 
-        if len(Defenders) is 0:
-            print("All Defenders dead")
-            return iter_num
-        if len(Attackers) is 0:
-            print("All Attackers dead")
-            return iter_num
+        if len(Defenders) == 0:
+            final_iter = iter_num
+            print("All Defenders dead after " + str(final_iter) + " iterations")
+            break
+        if len(Attackers) == 0:
+            final_iter = iter_num
+            print("All Attackers dead after " + str(final_iter) + " iterations")
+            break
+
+    if final_iter == -1:
+        print("More plunder possible!")
+    
+    # pad with zeros
+    if (d_iters[-1] == 0):
+        for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
+            d_iters.append(0)
+            a_iters.append(a_iters[-1])
+
+    if (a_iters[-1] == 0):
+        for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
+            d_iters.append(d_iters[-1])
+            a_iters.append(0)
+
+    print("End of iterations")
+    return a_iters, d_iters, crossover, final_iter
 
 
 def run_games():
@@ -181,9 +186,8 @@ def run_games():
         red, blue = init_game()
 
         for mandate in [False, True]:
+            print("")
 
-            d_iters = []
-            a_iters = []
 
             print("Mandate is: " + str(mandate))
 
@@ -193,25 +197,10 @@ def run_games():
             if (mandate): # apply the mandate
                 for d in Defenders:
                     d.assets = d.assets * (1 - cfg.game_settings['SEC_INVESTMENT'])
-                    d.skill = d.skill * (1 + cfg.game_settings['SEC_INVESTMENT'])
+                    d.skill = d.skill * (1 + 3 * cfg.game_settings['SEC_INVESTMENT'])
             
-            final = run_iterations(Attackers, Defenders, a_iters, d_iters)
-
-            if final is not None:
-                print("Finished after " + str(final) + " iterations")
-            else:
-                print("Num iterations reached. More plunder possible!!!")
-
-            # pad with zeros
-            if (d_iters[-1] == 0):
-                for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
-                    d_iters.append(0)
-                    a_iters.append(a_iters[-1])
-
-            if (a_iters[-1] == 0):
-                for _ in range(cfg.game_settings['SIM_ITERS'] - final - 1):
-                    d_iters.append(d_iters[-1])
-                    a_iters.append(0)
+            a_iters, d_iters, crossover, final = run_iterations(Attackers, Defenders)
+            
 
             # row = int(i / root)
             # col = int(i % root)
@@ -219,23 +208,23 @@ def run_games():
                 ax1.set_title("With Mandate")
                 ax1.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
                 ax1.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
+                if (crossover > 0):
+                    ax1.axvline(x=crossover)
             else:
                 ax0.set_title("Without Mandate")
                 ax0.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
                 ax0.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
-
-            
+                if (crossover > 0):
+                    ax0.axvline(x=crossover)
 
 
     plt.xlabel("iterations")
     plt.ylabel("total assets")
-    # plt.ylim(0, 200000)
     plt.legend()
     plt.show()
 
 
 def main():
-    # init_env()
     print("Starting games...")
     random.seed(3)
     run_games()
