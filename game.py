@@ -30,15 +30,15 @@ def create_blue_agent():
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
     
     assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
-    likelihood_of_attack = np.random.normal(0.388, 0.062)
-    if likelihood_of_attack < 0:
+    ProbOfAttackSuccess = np.random.normal(0.388, 0.062)
+    if ProbOfAttackSuccess < 0:
         print("Whoa! Drawing this number is more unlikely than dying in a plane crash!")
-        likelihood_of_attack = 0
-    elif likelihood_of_attack > 1:
+        ProbOfAttackSuccess = 0
+    elif ProbOfAttackSuccess > 1:
         print("Wow! Drawing this number is more unlikely than winning the lottery!")
-        likelihood_of_attack = 1
+        ProbOfAttackSuccess = 1
 
-    return assets, likelihood_of_attack
+    return assets, ProbOfAttackSuccess
 
 def create_red_agent():
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
@@ -53,8 +53,8 @@ def init_game():
     Attackers = []
     
     for _ in range(BLUETEAM_SIZE):
-        assets, likelihood_of_attack = create_blue_agent()
-        Defenders.append(Defender(assets, likelihood_of_attack))
+        assets, ProbOfAttackSuccess = create_blue_agent()
+        Defenders.append(Defender(assets, ProbOfAttackSuccess))
     
     for _ in range(REDTEAM_SIZE):
         assets = create_red_agent()
@@ -83,7 +83,7 @@ def fight(Defender, Attacker):
     effective_loot = Defender.assets * cfg.params['PAYOFF']
  
     # cost_of_attack = effective_loot * (Defender.skill / Attacker.skill)
-    if (np.random.uniform(0,1) < Defender.likelihood_of_attack):
+    if (np.random.uniform(0,1) < Defender.ProbOfAttackSuccess):
         # if (cost_of_attack < effective_loot): # always true under current conditions
             Defender.lose(effective_loot)
             # Attacker.win(effective_loot, cost_of_attack)
@@ -184,7 +184,7 @@ def run_games():
             if (mandate): # apply the mandate
                 for d in Defenders:
                     d.assets = d.assets * (1 - cfg.game_settings['SEC_INVESTMENT'])
-                    d.likelihood_of_attack = d.likelihood_of_attack * (1 - cfg.game_settings['SEC_INVESTMENT'])
+                    d.ProbOfAttackSuccess = d.ProbOfAttackSuccess * (1 - cfg.game_settings['SEC_INVESTMENT'])
             
             a_iters, d_iters, crossover, final = run_iterations(Attackers, Defenders)
             
