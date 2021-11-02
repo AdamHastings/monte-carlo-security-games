@@ -23,51 +23,42 @@ except:
     print(Fore.RED + "ERROR: Config file not found")
     sys.exit(0)
 
-BLUETEAM_SIZE = int(cfg.game_settings['TOTAL_PLAYERS'] * (1 - cfg.params['PERCENT_EVIL']))
-REDTEAM_SIZE = int(cfg.game_settings['TOTAL_PLAYERS'] * (cfg.params['PERCENT_EVIL']))
+BLUETEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'])
+REDTEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'] * cfg.params['PERCENT_EVIL'])
 
+def create_blue_agent():
+    randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
+    
+    assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
+    likelihood_of_attack = np.random.normal(0.388, 0.062)
+    if likelihood_of_attack < 0:
+        print("Whoa! Drawing this number is more unlikely than dying in a plane crash!")
+        likelihood_of_attack = 0
+    elif likelihood_of_attack > 1:
+        print("Wow! Drawing this number is more unlikely than winning the lottery!")
+        likelihood_of_attack = 1
 
-def get_agent_params(agent):
-    if agent=="blue":
-        # skills = random.choice(blue_dist)
-        # skills = np.random.normal(0,1)
-        # assets = cfg.blue['ASSETS']
-        # skills = np.random.lognormal(0,1,1)[0]
-        randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
-        assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
+    return assets, likelihood_of_attack
 
+def create_red_agent():
+    randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
 
-        skills = 0.25
-        # if (Mandate):
-        #     assets = assets * (1 - cfg.game_settings['SEC_INVESTMENT'])
-        #     skills = skills * (1 + 50 * cfg.game_settings['SEC_INVESTMENT'])
-    elif agent=="red":
-        # skills = random.choice(red_dist)
-        randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
-        # skills = np.random.normal(0,1)
-        # assets = cfg.red['ASSETS']
-        # skills = np.random.lognormal(0,1,1)[0] +1
-        assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.params['WEALTH_GAP']
-        skills = 2.5 
+    assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.params['WEALTH_GAP']
 
+    return assets
 
-    else:
-        sys.exit(0)
-
-    return assets, skills
-
-def init_game(Mandate=False):
+def init_game():
 
     Defenders = []
     Attackers = []
     
     for _ in range(BLUETEAM_SIZE):
-        assets, skills = get_agent_params("blue")
-        Defenders.append(Defender(assets, skills))
+        assets, likelihood_of_attack = create_blue_agent()
+        Defenders.append(Defender(assets, likelihood_of_attack))
     
     for _ in range(REDTEAM_SIZE):
-        assets, skills = get_agent_params("red")
-        Attackers.append(Attacker(assets, skills))
+        assets = create_red_agent()
+        Attackers.append(Attacker(assets))
 
     return Attackers, Defenders
 
@@ -89,19 +80,15 @@ def compute_utility(Attackers, Defenders, a_iters, d_iters):
 def fight(Defender, Attacker):
 
     # possible_earnings = Defender.assets * cfg.game['PAYOFF']
-    effective_loot = Defender.assets # * cfg.params['PAYOFF']
-    #cost_of_attack = (effective_loot / cfg.params['ROI'])# * (Defender.skill / Attacker.skill)
-
-    # red_fight_level = Attacker.skill * Attacker.assets
-    # blue_fight_level = Defender.skill * Defender.assets
-    
-
-    if (Attacker.skill > Defender.skill):
-        cost_of_attack = effective_loot * (Defender.skill / Attacker.skill)
-        if (cost_of_attack < effective_loot): # always true under current conditions
+    effective_loot = Defender.assets * cfg.params['PAYOFF']
+ 
+    # cost_of_attack = effective_loot * (Defender.skill / Attacker.skill)
+    if (np.random.uniform(0,1) < Defender.likelihood_of_attack):
+        # if (cost_of_attack < effective_loot): # always true under current conditions
             Defender.lose(effective_loot)
-            Attacker.win(effective_loot, cost_of_attack)
-    #else:
+            # Attacker.win(effective_loot, cost_of_attack)
+            Attacker.win(effective_loot, 0)
+    # else:
     #    Attacker.lose(cost_of_attack)
 
 def prune(Attackers, Defenders):
@@ -197,13 +184,10 @@ def run_games():
             if (mandate): # apply the mandate
                 for d in Defenders:
                     d.assets = d.assets * (1 - cfg.game_settings['SEC_INVESTMENT'])
-                    d.skill = d.skill * (1 + 3 * cfg.game_settings['SEC_INVESTMENT'])
+                    d.likelihood_of_attack = d.likelihood_of_attack * (1 - cfg.game_settings['SEC_INVESTMENT'])
             
             a_iters, d_iters, crossover, final = run_iterations(Attackers, Defenders)
             
-
-            # row = int(i / root)
-            # col = int(i % root)
             if (mandate):
                 ax1.set_title("With Mandate")
                 ax1.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")

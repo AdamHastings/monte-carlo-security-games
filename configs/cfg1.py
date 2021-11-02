@@ -9,15 +9,15 @@ import numpy as np
 # 3. PAYOFF (percentage of wealth transferred after a sucessful attack)
 
 params = dict(
-    PERCENT_EVIL = 0.01,
-    # PAYOFF = 0.05,
+    PERCENT_EVIL = 0.37,
+    PAYOFF = 0.05,
     WEALTH_GAP = 0.2
 )
 
 game_settings = dict(
-    TOTAL_PLAYERS = 5000,
+    BLUE_PLAYERS = 1000,
     SIM_ITERS = 500,
     NUM_GAMES = 1,
-    SEC_INVESTMENT = 0.1
+    SEC_INVESTMENT = 0.2
 )
 
