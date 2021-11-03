@@ -26,6 +26,13 @@ except:
 BLUETEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'])
 REDTEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'] * cfg.params['PERCENT_EVIL'])
 
+TOTAL_ASSETS = 0
+TOTAL_MANDATE_SPENDING = 0
+GOV_ASSETS = 0
+ATTACK_SPENDING = 0
+
+
+
 def create_blue_agent():
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
     
@@ -45,12 +52,14 @@ def create_blue_agent():
 
     return assets, ProbOfAttackSuccess, costToAttack
 
+
 def create_red_agent():
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
 
     assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * cfg.params['WEALTH_GAP']
 
     return assets
+
 
 def init_game():
 
@@ -68,6 +77,14 @@ def init_game():
     return Attackers, Defenders
 
 
+def sum_assets(Players):
+    total_assets = 0
+    for x in Players:
+        total_assets += x.assets
+
+    return total_assets
+
+
 def compute_utility(Attackers, Defenders, a_iters, d_iters):
     defenders_assets = 0
     for x in Defenders:
@@ -81,7 +98,6 @@ def compute_utility(Attackers, Defenders, a_iters, d_iters):
 
     return defenders_assets, attackers_assets
     
-
 def fight(Defender, Attacker):
 
     effective_loot = Defender.assets * cfg.params['PAYOFF']
@@ -96,6 +112,9 @@ def fight(Defender, Attacker):
         else:
             Attacker.lose(cost_of_attack)
 
+        global ATTACK_SPENDING
+        ATTACK_SPENDING += cost_of_attack
+
         # The attacker might get caught
         if (np.random.uniform(0,1) < cfg.params['CHANCE_OF_GETTING_CAUGHT']):
             if (AttackerWins):
@@ -103,6 +122,8 @@ def fight(Defender, Attacker):
                 Defender.recoup(recoup_amount) # Defender recoups amount that was lost
                 Attacker.lose(recoup_amount)
 
+            global GOV_ASSETS
+            GOV_ASSETS += Attacker.assets
             Attacker.lose(Attacker.assets)           # Remaining assets are seized by the government
             
 
@@ -146,9 +167,14 @@ def run_iterations(Attackers, Defenders):
         # for i in range(len(Defenders)):
         #     Defenders[i].assets += cfg.blue['EARNINGS']
         
-        bsum, rsum = compute_utility(Attackers, Defenders, a_iters, d_iters)
+        # bsum, rsum = compute_utility(Attackers, Defenders, a_iters, d_iters)
+        a_sum = sum_assets(Attackers)
+        d_sum = sum_assets(Defenders)
 
-        if ((crossover < 0) and rsum > bsum):
+        a_iters.append(a_sum)
+        d_iters.append(d_sum)
+
+        if ((crossover < 0) and a_sum > d_sum):
             crossover = iter_num
             print("Crossover at " + str(crossover) + " iterations")
 
@@ -187,18 +213,36 @@ def run_games():
         print("game " + str(i))
         red, blue = init_game()
 
+        a_sum = sum_assets(red)
+        d_sum = sum_assets(blue)
+
+        TOTAL_ASSETS = a_sum + d_sum
+        TOTAL_MANDATE_SPENDING = 0
+
+        print("INITIAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
+        print("INITIAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
+        print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
+
         for mandate in [False, True]:
             print("")
-
-
             print("Mandate is: " + str(mandate))
+
+            global GOV_ASSETS
+            global ATTACK_SPENDING
+
+
+            TOTAL_MANDATE_SPENDING = 0
+            GOV_ASSETS = 0
+            ATTACK_SPENDING = 0
 
             Attackers = deepcopy(red)
             Defenders = deepcopy(blue)
 
             if (mandate): # apply the mandate
                 for d in Defenders:
-                    d.assets -= d.assets * cfg.params['SEC_INVESTMENT']
+                    investment = d.assets * cfg.params['SEC_INVESTMENT']
+                    d.assets -= investment
+                    TOTAL_MANDATE_SPENDING += investment
                     d.costToAttack += (d.assets * cfg.params['SEC_INVESTMENT']) * cfg.params['SEC_INVESTMENT_CONVERSION_RATE']
             
             a_iters, d_iters, crossover, final = run_iterations(Attackers, Defenders)
@@ -215,6 +259,21 @@ def run_games():
                 ax0.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
                 if (crossover > 0):
                     ax0.axvline(x=crossover)
+
+            print("")
+            print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
+
+            a_sum = sum_assets(Attackers)
+            d_sum = sum_assets(Defenders)
+
+            print("FINAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
+            print("FINAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
+
+            print("GOV_ASSETS: " + "{:.2e}".format(GOV_ASSETS))
+            print("ATTACK_SPENDING: " + "{:.2e}".format(ATTACK_SPENDING))
+            print("TOTAL_MANDATE_SPENDING: " + "{:.2e}".format(TOTAL_MANDATE_SPENDING))
+            print("Check: " + str(True if abs(TOTAL_ASSETS - (a_sum + d_sum + GOV_ASSETS + ATTACK_SPENDING + TOTAL_MANDATE_SPENDING)  < 1) else False))
+
 
 
     plt.xlabel("iterations")
