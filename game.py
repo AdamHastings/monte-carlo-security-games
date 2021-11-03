@@ -30,13 +30,16 @@ def create_blue_agent():
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
     
     assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
-    ProbOfAttackSuccess = np.random.normal(0.388, 0.062)
-    if ProbOfAttackSuccess < 0:
+    ProbDefenseSuccess = np.random.normal(0.388, 0.062)
+    if ProbDefenseSuccess < 0:
         print("Whoa! Drawing this number is more unlikely than dying in a plane crash!")
-        ProbOfAttackSuccess = 0
-    elif ProbOfAttackSuccess > 1:
+        ProbDefenseSuccess = 0
+    elif ProbDefenseSuccess > 1:
         print("Wow! Drawing this number is more unlikely than winning the lottery!")
-        ProbOfAttackSuccess = 1
+        ProbDefenseSuccess = 1
+
+    ProbOfAttackSuccess = 1 - ProbDefenseSuccess
+
 
     costToAttack = assets * cfg.params['ATTACK_COST_CONVERSION_RATE'] # TODO discuss later if we want to change this derivation
 
