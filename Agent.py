@@ -18,6 +18,9 @@ class Defender(Agent):
             self.assets -= amount_lost
             
             return amount_lost
+    
+    def recoup(self, gain):
+        self.assets += gain
 
    
 

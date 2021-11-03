@@ -89,11 +89,22 @@ def fight(Defender, Attacker):
     expected_earnings = effective_loot * Defender.ProbOfAttackSuccess
 
     if (expected_earnings > cost_of_attack) and (cost_of_attack < Attacker.assets):
-        if (np.random.uniform(0,1) < Defender.ProbOfAttackSuccess):
+        AttackerWins = np.random.uniform(0,1) < Defender.ProbOfAttackSuccess
+        if (AttackerWins):
             Defender.lose(effective_loot)
             Attacker.win(effective_loot, cost_of_attack)
         else:
             Attacker.lose(cost_of_attack)
+
+        # The attacker might get caught
+        if (np.random.uniform(0,1) < cfg.params['CHANCE_OF_GETTING_CAUGHT']):
+            if (AttackerWins):
+                recoup_amount = effective_loot if Attacker.assets > effective_loot else Attacker.assets
+                Defender.recoup(recoup_amount) # Defender recoups amount that was lost
+                Attacker.lose(recoup_amount)
+
+            Attacker.lose(Attacker.assets)           # Remaining assets are seized by the government
+            
 
 def prune(Attackers, Defenders):
 
@@ -108,9 +119,6 @@ def prune(Attackers, Defenders):
     for i in range(len(Attackers)):
         if Attackers[i].get_assets() > 0:
             Temp.append(Attackers[i])
-        else:
-            print(Attackers[i].get_assets())
-        
 
     Attackers = Temp
 
