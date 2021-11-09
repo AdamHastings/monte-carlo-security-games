@@ -36,5 +36,6 @@ game_settings = dict(
     BLUE_PLAYERS = 2000,
     SIM_ITERS = 1000,
     NUM_GAMES = 1,
+    EPSILON = 100,
 )
 
