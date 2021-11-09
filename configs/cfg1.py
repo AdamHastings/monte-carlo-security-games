@@ -24,12 +24,12 @@ Format: (start, end, increment)
 """
 params_ranges = dict(
     PERCENT_EVIL = np.linspace(0, 0.5, 6),
-    PAYOFF = np.linspace(0, 1, 101),
-    WEALTH_GAP = np.linspace(0, 1, 11),
-    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0, 1, 11),
-    ATTACK_COST_CONVERSION_RATE = np.linspace(0, 1, 101),
+    PAYOFF = np.linspace(0, 1, 2),
+    WEALTH_GAP = np.linspace(0, 1, 2),
+    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0, 1, 2),
+    ATTACK_COST_CONVERSION_RATE = np.linspace(0, 1, 2),
     CHANCE_OF_GETTING_CAUGHT = np.linspace(0, 0, 1),
-    SEC_INVESTMENT = np.linspace(0, 1, 11)
+    SEC_INVESTMENT = np.linspace(0, 1, 2)
 )
 
 game_settings = dict(

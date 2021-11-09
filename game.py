@@ -29,7 +29,7 @@ TOTAL_MANDATE_SPENDING = 0
 GOV_ASSETS = 0
 ATTACK_SPENDING = 0
 
-stats = []
+all_stats = []
 
 def create_blue_agent(ATTACK_COST_CONVERSION_RATE):
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
@@ -147,6 +147,8 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
 
     a_iters = []
     d_iters = []
+    stats = []
+    epsilon_reached = False
 
     for iter_num in range(cfg.game_settings['SIM_ITERS']):
 
@@ -176,6 +178,8 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
                 final_iter = iter_num
                 print("Epsilon threshold of " + str(cfg.game_settings['EPSILON']) + " reached at " + str(final_iter) + " iterations")
                 stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
+                epsilon_reached = True
+                break
 
         a_iters.append(a_sum)
         d_iters.append(d_sum)
@@ -195,8 +199,9 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
 
     if final_iter == -1:
         print("More plunder possible!")
-        
-    stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
+     
+    if not epsilon_reached:
+        stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
     
     # pad with zeros
     if (d_iters[-1] == 0):
@@ -210,7 +215,7 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
             a_iters.append(0)
 
     print("End of iterations")
-    return a_iters, d_iters, crossover, final_iter
+    return a_iters, d_iters, crossover, final_iter, stats
 
 
 def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT):
@@ -219,10 +224,10 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
     REDTEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'] * PERCENT_EVIL)
 
 
-    fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True)
+    #fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True)
 
     for i in range(cfg.game_settings['NUM_GAMES']):
-        print("game " + str(i))
+        print("game " + str(i) + ":( " + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + ")")
         red, blue = init_game(BLUETEAM_SIZE, REDTEAM_SIZE, ATTACK_COST_CONVERSION_RATE, WEALTH_GAP)
 
         a_sum = sum_assets(red)
@@ -235,56 +240,59 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         print("INITIAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
         print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
 
-        for mandate in [False, True]:
-            print("")
-            print("Mandate is: " + str(mandate))
+        print("")
+        print("Mandate is: " + str(SEC_INVESTMENT > 0))
 
-            global GOV_ASSETS
-            global ATTACK_SPENDING
+        global GOV_ASSETS
+        global ATTACK_SPENDING
 
 
-            TOTAL_MANDATE_SPENDING = 0
-            GOV_ASSETS = 0
-            ATTACK_SPENDING = 0
+        TOTAL_MANDATE_SPENDING = 0
+        GOV_ASSETS = 0
+        ATTACK_SPENDING = 0
 
-            Attackers = deepcopy(red)
-            Defenders = deepcopy(blue)
+        Attackers = deepcopy(red)
+        Defenders = deepcopy(blue)
 
-            if (mandate): # apply the mandate
-                for d in Defenders:
-                    investment = d.assets * SEC_INVESTMENT
-                    d.assets -= investment
-                    TOTAL_MANDATE_SPENDING += investment
-                    d.costToAttack += (d.assets * SEC_INVESTMENT * SEC_INVESTMENT_CONVERSION_RATE)
-            
-            a_iters, d_iters, crossover, final = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
-            
-            if (mandate):
-                ax1.set_title("With Mandate")
-                ax1.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
-                ax1.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
-                if (crossover > 0):
-                    ax1.axvline(x=crossover)
-            else:
-                ax0.set_title("Without Mandate")
-                ax0.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
-                ax0.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
-                if (crossover > 0):
-                    ax0.axvline(x=crossover)
+        #if (mandate): # apply the mandate
+        for d in Defenders:
+            investment = d.assets * SEC_INVESTMENT
+            d.assets -= investment
+            TOTAL_MANDATE_SPENDING += investment
+            d.costToAttack += (d.assets * SEC_INVESTMENT * SEC_INVESTMENT_CONVERSION_RATE)
+        
+        a_iters, d_iters, crossover, final, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
+        all_stats.append("(" + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + "): " + str(stats))
+        
+        print("GAME STATS: ")
+        print(stats)
+        
+        # if (mandate):
+        #     ax1.set_title("With Mandate")
+        #     ax1.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
+        #     ax1.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
+        #     if (crossover > 0):
+        #         ax1.axvline(x=crossover)
+        # else:
+        #     ax0.set_title("Without Mandate")
+        #     ax0.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
+        #     ax0.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
+        #     if (crossover > 0):
+        #         ax0.axvline(x=crossover)
 
-            print("")
-            print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
+        print("")
+        print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
 
-            a_sum = sum_assets(Attackers)
-            d_sum = sum_assets(Defenders)
+        a_sum = sum_assets(Attackers)
+        d_sum = sum_assets(Defenders)
 
-            print("FINAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
-            print("FINAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
+        print("FINAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
+        print("FINAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
 
-            print("GOV_ASSETS: " + "{:.2e}".format(GOV_ASSETS))
-            print("ATTACK_SPENDING: " + "{:.2e}".format(ATTACK_SPENDING))
-            print("TOTAL_MANDATE_SPENDING: " + "{:.2e}".format(TOTAL_MANDATE_SPENDING))
-            print("Check: " + str(True if abs(TOTAL_ASSETS - (a_sum + d_sum + GOV_ASSETS + ATTACK_SPENDING + TOTAL_MANDATE_SPENDING)  < 1) else False))
+        print("GOV_ASSETS: " + "{:.2e}".format(GOV_ASSETS))
+        print("ATTACK_SPENDING: " + "{:.2e}".format(ATTACK_SPENDING))
+        print("TOTAL_MANDATE_SPENDING: " + "{:.2e}".format(TOTAL_MANDATE_SPENDING))
+        print("Check: " + str(True if abs(TOTAL_ASSETS - (a_sum + d_sum + GOV_ASSETS + ATTACK_SPENDING + TOTAL_MANDATE_SPENDING)  < 1) else False))
 
 
 
@@ -320,7 +328,10 @@ def main():
                         for CHANCE_OF_GETTING_CAUGHT in cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']:
                             for SEC_INVESTMENT in cfg.params_ranges['SEC_INVESTMENT']:
                                 run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT)
-                                
+    statsfile = open("stats.txt", "w")
+    for entry in range(len(all_stats)):
+        statsfile.write(str(all_stats[entry]) + "\n")
+    statsfile.close()
     # run_games()
 
     
