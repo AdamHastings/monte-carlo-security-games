@@ -23,8 +23,6 @@ except:
     print(Fore.RED + "ERROR: Config file not found")
     sys.exit(0)
 
-BLUETEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'])
-REDTEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'] * cfg.params['PERCENT_EVIL'])
 
 TOTAL_ASSETS = 0
 TOTAL_MANDATE_SPENDING = 0
@@ -207,6 +205,10 @@ def run_iterations(Attackers, Defenders):
 
 def run_games():
 
+    BLUETEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'])
+    REDTEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'] * cfg.params['PERCENT_EVIL'])
+
+
     fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True)
 
     for i in range(cfg.game_settings['NUM_GAMES']):
@@ -285,7 +287,31 @@ def run_games():
 def main():
     print("Starting games...")
     random.seed(3)
-    run_games()
+
+    # drive the tests:
+    # i = cfg.params_ranges['PERCENT_EVIL']
+    # print(i)
+    # print(i[1])
+    # pevil_range = cfg.params_ranges['PERCENT_EVIL']
+    # payoff_range = cfg.params_ranges['PAYOFF']
+    # wealth_range = cfg.params_ranges['WEALTH_GAP']
+    # convrate_range = cfg.params_ranges['SEC_INVESTMENT_CONVERSION_RATE']
+    # costrate_range = cfg.params_ranges['ATTACK_COST_CONVERSION_RATE']
+    # payoff_range = cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']
+    # payoff_range = cfg.params_ranges['SEC_INVESTMENT']
+    # for PERCENT_EVIL in range(cfg.params_ranges['PERCENT_EVIL'][0], cfg.params_ranges['PERCENT_EVIL'][1], cfg.params_ranges['PERCENT_EVIL'][2]):
+        # print(PERCENT_EVIL)
+
+    for PERCENT_EVIL in cfg.params_ranges['PERCENT_EVIL']:
+        for PAYOFF in cfg.params_ranges['PERCENT_EVIL']:
+            for WEALTH_GAP in cfg.params_ranges['WEALTH_GAP']:
+                for SEC_INVESTMENT_CONVERSION_RATE in cfg.params_ranges['SEC_INVESTMENT_CONVERSION_RATE']:
+                    for ATTACK_COST_CONVERSION_RATE in cfg.params_ranges['ATTACK_COST_CONVERSION_RATE']:
+                        for CHANCE_OF_GETTING_CAUGHT in cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']:
+                            for SEC_INVESTMENT in cfg.params_ranges['SEC_INVESTMENT']:
+                                # run_games()
+                                pass
+    # run_games()
 
     
   
