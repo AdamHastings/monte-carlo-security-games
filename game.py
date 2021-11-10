@@ -17,10 +17,17 @@ blue_dist=None
 red_dist=None
 linestyles = ['-', '--', '-.', ':']
 
+param_names = ['PERCENT_EVIL','PAYOFF', 'WEALTH_GAP', 'SEC_INVESTMENT_CONVERSION_RATE', 'ATTACK_COST_CONVERSION_RATE', 'CHANCE_OF_GETTING_CAUGHT', 'SEC_INVESTMENT']
+
 try:
     cfg = importlib.import_module("configs." + sys.argv[1])
+    if len(sys.argv) > 2:
+         cfg.params_ranges[param_names[int(sys.argv[3])]] = [float(sys.argv[2])]
+        
 except:
-    print(Fore.RED + "ERROR: Config file not found")
+    print(Fore.RED + "ERROR: Config file not found, or maybe another error! :) ")
+    for arg in sys.argv:
+        print("ARG: " + arg)
     sys.exit(0)
 
 
@@ -324,7 +331,7 @@ def main():
                         for CHANCE_OF_GETTING_CAUGHT in cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']:
                             for SEC_INVESTMENT in cfg.params_ranges['SEC_INVESTMENT']:
                                 run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT)
-    statsfile = open("stats.txt", "w")
+    statsfile = open("stats_" + sys.argv[2] + "_" + sys.argv[3] + ".txt", "w")
     for entry in range(len(all_stats)):
         statsfile.write(str(all_stats[entry]) + "\n")
     statsfile.close()
