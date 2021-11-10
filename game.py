@@ -285,6 +285,8 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         if (crossover > 0):
             plt.axvline(x=crossover)
 
+        plt.axvline(x=final - cfg.game_settings['STABLE_ITERS'], linestyle='--')
+
         print("")
         print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
 
