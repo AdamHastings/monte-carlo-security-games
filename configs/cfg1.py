@@ -23,19 +23,20 @@ import numpy as np
 Format: (start, end, increment)
 """
 params_ranges = dict(
-    PERCENT_EVIL = np.linspace(0, 0.5, 6),
-    PAYOFF = np.linspace(0, 1, 2),
-    WEALTH_GAP = np.linspace(0, 1, 2),
-    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0, 1, 2),
-    ATTACK_COST_CONVERSION_RATE = np.linspace(0, 1, 2),
-    CHANCE_OF_GETTING_CAUGHT = np.linspace(0, 0, 1),
-    SEC_INVESTMENT = np.linspace(0, 1, 2)
+    PERCENT_EVIL = np.linspace(0.3, 0.4, 2),
+    PAYOFF = np.linspace(0.3, 0.4, 2),
+    WEALTH_GAP = np.linspace(0.3, 0.4, 2),
+    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0.3, 0.4, 2),
+    ATTACK_COST_CONVERSION_RATE = np.linspace(0.3, 0.4, 2),
+    CHANCE_OF_GETTING_CAUGHT = np.linspace(0.3, 0.4, 2),
+    SEC_INVESTMENT = np.linspace(0.3, 0.4, 2)
 )
 
 game_settings = dict(
     BLUE_PLAYERS = 2000,
     SIM_ITERS = 1000,
     NUM_GAMES = 1,
-    EPSILON = 100,
+    EPSILON_DOLLARS = 100,
+    STABLE_ITERS = 50
 )
 

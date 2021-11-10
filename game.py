@@ -148,7 +148,8 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
     a_iters = []
     d_iters = []
     stats = []
-    epsilon_reached = False
+    stability_reached = False
+    stable_count = 0
 
     for iter_num in range(cfg.game_settings['SIM_ITERS']):
 
@@ -174,12 +175,16 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
         if len(a_iters) > 0:
             last_a_sum = a_iters[-1]
             last_d_sum = d_iters[-1]
-            if ((abs(a_sum - last_a_sum) < cfg.game_settings['EPSILON']) and (abs(d_sum - last_d_sum) < cfg.game_settings['EPSILON'])):
-                final_iter = iter_num
-                print("Epsilon threshold of " + str(cfg.game_settings['EPSILON']) + " reached at " + str(final_iter) + " iterations")
-                stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
-                epsilon_reached = True
-                break
+            if ((abs(a_sum - last_a_sum) < cfg.game_settings['EPSILON_DOLLARS']) and (abs(d_sum - last_d_sum) < cfg.game_settings['EPSILON_DOLLARS'])):
+                stable_count += 1
+                if stable_count >= cfg.game_settings['STABLE_ITERS']:
+                    final_iter = iter_num
+                    print("Epsilon threshold of " + str(cfg.game_settings['EPSILON_DOLLARS']) + " reached at " + str(final_iter) + " iterations")
+                    stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
+                    stability_reached = True
+                    break
+            else:
+                stable_count = 0
 
         a_iters.append(a_sum)
         d_iters.append(d_sum)
@@ -200,7 +205,7 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
     if final_iter == -1:
         print("More plunder possible!")
      
-    if not epsilon_reached:
+    if not stability_reached:
         stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
     
     # pad with zeros
@@ -267,18 +272,11 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         print("GAME STATS: ")
         print(stats)
         
-        # if (mandate):
-        #     ax1.set_title("With Mandate")
-        #     ax1.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
-        #     ax1.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
-        #     if (crossover > 0):
-        #         ax1.axvline(x=crossover)
-        # else:
-        #     ax0.set_title("Without Mandate")
-        #     ax0.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
-        #     ax0.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
-        #     if (crossover > 0):
-        #         ax0.axvline(x=crossover)
+        plt.title("")
+        plt.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
+        plt.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
+        if (crossover > 0):
+            plt.axvline(x=crossover)
 
         print("")
         print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
@@ -294,12 +292,10 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         print("TOTAL_MANDATE_SPENDING: " + "{:.2e}".format(TOTAL_MANDATE_SPENDING))
         print("Check: " + str(True if abs(TOTAL_ASSETS - (a_sum + d_sum + GOV_ASSETS + ATTACK_SPENDING + TOTAL_MANDATE_SPENDING)  < 1) else False))
 
-
-
-    plt.xlabel("iterations")
-    plt.ylabel("total assets")
-    plt.legend()
-    plt.show()
+        plt.xlabel("iterations")
+        plt.ylabel("total assets")
+        plt.legend()
+        plt.show()
 
 
 def main():
