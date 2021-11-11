@@ -23,7 +23,8 @@ PARALLEL_VAL = -1
 
 
 try:
-    cfg = importlib.import_module("configs." + sys.argv[1])
+    cfgfile = sys.argv[1]
+    cfg = importlib.import_module("configs." + cfgfile)
     if len(sys.argv) > 2:
         PARALLEL_VAL = float(sys.argv[2])
         cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
