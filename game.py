@@ -25,8 +25,8 @@ PARALLEL_VAL = -1
 try:
     cfg = importlib.import_module("configs." + sys.argv[1])
     if len(sys.argv) > 2:
-         cfg.params_ranges[cfg.PARALLELIZED] = [float(sys.argv[2])]
-         PARALLEL_VAL = cfg.params_ranges[cfg.PARALLELIZED][0]
+        PARALLEL_VAL = float(sys.argv[2])
+        cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
         
 except:
     print(Fore.RED + "ERROR: Config file not found, or maybe another error! :) ")
