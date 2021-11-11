@@ -4,31 +4,28 @@
 Created on Wed Nov 10 15:29:26 2021
 """
 
-# params_ranges = dict(
-#     PERCENT_EVIL = np.linspace(0.3, 0.4, 2),
-#     PAYOFF = np.linspace(0.3, 0.4, 2),
-#     WEALTH_GAP = np.linspace(0.3, 0.4, 2),
-#     SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0.3, 0.4, 2),
-#     ATTACK_COST_CONVERSION_RATE = np.linspace(0.3, 0.4, 2),
-#     CHANCE_OF_GETTING_CAUGHT = np.linspace(0.3, 0.4, 2),
-#     SEC_INVESTMENT = np.linspace(0.3, 0.4, 2)
-# )
-
-import os
+import os, sys
 import threading
 import numpy as np
+import importlib
 
 CONFIG_FILE = 'cfg1'
 
-PARALLEL_RANGE = np.linspace(0, 1, 11)
+try:
+    cfg = importlib.import_module("configs." + CONFIG_FILE)
+    PARALLEL_RANGE = cfg.params_ranges[cfg.PARALLELIZED]
+        
+except Exception as e:
+    print(e)
+    sys.exit(0)
 
 def spawn_game(entry):
-    os.system('python3 game.py ' + CONFIG_FILE + ' ' + entry )
+    os.system('python3 game.py ' + CONFIG_FILE + ' ' + entry)
     
 def main():
 
     for entry in PARALLEL_RANGE:
-        print('python3 game.py ' + CONFIG_FILE + ' ' + str(entry)
+        print('python3 game.py ' + CONFIG_FILE + ' ' + str(entry))  
         threading.Thread(target=spawn_game, args=(str(entry),)).start()
 
 if __name__== "__main__":

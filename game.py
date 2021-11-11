@@ -20,17 +20,18 @@ linestyles = ['-', '--', '-.', ':']
 param_names = ['PERCENT_EVIL','PAYOFF', 'WEALTH_GAP', 'SEC_INVESTMENT_CONVERSION_RATE', 'ATTACK_COST_CONVERSION_RATE', 'CHANCE_OF_GETTING_CAUGHT', 'SEC_INVESTMENT']
 
 PARALLEL_VAL = -1
-
+ROUND_DIGITS = 2
 
 try:
     cfgfile = sys.argv[1]
     cfg = importlib.import_module("configs." + cfgfile)
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 1:
         PARALLEL_VAL = float(sys.argv[2])
         cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
         
-except:
-    print(Fore.RED + "ERROR: Config file not found, or maybe another error! :) ")
+except Exception as e:
+    print(Fore.RED + "ERROR: Config file not found, or maybe another error! :( ")
+    print(e)
     for arg in sys.argv:
         print("ARG: " + arg)
     sys.exit(0)
@@ -278,8 +279,7 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         
         a_iters, d_iters, crossover, final, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
         
-        filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(PARALLEL_VAL) + ".csv" 
-        print(filename)
+        filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv" 
         statsfile = open(filename, 'a')  # write mode
         
         statsfile.write(str(PERCENT_EVIL) + "," + str(PAYOFF)+ "," + str(WEALTH_GAP)+ "," + str(SEC_INVESTMENT_CONVERSION_RATE)+ "," + str(ATTACK_COST_CONVERSION_RATE)+ "," + str(CHANCE_OF_GETTING_CAUGHT) + "," + str(SEC_INVESTMENT) + ",")
@@ -321,17 +321,15 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         # plt.show()
 
 def init_logs():
-    print(cfg.PARALLELIZED)
 
-    for p in cfg.params_ranges[cfg.PARALLELIZED]:
-        filename = 'logs/stats_' + cfg.PARALLELIZED + '_' + str(p) + ".csv"
-        statsfile = open(filename, 'w')  # write mode
-        
-        for k in param_names:
-            statsfile.write(str(k) + ',')
+    filename = 'logs/stats_' + cfg.PARALLELIZED + '_' + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv"
+    statsfile = open(filename, 'w')  # write mode
+    
+    for k in param_names:
+        statsfile.write(str(k) + ',')
 
-        statsfile.write('d_init,d_end,a_init,a_end,final_iter,crossover\n')
-        statsfile.close()
+    statsfile.write('d_init,d_end,a_init,a_end,final_iter,crossover\n')
+    statsfile.close()
 
 def main():
     print("Starting games...")

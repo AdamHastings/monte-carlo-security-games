@@ -2,9 +2,6 @@
 # Red  team are the attackers
 import numpy as np
 
-from parallel_games import PARALLEL_INDEX
-
-
 # Parameters:
 # 1. PERCENT_EVIL (percentage of players that are adversaries)
 # 2. WEALTH_GAP (mean difference between two distributions)
