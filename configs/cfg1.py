@@ -22,13 +22,13 @@ import numpy as np
 Format: (start, end, increment)
 """
 params_ranges = dict(
-    PERCENT_EVIL = np.linspace(0.01, 1.0, 25),
-    PAYOFF = np.linspace(0.01, 1.0, 25),
-    WEALTH_GAP = np.linspace(0.01, 1.0, 25),
-    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0.01, 1.0, 25),
-    ATTACK_COST_CONVERSION_RATE = np.linspace(0.01, 1.0, 25),
+    PERCENT_EVIL = np.linspace(0.1, 1.0, 10),
+    PAYOFF = np.linspace(0.1, 1.0, 10),
+    WEALTH_GAP = np.linspace(0.1, 1.0, 10),
+    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0.1, 1.0, 10),
+    ATTACK_COST_CONVERSION_RATE = np.linspace(0.1, 1.0, 10),
     CHANCE_OF_GETTING_CAUGHT = np.linspace(0.0, 0.0, 1),
-    SEC_INVESTMENT = np.linspace(0.01, 1.0, 51)
+    SEC_INVESTMENT = np.linspace(0.0, 1.0, 11)
 )
 
 PARALLELIZED = 'SEC_INVESTMENT'

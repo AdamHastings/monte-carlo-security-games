@@ -1,13 +1,11 @@
 from Agent import Defender, Attacker
-from scipy.stats import skewnorm
-from sklearn.preprocessing import normalize
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 import importlib
 import sys
 import random
-import colorama
-from colorama import Fore, Style
+#import colorama
+#from colorama import Fore, Style
 from numpy.random import choice
 from copy import deepcopy
 import math
@@ -217,21 +215,21 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
         print("More plunder possible!")
      
     if not stability_reached:
-        stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
+        stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, crossover))
     
     # pad with zeros
-    if (d_iters[-1] == 0):
-        for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
-            d_iters.append(0)
-            a_iters.append(a_iters[-1])
+    #if (d_iters[-1] == 0):
+    #    for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
+    #        d_iters.append(0)
+    #        a_iters.append(a_iters[-1])
 
-    if (a_iters[-1] == 0):
-        for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
-            d_iters.append(d_iters[-1])
-            a_iters.append(0)
+    #if (a_iters[-1] == 0):
+    #    for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
+    #        d_iters.append(d_iters[-1])
+    #        a_iters.append(0)
 
     # print("End of iterations")
-    return a_iters, d_iters, crossover, final_iter, stats
+    return a_iters, d_iters, stats
 
 
 def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT):
@@ -277,7 +275,7 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
             TOTAL_MANDATE_SPENDING += investment
             d.costToAttack += (d.assets * SEC_INVESTMENT * SEC_INVESTMENT_CONVERSION_RATE)
         
-        a_iters, d_iters, crossover, final, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
+        a_iters, d_iters, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
         
         filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv" 
         statsfile = open(filename, 'a')  # write mode
@@ -286,7 +284,6 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
 
         for stat in stats[0]:
             statsfile.write(str(stat) + ",")
-        statsfile.write(str(crossover))
         statsfile.write('\n')
         statsfile.close()
 
