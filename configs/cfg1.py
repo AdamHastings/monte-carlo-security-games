@@ -22,20 +22,20 @@ import numpy as np
 Format: (start, end, increment)
 """
 params_ranges = dict(
-    PERCENT_EVIL = np.linspace(0.3, 0.4, 2),
-    PAYOFF = np.linspace(0.8, 0.9, 2),
-    WEALTH_GAP = np.linspace(0.4, 0.8, 2),
-    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0.2, 0.3, 2),
-    ATTACK_COST_CONVERSION_RATE = np.linspace(0.1, 0.2, 2),
-    CHANCE_OF_GETTING_CAUGHT = np.linspace(0.01, 0.02, 2),
-    SEC_INVESTMENT = np.linspace(0.0, 1.0, 11)
+    PERCENT_EVIL = np.linspace(0.01, 1.0, 25),
+    PAYOFF = np.linspace(0.01, 1.0, 25),
+    WEALTH_GAP = np.linspace(0.01, 1.0, 25),
+    SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0.01, 1.0, 25),
+    ATTACK_COST_CONVERSION_RATE = np.linspace(0.01, 1.0, 25),
+    CHANCE_OF_GETTING_CAUGHT = np.linspace(0.0, 0.0, 1),
+    SEC_INVESTMENT = np.linspace(0.01, 1.0, 51)
 )
 
 PARALLELIZED = 'SEC_INVESTMENT'
 
 game_settings = dict(
     BLUE_PLAYERS = 2000,
-    SIM_ITERS = 1000,
+    SIM_ITERS = 10000,
     NUM_GAMES = 1,
     EPSILON_DOLLARS = 100,
     STABLE_ITERS = 50
