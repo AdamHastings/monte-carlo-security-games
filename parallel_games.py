@@ -20,16 +20,15 @@ import numpy as np
 
 CONFIG_FILE = 'cfg1'
 
-PARALLEL_INDEX = 6 #zero index based on parameter list above
 PARALLEL_RANGE = np.linspace(0, 1, 11)
 
 def spawn_game(entry):
-    os.system('python3 game.py ' + CONFIG_FILE + ' ' + entry + ' ' + str(PARALLEL_INDEX))
+    os.system('python3 game.py ' + CONFIG_FILE + ' ' + entry )
     
 def main():
 
     for entry in PARALLEL_RANGE:
-        print('python3 game.py ' + CONFIG_FILE + ' ' + str(entry) + ' ' + str(PARALLEL_INDEX))  
+        print('python3 game.py ' + CONFIG_FILE + ' ' + str(entry)
         threading.Thread(target=spawn_game, args=(str(entry),)).start()
 
 if __name__== "__main__":
