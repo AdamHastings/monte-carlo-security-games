@@ -29,7 +29,7 @@ params_ranges = dict(
     SEC_INVESTMENT_CONVERSION_RATE = np.linspace(0.2, 0.3, 2),
     ATTACK_COST_CONVERSION_RATE = np.linspace(0.1, 0.2, 2),
     CHANCE_OF_GETTING_CAUGHT = np.linspace(0.01, 0.02, 2),
-    SEC_INVESTMENT = np.linspace(0.1, 0.2, 2)
+    SEC_INVESTMENT = np.linspace(0.0, 1.0, 11)
 )
 
 game_settings = dict(

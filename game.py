@@ -186,7 +186,7 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
                 stable_count += 1
                 if stable_count >= cfg.game_settings['STABLE_ITERS']:
                     final_iter = iter_num
-                    print("Epsilon threshold of " + str(cfg.game_settings['EPSILON_DOLLARS']) + " reached at " + str(final_iter) + " iterations")
+                    # print("Epsilon threshold of " + str(cfg.game_settings['EPSILON_DOLLARS']) + " reached at " + str(final_iter) + " iterations")
                     stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
                     stability_reached = True
                     break
@@ -198,7 +198,7 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
 
         if ((crossover < 0) and a_sum > d_sum):
             crossover = iter_num
-            print("Crossover at " + str(crossover) + " iterations")
+            # print("Crossover at " + str(crossover) + " iterations")
 
         if len(Defenders) == 0:
             final_iter = iter_num
@@ -226,7 +226,7 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
             d_iters.append(d_iters[-1])
             a_iters.append(0)
 
-    print("End of iterations")
+    # print("End of iterations")
     return a_iters, d_iters, crossover, final_iter, stats
 
 
@@ -248,12 +248,12 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         TOTAL_ASSETS = a_sum + d_sum
         TOTAL_MANDATE_SPENDING = 0
 
-        print("INITIAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
-        print("INITIAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
-        print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
+        # print("INITIAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
+        # print("INITIAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
+        # print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
 
-        print("")
-        print("Mandate is: " + str(SEC_INVESTMENT > 0))
+        # print("")
+        # print("Mandate is: " + str(SEC_INVESTMENT > 0))
 
         global GOV_ASSETS
         global ATTACK_SPENDING
@@ -276,35 +276,35 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         a_iters, d_iters, crossover, final, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
         all_stats.append("(" + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + "): " + str(stats))
         
-        print("GAME STATS: ")
-        print(stats)
+        # print("GAME STATS: ")
+        # print(stats)
         
-        plt.title("")
-        plt.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
-        plt.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
-        if (crossover > 0):
-            plt.axvline(x=crossover)
+        # plt.title("")
+        # plt.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
+        # plt.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
+        # if (crossover > 0):
+        #     plt.axvline(x=crossover)
 
-        plt.axvline(x=final - cfg.game_settings['STABLE_ITERS'], linestyle='--')
+        # plt.axvline(x=final - cfg.game_settings['STABLE_ITERS'], linestyle='--')
 
-        print("")
-        print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
+        # print("")
+        # print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
 
         a_sum = sum_assets(Attackers)
         d_sum = sum_assets(Defenders)
 
-        print("FINAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
-        print("FINAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
+        # print("FINAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
+        # print("FINAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
 
-        print("GOV_ASSETS: " + "{:.2e}".format(GOV_ASSETS))
-        print("ATTACK_SPENDING: " + "{:.2e}".format(ATTACK_SPENDING))
-        print("TOTAL_MANDATE_SPENDING: " + "{:.2e}".format(TOTAL_MANDATE_SPENDING))
-        print("Check: " + str(True if abs(TOTAL_ASSETS - (a_sum + d_sum + GOV_ASSETS + ATTACK_SPENDING + TOTAL_MANDATE_SPENDING)  < 1) else False))
+        # print("GOV_ASSETS: " + "{:.2e}".format(GOV_ASSETS))
+        # print("ATTACK_SPENDING: " + "{:.2e}".format(ATTACK_SPENDING))
+        # print("TOTAL_MANDATE_SPENDING: " + "{:.2e}".format(TOTAL_MANDATE_SPENDING))
+        # print("Check: " + str(True if abs(TOTAL_ASSETS - (a_sum + d_sum + GOV_ASSETS + ATTACK_SPENDING + TOTAL_MANDATE_SPENDING)  < 1) else False))
 
-        plt.xlabel("iterations")
-        plt.ylabel("total assets")
-        plt.legend()
-        plt.show()
+        # plt.xlabel("iterations")
+        # plt.ylabel("total assets")
+        # plt.legend()
+        # plt.show()
 
 
 def main():

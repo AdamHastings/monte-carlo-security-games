@@ -21,7 +21,7 @@ import numpy as np
 CONFIG_FILE = 'cfg1'
 
 PARALLEL_INDEX = 6 #zero index based on parameter list above
-PARALLEL_RANGE = np.linspace(0, 1, 2)
+PARALLEL_RANGE = np.linspace(0, 1, 11)
 
 def spawn_game(entry):
     os.system('python3 game.py ' + CONFIG_FILE + ' ' + entry + ' ' + str(PARALLEL_INDEX))
