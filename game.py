@@ -36,7 +36,8 @@ TOTAL_MANDATE_SPENDING = 0
 GOV_ASSETS = 0
 ATTACK_SPENDING = 0
 
-all_stats = []
+# all_stats = []
+PARALLEL_VAL = -1
 
 def create_blue_agent(ATTACK_COST_CONVERSION_RATE):
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
@@ -239,7 +240,7 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
     #fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True)
 
     for i in range(cfg.game_settings['NUM_GAMES']):
-        print("game " + str(i) + ":( " + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + ")")
+        print("game " + str(i) + ":( " + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(CHANCE_OF_GETTING_CAUGHT) + ", " + str(SEC_INVESTMENT) + ")")
         red, blue = init_game(BLUETEAM_SIZE, REDTEAM_SIZE, ATTACK_COST_CONVERSION_RATE, WEALTH_GAP)
 
         a_sum = sum_assets(red)
@@ -274,8 +275,18 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
             d.costToAttack += (d.assets * SEC_INVESTMENT * SEC_INVESTMENT_CONVERSION_RATE)
         
         a_iters, d_iters, crossover, final, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
-        all_stats.append("(" + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + "): " + str(stats))
+        # all_stats.append("(" + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + "): " + str(stats))
         
+        print(filename)
+        statsfile = open(filename, 'a')  # write mode
+        
+        statsfile.write(str(PERCENT_EVIL) + "," + str(PAYOFF)+ "," + str(WEALTH_GAP)+ "," + str(SEC_INVESTMENT_CONVERSION_RATE)+ "," + str(ATTACK_COST_CONVERSION_RATE)+ "," + str(CHANCE_OF_GETTING_CAUGHT) + "," + str(SEC_INVESTMENT) + ",")
+
+        for stat in stats[0]:
+            statsfile.write(str(stat) + ",")
+        statsfile.write('\n')
+        statsfile.close()
+
         # print("GAME STATS: ")
         # print(stats)
         
@@ -306,10 +317,24 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         # plt.legend()
         # plt.show()
 
+def init_logs():
+    print(cfg.PARALLELIZED)
+
+    for p in cfg.params_ranges[cfg.PARALLELIZED]:
+        filename = 'logs/stats_' + cfg.PARALLELIZED + '_' + str(p) + ".csv"
+        statsfile = open(filename, 'w')  # write mode
+        
+        for k in param_names:
+            statsfile.write(str(k) + ',')
+
+        statsfile.write('d_init,d_end,a_init,a_end,final_iter\n')
+        statsfile.close()
 
 def main():
     print("Starting games...")
     random.seed(3)
+
+    init_logs()
 
     # drive the tests:
     # i = cfg.params_ranges['PERCENT_EVIL']
@@ -333,10 +358,10 @@ def main():
                         for CHANCE_OF_GETTING_CAUGHT in cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']:
                             for SEC_INVESTMENT in cfg.params_ranges['SEC_INVESTMENT']:
                                 run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT)
-    statsfile = open("stats_" + sys.argv[2] + "_" + sys.argv[3] + ".txt", "w")
-    for entry in range(len(all_stats)):
-        statsfile.write(str(all_stats[entry]) + "\n")
-    statsfile.close()
+    # statsfile = open("stats_" + sys.argv[2] + "_" + sys.argv[3] + ".txt", "w")
+    # for entry in range(len(all_stats)):
+    #     statsfile.write(str(all_stats[entry]) + "\n")
+    # statsfile.close()
     # run_games()
 
     
