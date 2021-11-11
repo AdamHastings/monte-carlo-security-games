@@ -41,8 +41,6 @@ TOTAL_MANDATE_SPENDING = 0
 GOV_ASSETS = 0
 ATTACK_SPENDING = 0
 
-# all_stats = []
-
 def create_blue_agent(ATTACK_COST_CONVERSION_RATE):
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
     
@@ -279,7 +277,6 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
             d.costToAttack += (d.assets * SEC_INVESTMENT * SEC_INVESTMENT_CONVERSION_RATE)
         
         a_iters, d_iters, crossover, final, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
-        # all_stats.append("(" + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + "): " + str(stats))
         
         filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(PARALLEL_VAL) + ".csv" 
         print(filename)
@@ -289,6 +286,7 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
 
         for stat in stats[0]:
             statsfile.write(str(stat) + ",")
+        statsfile.write(str(crossover))
         statsfile.write('\n')
         statsfile.close()
 
@@ -332,7 +330,7 @@ def init_logs():
         for k in param_names:
             statsfile.write(str(k) + ',')
 
-        statsfile.write('d_init,d_end,a_init,a_end,final_iter\n')
+        statsfile.write('d_init,d_end,a_init,a_end,final_iter,crossover\n')
         statsfile.close()
 
 def main():
@@ -340,20 +338,6 @@ def main():
     random.seed(3)
 
     init_logs()
-
-    # drive the tests:
-    # i = cfg.params_ranges['PERCENT_EVIL']
-    # print(i)
-    # print(i[1])
-    # pevil_range = cfg.params_ranges['PERCENT_EVIL']
-    # payoff_range = cfg.params_ranges['PAYOFF']
-    # wealth_range = cfg.params_ranges['WEALTH_GAP']
-    # convrate_range = cfg.params_ranges['SEC_INVESTMENT_CONVERSION_RATE']
-    # costrate_range = cfg.params_ranges['ATTACK_COST_CONVERSION_RATE']
-    # payoff_range = cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']
-    # payoff_range = cfg.params_ranges['SEC_INVESTMENT']
-    # for PERCENT_EVIL in range(cfg.params_ranges['PERCENT_EVIL'][0], cfg.params_ranges['PERCENT_EVIL'][1], cfg.params_ranges['PERCENT_EVIL'][2]):
-        # print(PERCENT_EVIL)
 
     for PERCENT_EVIL in cfg.params_ranges['PERCENT_EVIL']:
         for PAYOFF in cfg.params_ranges['PERCENT_EVIL']:
@@ -363,13 +347,7 @@ def main():
                         for CHANCE_OF_GETTING_CAUGHT in cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']:
                             for SEC_INVESTMENT in cfg.params_ranges['SEC_INVESTMENT']:
                                 run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT)
-    # statsfile = open("stats_" + sys.argv[2] + "_" + sys.argv[3] + ".txt", "w")
-    # for entry in range(len(all_stats)):
-    #     statsfile.write(str(all_stats[entry]) + "\n")
-    # statsfile.close()
-    # run_games()
 
     
-  
 if __name__== "__main__":
   main()
