@@ -2,6 +2,8 @@
 # Red  team are the attackers
 import numpy as np
 
+from parallel_games import PARALLEL_INDEX
+
 
 # Parameters:
 # 1. PERCENT_EVIL (percentage of players that are adversaries)
@@ -31,6 +33,8 @@ params_ranges = dict(
     CHANCE_OF_GETTING_CAUGHT = np.linspace(0.01, 0.02, 2),
     SEC_INVESTMENT = np.linspace(0.0, 1.0, 11)
 )
+
+PARALLELIZED = 'SEC_INVESTMENT'
 
 game_settings = dict(
     BLUE_PLAYERS = 2000,

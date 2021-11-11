@@ -19,10 +19,14 @@ linestyles = ['-', '--', '-.', ':']
 
 param_names = ['PERCENT_EVIL','PAYOFF', 'WEALTH_GAP', 'SEC_INVESTMENT_CONVERSION_RATE', 'ATTACK_COST_CONVERSION_RATE', 'CHANCE_OF_GETTING_CAUGHT', 'SEC_INVESTMENT']
 
+PARALLEL_VAL = -1
+
+
 try:
     cfg = importlib.import_module("configs." + sys.argv[1])
     if len(sys.argv) > 2:
-         cfg.params_ranges[param_names[int(sys.argv[3])]] = [float(sys.argv[2])]
+         cfg.params_ranges[cfg.PARALLELIZED] = [float(sys.argv[2])]
+         PARALLEL_VAL = cfg.params_ranges[cfg.PARALLELIZED][0]
         
 except:
     print(Fore.RED + "ERROR: Config file not found, or maybe another error! :) ")
@@ -37,7 +41,6 @@ GOV_ASSETS = 0
 ATTACK_SPENDING = 0
 
 # all_stats = []
-PARALLEL_VAL = -1
 
 def create_blue_agent(ATTACK_COST_CONVERSION_RATE):
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
@@ -277,6 +280,7 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         a_iters, d_iters, crossover, final, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
         # all_stats.append("(" + str(PERCENT_EVIL) + ", " + str(PAYOFF)+ ", " + str(WEALTH_GAP)+ ", " + str(SEC_INVESTMENT_CONVERSION_RATE)+ ", " + str(ATTACK_COST_CONVERSION_RATE)+ ", " + str(SEC_INVESTMENT) + "): " + str(stats))
         
+        filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(PARALLEL_VAL) + ".csv" 
         print(filename)
         statsfile = open(filename, 'a')  # write mode
         
