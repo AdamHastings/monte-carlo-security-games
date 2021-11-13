@@ -189,7 +189,7 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
                 if stable_count >= cfg.game_settings['STABLE_ITERS']:
                     final_iter = iter_num
                     # print("Epsilon threshold of " + str(cfg.game_settings['EPSILON_DOLLARS']) + " reached at " + str(final_iter) + " iterations")
-                    stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter))
+                    stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, crossover))
                     stability_reached = True
                     break
             else:
