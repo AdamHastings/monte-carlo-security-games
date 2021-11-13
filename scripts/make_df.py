@@ -5,16 +5,20 @@ import sys, os
 import glob
 import pandas as pd
 
-path = r'../logs'
-files = glob.glob(path + "/*.csv")
+def make_df():
+    path = r'../logs'
+    files = glob.glob(path + "/*.csv")
 
-frames = []
+    frames = []
 
-for f in files:
-    df = pd.read_csv(f, index_col=None, header=0)
-    frames.append(df)
+    for f in files:
+        df = pd.read_csv(f, index_col=False, header=0)
+        frames.append(df)
 
-df = pd.concat(frames, axis=0, ignore_index=True)
-df.to_csv('../data/df.csv', index=False)
+    df = pd.concat(frames, axis=0, ignore_index=True)
+    df.to_csv('../data/df.csv', index=False)
 
-        
+
+if __name__=="__main__":
+    make_df()
+            
