@@ -105,9 +105,11 @@ def loss_ratio_hist(df):
         for start,finish in zip(d_inits, d_ends):
             ratios.append(((start - finish)/start) * 100)
         
-        N = 100000
+        N = len(ratios)
+        print("N = " + str(N))
         X2 = np.sort(ratios)
         F2 = np.array(range(N))/float(N) * 100
+        print(X2[0], X2[-1])
         
         # F2 = np.delete(F2,np.arange(100))
         count = 0
@@ -123,14 +125,14 @@ def loss_ratio_hist(df):
 
         print("---------------")
         # F2 = 100 - F2
-        plt.plot(X2, F2, label=str(int(m * 100)) + "%")
+        plt.step(X2, F2, label=str(int(m * 100)) + "%")
 
 
         
     plt.title("CDF of percent decrease in assets")
     plt.xlabel("Percent decrease in assets (mandated spending + losses from attacks)")
     plt.ylabel("Percent of simulations")
-    plt.xlim(0,100)
+    plt.xlim(0,105)
     plt.ylim(60,100)
     # plt.xaxis.set_minor_locator(AutoMinorLocator())
     # plt.xaxis.set_minor_formatter(FormatStrFormatter("%.3f"))
