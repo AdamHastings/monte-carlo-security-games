@@ -27,6 +27,15 @@ def main():
         plt.ylabel("# of simulations")
         plt.hist(dframe[param], num_bins, facecolor='blue', alpha=0.5, edgecolor='black')
         plt.show()
+        
+        valcount = dframe[param].value_counts()
+        #print(param + " : " + str(valcount))
+        expected_val = 0
+        for pair in valcount.items():
+            expected_val += pair[0] * pair[1]
+        expected_val = expected_val / valcount.sum()
+        print(param + " expected val: " + str(expected_val) )
+            
 
     
 

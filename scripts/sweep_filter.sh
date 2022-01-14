@@ -1,0 +1,14 @@
+#!/bin/bash
+
+PERCENT_EVIL=0.5
+PAYOFF=0.8
+SEC_INVESTMENT=0.2
+SEC_INVESTMENT_CONVERSION_RATE=0.5
+WEALTH_GAP=0.5
+ATTACK_COST_CONVERSION_RATE=0.3
+
+cd ../data
+echo 'Running filters to sweep PAYOFF...'
+cat df.csv | awk -v PERCENT_EVIL=$PERCENT_EVIL -F, '$1 == PERCENT_EVIL' | awk -v SEC_INVESTMENT=$SEC_INVESTMENT -F, '$7 == SEC_INVESTMENT' | awk -v SICR=$SEC_INVESTMENT_CONVERSION_RATE -F, '$4 == SICR' | awk -v ACCR=$ATTACK_COST_CONVERSION_RATE -F, '$5 == ACCR' | awk -v WEALTH_GAP=$WEALTH_GAP -F, '$3 == WEALTH_GAP' > filtered_PAYOFF_$PAYOFF.csv
+echo 'Storing to CSV in data folder...'
+echo 'Done'
