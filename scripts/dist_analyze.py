@@ -6,7 +6,6 @@ Created on Thu Jan 13 15:07:22 2022
 @author: ry_pi5
 """
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
