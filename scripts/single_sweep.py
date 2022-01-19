@@ -19,7 +19,8 @@ def main():
         dframe = pd.read_csv(base_path + sweep_var + '.csv', index_col=False, header=0)
         i=0
         for payoff_val in dframe[param_names[sweep_vars.index(sweep_var)]]:
-            sweep_graph.append(dframe['d_init'][i] - dframe['d_end'][i])
+            #make relative
+            sweep_graph.append((dframe['d_init'][i] - dframe['d_end'][i]) / (dframe['d_init'][i]))
             i+=1
             
         print(sweep_graph)
@@ -27,7 +28,7 @@ def main():
         plt.plot(sweep_graph)
         plt.title("sweep of: " + sweep_var)
         plt.xlabel("value of " + sweep_var +  " * 10")
-        plt.ylabel("total $ loss by defenders")
+        plt.ylabel("relative $ loss by defenders")
         plt.grid()
     
     
