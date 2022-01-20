@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
+param_formatted = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SICR', 'WEALTH_GAP', 'ACCR']
 
 def main():
     path = '../data/df_no50.csv'
@@ -21,7 +22,7 @@ def main():
     for param in params:
         i += 1
         plt.subplot(num_rows, num_cols, i)
-        plt.title(param + " distribution")
+        plt.title(param_formatted[params.index(param)] + " distribution")
         plt.xlabel("Param val")
         plt.ylabel("# of simulations")
         plt.hist(dframe[param], num_bins, facecolor='blue', alpha=0.5, edgecolor='black')
