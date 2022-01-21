@@ -14,8 +14,14 @@ base_path = '../data/filtered_'
 sweep_vars = ['PAYOFF', 'ACCR', 'SICR', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
 param_names = ['PAYOFF', 'ATTACK_COST_CONVERSION_RATE', 'SEC_INVESTMENT_CONVERSION_RATE', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
 
-legend_labels = np.arange(0, 1.1, 0.1).tolist()
-rounded_labels = [str(round(num, 2)) for num in legend_labels]
+si_labels = np.arange(0, 1.1, 0.1).tolist()
+si_nums = [round(num,2) for num in si_labels]
+rounded_labels = [str(num) for num in si_nums]
+
+si_xvals = [round(num, 2) for num in si_labels]
+
+norm_vals = np.arange(0.1, 1.1, 0.1).tolist()
+xvals = [round(num,2) for num in norm_vals]
 
 
 def main():
@@ -32,9 +38,14 @@ def main():
                 
             print(sweep_graph)
             plt.legend(rounded_labels, title="SEC_INV")
-            plt.plot(sweep_graph)
+            if sweep_var != 'SEC_INVESTMENT':
+                plt.plot(xvals, sweep_graph)
+            else:
+                #plt.plot(si_xvals, sweep_graph)
+                pass
             plt.title("sweep of: " + sweep_var)
-            plt.xlabel("value of " + sweep_var +  " * 10")
+            plt.xlabel("value of " + sweep_var )
+            plt.xticks(si_nums)
             plt.ylabel("relative $ loss by defenders")
             plt.grid()
     
