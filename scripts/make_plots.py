@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 from matplotlib.lines import Line2D
 from termcolor import colored
 from matplotlib.ticker import AutoMinorLocator, FormatStrFormatter
@@ -50,6 +51,10 @@ def crossover_hist(df):
 def converge_hist(df):
     # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
 
+    plt.clf()
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+
     mandates = sorted(df['SEC_INVESTMENT'].unique())
     for i,m in enumerate(mandates):
         if (m == 1 or m == 0.9):
@@ -63,23 +68,29 @@ def converge_hist(df):
         X2 = np.sort(convergences)
         F2 = np.array(range(N))/float(N) * 100
 
-        plt.step(X2, F2, label=str(int(m * 100)) + "%")
+        ax.step(X2, F2, label=str(int(m * 100)) + "%")
 
     plt.ylim(60,100)
     plt.title("CDF of convergence iterations")
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
     # plt.yscale("log")
     plt.xlim(left=0, right=1250)
     plt.minorticks_on()
     plt.grid(True, which='both')
-    plt.xlabel("Iteration")
+    plt.xlabel("Iteration Number")
     plt.ylabel("Percent of games")
     plt.legend(loc="lower right", title="Mandate:")
-    # plt.tight_layout()
-    plt.show()  
+    plt.tight_layout()
+    # plt.show() 
+    plt.savefig("figures/convergence.pdf")
 
 def loss_ratio_hist(df):
     
     # fig, a =  plt.subplots(2,5,sharey=True,sharex=True)
+
+    plt.clf()
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
 
     mandates = sorted(df['SEC_INVESTMENT'].unique())
 
@@ -125,15 +136,15 @@ def loss_ratio_hist(df):
 
         print("---------------")
         # F2 = 100 - F2
-        plt.step(X2, F2, label=str(int(m * 100)) + "%")
+        ax.step(X2, F2, label=str(int(m * 100)) + "%")
 
-
-        
     plt.title("CDF of percent decrease in assets")
     plt.xlabel("Percent decrease in assets (mandated spending + losses from attacks)")
     plt.ylabel("Percent of simulations")
     plt.xlim(0,105)
     plt.ylim(60,100)
+    ax.xaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
     # plt.xaxis.set_minor_locator(AutoMinorLocator())
     # plt.xaxis.set_minor_formatter(FormatStrFormatter("%.3f"))
     print(mandates)
@@ -142,12 +153,19 @@ def loss_ratio_hist(df):
     plt.legend(loc="lower right", title="Mandate:")
     # plt.tight_layout()
     # plt.legend(loc="lower right")
-    plt.show()  
+    # plt.show()  
+    plt.savefig("figures/cdf_1.pdf")
+
+    plt.xlim(80,102)
+    plt.ylim(95,100)
+    plt.title("CDF of percent decrease in assets (closeup)")
+    plt.savefig("figures/closeup.pdf")
 
 def make_plots(df):
     # print(colored('  [+] Making crossover histogram', 'green'))
     # crossover_hist(df)
-    # print(colored('  [+] Making convergence histogram', 'green'))
-    # converge_hist(df)
+    print(colored('  [+] Making convergence histogram', 'green'))
+    converge_hist(df)
     print(colored('  [+] Making loss ratio histogram', 'green'))
     loss_ratio_hist(df)
+
