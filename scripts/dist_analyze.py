@@ -7,9 +7,13 @@ Created on Thu Jan 13 15:07:22 2022
 """
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
 param_formatted = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SICR', 'WEALTH_GAP', 'ACCR']
+
+si_labels = np.arange(0, 1.1, 0.1).tolist()
+si_nums = [round(num,1) for num in si_labels]
 
 def main():
     path = '../data/df_no50.csv'
@@ -29,16 +33,30 @@ def main():
         plt.show()
         
         valcount = dframe[param].value_counts()
-        #print(param + " : " + str(valcount))
+        print(param + " : " + str(valcount))
         expected_val = 0
         for pair in valcount.items():
             expected_val += pair[0] * pair[1]
         expected_val = expected_val / valcount.sum()
         print(param + " expected val: " + str(expected_val) )
+    
+    plt.figure()
+    plt.title("Monte-Carlo game parameter distributions")
+    plt.xlabel("Parameter values: [0, 1]")
+    plt.xticks(si_nums)
+    plt.ylabel("Number of instances")
+    plt.grid()
+    
+    for param in params:
+        xvals = []
+        yvals = []
+        param_valcount = dframe[param].value_counts()
+        for pair in param_valcount.items():
+            xvals.append(pair[0])
+            yvals.append(pair[1])
+        plt.plot(xvals, yvals)
+        plt.legend(param_formatted)
+    plt.savefig('../figures/hist_mc.pdf')
             
-
-    
-
-    
 if __name__ == "__main__":
     main()
