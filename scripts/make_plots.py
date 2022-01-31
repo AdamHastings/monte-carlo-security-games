@@ -20,7 +20,6 @@ def crossover_hist(df):
         if (m == 1):
             continue
 
-
         mands = df.loc[df['SEC_INVESTMENT'] == m]
         crossovers = mands['crossover'].to_numpy()
         # crossovers = np.where(crossovers == -1, -100, crossovers)
@@ -43,46 +42,78 @@ def crossover_hist(df):
     plt.title("CDF of crossover iterations")
     plt.legend(loc="upper right", title="Mandated security spending")
     plt.xlabel("Iteration")
-    plt.ylabel("Percent of games")
+    plt.ylabel("Percent of simulations")
     # plt.xlabel("Crossover iteration (far-left red bar means no crossover)")
     # plt.ylabel("Count")
     plt.show()  
 
-def converge_hist(df):
+def total_loot_hist(df):
     # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
 
     plt.clf()
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
+    a_win = fig.add_subplot(1,1,1)
+
+    #neither_win = fig.add_subplot(1,3,3)
 
     mandates = sorted(df['SEC_INVESTMENT'].unique())
     for i,m in enumerate(mandates):
-        if (m == 1 or m == 0.9):
+        #if (m == 1 or m == 0.9):
+        if (m > 0.4):
             continue
 
         mands = df.loc[df['SEC_INVESTMENT'] == m]
-        convergences = mands['final_iter'].to_numpy()
-        convergences = convergences - 50
+        print(str(mands.to_numpy().size) + " is total size for this mandate")
+        
+        #Probe convergence conditions
+        attacker_wins = mands.loc[mands['d_end'] == 0]
+        defender_wins = mands.loc[mands['a_end'] == 0]   
+        neither_wins = mands.loc[mands['d_end'] != 0]
 
-        N = 100000
-        X2 = np.sort(convergences)
-        F2 = np.array(range(N))/float(N) * 100
+        
+        #convergences = mands['final_iter'].to_numpy()
+        
+        a_convergences = attacker_wins['final_iter'].to_numpy()
+        d_convergences = defender_wins['final_iter'].to_numpy()
+        n_convergences = neither_wins['final_iter']
+        print("Neither wins: " + str(n_convergences.to_numpy().size) + " scenarios")
+        
+        print("Defenders totally looted in " + str(a_convergences.size) + " scenarios")
+        print("Attackers completely looted in " + str(d_convergences.size) + " scenarios")
 
-        ax.step(X2, F2, label=str(int(m * 100)) + "%")
+        print("Total: " + str(a_convergences.size + d_convergences.size + n_convergences.size) + " simulations")
+        
+        #Commenting this out, I think we need to show the 50 iter min -- ryan
+        #convergences = convergences - 50
 
-    plt.ylim(60,100)
-    plt.title("CDF of convergence iterations")
-    ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+        N = a_convergences.size
+        
+        X1 = np.sort(a_convergences)
+        F1 = np.array(range(N))/float(N) * 100
+        
+        # X2 = np.sort(d_convergences)
+        # F2 = np.array(range(N))/float(N) * 100
+        
+        # X3 = np.sort(n_convergences)
+        # F3 = np.array(range(N))/float(N) * 100
+
+        a_win.step(X1, F1, label=str(int(m * 100)) + "%", linewidth=2)
+        #d_win.step(X2, F2, label=str(int(m * 100)) + "%")
+        #neither_win.step(X3, F3, label=str(int(m * 100)) + "%")
+
+    plt.ylim(0, 110)
+    plt.title("CDF of iterations until defenders are totally looted")
+    #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
     # plt.yscale("log")
-    plt.xlim(left=0, right=1250)
+    plt.xlim(left=0, right=600)
     plt.minorticks_on()
     plt.grid(True, which='both')
     plt.xlabel("Iteration Number")
-    plt.ylabel("Percent of games")
+    plt.ylabel("Percent of simulations")
     plt.legend(loc="lower right", title="Mandate:")
     plt.tight_layout()
     # plt.show() 
-    plt.savefig("figures/convergence.pdf")
+    plt.savefig("../figures/total_loot.pdf")
 
 def loss_ratio_hist(df):
     
@@ -109,7 +140,8 @@ def loss_ratio_hist(df):
         d_ends = mands['d_end'].to_numpy()
 
         convergences = mands['final_iter'].to_numpy()
-        convergences = convergences - 50
+        #I think we should show min is 50 -- Ryan
+        #convergences = convergences - 50
 
 
         ratios = []
@@ -154,18 +186,20 @@ def loss_ratio_hist(df):
     # plt.tight_layout()
     # plt.legend(loc="lower right")
     # plt.show()  
-    plt.savefig("figures/cdf_1.pdf")
+    plt.savefig("../figures/cdf_1.pdf")
 
     plt.xlim(80,102)
     plt.ylim(95,100)
     plt.title("CDF of percent decrease in assets (closeup)")
-    plt.savefig("figures/closeup.pdf")
+    plt.savefig("../figures/closeup.pdf")
 
 def make_plots(df):
     # print(colored('  [+] Making crossover histogram', 'green'))
     # crossover_hist(df)
     print(colored('  [+] Making convergence histogram', 'green'))
-    converge_hist(df)
+    total_loot_hist(df)
     print(colored('  [+] Making loss ratio histogram', 'green'))
     loss_ratio_hist(df)
+    
+
 
