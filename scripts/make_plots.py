@@ -114,6 +114,56 @@ def total_loot_hist(df):
     plt.tight_layout()
     # plt.show() 
     plt.savefig("../figures/total_loot.pdf")
+    
+def rate_hist(df):
+    # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
+
+    plt.clf()
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+
+    mandates = sorted(df['SEC_INVESTMENT'].unique())
+    for i,m in enumerate(mandates):
+        if (m > 0.7):
+            continue
+
+        mands = df.loc[df['SEC_INVESTMENT'] == m]
+        print(str(mands.to_numpy().size) + " is total size for this mandate")
+        
+        #Probe convergence conditions
+        attacker_wins = mands.loc[mands['d_end'] == 0]
+        defender_wins = mands.loc[mands['a_end'] == 0]   
+        neither_wins = mands.loc[mands['d_end'] != 0]
+        
+        a_convergences = attacker_wins['final_iter'].to_numpy()
+        d_convergences = defender_wins['final_iter'].to_numpy()
+        n_convergences = neither_wins['final_iter']
+        
+        neither_wins['rate'] = (neither_wins['d_init'] - neither_wins['d_end']) / (neither_wins['final_iter'])
+        rates = neither_wins['rate'].to_numpy()
+
+        N = rates.size
+        
+        X1 = np.sort(rates)
+        F1 = np.array(range(N))/float(N) * 100
+        
+        ax.step(X1, F1, label=str(int(m * 100)) + "%", linewidth=2)
+
+
+    plt.ylim(60, 102)
+    plt.title("CDF of loss rates for simulations that reach an equilibrium")
+    #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+    # plt.yscale("log")
+    plt.xlim(left=0, right=1.7e6)
+    plt.minorticks_on()
+    plt.grid(True, which='both')
+    plt.xlabel("Loss rate ($ stolen by attackers / simuation iterations) ")
+    plt.ylabel("Percent of simulations")
+    plt.legend(loc="lower right", title="Mandate:")
+    plt.tight_layout()
+    # plt.show() 
+    plt.savefig("../figures/loss_rate.pdf")
+
 
 def loss_ratio_hist(df):
     
@@ -196,8 +246,10 @@ def loss_ratio_hist(df):
 def make_plots(df):
     # print(colored('  [+] Making crossover histogram', 'green'))
     # crossover_hist(df)
-    print(colored('  [+] Making convergence histogram', 'green'))
+    print(colored('  [+] Making total loot histogram', 'green'))
     total_loot_hist(df)
+    print(colored('  [+] Making rate of loss histogram', 'green'))
+    rate_hist(df)
     print(colored('  [+] Making loss ratio histogram', 'green'))
     loss_ratio_hist(df)
     
