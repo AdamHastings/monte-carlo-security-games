@@ -13,7 +13,7 @@ import numpy as np
 base_path = '../data/filtered_'
 sweep_vars = ['PAYOFF', 'ACCR', 'SICR', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
 param_names = ['PAYOFF', 'ATTACK_COST_CONVERSION_RATE', 'SEC_INVESTMENT_CONVERSION_RATE', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
-human_readable = ['attacker bounty', '(initial assets/cost of attack)', '(mandate% /cost of attack)', 'mandate %', 'red team size', 'attacker-defender wealth gap']
+human_readable = ['payoff', 'success', 'effectiveness', 'investment', 'number of attackers', 'inequality']
 
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
