@@ -157,7 +157,7 @@ def rate_hist(df):
     plt.xlim(left=0, right=1.7e6)
     plt.minorticks_on()
     plt.grid(True, which='both')
-    plt.xlabel("Loss rate ($ stolen by attackers / simuation iterations) ")
+    plt.xlabel("Loss rate ($ stolen by attackers / simulation iterations) ")
     plt.ylabel("Percent of simulations")
     plt.legend(loc="lower right", title="Mandate:")
     plt.tight_layout()

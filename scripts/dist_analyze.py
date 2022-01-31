@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
-param_formatted = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SICR', 'WEALTH_GAP', 'ACCR']
+param_formatted = ['ATTACKERS', 'PAYOFF', 'INVESTMENT', 'EFFECTIVENESS', 'INEQUALITY', 'SUCCESS']
 
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
@@ -41,7 +41,7 @@ def main():
         print(param + " expected val: " + str(expected_val) )
     
     plt.figure()
-    plt.title("Monte-Carlo game parameter distributions")
+    plt.title("Useful Monte-Carlo simulation parameter distributions")
     plt.xlabel("Parameter values: [0, 1]")
     plt.xticks(si_nums)
     plt.ylabel("Number of instances")
