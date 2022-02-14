@@ -11,7 +11,7 @@ import numpy as np
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
 param_formatted = ['ATTACKERS', 'PAYOFF', 'INVESTMENT', 'EFFECTIVENESS', 'INEQUALITY', 'SUCCESS']
-
+param_legend = ['ATTACKERS', 'INEQUALITY', 'SUCCESS', 'INVESTMENT', 'EFFECTIVENESS','PAYOFF']
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
 
@@ -44,8 +44,10 @@ def main():
     plt.title("Useful Monte-Carlo simulation parameter distributions")
     plt.xlabel("Parameter values: [0, 1]")
     plt.xticks(si_nums)
-    plt.ylabel("Number of instances")
+    plt.ylabel("Number of simulations")
     plt.grid()
+    #plt.set_ylim(ymin=0)
+    #plt.set_xlim(xmin=0)
     
     for param in params:
         xvals = []
@@ -55,7 +57,7 @@ def main():
             xvals.append(pair[0])
             yvals.append(pair[1])
         plt.plot(xvals, yvals)
-        plt.legend(param_formatted)
+        plt.legend(param_legend)
     plt.savefig('../figures/hist_mc.pdf')
             
 if __name__ == "__main__":
