@@ -30,7 +30,7 @@ def main():
         plt.xlabel("Param val")
         plt.ylabel("# of simulations")
         plt.hist(dframe[param], num_bins, facecolor='blue', alpha=0.5, edgecolor='black')
-        plt.show()
+        # plt.show()
         
         valcount = dframe[param].value_counts()
         print(param + " : " + str(valcount))
@@ -46,9 +46,9 @@ def main():
     plt.xticks(si_nums)
     plt.ylabel("Number of simulations")
     plt.grid()
-    #plt.set_ylim(ymin=0)
-    #plt.set_xlim(xmin=0)
-    
+    plt.xlim(0,1)
+    plt.ylim(0, 50000)
+
     for param in params:
         xvals = []
         yvals = []
@@ -57,8 +57,9 @@ def main():
             xvals.append(pair[0])
             yvals.append(pair[1])
         plt.plot(xvals, yvals)
-        plt.legend(param_legend)
-    plt.savefig('../figures/hist_mc.pdf')
+
+        plt.legend(param_formatted, loc='upper center', bbox_to_anchor=(0.4, 0.5, 0.3, 0.5))
+        plt.savefig('../figures/hist_mc_' + str(param) + '.png')
             
 if __name__ == "__main__":
     main()
