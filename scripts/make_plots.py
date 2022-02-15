@@ -87,9 +87,16 @@ def total_loot_hist(df):
         #convergences = convergences - 50
 
         N = a_convergences.size
+                
+        #Good for CDF, but we are changing to PDF
+        #X1 = np.sort(a_convergences)
+        #F1 = np.array(range(N))/float(N) * 100
         
-        X1 = np.sort(a_convergences)
-        F1 = np.array(range(N))/float(N) * 100
+        binsize = 50
+        round_vals = [int(val/binsize) * binsize for val in a_convergences]
+        (vals, counts) = np.unique(round_vals, return_counts=True)
+        X1 = vals
+        F1 = counts
         
         # X2 = np.sort(d_convergences)
         # F2 = np.array(range(N))/float(N) * 100
@@ -97,23 +104,23 @@ def total_loot_hist(df):
         # X3 = np.sort(n_convergences)
         # F3 = np.array(range(N))/float(N) * 100
 
-        a_win.step(X1, F1, label=str(int(m * 100)) + "%", linewidth=2)
+        a_win.plot(X1, F1, label=str(int(m * 100)) + "%", linewidth=2)
         #d_win.step(X2, F2, label=str(int(m * 100)) + "%")
         #neither_win.step(X3, F3, label=str(int(m * 100)) + "%")
 
-        plt.ylim(0, 110)
-        plt.title("CDF of iterations until defenders are totally looted")
-        #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
-        # plt.yscale("log")
-        plt.xlim(left=0, right=600)
-        plt.minorticks_on()
-        plt.grid(True, which='both')
-        plt.xlabel("Iteration Number")
-        plt.ylabel("Percent of simulations")
-        plt.legend(loc="lower right", title="Mandate:")
-        plt.tight_layout()
-        # plt.show() 
-        plt.savefig("../figures/total_loot" + str(m) + ".png")
+    plt.ylim(0, 375)
+    plt.title("PDF of simulation iterations when attackers win")
+    #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+    # plt.yscale("log")
+    plt.xlim(left=0, right=600)
+    plt.minorticks_on()
+    plt.grid(True, which='both')
+    plt.xlabel("Duration of simulation (iterations)")
+    plt.ylabel("Number of simulations")
+    plt.legend(loc="lower right", title="Mandate:")
+    plt.tight_layout()
+    # plt.show() 
+    plt.savefig("../figures/total_loot.pdf")
     
 def rate_hist(df):
     # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
@@ -150,22 +157,19 @@ def rate_hist(df):
         ax.step(X1, F1, label=str(int(m * 100)) + "%", linewidth=2)
 
 
-        plt.ylim(60, 102)
-        plt.title("CDF of loss rates for simulations that reach an equilibrium")
-        #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
-        # plt.yscale("log")
-        plt.xlim(left=0, right=1.7e6)
-        plt.minorticks_on()
-        plt.grid(True, which='both')
-        plt.xlabel("Loss rate ($ stolen by attackers / simulation iterations) ")
-        plt.ylabel("Percent of simulations")
-        
-
-        handles, labels = ax.get_legend_handles_labels()
-        plt.legend(reversed(handles), reversed(labels), loc="lower right", title="Mandate:")
-        plt.tight_layout()
-        # plt.show() 
-        plt.savefig("../figures/loss_rate" + str(m) + ".png")
+    plt.ylim(60, 102)
+    plt.title("CDF of loss rates for simulations that neither party wins")
+    #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+    # plt.yscale("log")
+    plt.xlim(left=0, right=1.7e6)
+    plt.minorticks_on()
+    plt.grid(True, which='both')
+    plt.xlabel("Loss rate ($ stolen by attackers / simulation iterations) ")
+    plt.ylabel("Percent of simulations")
+    plt.legend(loc="lower right", title="Mandate:")
+    plt.tight_layout()
+    # plt.show() 
+    plt.savefig("../figures/loss_rate.pdf")
 
 
 def loss_ratio_hist(df):
