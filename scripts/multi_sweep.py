@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 base_path = '../data/filtered_'
-sweep_vars = ['PAYOFF', 'ACCR', 'SICR', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
+sweep_vars = ['SICR']#, 'ACCR', 'SICR', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
 param_names = ['PAYOFF', 'ATTACK_COST_CONVERSION_RATE', 'SEC_INVESTMENT_CONVERSION_RATE', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
 human_readable = ['payoff', 'success', 'effectiveness', 'investment', 'number of attackers', 'inequality']
 
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
-rounded_labels = [(str(int(float(num) * 100)) + "%") for num in si_nums]
+# rounded_labels = [(str(int(float(num) * 100)) + "%") for num in si_nums]
 
 si_xvals = [round(num, 2) for num in si_labels]
 
@@ -27,7 +27,12 @@ xvals = [round(num,2) for num in norm_vals]
 
 def main():
     for sweep_var in sweep_vars:
-        plt.figure()
+
+        plt.clf()
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+        
+
         for num in range(0, 11):
             sweep_graph = []
             #another array to store total percent loss relative to original assets
@@ -50,19 +55,25 @@ def main():
             print ("VALUES FOR " + sweep_var)
             print(sweep_graph)
 
-            if sweep_var != 'SEC_INVESTMENT':
-                plt.plot(xvals, sweep_graph)
-            else:
-                plt.plot(si_xvals, sweep_graph)
+            ax.plot(xvals, sweep_graph, label=str(num*10) + "%")
                 
-        plt.title("Total inclusive relative defender losses vs. " + human_readable[sweep_vars.index(sweep_var)])
-        plt.xlabel(human_readable[sweep_vars.index(sweep_var)] + ": (0, 1]")
-        plt.xticks(si_nums)
-        plt.ylabel("Relative $ loss by defenders (%)")
-        plt.grid()
-        if sweep_var != 'SEC_INVESTMENT':
-            plt.legend(rounded_labels, title="Mandate")
-        plt.savefig('../figures/' + sweep_var +  '_inclusive.pdf')
+            
+            handles, labels = ax.get_legend_handles_labels()
+            # print(handles)
+            # print(labels)
+            # print(rounded_labels)
+            # print(list(reversed(rounded_labels)))
+            handles, labels = ax.get_legend_handles_labels()
+            plt.legend(reversed(handles), reversed(labels), title="Mandate", loc='lower left')
+
+            plt.grid(True, which='both')
+            plt.title("Total inclusive relative defender losses vs. " + human_readable[sweep_vars.index(sweep_var)])
+            plt.xlabel(human_readable[sweep_vars.index(sweep_var)] + ": (0, 1]")
+            plt.xticks(si_nums)
+            plt.ylabel("Relative $ loss by defenders (%)")
+            plt.ylim(0,1)
+
+            plt.savefig('../figures/' + sweep_var +  '_inclusive_' + str(num) + '.png')
     
     
                            
