@@ -108,19 +108,19 @@ def total_loot_hist(df):
         #d_win.step(X2, F2, label=str(int(m * 100)) + "%")
         #neither_win.step(X3, F3, label=str(int(m * 100)) + "%")
 
-    plt.ylim(0, 375)
-    plt.title("PDF of simulation iterations when attackers win")
-    #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
-    # plt.yscale("log")
-    plt.xlim(left=0, right=600)
-    plt.minorticks_on()
-    plt.grid(True, which='both')
-    plt.xlabel("Duration of simulation (iterations)")
-    plt.ylabel("Number of simulations")
-    plt.legend(loc="lower right", title="Mandate:")
-    plt.tight_layout()
-    # plt.show() 
-    plt.savefig("../figures/total_loot.pdf")
+        plt.ylim(0, 375)
+        plt.title("PDF of simulation iterations when attackers win")
+        #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+        # plt.yscale("log")
+        plt.xlim(left=0, right=600)
+        plt.minorticks_on()
+        plt.grid(True, which='both')
+        plt.xlabel("Duration of simulation (iterations)")
+        plt.ylabel("Number of simulations")
+        plt.legend(loc="upper right", title="Mandate:")
+        plt.tight_layout()
+        # plt.show() 
+        plt.savefig("../figures/total_loot" + str(m) + ".png")
     
 def rate_hist(df):
     # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
@@ -258,7 +258,7 @@ def make_plots(df):
     total_loot_hist(df)
     # print(colored('  [+] Making rate of loss histogram', 'green'))
     # rate_hist(df)
-    # print(colored('  [+
+    # # print(colored('  [+
     
 
 
