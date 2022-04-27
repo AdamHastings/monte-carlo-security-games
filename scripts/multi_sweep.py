@@ -8,6 +8,7 @@ Created on Thu Jan 20 17:42:04 2022
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 import numpy as np
 
 base_path = '../data/filtered_'
@@ -23,6 +24,7 @@ si_xvals = [round(num, 2) for num in si_labels]
 
 norm_vals = np.arange(0.1, 1.1, 0.1).tolist()
 xvals = [round(num,2) for num in norm_vals]
+print(xvals)
 
 
 def main():
@@ -53,9 +55,11 @@ def main():
                 i+=1
             
             print ("VALUES FOR " + sweep_var)
-            print(sweep_graph)
+            sweep_graph = np.array(sweep_graph) * 100
 
             ax.plot(xvals, sweep_graph, label=str(num*10) + "%")
+            ax.yaxis.set_major_formatter(mtick.PercentFormatter())
+
                 
             
             handles, labels = ax.get_legend_handles_labels()
@@ -67,11 +71,13 @@ def main():
             plt.legend(reversed(handles), reversed(labels), title="Mandate", loc='lower left')
 
             plt.grid(True, which='both')
-            plt.title("Total inclusive relative defender losses vs. " + human_readable[sweep_vars.index(sweep_var)])
-            plt.xlabel(human_readable[sweep_vars.index(sweep_var)] + ": (0, 1]")
+            # plt.title("Total inclusive relative defender losses vs. " + human_readable[sweep_vars.index(sweep_var)])
+            print(sweep_vars.index(sweep_var))
+            print(human_readable[sweep_vars.index(sweep_var)])
+            plt.xlabel("Efficiency: (0, 1]")
             plt.xticks(si_nums)
             plt.ylabel("Relative $ loss by defenders (%)")
-            plt.ylim(0,1)
+            plt.ylim(0,100)
 
             plt.savefig('../figures/' + sweep_var +  '_inclusive_' + str(num) + '.png')
     

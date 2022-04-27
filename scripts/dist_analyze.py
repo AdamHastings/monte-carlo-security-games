@@ -8,6 +8,10 @@ Created on Thu Jan 13 15:07:22 2022
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.size"] = 9
+
+
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
 param_formatted = ['ATTACKERS', 'PAYOFF', 'INVESTMENT', 'EFFECTIVENESS', 'INEQUALITY', 'SUCCESS']
@@ -26,7 +30,7 @@ def main():
     for param in params:
         i += 1
         plt.subplot(num_rows, num_cols, i)
-        plt.title(param_formatted[params.index(param)] + " distribution")
+        # plt.title(param_formatted[params.index(param)] + " distribution")
         plt.xlabel("Param val")
         plt.ylabel("# of simulations")
         plt.hist(dframe[param], num_bins, facecolor='blue', alpha=0.5, edgecolor='black')
@@ -40,9 +44,9 @@ def main():
         expected_val = expected_val / valcount.sum()
         print(param + " expected val: " + str(expected_val) )
     
-    plt.figure()
-    plt.title("Useful Monte-Carlo simulation parameter distributions")
-    plt.xlabel("Parameter values: [0, 1]")
+    plt.figure(figsize=(4, 3))
+    # plt.title("Useful Monte-Carlo simulation parameter distributions")
+    plt.xlabel("Parameter values")
     plt.xticks(si_nums)
     plt.ylabel("Number of simulations")
     plt.grid()
@@ -58,8 +62,9 @@ def main():
             yvals.append(pair[1])
         plt.plot(xvals, yvals)
 
-        plt.legend(param_formatted, loc='upper center', bbox_to_anchor=(0.4, 0.5, 0.3, 0.5))
-        plt.savefig('../figures/hist_mc_' + str(param) + '.png')
+    plt.tight_layout()
+    plt.legend(param_formatted, loc='best', bbox_to_anchor=(0.4, 0.5, 0.3, 0.5))
+    plt.savefig('../figures/hist_mc.pdf')
             
 if __name__ == "__main__":
     main()
