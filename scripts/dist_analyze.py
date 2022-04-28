@@ -15,7 +15,7 @@ plt.rcParams["font.size"] = 9
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
 param_formatted = ['ATTACKERS', 'PAYOFF', 'INVESTMENT', 'EFFECTIVENESS', 'INEQUALITY', 'SUCCESS']
-param_legend = ['ATTACKERS', 'INEQUALITY', 'SUCCESS', 'INVESTMENT', 'EFFECTIVENESS','PAYOFF']
+# param_legend = ['ATTACKERS', 'INEQUALITY', 'SUCCESS', 'INVESTMENT', 'EFFECTIVENESS','PAYOFF']
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
 
@@ -29,11 +29,11 @@ def main():
     
     for param in params:
         i += 1
-        plt.subplot(num_rows, num_cols, i)
+        # plt.subplot(num_rows, num_cols, i)
         # plt.title(param_formatted[params.index(param)] + " distribution")
-        plt.xlabel("Param val")
-        plt.ylabel("# of simulations")
-        plt.hist(dframe[param], num_bins, facecolor='blue', alpha=0.5, edgecolor='black')
+        # plt.xlabel("Param val")
+        # plt.ylabel("# of simulations")
+        # plt.hist(dframe[param], num_bins, facecolor='blue', alpha=0.5, edgecolor='black')
         # plt.show()
         
         valcount = dframe[param].value_counts()
@@ -60,10 +60,13 @@ def main():
         for pair in param_valcount.items():
             xvals.append(pair[0])
             yvals.append(pair[1])
+        print(param)
+        if param == "WEALTH_GAP":
+            yvals = [y + 400 for y in yvals]
         plt.plot(xvals, yvals)
 
     plt.tight_layout()
-    plt.legend(param_formatted, loc='best', bbox_to_anchor=(0.4, 0.5, 0.3, 0.5))
+    plt.legend(param_formatted, loc='best',title="Parameter:", bbox_to_anchor=(0.3, 0.6, 0.3, 0.5), fancybox=True, shadow=True, ncol=1)
     plt.savefig('../figures/hist_mc.pdf')
             
 if __name__ == "__main__":

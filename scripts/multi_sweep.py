@@ -16,7 +16,7 @@ plt.rcParams["font.size"] = 9
 base_path = '../data/filtered_'
 sweep_vars = ['PAYOFF', 'ACCR', 'SICR']#, 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
 param_names = ['PAYOFF', 'ATTACK_COST_CONVERSION_RATE', 'SEC_INVESTMENT_CONVERSION_RATE', 'SEC_INVESTMENT', 'PERCENT_EVIL', 'WEALTH_GAP']
-human_readable = ['payoff', 'success', 'effectiveness', 'investment', 'number of attackers', 'inequality']
+human_readable = ['PAYOFF', 'success', 'EFFICIENCY', 'investment', 'number of attackers', 'inequality']
 
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
@@ -75,7 +75,7 @@ def main():
 
         print(human_readable[sweep_vars.index(sweep_var)])
 
-        plt.legend(reversed(handles), reversed(labels), title="Mandate", bbox_to_anchor=(1.3,1), loc="upper right", fancybox=True, shadow=True, ncol=1)
+        plt.legend(reversed(handles), reversed(labels), title="Mandate:", bbox_to_anchor=(1.3,1), loc="upper right", fancybox=True, shadow=True, ncol=1)
         plt.xlabel(human_readable[sweep_vars.index(sweep_var)] + ": (0, 1]")
         plt.xticks(si_nums)
         plt.ylabel("Relative $ loss by defenders (%)")
