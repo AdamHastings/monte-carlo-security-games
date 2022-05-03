@@ -43,7 +43,7 @@ def crossover_hist(df):
         # a[row, col].set_title("Mandate = " + str(m * 100) + "%")
     # plt.yscale("log")
     plt.title("CDF of crossover iterations")
-    plt.legend(loc="upper right", title="Mandated security spending", fancybox=True, shadow=True, ncol=1)
+    plt.legend(loc="upper right", title="Mandated security spending", fontfamily="monospace" fancybox=True, shadow=True, ncol=1)
     plt.xlabel("Iteration")
     plt.ylabel("Percent of simulations")
     # plt.xlabel("Crossover iteration (far-left red bar means no crossover)")
@@ -120,7 +120,7 @@ def total_loot_hist(df):
     plt.grid(True, which='both')
     plt.xlabel("Duration of simulation (iterations)")
     plt.ylabel("Number of simulations")
-    plt.legend(loc="upper right", title="Mandate:", fancybox=True, shadow=True, ncol=1)
+    plt.legend(loc="upper right", title="MANDATE:", fancybox=True, shadow=True, ncol=1)
     plt.tight_layout()
     # plt.show() 
     plt.savefig("../figures/total_loot.pdf")
@@ -169,7 +169,7 @@ def rate_hist(df):
     plt.grid(True, which='both')
     plt.xlabel("Loss rate ($ stolen by attackers / simulation iterations) ")
     plt.ylabel("Percent of simulations")
-    plt.legend(loc="lower right", title="Mandate:", fancybox=True, shadow=True, ncol=1)
+    plt.legend(loc="lower right", title="MANDATE:", fancybox=True, shadow=True, ncol=1)
     plt.tight_layout()
     # plt.show() 
     plt.savefig("../figures/loss_rate.pdf")
@@ -230,7 +230,7 @@ def loss_ratio_hist(df):
         ax.step(X2, F2, label=str(int(m * 100)) + "%")
 
         # plt.title("CDF of percent decrease in assets")
-        plt.xlabel("Percent decrease in assets (mandated spending + losses from attacks)")
+        plt.xlabel("Percent decrease in tokens (mandated spending + losses from attacks)")
         plt.ylabel("Percent of simulations")
         plt.xlim(0,105)
         plt.ylim(60,100)
@@ -241,7 +241,7 @@ def loss_ratio_hist(df):
         print(mandates)
         plt.minorticks_on()
         plt.grid(True, which='both')
-        plt.legend(loc="lower right", title="Mandate:", fancybox=True, shadow=True, ncol=1)
+        plt.legend(loc="lower right", title="MANDATE:", fancybox=True, shadow=True, ncol=1)
         # plt.tight_layout()
         # plt.legend(loc="lower right")
         # plt.show() 
@@ -250,7 +250,7 @@ def loss_ratio_hist(df):
 
     plt.xlim(80,102)
     plt.ylim(95,100)
-    plt.title("CDF of percent decrease in assets (closeup)")
+    plt.title("CDF of percent decrease in tokens (closeup)")
     plt.savefig("../figures/closeup.pdf")
 
 def make_plots(df):

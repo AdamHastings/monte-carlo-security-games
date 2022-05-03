@@ -14,7 +14,7 @@ plt.rcParams["font.size"] = 9
 
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
-param_formatted = ['ATTACKERS', 'PAYOFF', 'INVESTMENT', 'EFFECTIVENESS', 'INEQUALITY', 'SUCCESS']
+param_formatted = ['ATTACKERS', 'PAYOFF', 'MANDATE', 'EFFECTIVENESS', 'INEQUALITY', 'SUCCESS']
 # param_legend = ['ATTACKERS', 'INEQUALITY', 'SUCCESS', 'INVESTMENT', 'EFFECTIVENESS','PAYOFF']
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
@@ -66,7 +66,7 @@ def main():
         plt.plot(xvals, yvals)
 
     plt.tight_layout()
-    plt.legend(param_formatted, loc='best',title="Parameter:", bbox_to_anchor=(0.3, 0.6, 0.3, 0.5), fancybox=True, shadow=True, ncol=1)
+    plt.legend(param_formatted, loc='best',title="Game parameter:", bbox_to_anchor=(0.3, 0.6, 0.3, 0.5), fancybox=True, shadow=True, ncol=1)
     plt.savefig('../figures/hist_mc.pdf')
             
 if __name__ == "__main__":
