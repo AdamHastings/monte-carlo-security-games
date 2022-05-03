@@ -78,7 +78,7 @@ def main():
         plt.legend(reversed(handles), reversed(labels), title="MANDATE:", bbox_to_anchor=(1.3,1), loc="upper right", fancybox=True, shadow=True, ncol=1)
         plt.xlabel(human_readable[sweep_vars.index(sweep_var)] + ": (0, 1]")
         plt.xticks(si_nums)
-        plt.ylabel("Relative $ loss by defenders (%)")
+        plt.ylabel("Relative token loss by defenders (%)")
         plt.ylim(0,100)
         plt.tight_layout()
         plt.savefig('../figures/' + sweep_var +  '_inclusive.pdf')
