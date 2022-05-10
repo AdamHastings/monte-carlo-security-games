@@ -172,6 +172,67 @@ def rate_hist(df):
     plt.savefig("../figures/loss_rate.pdf")
 
 
+def losses_per_iteration(df):
+    # Ok so we're not really doing losses per iteration since this data was never collected but we can plot trendlines for each mandate of iterations on x-axis and total losses on y-axis
+    plt.clf()
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+
+    mandates = sorted(df['SEC_INVESTMENT'].unique())
+    for i,m in enumerate(mandates):
+        mands = df.loc[df['SEC_INVESTMENT'] == m]
+
+        # # Do we really need this?
+        # mands = mands.loc[mands['d_end'] != 0]
+
+        losses = (mands['d_init'] - mands['d_end']).to_numpy()
+        runtimes = mands['final_iter'].to_numpy()
+
+        sorted_runtimes, sorted_losses = zip(*sorted(zip(runtimes, losses)))
+        ax.scatter(sorted_runtimes, sorted_losses)
+
+    plt.savefig('../figures/losses_per_iteration.png')
+
+
+def loss_rate_pdf(df):
+    # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
+
+    plt.clf()
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+
+    mandates = sorted(df['SEC_INVESTMENT'].unique())
+    for i,m in enumerate(mandates):
+        if (m > 0.5):
+            continue
+
+        mands = df.loc[df['SEC_INVESTMENT'] == m]
+
+        neither_wins = mands.loc[mands['d_end'] != 0]
+        
+        # neither_wins['rate'] = (neither_wins['d_init'] - neither_wins['d_end']) / (neither_wins['final_iter'])
+        tokens_lost = neither_wins['d_init'] - neither_wins['d_end']
+        loss_rate = (neither_wins['d_init'] - neither_wins['d_end']) / neither_wins['final_iter'].to_numpy()
+        
+        
+        ax.hist(loss_rate, label=str(int(m * 100)) + "%", histtype='step', linewidth=2)
+
+
+    # plt.ylim(60, 102)
+    plt.title("Histograms of simulations that end in stalemate")
+    #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+    # plt.yscale("log")
+    # plt.xlim(left=0, right=1.7e6)
+    plt.minorticks_on()
+    plt.grid(True, which='both')
+    plt.xlabel("Aggregate loss rate ($ stolen by attackers / simulation iterations) ")
+    plt.ylabel("Count")
+    plt.legend(loc="lower right", title="Mandate:")
+    plt.tight_layout()
+    # plt.show() 
+    plt.savefig("../figures/loss_rate_pdf.pdf")
+
+
 def loss_ratio_hist(df):
     
     # fig, a =  plt.subplots(2,5,sharey=True,sharex=True)
@@ -253,12 +314,16 @@ def loss_ratio_hist(df):
 def make_plots(df):
     # print(colored('  [+] Making crossover histogram', 'green'))
     # crossover_hist(df)
-    print(colored('  [+] Making total loot histogram', 'green'))
-    total_loot_hist(df)
-    print(colored('  [+] Making rate of loss histogram', 'green'))
-    rate_hist(df)
-    print(colored('  [+] Making loss ratio histogram', 'green'))
-    loss_ratio_hist(df)
+    # print(colored('  [+] Making total loot histogram', 'green'))
+    # total_loot_hist(df)
+    # print(colored('  [+] Making rate of loss histogram', 'green'))
+    # rate_hist(df)
+    print(colored('  [+] Making loss rate pdf', 'green'))
+    loss_rate_pdf(df)
+    print(colored('  [+] Making losses per iteration', 'green'))
+    losses_per_iteration(df)
+    # print(colored('  [+] Making loss ratio histogram', 'green'))
+    # loss_ratio_hist(df)
     
 
 
