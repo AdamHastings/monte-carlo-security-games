@@ -129,7 +129,7 @@ def rate_hist(df):
     # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
 
     plt.clf()
-    fig = plt.figure(figsize=(4, 3))
+    fig = plt.figure(figsize=(4, 2))
     ax = fig.add_subplot(1,1,1)
 
     mandates = sorted(df['SEC_INVESTMENT'].unique())
@@ -162,14 +162,15 @@ def rate_hist(df):
 
     plt.ylim(60, 102)
     # plt.title("CDF of loss rates for simulations that neither party wins")
-    #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
+    # ax.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
     # plt.yscale("log")
     plt.xlim(left=0, right=1.7e6)
     plt.minorticks_on()
     plt.grid(True, which='both')
-    plt.xlabel("Loss rate (tokens stolen  / simulation iterations) ")
+    plt.xlabel("Loss rate (loot / # iterations) ")
     plt.ylabel("Percent of simulations")
-    plt.legend(loc="lower right", title="MANDATE:", fancybox=True, shadow=True, ncol=1)
+    plt.legend(loc="lower right", title="MANDATE:", fancybox=True, shadow=True, ncol=2)
     plt.tight_layout()
     # plt.show() 
     plt.savefig("../figures/loss_rate.pdf")
@@ -323,8 +324,8 @@ def make_plots(df):
     rate_hist(df)
     print(colored('  [+] Making loss rate pdf', 'green'))
     loss_rate_pdf(df)
-    # print(colored('  [+] Making losses per iteration', 'green'))
-    # losses_per_iteration(df)
+    print(colored('  [+] Making losses per iteration', 'green'))
+    losses_per_iteration(df)
     print(colored('  [+] Making loss ratio histogram', 'green'))
     loss_ratio_hist(df)
     
