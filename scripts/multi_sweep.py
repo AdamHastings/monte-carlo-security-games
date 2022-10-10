@@ -33,11 +33,11 @@ def main():
     for sweep_var in sweep_vars:
 
         plt.clf()
-        fig = plt.figure(figsize=(4,3))
+        fig = plt.figure(figsize=(4,2.5))
         ax = fig.add_subplot(1,1,1)
         
 
-        for num in range(0, 10):
+        for num in range(0, 8):
             sweep_graph = []
             #another array to store total percent loss relative to original assets
             total_graph = []
@@ -80,6 +80,7 @@ def main():
         plt.xticks(si_nums)
         plt.ylabel("Relative token loss by defenders (%)")
         plt.ylim(0,100)
+        plt.xlim(0.1,1.1)
         plt.tight_layout()
         plt.savefig('../figures/' + sweep_var +  '_inclusive.pdf')
     

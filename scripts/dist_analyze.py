@@ -8,7 +8,7 @@ Created on Thu Jan 13 15:07:22 2022
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.size"] = 9
 
 
