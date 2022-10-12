@@ -48,14 +48,18 @@ def main():
     # plt.title("Useful Monte-Carlo simulation parameter distributions")
     plt.xlabel("Parameter values")
     plt.xticks(si_nums)
-    plt.ylabel("Number of simulations")
+    plt.ylabel("Number of games")
     plt.grid()
     plt.xlim(0,1)
     plt.ylim(0, 50000)
+    
 
     for param in params:
         xvals = []
         yvals = []
+
+        
+
         param_valcount = dframe[param].value_counts()
         for pair in param_valcount.items():
             xvals.append(pair[0])
@@ -63,6 +67,11 @@ def main():
         print(param)
         if param == "WEALTH_GAP":
             yvals = [y + 400 for y in yvals]
+
+        if param == "PAYOFF":
+            xvals.append(0.1)
+            yvals.append(0)
+        
         plt.plot(xvals, yvals)
 
     plt.tight_layout()

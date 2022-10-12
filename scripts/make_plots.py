@@ -45,7 +45,7 @@ def crossover_hist(df):
     plt.title("CDF of crossover iterations")
     plt.legend(loc="upper right", title="Mandated security spending", fancybox=True, shadow=True, ncol=1)
     plt.xlabel("Iteration")
-    plt.ylabel("Percent of simulations")
+    plt.ylabel("Percent of games")
     # plt.xlabel("Crossover iteration (far-left red bar means no crossover)")
     # plt.ylabel("Count")
     # plt.show()  
@@ -118,12 +118,12 @@ def total_loot_hist(df):
     plt.xlim(left=0, right=600)
     plt.minorticks_on()
     plt.grid(True, which='both')
-    plt.xlabel("Duration of simulation (iterations)")
-    plt.ylabel("Number of simulations")
+    plt.xlabel("Duration of games (iterations)")
+    plt.ylabel("Number of games")
     plt.legend(loc="upper right", title="MANDATE:", fancybox=True, shadow=True, ncol=1)
     plt.tight_layout()
     # plt.show() 
-    plt.savefig("../figures/total_loot.pdf")
+    plt.savefig("../figures/total_loot.pdf", pad_inches=0)
     
 def rate_hist(df):
     # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
@@ -169,11 +169,11 @@ def rate_hist(df):
     plt.minorticks_on()
     plt.grid(True, which='both')
     plt.xlabel("Loss rate (loot / # iterations) ")
-    plt.ylabel("Percent of simulations")
+    plt.ylabel("Percent of games")
     plt.legend(loc="lower right", title="MANDATE:", fancybox=True, shadow=True, ncol=2)
     plt.tight_layout()
     # plt.show() 
-    plt.savefig("../figures/loss_rate.pdf")
+    plt.savefig("../figures/loss_rate.pdf", pad_inches=0)
 
 
 def losses_per_iteration(df):
