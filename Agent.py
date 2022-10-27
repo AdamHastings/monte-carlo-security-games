@@ -33,3 +33,16 @@ class Attacker(Agent):
     
     def lose(self, cost):
         self.assets -= cost 
+
+# TODO: One shot insurance, or continuous investments?
+#    A: We will do one-shot for now
+class Insurer(Agent):
+    def __init__(self, assets):
+        Agent.__init__(self, assets)
+
+    def collect_premiums(self, premiums):
+        self.assets += premiums
+
+    def remit_claim(self, claim):
+        self.assets -= claim
+        return claim

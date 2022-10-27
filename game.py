@@ -13,7 +13,6 @@ import math
 
 blue_dist=None
 red_dist=None
-linestyles = ['-', '--', '-.', ':']
 
 param_names = ['PERCENT_EVIL','PAYOFF', 'WEALTH_GAP', 'SEC_INVESTMENT_CONVERSION_RATE', 'ATTACK_COST_CONVERSION_RATE', 'CHANCE_OF_GETTING_CAUGHT', 'SEC_INVESTMENT']
 
@@ -80,6 +79,8 @@ def init_game(BLUETEAM_SIZE, REDTEAM_SIZE, ATTACK_COST_CONVERSION_RATE, WEALTH_G
     for _ in range(REDTEAM_SIZE):
         assets = create_red_agent(WEALTH_GAP)
         Attackers.append(Attacker(assets))
+
+    Insurer = Insurer(assets)
 
     return Attackers, Defenders
 
