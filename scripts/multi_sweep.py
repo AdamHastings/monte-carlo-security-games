@@ -10,7 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import numpy as np
-plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.size"] = 9
 
 base_path = '../data/filtered_'
@@ -78,11 +78,11 @@ def main():
         plt.legend(reversed(handles), reversed(labels), title="MANDATE:", bbox_to_anchor=(1.3,1), loc="upper right", fancybox=True, shadow=True, ncol=1)
         plt.xlabel(human_readable[sweep_vars.index(sweep_var)] + ": (0, 1]")
         plt.xticks(si_nums)
-        plt.ylabel("Relative token loss by defenders (%)")
+        plt.ylabel("Total Defender losses (%)")
         plt.ylim(0,100)
         plt.xlim(0.1,1.1)
         plt.tight_layout()
-        plt.savefig('../figures/' + sweep_var +  '_inclusive.pdf')
+        plt.savefig('../figures/' + sweep_var +  '_inclusive.pdf',bbox_inches='tight')
     
     
                            

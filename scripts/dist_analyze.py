@@ -14,7 +14,7 @@ plt.rcParams["font.size"] = 9
 
 
 params = ['PERCENT_EVIL', 'PAYOFF', 'SEC_INVESTMENT', 'SEC_INVESTMENT_CONVERSION_RATE', 'WEALTH_GAP', 'ATTACK_COST_CONVERSION_RATE']
-param_formatted = ['ATTACKERS', 'PAYOFF', 'MANDATE', 'EFFECTIVENESS', 'INEQUALITY', 'SUCCESS']
+param_formatted = ['ATTACKERS', 'PAYOFF', 'MANDATE', 'EFFICIENCY', 'INEQUALITY', 'SUCCESS']
 # param_legend = ['ATTACKERS', 'INEQUALITY', 'SUCCESS', 'INVESTMENT', 'EFFECTIVENESS','PAYOFF']
 si_labels = np.arange(0, 1.1, 0.1).tolist()
 si_nums = [round(num,1) for num in si_labels]
