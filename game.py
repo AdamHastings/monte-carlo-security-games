@@ -82,7 +82,7 @@ def init_game(BLUETEAM_SIZE, REDTEAM_SIZE, ATTACK_COST_CONVERSION_RATE, WEALTH_G
 
     Insurer = Insurer(assets)
 
-    return Attackers, Defenders
+    return Attackers, Defenders, Insurer
 
 
 def sum_assets(Players):
