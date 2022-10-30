@@ -1,11 +1,12 @@
 from Agent import Defender, Attacker
-#import matplotlib.pyplot as plt
+from multiprocessing import Pool
+import itertools
 import numpy as np
 import importlib
 import sys
 import random
 #import colorama
-#from colorama import Fore, Style
+from colorama import Fore, Style
 from numpy.random import choice
 from copy import deepcopy
 import math
@@ -19,19 +20,21 @@ param_names = ['PERCENT_EVIL','PAYOFF', 'WEALTH_GAP', 'SEC_INVESTMENT_CONVERSION
 PARALLEL_VAL = -1
 ROUND_DIGITS = 2
 
-try:
-    cfgfile = sys.argv[1]
-    cfg = importlib.import_module("configs." + cfgfile)
-    if len(sys.argv) > 1:
-        PARALLEL_VAL = float(sys.argv[2])
-        cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
+
+# print(sys.argv)
+# try:
+#     cfgfile = sys.argv[1]
+#     cfg = importlib.import_module("configs." + cfgfile)
+#     if len(sys.argv) > 1:
+#         PARALLEL_VAL = float(sys.argv[2])
+#         cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
         
-except Exception as e:
-    print(Fore.RED + "ERROR: Config file not found, or maybe another error! :( ")
-    print(e)
-    for arg in sys.argv:
-        print("ARG: " + arg)
-    sys.exit(0)
+# except Exception as e:
+#     print(Fore.RED + "ERROR: Config file not found, or maybe another error! :( ")
+#     print(e)
+#     for arg in sys.argv:
+#         print("ARG: " + arg)
+#     sys.exit(0)
 
 
 TOTAL_ASSETS = 0
@@ -333,16 +336,29 @@ def main():
     print("Starting games...")
     random.seed(3)
 
-    init_logs()
+    # init_logs()
 
-    for PERCENT_EVIL in cfg.params_ranges['PERCENT_EVIL']:
-        for PAYOFF in cfg.params_ranges['PERCENT_EVIL']:
-            for WEALTH_GAP in cfg.params_ranges['WEALTH_GAP']:
-                for SEC_INVESTMENT_CONVERSION_RATE in cfg.params_ranges['SEC_INVESTMENT_CONVERSION_RATE']:
-                    for ATTACK_COST_CONVERSION_RATE in cfg.params_ranges['ATTACK_COST_CONVERSION_RATE']:
-                        for CHANCE_OF_GETTING_CAUGHT in cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']:
-                            for SEC_INVESTMENT in cfg.params_ranges['SEC_INVESTMENT']:
-                                run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT)
+    PERCENT_EVIL_range = np.linspace(0.1, 1.0, 10)
+    PAYOFF_range = np.linspace(0.1, 1.0, 10)
+    WEALTH_GAP_range = np.linspace(0.1, 1.0, 10)
+    SEC_INVESTMENT_CONVERSION_RATE_range = np.linspace(0.1, 1.0, 10)
+    ATTACK_COST_CONVERSION_RATE_range = np.linspace(0.1, 1.0, 10)
+    CHANCE_OF_GETTING_CAUGHT_range = [0.0] # TODO this should be removed
+    SEC_INVESTMENT = [0.0] # TODO change this per machine
+
+    inputs = list(itertools.product(PERCENT_EVIL_range, PAYOFF_range, WEALTH_GAP_range, SEC_INVESTMENT_CONVERSION_RATE_range, ATTACK_COST_CONVERSION_RATE_range, CHANCE_OF_GETTING_CAUGHT_range, SEC_INVESTMENT))
+
+    with Pool() as p:
+        p.starmap(run_games, inputs)
+
+    # for PERCENT_EVIL in cfg.params_ranges['PERCENT_EVIL']:
+    #     for PAYOFF in cfg.params_ranges['PERCENT_EVIL']:
+    #         for WEALTH_GAP in cfg.params_ranges['WEALTH_GAP']:
+    #             for SEC_INVESTMENT_CONVERSION_RATE in cfg.params_ranges['SEC_INVESTMENT_CONVERSION_RATE']:
+    #                 for ATTACK_COST_CONVERSION_RATE in cfg.params_ranges['ATTACK_COST_CONVERSION_RATE']:
+    #                     for CHANCE_OF_GETTING_CAUGHT in cfg.params_ranges['CHANCE_OF_GETTING_CAUGHT']:
+    #                         for SEC_INVESTMENT in cfg.params_ranges['SEC_INVESTMENT']:
+    #                             run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, ATTACK_COST_CONVERSION_RATE, CHANCE_OF_GETTING_CAUGHT, SEC_INVESTMENT)
 
     
 if __name__== "__main__":
