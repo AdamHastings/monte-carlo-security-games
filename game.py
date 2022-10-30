@@ -281,7 +281,9 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         
         a_iters, d_iters, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
         
-        filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv" 
+        # filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv"
+        # TODO programmatically do this...
+        filename = "logs/test_SEC_INVESTMENT_0.0.csv" 
         statsfile = open(filename, 'a')  # write mode
         
         statsfile.write(str(PERCENT_EVIL) + "," + str(PAYOFF)+ "," + str(WEALTH_GAP)+ "," + str(SEC_INVESTMENT_CONVERSION_RATE)+ "," + str(ATTACK_COST_CONVERSION_RATE)+ "," + str(CHANCE_OF_GETTING_CAUGHT) + "," + str(SEC_INVESTMENT) + ",")
@@ -321,16 +323,16 @@ def run_games(PERCENT_EVIL, PAYOFF, WEALTH_GAP, SEC_INVESTMENT_CONVERSION_RATE, 
         # plt.legend()
         # plt.show()
 
-def init_logs():
+# def init_logs():
 
-    filename = 'logs/stats_' + cfg.PARALLELIZED + '_' + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv"
-    statsfile = open(filename, 'w')  # write mode
+#     filename = 'logs/stats_' + cfg.PARALLELIZED + '_' + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv"
+#     statsfile = open(filename, 'w')  # write mode
     
-    for k in param_names:
-        statsfile.write(str(k) + ',')
+#     for k in param_names:
+#         statsfile.write(str(k) + ',')
 
-    statsfile.write('d_init,d_end,a_init,a_end,final_iter,crossover\n')
-    statsfile.close()
+#     statsfile.write('d_init,d_end,a_init,a_end,final_iter,crossover\n')
+#     statsfile.close()
 
 def main():
     print("Starting games...")
