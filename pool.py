@@ -18,12 +18,12 @@ if __name__ == '__main__':
     c = np.linspace(0.1, 1.0, 10)
     d = np.linspace(0.1, 1.0, 10)
     e = np.linspace(0.1, 1.0, 10)
-    f = np.linspace(0.1, 1.0, 10)
+    f = [5]
     # print(a)
     # print("-------")
 
     inputs = list(itertools.product(a,b,c,d,e,f))
-    # print(inputs)
+    print(inputs)
     
-    with Pool(5) as p:
-        p.starmap(func, inputs)
+    # with Pool() as p:
+    #     p.starmap(func, inputs)
