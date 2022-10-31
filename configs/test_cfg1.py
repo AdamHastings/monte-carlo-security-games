@@ -12,14 +12,14 @@ import numpy as np
 Format: (start, end, increment)
 """
 params_ranges = dict(
-    ATTACKERS = np.linspace(0.1, 1.0, 10), # Percentage of Attackers, relative to BLUE_PLAYERS
-    PAYOFF = np.linspace(0.1, 1.0, 10), # How much of a defender's assets are stolen if attacker is succesful
-    INEQUALITY = np.linspace(0.1, 1.0, 10), # How much poorer Attackers are than Defenders, as a pct
-    EFFICIENCY = np.linspace(0.1, 1.0, 10), # Percent of MANDATE that goes towards increasing a defender's costToAttack
-    SUCCESS = np.linspace(0.1, 1.0, 10), # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
+    ATTACKERS = np.linspace(0.1, 1.0, 1), # Percentage of Attackers, relative to BLUE_PLAYERS
+    PAYOFF = np.linspace(0.1, 1.0, 1), # How much of a defender's assets are stolen if attacker is succesful
+    INEQUALITY = np.linspace(0.1, 1.0, 1), # How much poorer Attackers are than Defenders, as a pct
+    EFFICIENCY = np.linspace(0.1, 1.0, 1), # Percent of MANDATE that goes towards increasing a defender's costToAttack
+    SUCCESS = np.linspace(0.1, 1.0, 1), # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
     CHANCE_OF_GETTING_CAUGHT = np.linspace(0.0, 0.0, 1), # Probability that an attacker is caught and has their assets confiscated
-    CLAIMS = np.linspace(0.1, 1.0, 10), # Percentage of losses paid back to defender by Insurer
-    PREMIUMS = np.linspace(0.1, 1.0, 10), # Percentage of MANDATE that is allocated towards security
+    CLAIMS = np.linspace(0.1, 1.0, 1), # Percentage of losses paid back to defender by Insurer
+    PREMIUMS = np.linspace(0.1, 1.0, 1), # Percentage of MANDATE that is allocated towards security
     MANDATE = np.linspace(0.0, 1.0, 11) # Percentage of assets that are spent on security measures.
 )
 
