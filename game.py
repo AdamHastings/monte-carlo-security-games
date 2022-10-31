@@ -6,7 +6,7 @@ import importlib
 import sys
 import random
 #import colorama
-from colorama import Fore, Style
+#from colorama import Fore, Style
 from numpy.random import choice
 from copy import deepcopy
 import math
@@ -21,20 +21,20 @@ PARALLEL_VAL = -1
 ROUND_DIGITS = 2
 
 
-# print(sys.argv)
-# try:
-#     cfgfile = sys.argv[1]
-#     cfg = importlib.import_module("configs." + cfgfile)
-#     if len(sys.argv) > 1:
-#         PARALLEL_VAL = float(sys.argv[2])
-#         cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
-        
-# except Exception as e:
-#     print(Fore.RED + "ERROR: Config file not found, or maybe another error! :( ")
-#     print(e)
-#     for arg in sys.argv:
-#         print("ARG: " + arg)
-#     sys.exit(0)
+print(sys.argv)
+try:
+    cfgfile = sys.argv[1]
+    cfg = importlib.import_module("configs." + cfgfile)
+    if len(sys.argv) > 1:
+        PARALLEL_VAL = float(sys.argv[2])
+        cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
+       
+except Exception as e:
+    print("ERROR: Config file not found, or maybe another error! :( ")
+    print(e)
+    for arg in sys.argv:
+        print("ARG: " + arg)
+    sys.exit(0)
 
 
 TOTAL_ASSETS = 0
@@ -83,9 +83,9 @@ def init_game(BLUETEAM_SIZE, REDTEAM_SIZE, ATTACK_COST_CONVERSION_RATE, WEALTH_G
         assets = create_red_agent(WEALTH_GAP)
         Attackers.append(Attacker(assets))
 
-    Insurer = Insurer(assets)
+    #Insurer = Insurer(assets)
 
-    return Attackers, Defenders, Insurer
+    return Attackers, Defenders#, Insurer
 
 
 def sum_assets(Players):
