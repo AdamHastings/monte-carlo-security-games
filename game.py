@@ -5,48 +5,20 @@ import numpy as np
 import importlib
 import sys
 import random
-#import colorama
-#from colorama import Fore, Style
 from numpy.random import choice
 from copy import deepcopy
 import math
 
-
-blue_dist=None
-red_dist=None
-
-param_names = ['ATTACKERS','PAYOFF', 'INEQUALITY', 'EFFICIENCY', 'SUCCESS', 'CHANCE_OF_GETTING_CAUGHT', 'MANDATE']
-
-PARALLEL_VAL = -1
-ROUND_DIGITS = 2
-
-
-print(sys.argv)
-try:
-    cfgfile = sys.argv[1]
-    cfg = importlib.import_module("configs." + cfgfile)
-    if len(sys.argv) > 1:
-        PARALLEL_VAL = float(sys.argv[2])
-        cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
-       
-except Exception as e:
-    print("ERROR: Config file not found, or maybe another error! :( ")
-    print(e)
-    for arg in sys.argv:
-        print("ARG: " + arg)
-    sys.exit(0)
-
-
 # Global vars for tracking game outcomes
-TOTAL_ASSETS = 0
-TOTAL_MANDATE_SPENDING = 0
-GOV_ASSETS = 0
-ATTACK_SPENDING = 0
+# TOTAL_MANDATE_SPENDING = 0
+# GOV_ASSETS = 0
+# ATTACK_SPENDING = 0
 
 def create_blue_agent(SUCCESS):
+
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
-    
     assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
+
     ProbDefenseSuccess = np.random.normal(0.388, 0.062)
     if ProbDefenseSuccess < 0:
         print("Whoa! Drawing this number is more unlikely than dying in a plane crash!")
@@ -56,19 +28,15 @@ def create_blue_agent(SUCCESS):
         ProbDefenseSuccess = 1
 
     ProbOfAttackSuccess = 1 - ProbDefenseSuccess
-
-
     costToAttack = assets * SUCCESS # TODO discuss later if we want to change this derivation
 
-    return assets, ProbOfAttackSuccess, costToAttack
+    return Defender(assets, ProbOfAttackSuccess, costToAttack)
 
 
 def create_red_agent(INEQUALITY):
     randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
-
     assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] * INEQUALITY
-
-    return assets
+    return Attacker(assets)
 
 
 def init_game(BLUETEAM_SIZE, REDTEAM_SIZE, SUCCESS, INEQUALITY):
@@ -77,12 +45,10 @@ def init_game(BLUETEAM_SIZE, REDTEAM_SIZE, SUCCESS, INEQUALITY):
     Attackers = []
     
     for _ in range(BLUETEAM_SIZE):
-        assets, ProbOfAttackSuccess, costToAttack = create_blue_agent(SUCCESS)
-        Defenders.append(Defender(assets, ProbOfAttackSuccess, costToAttack))
+        Defenders.append(create_blue_agent(SUCCESS))
     
     for _ in range(REDTEAM_SIZE):
-        assets = create_red_agent(INEQUALITY)
-        Attackers.append(Attacker(assets))
+        Attackers.append(create_red_agent(INEQUALITY))
 
     #Insurer = Insurer(assets)
 
@@ -203,7 +169,6 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
 
         if ((crossover < 0) and a_sum > d_sum):
             crossover = iter_num
-            # print("Crossover at " + str(crossover) + " iterations")
 
         if len(Defenders) == 0:
             final_iter = iter_num
@@ -220,31 +185,21 @@ def run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT):
     if not stability_reached:
         stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, crossover))
     
-    # pad with zeros
-    #if (d_iters[-1] == 0):
-    #    for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
-    #        d_iters.append(0)
-    #        a_iters.append(a_iters[-1])
-
-    #if (a_iters[-1] == 0):
-    #    for _ in range(cfg.game_settings['SIM_ITERS'] - final_iter - 1):
-    #        d_iters.append(d_iters[-1])
-    #        a_iters.append(0)
-
-    # print("End of iterations")
     return a_iters, d_iters, stats
 
 
 def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CHANCE_OF_GETTING_CAUGHT, MANDATE):
 
+    # global cfg
+    print(cfg.game_settings)
+
     BLUETEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'])
     REDTEAM_SIZE = int(cfg.game_settings['BLUE_PLAYERS'] * ATTACKERS)
 
-
-    #fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True)
-
     for i in range(cfg.game_settings['NUM_GAMES']):
         print("game " + str(i) + ":( " + str(ATTACKERS) + ", " + str(PAYOFF)+ ", " + str(INEQUALITY)+ ", " + str(EFFICIENCY)+ ", " + str(SUCCESS)+ ", " + str(CHANCE_OF_GETTING_CAUGHT) + ", " + str(MANDATE) + ")")
+        
+        # TODO maybe optimize by creating template Defender/Attacker 
         red, blue = init_game(BLUETEAM_SIZE, REDTEAM_SIZE, SUCCESS, INEQUALITY)
 
         a_sum = sum_assets(red)
@@ -252,13 +207,6 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CHANCE_OF_GETT
 
         TOTAL_ASSETS = a_sum + d_sum
         TOTAL_MANDATE_SPENDING = 0
-
-        # print("INITIAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
-        # print("INITIAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
-        # print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
-
-        # print("")
-        # print("Mandate is: " + str(MANDATE > 0))
 
         global GOV_ASSETS
         global ATTACK_SPENDING
@@ -271,7 +219,6 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CHANCE_OF_GETT
         Attackers = deepcopy(red)
         Defenders = deepcopy(blue)
 
-        #if (mandate): # apply the mandate
         for d in Defenders:
             investment = d.assets * MANDATE
             d.assets -= investment
@@ -280,9 +227,9 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CHANCE_OF_GETT
         
         a_iters, d_iters, stats = run_iterations(Attackers, Defenders, PAYOFF, CHANCE_OF_GETTING_CAUGHT)
         
-        # filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv"
+        filename = "logs/stats_" + cfg.PARALLELIZED + "_" + str(round(PARALLEL_VAL, 2)) + ".csv"
         # TODO programmatically do this...
-        filename = "logs/test_MANDATE_0.0.csv" 
+        # filename = "logs/test_MANDATE_0.0.csv" 
         statsfile = open(filename, 'a')  # write mode
         
         statsfile.write(str(ATTACKERS) + "," + str(PAYOFF)+ "," + str(INEQUALITY)+ "," + str(EFFICIENCY)+ "," + str(SUCCESS)+ "," + str(CHANCE_OF_GETTING_CAUGHT) + "," + str(MANDATE) + ",")
@@ -292,79 +239,65 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CHANCE_OF_GETT
         statsfile.write('\n')
         statsfile.close()
 
-        # print("GAME STATS: ")
-        # print(stats)
-        
-        # plt.title("")
-        # plt.plot(d_iters, label="Blue Team", linewidth=2, linestyle="-", color="b")
-        # plt.plot(a_iters, label="Red Team", linewidth=2, linestyle="-", color="r")
-        # if (crossover > 0):
-        #     plt.axvline(x=crossover)
-
-        # plt.axvline(x=final - cfg.game_settings['STABLE_ITERS'], linestyle='--')
-
-        # print("")
-        # print("TOTAL_ASSETS: " + "{:.2e}".format(TOTAL_ASSETS))
-
         a_sum = sum_assets(Attackers)
         d_sum = sum_assets(Defenders)
 
-        # print("FINAL_BLUE_ASSETS: " + "{:.2e}".format(d_sum))
-        # print("FINAL_RED_ASSETS: " + "{:.2e}".format(a_sum))
 
-        # print("GOV_ASSETS: " + "{:.2e}".format(GOV_ASSETS))
-        # print("ATTACK_SPENDING: " + "{:.2e}".format(ATTACK_SPENDING))
-        # print("TOTAL_MANDATE_SPENDING: " + "{:.2e}".format(TOTAL_MANDATE_SPENDING))
-        # print("Check: " + str(True if abs(TOTAL_ASSETS - (a_sum + d_sum + GOV_ASSETS + ATTACK_SPENDING + TOTAL_MANDATE_SPENDING)  < 1) else False))
+def init_logs():
 
-        # plt.xlabel("iterations")
-        # plt.ylabel("total assets")
-        # plt.legend()
-        # plt.show()
+    param_names = ['ATTACKERS','PAYOFF', 'INEQUALITY', 'EFFICIENCY', 'SUCCESS', 'CHANCE_OF_GETTING_CAUGHT', 'MANDATE']
 
-# def init_logs():
 
-#     filename = 'logs/stats_' + cfg.PARALLELIZED + '_' + str(round(PARALLEL_VAL, ROUND_DIGITS)) + ".csv"
-#     statsfile = open(filename, 'w')  # write mode
+    filename = 'logs/stats_' + cfg.PARALLELIZED + '_' + str(round(PARALLEL_VAL, 2)) + ".csv"
+    statsfile = open(filename, 'w')  # write mode
+
+    # TODO maybe check if file already exists? Because we don't want to accidentally overwrite it
     
-#     for k in param_names:
-#         statsfile.write(str(k) + ',')
+    for k in param_names:
+        statsfile.write(str(k) + ',')
 
-#     statsfile.write('d_init,d_end,a_init,a_end,final_iter,crossover\n')
-#     statsfile.close()
+    statsfile.write('d_init,d_end,a_init,a_end,final_iter,crossover\n')
+    statsfile.close()
+
+# initialize worker processes
+def init_worker(cfg_obj):
+    # declare scope of a new global variable
+    global cfg
+    # store argument in the global variable for this process
+    cfg = cfg_obj
 
 def main():
-    print("Starting games...")
+    print("\nStarting games...")
     random.seed(3)
 
-    # print(sys.argv)
-    # try:
-    #     cfgfile = sys.argv[1]
-    #     cfg = importlib.import_module("configs." + cfgfile)
-    #     if len(sys.argv) > 1:
-    #         PARALLEL_VAL = float(sys.argv[2])
-    #         cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
-            
-    # except Exception as e:
-    #     print(Fore.RED + "ERROR: Config file not found, or maybe another error! :( ")
-    #     print(e)
-    #     for arg in sys.argv:
-    #         print("ARG: " + arg)
-    #     sys.exit(0)
+    try:
+        cfgfile = sys.argv[1]
+        cfg = importlib.import_module("configs." + cfgfile)
+        if len(sys.argv) > 1:
+            global PARALLEL_VAL 
+            PARALLEL_VAL = float(sys.argv[2])
+            cfg.params_ranges[cfg.PARALLELIZED] = [PARALLEL_VAL]
+        
+    except Exception as e:
+        print(e)
+        print("\n\nExample of how to run config test_cfg1 with the PARALLELIZED value set to 0.5:")
+        print("\n\npython3 game.py test_cfg1.py 0.5\n\n")
+        sys.exit(0)
 
     # init_logs()
+    print(cfg.game_settings)
 
-    ATTACKERS_range = np.linspace(0.1, 1.0, 10)
-    PAYOFF_range = np.linspace(0.1, 1.0, 10)
-    INEQUALITY_range = np.linspace(0.1, 1.0, 10)
-    EFFICIENCY_range = np.linspace(0.1, 1.0, 10)
-    SUCCESS_range = np.linspace(0.1, 1.0, 10)
+    ATTACKERS_range = cfg.params_ranges["ATTACKERS"]
+    PAYOFF_range = cfg.params_ranges["PAYOFF"]
+    INEQUALITY_range = cfg.params_ranges["INEQUALITY"]
+    EFFICIENCY_range = cfg.params_ranges["EFFICIENCY"]
+    SUCCESS_range = cfg.params_ranges["SUCCESS"]
     CHANCE_OF_GETTING_CAUGHT_range = [0.0] # TODO this should probably just be removed since we aren't using it
     MANDATE = [0.0] # TODO change this per machine
 
     inputs = list(itertools.product(ATTACKERS_range, PAYOFF_range, INEQUALITY_range, EFFICIENCY_range, SUCCESS_range, CHANCE_OF_GETTING_CAUGHT_range, MANDATE))
 
-    with Pool() as p:
+    with Pool(initializer=init_worker, initargs=(cfg,)) as p:
         p.starmap(run_games, inputs)
     
 if __name__== "__main__":
