@@ -97,3 +97,6 @@ def create_insurer(Defenders, PREMIUM):
         ins.collect_premium(premium)
 
     return ins
+
+def create_government():
+    return Government(0)
