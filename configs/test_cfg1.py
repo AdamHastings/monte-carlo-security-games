@@ -20,6 +20,7 @@ params = dict(
     CAUGHT = np.linspace(0.0, 0.0, 2), # Probability that an attacker is caught and has their assets confiscated
     CLAIMS = np.linspace(0.1, 1.0, 2), # Percentage of losses paid back to defender by Insurer
     PREMIUMS = np.linspace(0.1, 1.0, 2), # Percentage of MANDATE that is allocated towards security
+    TAX = np.linspace(0.1, 1.0, 0.1,) # Percentage of confiscated assets that are retained by Government
     MANDATE = np.linspace(0.0, 1.0, 1) # Percentage of assets that are spent on security measures.
 )
 
