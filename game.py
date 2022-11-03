@@ -16,51 +16,50 @@ import os.path
 A Game object is a collection of const values plus the game results
 '''
 class Game:
-    def __init__(self, Defenders, Attackers, ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS, PREMIUM, TAX, MANDATE):
-        self.ATTACKERS = ATTACKERS
-        self.PAYOFF = PAYOFF
-        self.INEQUALITY = INEQUALITY
-        self.EFFICIENCY = EFFICIENCY
-        self.SUCCESS = SUCCESS
-        self.CAUGHT = CAUGHT
-        self.CLAIMS = CLAIMS
-        self.PREMIUM = PREMIUM
-        self.TAX = TAX
-        self.MANDATE = MANDATE
-        self.d_init = -1
-        self.d_end = -1
-        self.a_init = -1
-        self.a_end = -1
-        self.i_init = -1
-        self.i_end = -1
-        self.crossover = -1
-        self.final_iter = -1
+
+    # TODO compute the init values...
+    d_init = -1
+    d_end = -1
+    a_init = -1
+    a_end = -1
+    i_init = -1
+    i_end = -1
+    g_init = -1
+    g_end = -1
+    crossover = -1
+    final_iter = -1
+
+        
+    def __init__(self, params, Attackers, Defenders, Insurer, Government):
+        self.params = params
+        self.Attackers = Attackers
+        self.Defenders = Defenders
+        self.Insurer = Insurer
+        self.Government = Government
+
+        self.d_init = self.sum_assets(Defenders)
+        self.a_init = self.sum_assets(Attackers)
+        self.i_init = Insurer.assets
+        self.g_init = Government.assets
+
 
     def __str__(self):
         ret = ""
-        ret += self.ATTACKERS + ","
-        ret += self.PAYOFF + ","
-        ret += self.INEQUALITY  + ","
-        ret += self.EFFICIENCY  + ","
-        ret += self.SUCCESS  + ","
-        ret += self.CAUGHT  + ","
-        ret += self.CLAIMS  + ","
-        ret += self.PREMIUM  + ","
-        ret += self.TAX  + ","
-        ret += self.MANDATE  + ","
-        ret += self.d_init + ","
-        ret += self.d_end + ","
-        ret += self.a_init + ","
-        ret += self.a_end + ","
-        ret += self.i_init + ","
-        ret += self.i_end + ","
-        ret += self.crossover + ","
-        ret += self.final_iter + ","
+        ret += ",".join(str(self.params[k]) for k in sorted(self.params.keys())) + ","
+        ret += str(self.d_init) + ","
+        ret += str(self.d_end) + ","
+        ret += str(self.a_init) + ","
+        ret += str(self.a_end) + ","
+        ret += str(self.i_init) + ","
+        ret += str(self.i_end) + ","
+        ret += str(self.crossover) + ","
+        ret += str(self.final_iter) + "\n"
         return ret
 
-    def fight(self, Defender, Attacker, g):
+        
+    def fight(self, Defender, Attacker):
 
-        effective_loot = Defender.assets * g.PAYOFF
+        effective_loot = Defender.assets * self.PAYOFF
         cost_of_attack = Defender.costToAttack
         expected_earnings = effective_loot * Defender.ProbOfAttackSuccess
 
@@ -72,23 +71,29 @@ class Game:
             else:
                 Attacker.lose(cost_of_attack)
 
-            global ATTACK_SPENDING
-            ATTACK_SPENDING += cost_of_attack
-
             # The attacker might get caught
-            if (np.random.uniform(0,1) < g.CAUGHT):
+            if (np.random.uniform(0,1) < self.CAUGHT):
                 if (AttackerWins):
                     recoup_amount = effective_loot if Attacker.assets > effective_loot else Attacker.assets
                     Defender.recoup(recoup_amount) # Defender recoups amount that was lost
                     Attacker.lose(recoup_amount)
 
-                Attacker.lose(Attacker.assets)           # Remaining assets are seized by the government
-                # TODO add Gov player
-                # Government.gain(Attacker.assets)
+                # Remaining assets are seized by the government
+                Government.gain(Attacker.assets)
+                Attacker.lose(Attacker.assets)           
+
+
+    def sum_assets(self, Players):
+        total_assets = 0
+        for x in Players:
+            total_assets += x.assets
+
+        return total_assets
                 
 
-    def prune(self, Attackers, Defenders):
+    def prune(self):
 
+        # TODO this is horribly inefficient. Redo
         Temp = []
         for i in range(len(Defenders)):
             if Defenders[i].get_assets() > 0:
@@ -103,10 +108,7 @@ class Game:
 
         Attackers = Temp
 
-    def run_iterations(self, Attackers, Defenders, g):
-        crossover = -1
-        final_iter = -1
-
+    def run_iterations(self):
         a_iters = []
         d_iters = []
         stats = []
@@ -115,18 +117,18 @@ class Game:
 
         for iter_num in range(cfg.game_settings['SIM_ITERS']):
 
-            random.shuffle(Defenders)
+            random.shuffle(self.Defenders)
 
-            for i in range(len(Attackers)):
-                if (i > len(Defenders)):
+            for i in range(len(self.Attackers)):
+                if (i > len(self.Defenders)):
                     print("more attackers than defenders!")
                     break
-                self.fight(Defenders[i], Attackers[i], g.PAYOFF, g.CAUGHT)
+                self.fight(self.Defenders[i], self.Attackers[i])
             
-            self.prune(Attackers, Defenders)
+            self.prune(self.Attackers, self.Defenders)
 
-            a_sum = sum_assets(Attackers)
-            d_sum = sum_assets(Defenders)
+            a_sum = self.sum_assets(self.Attackers)
+            d_sum = self.sum_assets(self.Defenders)
             
             if len(a_iters) > 0:
                 last_a_sum = a_iters[-1]
@@ -162,102 +164,91 @@ class Game:
         
         return a_iters, d_iters, stats
 
-    def init_game(self, g):
-
-        Defenders = []    
-        for _ in range(int(cfg.BLUE_PLAYERS)):
-            Defenders.append(create_blue_agent(g.SUCCESS))
-        
-        Attackers = []
-        for _ in range(int(cfg.BLUE_PLAYERS * g.ATTACKERS)):
-            Attackers.append(create_red_agent(g.INEQUALITY))
-
-        Insurer = create_insurer(Defenders, g.PREMIUM)
-        Government = create_government()
-
-        ### TODO Split below this line into a game-specific init..?
-        for d in Defenders:
-            investment = d.assets * g.MANDATE
-            d.assets -= investment
-            d.costToAttack += (d.assets * g.MANDATE * g.EFFICIENCY)
-
-        return Attackers, Defenders, Insurer, Government
-
-
-    def sum_assets(self, Players):
-        total_assets = 0
-        for x in Players:
-            total_assets += x.assets
-
-        return total_assets
-
-
-# def compute_utility(Attackers, Defenders, a_iters, d_iters):
-#     defenders_assets = 0
-#     for x in Defenders:
-#         defenders_assets += x.assets
-#     d_iters.append(defenders_assets)
-
-#     attackers_assets = 0
-#     for x in Attackers:
-#         attackers_assets += x.assets
-#     a_iters.append(attackers_assets)
-
-#     return defenders_assets, attackers_assets
-    
-
 
 
 def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS, PREMIUM, TAX, MANDATE):
 
-    # Game object to hold const game parameters
-    g = Game(ATTACKERS=ATTACKERS, \
-                PAYOFF=PAYOFF, \
-                INEQUALITY=INEQUALITY, \
-                EFFICIENCY=EFFICIENCY, \
-                SUCCESS=SUCCESS, \
-                CAUGHT=CAUGHT, \
-                CLAIMS=CLAIMS, \
-                PREMIUM=PREMIUM, \
-                TAX=TAX, \
-                MANDATE=MANDATE
-            )
+    global cfg
+    global gDefenders 
+    global gAttackers
+    global gInsurer
+    global gGovernment
+
+    params = {}
+    params["ATTACKERS"] = ATTACKERS
+    params["PAYOFF"] = PAYOFF
+    params["INEQUALITY"] = INEQUALITY
+    params["EFFICIENCY"] = EFFICIENCY
+    params["SUCCESS"] = SUCCESS
+    params["CAUGHT"] = CAUGHT
+    params["CLAIMS"] = CLAIMS
+    params["PREMIUM"] = PREMIUM
+    params["TAX"] = TAX
+    params["MANDATE"] = MANDATE
+
 
     for i in range(cfg.game_settings['NUM_GAMES']):
         # print("game " + str(i) + ":( " + str(ATTACKERS) + ", " + str(PAYOFF)+ ", " + str(INEQUALITY)+ ", " + str(EFFICIENCY)+ ", " + str(SUCCESS)+ ", " + str(CAUGHT) + ", " + str(MANDATE) + ")")
         
-        # TODO maybe optimize by creating template Defender/Attacker 
-        red, blue = init_game(g)
-
-        # TODO Why are we doing this?
-        Attackers = deepcopy(red)
-        Defenders = deepcopy(blue)
+        # Create Agents here
+        Defenders = deepcopy(gDefenders)
+        Insurer = deepcopy(gInsurer)
+        Government = deepcopy(gGovernment)
+        Attackers = deepcopy(gAttackers[:int(cfg.game_settings["BLUE_PLAYERS"] * params["ATTACKERS"])])
         
-        run_iterations(Attackers, Defenders, g)
+        for a in Attackers:
+            a.assets *= params['INEQUALITY']
+
+        for d in Defenders:
+            investment = d.assets * params["MANDATE"]
+            d.lose(investment)
+            
+            insurance_investment = investment * params["PREMIUM"]
+            d.buy_insurance(insurance_investment)
+            Insurer.collect_premium(insurance_investment)
+
+            sec_investment = investment - insurance_investment
+            d.costToAttack += (sec_investment * params["EFFICIENCY"])
+
+        # Game object to hold const game parameters
+        g = Game(params, Attackers, Defenders, Insurer, Government)
         
-        statsfile = open(cfg.FILENAME, 'a')  # write mode
-        statsfile.write(g)
-        statsfile.close()
+        # g.run_iterations()
+        
+        log = open(cfg.LOGFILE, 'a')  # write mode
+        log.write(str(g))
+        log.close()
 
 
-
+'''
+    Make sure you don't accidentally overwrite an existing logfile
+'''
 def init_logs(cfg):
-    if os.path.exists(cfg.FILENAME):
-        response = input("\nThis file already exists: " + cfg.FILENAME + "\nDo you want to replace it? Y/n\n >> ")
+    if os.path.exists(cfg.LOGFILE):
+        response = input("\nThis file already exists: " + cfg.LOGFILE + "\nDo you want to replace it? Y/n\n >> ")
         if response.lower() != "y":
-            print("\nOK, this program will not overwrite " + cfg.FILENAME + ".\nThis program will now exit.\n")
+            print("\nOK, this program will not overwrite " + cfg.LOGFILE + ".\nThis program will now exit.\n")
             sys.exit(0)
         else:
             print("\n")
 
-    statsfile = open(cfg.FILENAME, 'w')  # write mode
-    header = ",".join(cfg.params.keys()) + ","
+    log = open(cfg.LOGFILE, 'w')  # write mode
+    header = ""
+    for k in sorted(cfg.params_ranges.keys()):
+        header += k[:-6] + "," # trim off the "_range" of the cfg param names
     header += "d_init,d_end,a_init,a_end,final_iter,crossover\n"
-    statsfile.write(header)
-    statsfile.close()
+    log.write(header)
+    log.close()
 
-'''Initialize worker processes'''
+
+'''
+    Initialize worker processes with some global variables.
+    This is so that we don't have to do create 
+    Called once per core.
+'''
 def init_worker(cfg_in):
+    random.seed(3) # Seed random so that Agents are the same across multiple cores
+
     global cfg
     cfg = cfg_in
 
@@ -266,9 +257,19 @@ def init_worker(cfg_in):
     global gInsurer
     global gGovernment
 
-def main():
-    random.seed(3)
+    gDefenders = []    
+    for _ in range(cfg.game_settings['BLUE_PLAYERS']):
+        gDefenders.append(Defender())
+    
+    gAttackers = []
+    for _ in range(cfg.game_settings['BLUE_PLAYERS']):
+        gAttackers.append(Attacker())
 
+    gInsurer = Insurer()
+    gGovernment = Government()
+
+
+def main():
     try:
         cfg = importlib.import_module("configs." + sys.argv[1])
         if len(sys.argv) != 2:
@@ -281,27 +282,16 @@ def main():
 
     init_logs(cfg)
 
-    ATTACKERS_range = cfg.params["ATTACKERS"]
-    PAYOFF_range = cfg.params["PAYOFF"]
-    INEQUALITY_range = cfg.params["INEQUALITY"]
-    EFFICIENCY_range = cfg.params["EFFICIENCY"]
-    SUCCESS_range = cfg.params["SUCCESS"]
-    CAUGHT_range = cfg.params["CAUGHT"]
-    CLAIMS_range = cfg.params["CLAIMS"]
-    PREMIUM_range = cfg.params["PREMIUM"]
-    TAX_range = cfg.params["TAX"]
-    MANDATE_range = cfg.params["MANDATE"]
-
-    inputs = list(itertools.product(ATTACKERS_range,\
-                                        PAYOFF_range,\
-                                        INEQUALITY_range,\
-                                        EFFICIENCY_range,
-                                        SUCCESS_range,\
-                                        CAUGHT_range,\
-                                        CLAIMS_range,\
-                                        PREMIUM_range,\
-                                        TAX_range,\
-                                        MANDATE_range\
+    inputs = list(itertools.product(cfg.params_ranges["ATTACKERS_range"],
+                                        cfg.params_ranges["PAYOFF_range"],
+                                        cfg.params_ranges["INEQUALITY_range"],
+                                        cfg.params_ranges["EFFICIENCY_range"],
+                                        cfg.params_ranges["SUCCESS_range"],
+                                        cfg.params_ranges["CAUGHT_range"],
+                                        cfg.params_ranges["CLAIMS_range"],
+                                        cfg.params_ranges["PREMIUM_range"],
+                                        cfg.params_ranges["TAX_range"],
+                                        cfg.params_ranges["MANDATE_range"]
                                     ))
 
     print("Starting games...")
