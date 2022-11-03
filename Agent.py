@@ -7,6 +7,8 @@ import numpy as np
 Base class for all agents
 '''
 class Agent:
+    assets = 0
+
     def __init__(self, assets):
         self.assets = assets
 
@@ -14,6 +16,11 @@ class Agent:
         return self.assets
 
     # TODO general gain/loss functions maybe?        
+    def gain(self, gain):
+        self.assets += gain
+
+    def lose(self, loss):
+        self.assets -= loss
 
 
 class Defender(Agent):
@@ -33,19 +40,10 @@ class Defender(Agent):
             ProbDefenseSuccess = 1
 
         self.ProbOfAttackSuccess = 1 - ProbDefenseSuccess
-        self.costToAttack = self.assets # TODO this needs to be scaled by SUCCESS
+        self.costToAttack = self.assets 
 
-        self.insurance = 0
+        self.insurance = 0 # TODO is this needed?
 
-    def lose(self, loot):
-        self.assets -= loot
-
-    def buy_insurance(self, premium):
-        self.assets -= premium
-
-
-    def gain(self, gain):
-        self.assets += gain
 
 class Attacker(Agent):
     def __init__(self):
@@ -55,11 +53,6 @@ class Attacker(Agent):
 
         Agent.__init__(self, self.assets)
 
-    def win(self, loot, cost):
-        self.assets = self.assets + loot - cost
-    
-    def lose(self, cost):
-        self.assets -= cost 
 
 # TODO: One shot insurance, or continuous investments?
 #    A: We will do one-shot for now
@@ -67,16 +60,7 @@ class Insurer(Agent):
     def __init__(self):
         Agent.__init__(self, 0)
 
-    def collect_premium(self, premiums):
-        self.assets += premiums
-
-    def remit_claim(self, claim):
-        self.assets -= claim
-        return claim
-
 class Government(Agent):
     def __init__(self):
         Agent.__init__(self, 0)
 
-    def confiscate(self, loot):
-        self.assets += loot

@@ -26,7 +26,9 @@ class Game:
     i_end = -1
     g_init = -1
     g_end = -1
+
     crossover = -1
+    insurer_time_of_death = -1
     final_iter = -1
 
         
@@ -45,7 +47,7 @@ class Game:
 
     def __str__(self):
         ret = ""
-        ret += ",".join(str(self.params[k]) for k in sorted(self.params.keys())) + ","
+        ret += ",".join(str(round(self.params[k], 2)) for k in sorted(self.params.keys())) + ","
         ret += str(self.d_init) + ","
         ret += str(self.d_end) + ","
         ret += str(self.a_init) + ","
@@ -57,30 +59,46 @@ class Game:
         return ret
 
         
-    def fight(self, Defender, Attacker):
+    def fight(self, a, d):
 
-        effective_loot = Defender.assets * self.PAYOFF
-        cost_of_attack = Defender.costToAttack
-        expected_earnings = effective_loot * Defender.ProbOfAttackSuccess
+        effective_loot = d.assets * self.params["PAYOFF"]
+        cost_of_attack = d.costToAttack
+        expected_earnings = effective_loot * d.ProbOfAttackSuccess
 
-        if (expected_earnings > cost_of_attack) and (cost_of_attack < Attacker.assets):
-            AttackerWins = np.random.uniform(0,1) < Defender.ProbOfAttackSuccess
+        if (expected_earnings > cost_of_attack) and (cost_of_attack < a.assets):
+            # Attacker decides that it's worth it to attack
+            a.lose(cost_of_attack)
+
+            AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
             if (AttackerWins):
-                Defender.lose(effective_loot)
-                Attacker.win(effective_loot, cost_of_attack)
-            else:
-                Attacker.lose(cost_of_attack)
+                d.lose(effective_loot)
+                a.gain(effective_loot)
+                # TODO should a defender's cost to attack also be adjusted accordingly?
 
+                # Recoup losses from Insurer (if Insurer is not dead yet)
+                if self.Insurer.assets > 0:
+
+                    # The defender gets to recoup losses from Insurer
+                    claims_amount = effective_loot * self.params["CLAIMS"]
+                    
+                    if (claims_amount > self.Insurer.assets):
+                        # Insurer goes bust
+                        claims_amount = self.Insurer.assets
+                    
+                    d.gain(claims_amount)
+                    self.Insurer.lose(claims_amount)
+
+                
             # The attacker might get caught
-            if (np.random.uniform(0,1) < self.CAUGHT):
+            if (np.random.uniform(0,1) < self.params["CAUGHT"]):
                 if (AttackerWins):
-                    recoup_amount = effective_loot if Attacker.assets > effective_loot else Attacker.assets
-                    Defender.recoup(recoup_amount) # Defender recoups amount that was lost
-                    Attacker.lose(recoup_amount)
+                    recoup_amount = effective_loot if a.assets > effective_loot else a.assets
+                    d.recoup(recoup_amount) # d recoups amount that was lost
+                    a.lose(recoup_amount)
 
                 # Remaining assets are seized by the government
-                Government.gain(Attacker.assets)
-                Attacker.lose(Attacker.assets)           
+                self.Government.gain(a.assets)
+                a.lose(a.assets)           
 
 
     def sum_assets(self, Players):
@@ -89,24 +107,7 @@ class Game:
             total_assets += x.assets
 
         return total_assets
-                
-
-    def prune(self):
-
-        # TODO this is horribly inefficient. Redo
-        Temp = []
-        for i in range(len(Defenders)):
-            if Defenders[i].get_assets() > 0:
-                Temp.append(Defenders[i])
-            
-        Defenders = Temp
-
-        Temp = []
-        for i in range(len(Attackers)):
-            if Attackers[i].get_assets() > 0:
-                Temp.append(Attackers[i])
-
-        Attackers = Temp
+    
 
     def run_iterations(self):
         a_iters = []
@@ -119,14 +120,21 @@ class Game:
 
             random.shuffle(self.Defenders)
 
-            for i in range(len(self.Attackers)):
-                if (i > len(self.Defenders)):
-                    print("more attackers than defenders!")
-                    break
-                self.fight(self.Defenders[i], self.Attackers[i])
-            
-            self.prune(self.Attackers, self.Defenders)
+            for a,d in zip(self.Attackers, self.Defenders):
+                # if (i > len(self.Defenders)):
+                #     print("more attackers than defenders!")
+                #     break
+                self.fight(a=a, d=d)
+                if d.assets == 0:
+                    self.Defenders.remove(d) # TODO does this work? TODO TODO TODO
+                if a.assets == 0:
+                    self.Attackers.remove(a)
 
+            if self.Insurer.assets == 0:
+                self.insurer_time_of_death = iter_num
+            
+
+            # Double check what's going on beneath this line
             a_sum = self.sum_assets(self.Attackers)
             d_sum = self.sum_assets(self.Defenders)
             
@@ -138,7 +146,8 @@ class Game:
                     if stable_count >= cfg.game_settings['STABLE_ITERS']:
                         final_iter = iter_num
                         # print("Epsilon threshold of " + str(cfg.game_settings['EPSILON_DOLLARS']) + " reached at " + str(final_iter) + " iterations")
-                        stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, crossover))
+                        # stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, crossover))
+                        # TODO handle stats some other way
                         stability_reached = True
                         break
                 else:
@@ -147,22 +156,22 @@ class Game:
             a_iters.append(a_sum)
             d_iters.append(d_sum)
 
-            if ((crossover < 0) and a_sum > d_sum):
-                crossover = iter_num
+            if ((self.crossover < 0) and a_sum > d_sum):
+                self.crossover = iter_num
 
-            if len(Defenders) == 0:
+            if len(self.Defenders) == 0:
                 final_iter = iter_num
                 print("All Defenders dead after " + str(final_iter) + " iterations")
                 break
-            if len(Attackers) == 0:
+            if len(self.Attackers) == 0:
                 final_iter = iter_num
                 print("All Attackers dead after " + str(final_iter) + " iterations")
                 break
         
         if not stability_reached:
-            stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, crossover))
-        
-        return a_iters, d_iters, stats
+            # stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, self.crossover))
+            pass
+            # TODO add stats some other way
 
 
 
@@ -204,16 +213,17 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
             d.lose(investment)
             
             insurance_investment = investment * params["PREMIUM"]
-            d.buy_insurance(insurance_investment)
-            Insurer.collect_premium(insurance_investment)
+            d.lose(insurance_investment)
+            Insurer.gain(insurance_investment)
 
             sec_investment = investment - insurance_investment
+            d.costToAttack = d.assets * params["SUCCESS"]
             d.costToAttack += (sec_investment * params["EFFICIENCY"])
 
         # Game object to hold const game parameters
         g = Game(params, Attackers, Defenders, Insurer, Government)
         
-        # g.run_iterations()
+        g.run_iterations()
         
         log = open(cfg.LOGFILE, 'a')  # write mode
         log.write(str(g))
