@@ -104,7 +104,7 @@ class Game:
                         # Insurer goes bust
                         claims_amount = self.Insurer.assets           
                     self.defender_gain(d, claims_amount) 
-                    self.insurer_lose(Insurer, claims_amount)
+                    self.insurer_lose(self.Insurer, claims_amount)
           
             # The attacker might get caught
             if (np.random.uniform(0,1) < self.params["CAUGHT"]):
@@ -114,7 +114,7 @@ class Game:
                     self.attacker_lose(recoup_amount)
     
                 # Remaining assets are seized by the government
-                self.government_gain(Government, a.assets)
+                self.government_gain(self.Government, a.assets)
                 self.attacker_lose(a, a.assets)
 
                 # TODO distribute confiscated earnings to victims
