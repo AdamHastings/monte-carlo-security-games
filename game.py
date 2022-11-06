@@ -174,15 +174,15 @@ class Game:
                 self.crossover = iter_num
 
             # Remove the dead players from the game
-            Defenders = [d for d in Defenders if d.assets > 0]
-            Attackers = [a for a in Attackers if a.assets > 0]
+            self.Defenders = [d for d in self.Defenders if d.assets > 0]
+            self.Attackers = [a for a in self.Attackers if a.assets > 0]
             if self.Insurer.assets == 0:
                 self.insurer_time_of_death = iter_num
             
             # Check if the game needs to be ended
 
             # Condition #1: Either the Defenders or the Attackers completely die off
-            if len(Defenders) == 0 or len(Attackers) == 0:
+            if len(self.Defenders) == 0 or len(self.Attackers) == 0:
                 self.conclude_game(iter_num)
                 return
 
