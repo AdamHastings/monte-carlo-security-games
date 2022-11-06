@@ -38,6 +38,9 @@ class Game:
         self.last_delta_defenders_changes = [cfg.game_settings["EPSILON_DOLLARS"]] * cfg.game_settings["DELTA_ITERS"]
         self.last_delta_attackers_changes = [cfg.game_settings["EPSILON_DOLLARS"]] * cfg.game_settings["DELTA_ITERS"]
 
+        self.outside_epsilon_count_attackers = cfg.game_settings["DELTA_ITERS"]
+        self.outside_epsilon_count_defenders = cfg.game_settings["DELTA_ITERS"]
+
     def __str__(self):
         ret = ""
         ret += ",".join(str(round(self.params[k], 2)) for k in sorted(self.params.keys())) + ","
@@ -114,6 +117,33 @@ class Game:
 
                 # TODO distribute confiscated earnings to victims
 
+    def is_equilibrium_reached(self, iter_num):
+
+        last_delta_defenders_pop = self.last_delta_defenders_changes[iter_num % cfg.game_settings["DELTA_ITERS"]]
+        last_delta_attackers_pop = self.last_delta_attackers_changes[iter_num % cfg.game_settings["DELTA_ITERS"]]
+        self.last_delta_defenders_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.defender_iter_sum
+        self.last_delta_attackers_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.attacker_iter_sum
+     
+        if self.defender_iter_sum >= cfg.game_settings["EPSILON_DOLLARS"]:
+            if last_delta_defenders_pop < cfg.game_settings["EPSILON_DOLLARS"]:
+                self.outside_epsilon_count_defenders += 1
+        else:
+            if last_delta_defenders_pop >= cfg.game_settings["EPSILON_DOLLARS"]:
+                self.outside_epsilon_count_defenders -= 1
+
+        if self.attacker_iter_sum >= cfg.game_settings["EPSILON_DOLLARS"]:
+            if last_delta_attackers_pop < cfg.game_settings["EPSILON_DOLLARS"]:
+                self.outside_epsilon_count_attackers += 1
+        else:
+            if last_delta_attackers_pop >= cfg.game_settings["EPSILON_DOLLARS"]:
+                self.outside_epsilon_count_attackers -= 1
+
+        assert self.outside_epsilon_count_attackers >= 0
+        assert self.outside_epsilon_count_defenders >= 0
+
+        return self.outside_epsilon_count_attackers == 0 and self.outside_epsilon_count_defenders == 0
+
+
     def conclude_game(self, iter_num):
         self.d_end = sum(d.assets for d in self.Defenders)  
         self.a_end = sum(a.assets for a in self.Attackers)
@@ -157,55 +187,14 @@ class Game:
                 return
 
             # Condition #2: The game has converged and hasn't changed by epsilon for delta iterations
-            # TODO look at last EPSILON changes
-
-            self.last_delta_defenders_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.current_defender_sum_assets
-            self.last_delta_attackers_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.current_attacker_sum_assets
-            
-            # TODO this could likely be memoized a little better --- can we do this without iterating? I think so...
-            # This is in the innermost loop so it's definitely worth optimizing
-            attackers_negligible_change = (min(self.last_delta_attackers_changes) > (-1 * cfg.game_settings["EPSILON_DOLLARS"])) \
-                                        and (max(self.last_delta_attackers_changes) < cfg.game_settings["EPSILON_DOLLARS"])
-
-            defenders_negligible_change = (min(self.last_delta_defenders_changes) > (-1 * cfg.game_settings["EPSILON_DOLLARS"])) \
-                                        and (max(self.last_delta_defenders_changes) < cfg.game_settings["EPSILON_DOLLARS"])
-
-            if (attackers_negligible_change and defenders_negligible_change):
+            if self.is_equilibrium_reached(iter_num):
                 # Game has reach an equilibrium
                 self.conclude_game(iter_num)
                 return
-
-            # # Double check what's going on beneath this line...
-            # a_sum = self.sum_assets(self.Attackers)
-            # d_sum = self.sum_assets(self.Defenders)
-            
-            # if len(a_iters) > 0:
-            #     last_a_sum = a_iters[-1]
-            #     last_d_sum = d_iters[-1]
-            #     if ((abs(a_sum - last_a_sum) < cfg.game_settings['EPSILON_DOLLARS']) and (abs(d_sum - last_d_sum) < cfg.game_settings['EPSILON_DOLLARS'])):
-            #         stable_count += 1
-            #         if stable_count >= cfg.game_settings['STABLE_ITERS']:
-            #             final_iter = iter_num
-            #             # print("Epsilon threshold of " + str(cfg.game_settings['EPSILON_DOLLARS']) + " reached at " + str(final_iter) + " iterations")
-            #             # stats.append((d_iters[0], d_sum , a_iters[0], a_sum, final_iter, crossover))
-            #             # TODO handle stats some other way
-            #             stability_reached = True
-            #             break
-            #     else:
-            #         stable_count = 0
-
-            # a_iters.append(a_sum)
-            # d_iters.append(d_sum)
-
-            # if ((self.crossover < 0) and a_sum > d_sum):
-            #     self.crossover = iter_num
-
         
         # Condition #3: The game did not converge after SIM_ITERS iterations 
         self.conclude_game(iter_num=cfg.game_settings["SIM_ITERS"])
         return
-
-
 
 def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS, PREMIUM, TAX, MANDATE):
 
