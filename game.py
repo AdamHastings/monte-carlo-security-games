@@ -29,6 +29,8 @@ class Game:
         self.i_init = Insurer.assets
         self.g_init = Government.assets
 
+        self.crossover = -1
+
         self.current_defender_sum_assets = self.d_init
         self.current_attacker_sum_assets = self.a_init
 
