@@ -16,11 +16,6 @@ import os.path
 A Game object is a collection of const values plus the game results
 '''
 class Game:
-
-    crossover = -1
-    insurer_time_of_death = -1
-    final_iter = -1
-
         
     def __init__(self, params, Attackers, Defenders, Insurer, Government):
         self.params = params
@@ -40,8 +35,8 @@ class Game:
         self.defender_iter_sum = 0
         self.attacker_iter_sum = 0
 
-        self.last_delta_defenders_changes = [cfg.game_settings["DELTA_ITERS"]] * cfg.game_settings["EPSILON_DOLLARS"]
-        self.last_delta_attackers_changes = [cfg.game_settings["DELTA_ITERS"]] * cfg.game_settings["EPSILON_DOLLARS"]
+        self.last_delta_defenders_changes = [cfg.game_settings["EPSILON_DOLLARS"]] * cfg.game_settings["DELTA_ITERS"]
+        self.last_delta_attackers_changes = [cfg.game_settings["EPSILON_DOLLARS"]] * cfg.game_settings["DELTA_ITERS"]
 
     def __str__(self):
         ret = ""
@@ -58,22 +53,25 @@ class Game:
 
     def defender_lose(self, d, loss):
         d.lose(loss)
-        self.current_defender_sum_assets -= loss
+        self.defender_iter_sum -= loss
 
     def defender_gain(self, d, gain):
         d.gain(gain)
-        self.current_attacker_sum_assets += gain
+        self.defender_iter_sum += gain
 
     def attacker_lose(self, a, loss):
         a.lose(loss)
-        self.current_attacker_sum_assets -= loss
+        self.attacker_iter_sum -= loss
 
     def attacker_gain(self, a, gain):
         a.gain(gain)
-        self.current_attacker_sum_assets += gain
+        self.attacker_iter_sum += gain
 
     def insurer_lose(self, i, loss):
         i.lose(loss)
+
+    def government_gain(self, g, gain):
+        g.gain(gain)
         
     def fight(self, a, d):
 
@@ -111,17 +109,19 @@ class Game:
                     self.attacker_lose(recoup_amount)
     
                 # Remaining assets are seized by the government
-                self.Government.gain(a.assets)
-                a.lose(a.assets)    
-                self.current_attacker_sum_assets -= a.assets
-                # TODO distribute confiscated earnings to victims
-                # TODO
+                self.government_gain(Government, a.assets)
+                self.attacker_lose(a, a.assets)
 
-    def conclude_game(self):
+                # TODO distribute confiscated earnings to victims
+
+    def conclude_game(self, iter_num):
         self.d_end = sum(d.assets for d in self.Defenders)  
         self.a_end = sum(a.assets for a in self.Attackers)
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
+
+        self.final_iter = iter_num
+
     
     def run_iterations(self):
 
@@ -136,10 +136,16 @@ class Game:
             for a,d in zip(self.Attackers, self.Defenders):
                 self.fight(a=a, d=d)
 
+            self.current_defender_sum_assets += self.defender_iter_sum
+            self.current_attacker_sum_assets += self.attacker_iter_sum
+
+            # Check if Attackers now own more than Defenders
+            if (self.current_attacker_sum_assets > self.current_defender_sum_assets):
+                self.crossover = iter_num
+
             # Remove the dead players from the game
             Defenders = [d for d in Defenders if d.assets > 0]
             Attackers = [a for a in Attackers if a.assets > 0]
-
             if self.Insurer.assets == 0:
                 self.insurer_time_of_death = iter_num
             
@@ -147,12 +153,27 @@ class Game:
 
             # Condition #1: Either the Defenders or the Attackers completely die off
             if len(Defenders) == 0 or len(Attackers) == 0:
-                self.conclude_game()
+                self.conclude_game(iter_num)
                 return
 
             # Condition #2: The game has converged and hasn't changed by epsilon for delta iterations
             # TODO look at last EPSILON changes
+
+            self.last_delta_defenders_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.current_defender_sum_assets
+            self.last_delta_attackers_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.current_attacker_sum_assets
             
+            # TODO this could likely be memoized a little better --- can we do this without iterating? I think so...
+            # This is in the innermost loop so it's definitely worth optimizing
+            attackers_negligible_change = (min(self.last_delta_attackers_changes) > (-1 * cfg.game_settings["EPSILON_DOLLARS"])) \
+                                        and (max(self.last_delta_attackers_changes) < cfg.game_settings["EPSILON_DOLLARS"])
+
+            defenders_negligible_change = (min(self.last_delta_defenders_changes) > (-1 * cfg.game_settings["EPSILON_DOLLARS"])) \
+                                        and (max(self.last_delta_defenders_changes) < cfg.game_settings["EPSILON_DOLLARS"])
+
+            if (attackers_negligible_change and defenders_negligible_change):
+                # Game has reach an equilibrium
+                self.conclude_game(iter_num)
+                return
 
             # # Double check what's going on beneath this line...
             # a_sum = self.sum_assets(self.Attackers)
@@ -179,17 +200,9 @@ class Game:
             # if ((self.crossover < 0) and a_sum > d_sum):
             #     self.crossover = iter_num
 
-            # if len(self.Defenders) == 0:
-            #     final_iter = iter_num
-            #     print("All Defenders dead after " + str(final_iter) + " iterations")
-            #     break
-            # if len(self.Attackers) == 0:
-            #     final_iter = iter_num
-            #     print("All Attackers dead after " + str(final_iter) + " iterations")
-            #     break
         
-        # if you reach this point, then the game never converged...
-        self.conclude_game()
+        # Condition #3: The game did not converge after SIM_ITERS iterations 
+        self.conclude_game(iter_num=cfg.game_settings["SIM_ITERS"])
         return
 
 
@@ -239,7 +252,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
             d.costToAttack = d.assets * params["SUCCESS"]
             d.costToAttack += (sec_investment * params["EFFICIENCY"])
 
-        # Game object to hold const game parameters
+        # Create a Game object to hold game parameters
         g = Game(params=params, Attackers=Attackers, Defenders=Defenders, Insurer=Insurer, Government=Government)
         
         g.run_iterations()
