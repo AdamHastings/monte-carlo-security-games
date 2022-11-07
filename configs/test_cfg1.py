@@ -8,7 +8,7 @@ Format: (start, end, increment)
 
 params_ranges = dict(
     # Parameters that affect game initialization
-    MANDATE_range = np.linspace(0.0, 1.0, 11), # Percentage of assets that are spent on security measures.
+    MANDATE_range = np.linspace(0.0, 1.0, 2), # Percentage of assets that are spent on security measures.
     ATTACKERS_range = np.linspace(0.1, 1.0, 2), # Percentage of Attackers, relative to BLUE_PLAYERS
     INEQUALITY_range = np.linspace(0.1, 1.0, 2), # How much poorer Attackers are than Defenders, as a pct
     PREMIUM_range= np.linspace(0.1, 1.0, 2), # Percentage of MANDATE that is allocated towards security
@@ -39,4 +39,10 @@ for (k,v) in params_ranges.items():
 
 # set global filename to be used by all worker threads
 _cfg_name = __file__.split('/')[-1].split('.')[0]
-LOGFILE = "logs/" + _cfg_name + '_' + '_'.join([str(k) + "=" + str(v[0]) for k,v in _pinned_vals.items()]) + ".csv"
+
+if (len(_pinned_vals) > 0):
+    _pinned_name = '_'.join([str(k) + "=" + str(v[0]) for k,v in _pinned_vals.items()])
+else:
+    _pinned_name = "all"
+
+LOGFILE = "logs/" + _cfg_name + '_' + _pinned_name + ".csv"

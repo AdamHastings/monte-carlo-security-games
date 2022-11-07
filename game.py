@@ -146,7 +146,6 @@ class Game:
 
         return self.outside_epsilon_count_attackers == 0 and self.outside_epsilon_count_defenders == 0
 
-
     def conclude_game(self, iter_num):
         self.d_end = sum(d.assets for d in self.Defenders)  
         self.a_end = sum(a.assets for a in self.Attackers)
@@ -154,14 +153,13 @@ class Game:
         self.g_end = self.Government.assets
 
         self.final_iter = iter_num
-
-    
+  
     def run_iterations(self):
 
         for iter_num in range(cfg.game_settings['SIM_ITERS']):
 
             # Make the pairings between Attackers and Defenders random
-            random.shuffle(self.Defenders)
+            random.shuffle(self.Attackers)
 
             self.defender_iter_sum = 0
             self.attacker_iter_sum = 0
@@ -265,6 +263,7 @@ def init_logs(cfg):
             sys.exit(0)
         else:
             print("\n")
+    print("Writing to", cfg.LOGFILE)
 
     log = open(cfg.LOGFILE, 'w')  # write mode
     header = ""
