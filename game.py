@@ -1,4 +1,5 @@
 from fileinput import filename
+from datetime import datetime
 from Agent import *
 from multiprocessing import Pool
 import itertools
@@ -110,8 +111,8 @@ class Game:
             if (np.random.uniform(0,1) < self.params["CAUGHT"]):
                 if (AttackerWins):
                     recoup_amount = effective_loot if a.assets > effective_loot else a.assets
-                    self.defender_gain(recoup_amount)
-                    self.attacker_lose(recoup_amount)
+                    self.defender_gain(d, recoup_amount)
+                    self.attacker_lose(a, recoup_amount)
     
                 # Remaining assets are seized by the government
                 self.government_gain(self.Government, a.assets)
@@ -315,6 +316,9 @@ def main():
 
     init_logs(cfg)
 
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+
     inputs = list(itertools.product(cfg.params_ranges["ATTACKERS_range"],
                                         cfg.params_ranges["PAYOFF_range"],
                                         cfg.params_ranges["INEQUALITY_range"],
@@ -327,11 +331,13 @@ def main():
                                         cfg.params_ranges["MANDATE_range"]
                                     ))
 
-    print("Starting games...")
+    print("Starting", len(inputs), "games at", current_time)
     with Pool(initializer=init_worker, initargs=(cfg,)) as p:
         p.starmap(run_games, inputs)
 
-    print("\nFinished!\n")
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("\nFinished! at", current_time)
     
 if __name__== "__main__":
   main()
