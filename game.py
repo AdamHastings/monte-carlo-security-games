@@ -120,12 +120,12 @@ class Game:
 
                 # TODO distribute confiscated earnings to victims
 
-    def is_equilibrium_reached(self, iter_num):
+    def is_equilibrium_reached(self):
 
-        last_delta_defenders_pop = self.last_delta_defenders_changes[iter_num % cfg.game_settings["DELTA_ITERS"]]
-        last_delta_attackers_pop = self.last_delta_attackers_changes[iter_num % cfg.game_settings["DELTA_ITERS"]]
-        self.last_delta_defenders_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.defender_iter_sum
-        self.last_delta_attackers_changes[iter_num % cfg.game_settings["DELTA_ITERS"]] = self.attacker_iter_sum
+        last_delta_defenders_pop = self.last_delta_defenders_changes[self.iter_num % cfg.game_settings["DELTA_ITERS"]]
+        last_delta_attackers_pop = self.last_delta_attackers_changes[self.iter_num % cfg.game_settings["DELTA_ITERS"]]
+        self.last_delta_defenders_changes[self.iter_num % cfg.game_settings["DELTA_ITERS"]] = self.defender_iter_sum
+        self.last_delta_attackers_changes[self.iter_num % cfg.game_settings["DELTA_ITERS"]] = self.attacker_iter_sum
      
         if self.defender_iter_sum >= cfg.game_settings["EPSILON_DOLLARS"]:
             if last_delta_defenders_pop < cfg.game_settings["EPSILON_DOLLARS"]:
@@ -146,17 +146,17 @@ class Game:
 
         return self.outside_epsilon_count_attackers == 0 and self.outside_epsilon_count_defenders == 0
 
-    def conclude_game(self, iter_num):
+    def conclude_game(self):
         self.d_end = sum(d.assets for d in self.Defenders)  
         self.a_end = sum(a.assets for a in self.Attackers)
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
-        self.final_iter = iter_num
+        self.final_iter = self.iter_num
   
     def run_iterations(self):
 
-        for iter_num in range(cfg.game_settings['SIM_ITERS']):
+        for self.iter_num in range(cfg.game_settings['SIM_ITERS']):
 
             # Make the pairings between Attackers and Defenders random
             random.shuffle(self.Attackers)
@@ -172,29 +172,29 @@ class Game:
 
             # Check if Attackers now own more than Defenders
             if (self.current_attacker_sum_assets > self.current_defender_sum_assets):
-                self.crossover = iter_num
+                self.crossover = self.iter_num
 
             # Remove the dead players from the game
             self.Defenders = [d for d in self.Defenders if d.assets > 0]
             self.Attackers = [a for a in self.Attackers if a.assets > 0]
             if self.Insurer.assets == 0:
-                self.insurer_time_of_death = iter_num
+                self.insurer_time_of_death = self.iter_num
             
             # Check if the game needs to be ended
 
             # Condition #1: Either the Defenders or the Attackers completely die off
             if len(self.Defenders) == 0 or len(self.Attackers) == 0:
-                self.conclude_game(iter_num)
+                self.conclude_game()
                 return
 
             # Condition #2: The game has converged and hasn't changed by epsilon for delta iterations
-            if self.is_equilibrium_reached(iter_num):
+            if self.is_equilibrium_reached():
                 # Game has reach an equilibrium
-                self.conclude_game(iter_num)
+                self.conclude_game()
                 return
         
         # Condition #3: The game did not converge after SIM_ITERS iterations 
-        self.conclude_game(iter_num=cfg.game_settings["SIM_ITERS"])
+        self.conclude_game()
         return
 
 def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS, PREMIUM, TAX, MANDATE):
