@@ -1,24 +1,25 @@
 # SuperFastPython.com
 # example of sharing a global variable among all workers
-from random import random
+import random
 from time import sleep
 from multiprocessing import SimpleQueue
 from multiprocessing.pool import Pool
  
 # initialize worker processes
 def init_worker(shared_queue):
+    random.seed(3)
     # declare scope of a new global variable
     global queue
     # store argument in the global variable for this process
     queue = shared_queue
-    print("init worker")
+    print("init worker: " + str(random.randint(0,100))) 
  
 # task executed in a worker process
 def task(identifier):
     # generate a value
     value = random() * 5
     # block for a moment
-    sleep(value)
+    # sleep(value)
     # declare scope of shared queue
     global queue
     # send result using shared queue
