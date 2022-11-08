@@ -161,7 +161,7 @@ class Game:
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
-        self.final_iter = self.iter_num
+        self.final_iter = self.iter_num + 1
         assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'self.final_iter = {self.final_iter}'
   
     def run_iterations(self):
