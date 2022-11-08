@@ -31,6 +31,7 @@ class Game:
         self.g_init = Government.assets
 
         self.crossover = -1
+        self.insurer_time_of_death = -1
 
         self.current_defender_sum_assets = self.d_init
         self.current_attacker_sum_assets = self.a_init
@@ -46,15 +47,17 @@ class Game:
 
     def __str__(self):
         ret = ""
-        ret += ",".join(str(round(self.params[k], 2)) for k in sorted(self.params.keys())) + ","
-        ret += str(self.d_init) + ","
-        ret += str(self.d_end) + ","
-        ret += str(self.a_init) + ","
-        ret += str(self.a_end) + ","
-        ret += str(self.i_init) + ","
-        ret += str(self.i_end) + ","
+        ret += ",".join(str(round(self.params[k], 2)).lstrip('0') for k in sorted(self.params.keys())) + ","
+        ret += str(round(self.d_init)) + ","
+        ret += str(round(self.d_end)) + ","
+        ret += str(round(self.a_init)) + ","
+        ret += str(round(self.a_end)) + ","
+        ret += str(round(self.i_init)) + ","
+        ret += str(round(self.i_end)) + ","
         ret += str(self.crossover) + ","
-        ret += str(self.final_iter) + "\n"
+        ret += str(self.insurer_time_of_death) + ","
+        ret += str(self.final_iter) + ","
+        ret += str(self.reason) + "\n"
         return ret
 
     def defender_lose(self, d, loss):
@@ -90,37 +93,39 @@ class Game:
 
             # Pay the cost of attacking
             self.attacker_lose(a, cost_of_attack)
-
-            AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
-            if (AttackerWins):
-                self.defender_lose(d, effective_loot)
-                self.attacker_gain(a, effective_loot)
-                
-                # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets
-                # This is because we assume previous security investments are still valid!
-                
-                # Recoup losses from Insurer (if Insurer is not dead yet)
-                if self.Insurer.assets > 0:
-                    # The defender gets to recoup losses from Insurer
-                    claims_amount = effective_loot * self.params["CLAIMS"]
-                    if (claims_amount > self.Insurer.assets):
-                        # Insurer goes bust
-                        claims_amount = self.Insurer.assets           
-                    self.defender_gain(d, claims_amount) 
-                    self.insurer_lose(self.Insurer, claims_amount)
-          
+     
             # The attacker might get caught
             if (np.random.uniform(0,1) < self.params["CAUGHT"]):
-                if (AttackerWins):
-                    recoup_amount = effective_loot if a.assets > effective_loot else a.assets
-                    self.defender_gain(d, recoup_amount)
-                    self.attacker_lose(a, recoup_amount)
+                # if (AttackerWins):
+                #     recoup_amount = effective_loot if a.assets > effective_loot else a.assets
+                #     self.defender_gain(d, recoup_amount)
+                #     self.attacker_lose(a, recoup_amount)
     
                 # Remaining assets are seized by the government
                 self.government_gain(self.Government, a.assets)
                 self.attacker_lose(a, a.assets)
-
                 # TODO distribute confiscated earnings to victims
+
+            else:
+                AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
+                if (AttackerWins):
+                    self.defender_lose(d, effective_loot)
+                    self.attacker_gain(a, effective_loot)
+                    
+                    # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets
+                    # This is because we assume previous security investments are still valid!
+                    
+                    # Recoup losses from Insurer (if Insurer is not dead yet)
+                    if self.Insurer.assets > 0:
+                        # The defender gets to recoup losses from Insurer
+                        claims_amount = effective_loot * self.params["CLAIMS"]
+                        if (claims_amount > self.Insurer.assets):
+                            # Insurer goes bust
+                            claims_amount = self.Insurer.assets
+                            self.insurer_time_of_death = self.iter_num
+                                    
+                        self.defender_gain(d, claims_amount) 
+                        self.insurer_lose(self.Insurer, claims_amount)
 
     def is_equilibrium_reached(self):
 
@@ -143,32 +148,43 @@ class Game:
             if last_delta_attackers_pop >= cfg.game_settings["EPSILON_DOLLARS"]:
                 self.outside_epsilon_count_attackers -= 1
 
-        assert self.outside_epsilon_count_attackers >= 0
-        assert self.outside_epsilon_count_defenders >= 0
+        assert self.outside_epsilon_count_attackers >= 0, f'{self.params}'
+        assert self.outside_epsilon_count_defenders >= 0, f'{self.params}'
 
         return self.outside_epsilon_count_attackers == 0 and self.outside_epsilon_count_defenders == 0
 
-    def conclude_game(self):
+    '''
+    reason: A code as to why this particular game has ended
+    possible values:
+        A: Attackers all dead
+        D: Defenders all dead
+        E: Equilibrium reached
+        N: Non-convergence (none of the above)
+    '''
+    def conclude_game(self, reason):
         self.d_end = sum(d.assets for d in self.Defenders)  
         self.a_end = sum(a.assets for a in self.Attackers)
 
         # Make sure the game has ended in a sane state
-        assert self.d_end >= 0, f'self.d_end ({self.d_end}) < 0'
-        assert self.a_end >= 0, f'self.a_end ({self.a_end}) < 0'
-        assert self.current_defender_sum_assets >= 0, f'self.current_defender_sum_assets ({self.current_defender_sum_assets}) < 0'
-        assert self.current_attacker_sum_assets >= 0, f'self.current_attacker_sum_assets ({self.current_attacker_sum_assets}) < 0'
-        assert abs(self.d_end - self.current_defender_sum_assets) < 1, f'self.d_end ({self.d_end}) != self.current_defender_sum_assets ({self.current_defender_sum_assets}), {abs(self.d_end - self.current_defender_sum_assets)}'
-        assert abs(self.a_end - self.current_attacker_sum_assets) < 1, f'self.a_end ({self.a_end}) != self.current_attacker_sum_assets ({self.current_attacker_sum_assets}), {abs(self.d_end - self.current_defender_sum_assets)}'
+        assert self.d_end >= 0, f'{self.params}'
+        assert self.a_end >= 0, f'{self.params}'
+        assert self.current_defender_sum_assets >= 0, f'{self.params}'
+        assert self.current_attacker_sum_assets >= 0, f'{self.params}'
+        assert abs(self.d_end - self.current_defender_sum_assets) < 1, f'{self.params}'
+        assert abs(self.a_end - self.current_attacker_sum_assets) < 1, f'{self.params}'
+        assert self.d_init >= self.d_end, f'{self.params}'
 
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
         self.final_iter = self.iter_num + 1
         if len(self.Defenders) > 0 and len(self.Attackers) > 0:
-            assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'self.final_iter = {self.final_iter}'
+            assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'{self.params}'
 
         if self.crossover >= 0:
-            assert self.d_end < self.a_end
+            assert self.d_end < self.a_end, f'{self.params}'
+
+        self.reason = reason
   
     def run_iterations(self):
 
@@ -192,25 +208,27 @@ class Game:
 
             # Remove the dead players from the game
             self.Defenders = [d for d in self.Defenders if d.assets > 0]
-            self.Attackers = [a for a in self.Attackers if a.assets > 0]
-            if self.Insurer.assets == 0:
-                self.insurer_time_of_death = self.iter_num
+            self.Attackers = [a for a in self.Attackers if a.assets > 0]                
             
             # Check if the game needs to be ended
 
             # Condition #1: Either the Defenders or the Attackers completely die off
-            if len(self.Defenders) == 0 or len(self.Attackers) == 0:
-                self.conclude_game()
+            if len(self.Defenders) == 0:
+                self.conclude_game('A')
+                return
+            
+            if len(self.Attackers) == 0:
+                self.conclude_game('D')
                 return
 
             # Condition #2: The game has converged and hasn't changed by epsilon for delta iterations
             if self.is_equilibrium_reached():
                 # Game has reach an equilibrium
-                self.conclude_game()
+                self.conclude_game('E')
                 return
         
         # Condition #3: The game did not converge after SIM_ITERS iterations 
-        self.conclude_game()
+        self.conclude_game('N')
         return
 
 def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS, PREMIUM, TAX, MANDATE):
@@ -245,7 +263,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
         
         for a in Attackers:
             a.assets *= params['INEQUALITY']
-            assert a.assets > 0
+            assert a.assets > 0, f'{params}'
 
         for d in Defenders:
             investment = d.assets * params["MANDATE"]
@@ -259,7 +277,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
             d.costToAttack = d.assets * params["SUCCESS"]
             d.costToAttack += (sec_investment * params["EFFICIENCY"])
 
-            assert d.assets >=0, f'{d.assets}, {insurance_investment}'
+            assert d.assets >=0, f'{params}'
 
         # Create a Game object to hold game parameters
         g = Game(params=params, Attackers=Attackers, Defenders=Defenders, Insurer=Insurer, Government=Government)
@@ -288,7 +306,7 @@ def init_logs(cfg):
     header = ""
     for k in sorted(cfg.params_ranges.keys()):
         header += k[:-6] + "," # trim off the "_range" of the cfg param names
-    header += "d_init,d_end,a_init,a_end,final_iter,crossover\n"
+    header += "d_init,d_end,a_init,a_end,i_init,i_end,crossover,insurer_tod,final_iter,reason\n"
     log.write(header)
     log.close()
 
