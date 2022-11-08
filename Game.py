@@ -165,19 +165,20 @@ class Game:
         self.a_end = sum(a.assets for a in self.Attackers)
 
         # Make sure the game has ended in a sane state
-        assert self.d_end >= 0, f'{self.params}'
-        assert self.a_end >= 0, f'{self.params}'
-        assert self.current_defender_sum_assets >= 0, f'{self.params}'
-        assert self.current_attacker_sum_assets >= 0, f'{self.params}'
+        # add 1 here and there to account for floating point imprecsion
+        assert self.d_end + 1 >= 0, f'{self.params}'
+        assert self.a_end + 1 >= 0, f'{self.params}'
+        assert self.current_defender_sum_assets + 1 >= 0, f'{self.params}, {self.current_defender_sum_assets}'
+        assert self.current_attacker_sum_assets + 1 >= 0, f'{self.params}'
         assert abs(self.d_end - self.current_defender_sum_assets) < 1, f'{self.params}'
         assert abs(self.a_end - self.current_attacker_sum_assets) < 1, f'{self.params}'
         assert self.d_init >= self.d_end, f'{self.params}'
+        assert self.paid_claims <= (self.i_init + 1) and self.paid_claims >=0, f'{self.params}'
+
 
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
-        # add 1 to account for floating point imprecsion
-        assert self.paid_claims <= (self.i_init+1) and self.paid_claims >=0, f'{self.params}'
 
         self.final_iter = self.iter_num
         if len(self.Defenders) > 0 and len(self.Attackers) > 0:
