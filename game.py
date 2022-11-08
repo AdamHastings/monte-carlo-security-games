@@ -87,6 +87,8 @@ class Game:
 
         if (expected_earnings > cost_of_attack) and (cost_of_attack < a.assets):
             # Attacker decides that it's worth it to attack
+
+            # Pay the cost of attacking
             self.attacker_lose(a, cost_of_attack)
 
             AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
@@ -155,14 +157,15 @@ class Game:
         assert self.a_end >= 0, f'self.a_end ({self.a_end}) < 0'
         assert self.current_defender_sum_assets >= 0, f'self.current_defender_sum_assets ({self.current_defender_sum_assets}) < 0'
         assert self.current_attacker_sum_assets >= 0, f'self.current_attacker_sum_assets ({self.current_attacker_sum_assets}) < 0'
-        assert round(self.d_end) == round(self.current_defender_sum_assets), f'self.d_end ({self.d_end}) != self.current_defender_sum_assets ({self.current_defender_sum_assets})'
-        assert round(self.a_end) == round(self.current_attacker_sum_assets), f'self.a_end ({self.a_end}) != self.current_attacker_sum_assets ({self.current_attacker_sum_assets})'
+        assert abs(self.d_end - self.current_defender_sum_assets) < 1, f'self.d_end ({self.d_end}) != self.current_defender_sum_assets ({self.current_defender_sum_assets}), {abs(self.d_end - self.current_defender_sum_assets)}'
+        assert abs(self.a_end - self.current_attacker_sum_assets) < 1, f'self.a_end ({self.a_end}) != self.current_attacker_sum_assets ({self.current_attacker_sum_assets}), {abs(self.d_end - self.current_defender_sum_assets)}'
 
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
         self.final_iter = self.iter_num + 1
-        assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'self.final_iter = {self.final_iter}'
+        if len(self.Defenders) > 0 and len(self.Attackers) > 0:
+            assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'self.final_iter = {self.final_iter}'
 
         if self.crossover >= 0:
             assert self.d_end < self.a_end
@@ -232,7 +235,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
 
 
     for i in range(cfg.game_settings['NUM_GAMES']):
-        # print("game " + str(i) + ":( " + str(ATTACKERS) + ", " + str(PAYOFF)+ ", " + str(INEQUALITY)+ ", " + str(EFFICIENCY)+ ", " + str(SUCCESS)+ ", " + str(CAUGHT) + ", " + str(MANDATE) + ")")
+        # print(params)
         
         # Create Agents here
         Defenders = deepcopy(gDefenders)
@@ -242,18 +245,21 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
         
         for a in Attackers:
             a.assets *= params['INEQUALITY']
+            assert a.assets > 0
 
         for d in Defenders:
             investment = d.assets * params["MANDATE"]
-            d.lose(investment)
             
             insurance_investment = investment * params["PREMIUM"]
             d.lose(insurance_investment)
             Insurer.gain(insurance_investment)
 
             sec_investment = investment - insurance_investment
+            d.lose(sec_investment)
             d.costToAttack = d.assets * params["SUCCESS"]
             d.costToAttack += (sec_investment * params["EFFICIENCY"])
+
+            assert d.assets >=0, f'{d.assets}, {insurance_investment}'
 
         # Create a Game object to hold game parameters
         g = Game(params=params, Attackers=Attackers, Defenders=Defenders, Insurer=Insurer, Government=Government)
