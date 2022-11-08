@@ -163,6 +163,9 @@ class Game:
 
         self.final_iter = self.iter_num + 1
         assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'self.final_iter = {self.final_iter}'
+
+        if self.crossover >= 0:
+            assert self.d_end < self.a_end
   
     def run_iterations(self):
 
