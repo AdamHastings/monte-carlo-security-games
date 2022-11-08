@@ -98,12 +98,7 @@ class Game:
             self.attacker_lose(a, cost_of_attack)
      
             # The attacker might get caught
-            if (np.random.uniform(0,1) < self.params["CAUGHT"]):
-                # if (AttackerWins):
-                #     recoup_amount = effective_loot if a.assets > effective_loot else a.assets
-                #     self.defender_gain(d, recoup_amount)
-                #     self.attacker_lose(a, recoup_amount)
-    
+            if (np.random.uniform(0,1) < self.params["CAUGHT"]):    
                 # Remaining assets are seized by the government
                 self.government_gain(self.Government, a.assets)
                 self.attacker_lose(a, a.assets)
@@ -180,7 +175,8 @@ class Game:
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
-        assert self.paid_claims <= self.i_init and self.paid_claims >=0, f'{self.params},  {self.paid_claims}, {self.i_init}'
+        # add 1 to account for floating point imprecsion
+        assert self.paid_claims <= (self.i_init+1) and self.paid_claims >=0, f'{self.params}'
 
         self.final_iter = self.iter_num
         if len(self.Defenders) > 0 and len(self.Attackers) > 0:
@@ -245,16 +241,18 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
     global gGovernment
 
     params = {}
+    params["MANDATE"] = MANDATE
     params["ATTACKERS"] = ATTACKERS
-    params["PAYOFF"] = PAYOFF
     params["INEQUALITY"] = INEQUALITY
+    params["PREMIUM"] = PREMIUM
     params["EFFICIENCY"] = EFFICIENCY
     params["SUCCESS"] = SUCCESS
+    
+    params["PAYOFF"] = PAYOFF
     params["CAUGHT"] = CAUGHT
-    params["CLAIMS"] = CLAIMS
-    params["PREMIUM"] = PREMIUM
+    params["CLAIMS"] = CLAIMS 
     params["TAX"] = TAX
-    params["MANDATE"] = MANDATE
+    
 
 
     for i in range(cfg.game_settings['NUM_GAMES']):
