@@ -32,6 +32,7 @@ class Game:
 
         self.crossover = -1
         self.insurer_time_of_death = -1
+        self.paid_claims = 0
 
         self.current_defender_sum_assets = self.d_init
         self.current_attacker_sum_assets = self.a_init
@@ -56,6 +57,7 @@ class Game:
         ret += str(round(self.i_end)) + ","
         ret += str(self.crossover) + ","
         ret += str(self.insurer_time_of_death) + ","
+        ret += str(round(self.paid_claims)) + ","
         ret += str(self.final_iter) + ","
         ret += str(self.reason) + "\n"
         return ret
@@ -78,6 +80,7 @@ class Game:
 
     def insurer_lose(self, i, loss):
         i.lose(loss)
+        self.paid_claims += loss
 
     def government_gain(self, g, gain):
         g.gain(gain)
@@ -177,7 +180,9 @@ class Game:
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
-        self.final_iter = self.iter_num + 1
+        assert self.paid_claims <= self.i_init and self.paid_claims >=0, f'{self.params},  {self.paid_claims}, {self.i_init}'
+
+        self.final_iter = self.iter_num
         if len(self.Defenders) > 0 and len(self.Attackers) > 0:
             assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'{self.params}'
 
@@ -188,7 +193,7 @@ class Game:
   
     def run_iterations(self):
 
-        for self.iter_num in range(cfg.game_settings['SIM_ITERS']):
+        for self.iter_num in range(1, cfg.game_settings['SIM_ITERS']+1):
 
             # Make the pairings between Attackers and Defenders random
             random.shuffle(self.Attackers)
@@ -306,7 +311,7 @@ def init_logs(cfg):
     header = ""
     for k in sorted(cfg.params_ranges.keys()):
         header += k[:-6] + "," # trim off the "_range" of the cfg param names
-    header += "d_init,d_end,a_init,a_end,i_init,i_end,crossover,insurer_tod,final_iter,reason\n"
+    header += "d_init,d_end,a_init,a_end,i_init,i_end,crossover,insurer_tod,paid_claims,final_iter,reason\n"
     log.write(header)
     log.close()
 
