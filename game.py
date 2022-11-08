@@ -149,10 +149,20 @@ class Game:
     def conclude_game(self):
         self.d_end = sum(d.assets for d in self.Defenders)  
         self.a_end = sum(a.assets for a in self.Attackers)
+
+        # Make sure the game has ended in a sane state
+        assert self.d_end >= 0, f'self.d_end ({self.d_end}) < 0'
+        assert self.a_end >= 0, f'self.a_end ({self.a_end}) < 0'
+        assert self.current_defender_sum_assets >= 0, f'self.current_defender_sum_assets ({self.current_defender_sum_assets}) < 0'
+        assert self.current_attacker_sum_assets >= 0, f'self.current_attacker_sum_assets ({self.current_attacker_sum_assets}) < 0'
+        assert round(self.d_end) == round(self.current_defender_sum_assets), f'self.d_end ({self.d_end}) != self.current_defender_sum_assets ({self.current_defender_sum_assets})'
+        assert round(self.a_end) == round(self.current_attacker_sum_assets), f'self.a_end ({self.a_end}) != self.current_attacker_sum_assets ({self.current_attacker_sum_assets})'
+
         self.i_end = self.Insurer.assets
         self.g_end = self.Government.assets
 
         self.final_iter = self.iter_num
+        assert self.final_iter >= cfg.game_settings['DELTA_ITERS'], f'self.final_iter = {self.final_iter}'
   
     def run_iterations(self):
 
