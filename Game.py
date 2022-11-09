@@ -77,32 +77,50 @@ class Game:
     def defender_lose(self, d, loss):
         d.lose(loss)
         self.defender_iter_sum -= loss
+        # print(f'** defender_iter_sum: {self.defender_iter_sum}')
+        assert d.assets >= 0, f'{self.params},'
 
     def defender_gain(self, d, gain):
         d.gain(gain)
         self.defender_iter_sum += gain
 
-    def defender_recoup(self, d, recoup):
+    def defender_recoup(self, a, d, recoup):
         # Check if the defender has been paid claims for losses to a
-        if self.Attackers[self.a_i] in d.claims_received:
-            claims_received_from_a = d.claims_received[self.Attackers[self.a_i]]
+        print(f'    d.claims_received: {d.claims_received}')
+        print(f'    has d has been attacked by Attackers[{self.a_i}]?')
+        if a.id in d.claims_received:
+            print(f'      yes')
+            claims_received_from_a = d.claims_received[a.id]
             # Pay back received claims first
+            # TODO reduce d.claims_received by the appropriate amount
             if recoup >= claims_received_from_a:
                 # Defender gets to keep some
                 # TODO Make sure you revive Insurer...maybe may TOD a list?
-                self.Insurer.gain(claims_received_from_a)
-                d.gain(recoup - claims_received_from_a)
+                self.defender_gain(d, gain=recoup - claims_received_from_a)
+                # Pay back the Insurer as much as d is able
+                # TODO don't let a pay Insurer more than their assets allow!
+                if d.assets > claims_received_from_a:
+                    self.Insurer.gain(claims_received_from_a)
+                    self.defender_lose(d, claims_received_from_a)
+                    d.claims_received[a.id] -= claims_received_from_a
+                else:
+                    self.Insurer.gain(d.assets)
+                    self.defender_lose(d, d.assets)
+                    d.claims_received[a.id] -= d.assets
+                    # TODO remove d from living Defenders
             else:
                 # All goes back to the Insurer
-                self.Insurer.gain(claims_received_from_a)
+                self.Insurer.gain(recoup)
+                d.claims_received[a.id] -= recoup
         else:
-            d.gain(recoup)
+            self.defender_gain(d, gain=recoup)
 
 
 
     def attacker_lose(self, a, loss):
         a.lose(loss)
         self.attacker_iter_sum -= loss
+        assert a.assets >= 0, f'{self.params},'
 
     def attacker_gain(self, a, gain):
         a.gain(gain)
@@ -127,33 +145,40 @@ class Game:
     def attacker_payback(self, a):
         loot = a.assets
         paybacks = 0
+        print(f'  assets: {a.assets}')
         for (k,v) in a.victims.items():
             # Payback for as long as possible
-            print("--",k,v)
+            print("  --",k,v)
             if a.assets > 0:
                 
                 if self.Defenders[k].assets == 0:
+                    print("reviving the dead")
                     self.alive_defenders.append(k)
 
                 if a.assets > v:
+                    print("  full payback")
                     paybacks += v
-                    self.defender_recoup(self.Defenders[k], v)
+                    self.defender_recoup(a=a, d=self.Defenders[k], recoup=v)
                     self.attacker_lose(a, v)
                 else:
+                    print("  partial payback")
                     paybacks += a.assets
-                    self.defender_recoup(self.Defenders[k], a.assets)
+                    self.defender_recoup(a=a, d=self.Defenders[k], recoup=a.assets)
                     self.attacker_lose(a, a.assets)
                     break
             else:
                 break
+
         
         if (a.assets != 0):
+            print("  government getting ", a.assets)
             self.government_gain(self.Government, a.assets)
             self.attacker_lose(a, a.assets)
         else:
             assert abs(loot - paybacks) < 1, f'{self.params}, {loot}, {paybacks}'
         
-        
+        print("============")
+
     def fight(self, a, d):
 
         effective_loot = d.assets * self.params["PAYOFF"]
@@ -180,17 +205,20 @@ class Game:
                 # self.attacker_lose(a, a.assets)
                 # TODO check this above
                 self.caught += 1
+                print(f'Attacker[{a.id}] caught!')
                 self.attacker_payback(a)
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
                     # self.a_steals_from_d(a,d,effective_loot) #TODO implement this function to replace the below
+                    print(f'Attacker[{a.id}] stealing {effective_loot} from Defender[{d.id}]')
                     self.defender_lose(d, effective_loot)
                     self.attacker_gain(a, effective_loot)
                     self.amount_stolen += effective_loot # TODO place this in attacker_gain maybe?
                     
                     # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets
                     # This is because we assume previous security investments are still valid!
+                    
                     
                     # Recoup losses from Insurer (if Insurer is not dead yet)
                     # TODO place this into self.receive_claim() function
@@ -209,6 +237,7 @@ class Game:
                         else:
                             d.claims_received[self.a_i] = claims_amount
                         self.insurer_lose(self.Insurer, claims_amount)
+        # print(f'2: defender_iter_sum: {self.defender_iter_sum}')
 
     def is_equilibrium_reached(self):
 
@@ -258,7 +287,7 @@ class Game:
         assert self.a_end + 1 >= 0, f'{self.params}'
         assert self.current_defender_sum_assets + 1 >= 0, f'{self.params}'
         assert self.current_attacker_sum_assets + 1 >= 0, f'{self.params}'
-        assert abs(self.d_end - self.current_defender_sum_assets) < 1, f'{self.params}'
+        assert abs(self.d_end - self.current_defender_sum_assets) < 1, f'{self.params}, d_end={self.d_end}, current_defender_sum_assets={self.current_defender_sum_assets}'
         assert abs(self.a_end - self.current_attacker_sum_assets) < 1, f'{self.params}'
         assert self.i_init + 1 > self.i_end, f'{self.params}'
         assert self.d_init + 1 > self.d_end, f'{self.params}, d_init={self.d_init}, d_end={self.d_end}'
@@ -286,7 +315,8 @@ class Game:
         defenders_have_more_than_attackers = True
 
         for self.iter_num in range(1, self.game_settings['SIM_ITERS']+1):
-
+            print(">>>>>>>> ", self.iter_num, "<<<<<<<<<< current_defender_sum_assets=", self.current_defender_sum_assets)
+            
             self.defender_iter_sum = 0
             self.attacker_iter_sum = 0
 
@@ -306,6 +336,7 @@ class Game:
                 assert len(self.Defenders) > self.d_i, f'{self.params}'
                 assert self.Attackers[self.a_i].assets + 1 >= 0, f'{self.params}'
                 assert self.Defenders[self.d_i].assets + 1 >= 0, f'{self.params},'
+                # print(f'3: defender_iter_sum: {self.defender_iter_sum}')
 
             # Remove the dead players from the game
             for x in dead_attackers:
@@ -313,10 +344,13 @@ class Game:
             for x in dead_defenders:
                 self.alive_defenders.remove(x)
 
+            
+            # print(f'4: defender_iter_sum: {self.defender_iter_sum}')
+
             self.current_defender_sum_assets += self.defender_iter_sum
             self.current_attacker_sum_assets += self.attacker_iter_sum
-            print(self.current_defender_sum_assets)
             # assert abs((self.Insurer.assets + self.current_defender_sum_assets) - (self.current_attacker_sum_assets + self.attacker_expenditures)) < 1, f'{self.params}, {self.Insurer.assets}, {self.current_defender_sum_assets}, {self.current_attacker_sum_assets}, {self.attacker_expenditures}'
+            assert self.d_init + 1 > self.current_defender_sum_assets, f'{self.params}, d_init={self.d_init}, current_defender_sum_assets={self.current_defender_sum_assets}'
 
             # Check if there has been a crossover point
             if defenders_have_more_than_attackers:

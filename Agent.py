@@ -23,7 +23,17 @@ class Agent:
 
 
 class Defender(Agent):
+
+    ctr = 0
+
     def __init__(self):
+
+        self.id = Defender.ctr
+        Defender.ctr += 1
+
+        # TODO delete later! for debugging only
+        random.seed(4)
+        np.random.seed(3)
 
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
         self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
@@ -41,12 +51,21 @@ class Defender(Agent):
         self.ProbOfAttackSuccess = 1 - ProbDefenseSuccess
         self.costToAttack = self.assets 
 
-        # self.insurance = 0 # TODO is this needed?
         self.claims_received = dict()
 
 
 class Attacker(Agent):
+
+    ctr = 0
+
     def __init__(self):
+
+        self.id = Attacker.ctr
+        Attacker.ctr += 1
+
+        # TODO delete later! for debugging only
+        random.seed(3)
+        np.random.seed(3)
 
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
         self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] # TODO scale this by INEQUALITY later

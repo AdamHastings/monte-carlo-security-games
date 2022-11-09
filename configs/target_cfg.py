@@ -23,7 +23,7 @@ params_ranges = dict(
 )
 
 game_settings = dict(
-    BLUE_PLAYERS = 2000,
+    BLUE_PLAYERS = 20,
     SIM_ITERS = 10000,
     NUM_GAMES = 1,
     EPSILON_DOLLARS = 100,
