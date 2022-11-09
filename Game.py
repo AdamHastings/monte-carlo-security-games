@@ -32,10 +32,11 @@ class Game:
         self.g_init = Government.assets
 
         # Some interesting stats to keep track of
-        self.crossover = -1
+        self.crossovers = []
         self.insurer_time_of_death = -1
         self.paid_claims = 0
         self.attacks = 0
+        self.outcome = "X"
 
         # Keep track of the cumulative worth of Attackers and Defenders assets (e.g. memoize)
         self.current_defender_sum_assets = self.d_init
@@ -53,7 +54,7 @@ class Game:
         self.outside_epsilon_count_attackers = self.game_settings["DELTA_ITERS"]
         self.outside_epsilon_count_defenders = self.game_settings["DELTA_ITERS"]
 
-    def __str__(self):
+    def toString(self):
         ret = ""
         ret += ",".join(str(round(self.params[k], 2)).lstrip('0') for k in sorted(self.params.keys())) + ","
         ret += str(round(self.d_init)) + ","
@@ -63,7 +64,7 @@ class Game:
         ret += str(round(self.i_init)) + ","
         ret += str(round(self.i_end)) + ","
         ret += str(self.attacks) + ","
-        ret += str(self.crossover) + ","
+        ret += "\"" + str(self.crossovers) + "\","
         ret += str(self.insurer_time_of_death) + ","
         ret += str(round(self.paid_claims)) + ","
         ret += str(self.final_iter) + ","
@@ -102,7 +103,8 @@ class Game:
     def attacker_payback(self, a):
         # TODO distribute confiscated earnings to victims
         # print(a.victims)
-        print(a.victims)
+        # print(a.victims)
+        # print(self.Attackers[self.a_i].victims())
         for (k,v) in a.victims.items():
             print(k,v)
         
@@ -128,7 +130,7 @@ class Game:
                 # Remaining assets are seized by the government
                 # self.government_gain(self.Government, a.assets)
                 # self.attacker_lose(a, a.assets)
-                print(a.victims)
+                # print(a.victims)
                 self.attacker_payback(a)
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
@@ -215,9 +217,6 @@ class Game:
         elif outcome == 'A':
             assert len(self.alive_attackers) == 0, f'{self.params}'
 
-        if self.crossover >= 0:
-            assert self.d_end < self.a_end, f'{self.params}\nself.d_end={self.d_end}, self.a_end={self.a_end}'
-
         self.outcome = outcome
   
     def run_iterations(self):
@@ -225,6 +224,8 @@ class Game:
         # Lists of inidices of which players are still alive
         self.alive_attackers = list(range(len(self.Attackers)))
         self.alive_defenders = list(range(len(self.Defenders)))
+
+        defenders_have_more = True
 
         for self.iter_num in range(1, self.game_settings['SIM_ITERS']+1):
 
@@ -257,9 +258,15 @@ class Game:
             self.current_defender_sum_assets += self.defender_iter_sum
             self.current_attacker_sum_assets += self.attacker_iter_sum
 
-            # Check if Attackers now own more than Defenders
-            if (self.current_attacker_sum_assets > self.current_defender_sum_assets):
-                self.crossover = self.iter_num
+            # Check if there has been a crossover point
+            if defenders_have_more:
+                if (self.current_attacker_sum_assets > self.current_defender_sum_assets):
+                    self.crossovers.append(self.iter_num)
+                    defenders_have_more = False
+            else:
+                if (self.current_attacker_sum_assets < self.current_defender_sum_assets):
+                    self.crossovers.append(self.iter_num)
+                    defenders_have_more = True
             
             # Check if the game needs to be ended
 
