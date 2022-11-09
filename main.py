@@ -70,7 +70,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
         g.run_iterations()
         
         log = open(cfg.LOGFILE, 'a')  # write mode
-        log.write(str(g))
+        log.write(g.toString())
         log.close()
 
 

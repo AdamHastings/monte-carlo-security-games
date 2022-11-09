@@ -41,7 +41,8 @@ class Defender(Agent):
         self.ProbOfAttackSuccess = 1 - ProbDefenseSuccess
         self.costToAttack = self.assets 
 
-        self.insurance = 0 # TODO is this needed?
+        # self.insurance = 0 # TODO is this needed?
+        self.claims_received = dict()
 
 
 class Attacker(Agent):

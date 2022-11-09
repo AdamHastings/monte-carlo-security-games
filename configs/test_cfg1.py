@@ -17,9 +17,9 @@ params_ranges = dict(
 
     # Parameters that affect gameplay
     PAYOFF_range = np.linspace(0.1, 1.0, 2), # How much of a defender's assets are stolen if attacker is successful
-    CAUGHT_range = np.linspace(0.0, 1.0, 2), # Probability that an attacker is caught and has their assets confiscated
+    CAUGHT_range = np.linspace(0.0, 1.0, 4), # Probability that an attacker is caught and has their assets confiscated
     CLAIMS_range = np.linspace(0.1, 1.0, 2), # Percentage of losses paid back to defender by Insurer
-    TAX_range    = np.linspace(0.1, 0.2, 2), # Percentage of confiscated assets that are retained by Government
+    TAX_range    = np.linspace(0.1, 0.2, 1), # Percentage of confiscated assets that are retained by Government
 )
 
 game_settings = dict(
