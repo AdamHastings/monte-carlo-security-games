@@ -15,7 +15,6 @@ class Agent:
     def get_assets(self):
         return self.assets
 
-    # TODO general gain/loss functions maybe?        
     def gain(self, gain):
         self.assets += gain
 
@@ -52,6 +51,8 @@ class Attacker(Agent):
         self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] # TODO scale this by INEQUALITY later
 
         Agent.__init__(self, self.assets)
+
+        self.victims = dict()
 
 
 # TODO: One shot insurance, or continuous investments?

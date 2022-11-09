@@ -27,7 +27,7 @@ game_settings = dict(
     SIM_ITERS = 10000,
     NUM_GAMES = 1,
     EPSILON_DOLLARS = 100,
-    DELTA_ITERS = 100
+    DELTA_ITERS = 50
 )
 
 # Find the params that are pinned to a single value 
