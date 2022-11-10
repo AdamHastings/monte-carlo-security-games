@@ -80,6 +80,11 @@ class Game:
         # print(f'** defender_iter_sum: {self.defender_iter_sum}')
         assert d.assets >= 0, f'{self.params},'
 
+    def a_steals_from_d(self, a, d, loot):
+        self.defender_lose(d, loot)
+        self.attacker_gain(a, loot)
+        self.amount_stolen += loot
+
     def defender_gain(self, d, gain):
         d.gain(gain)
         self.defender_iter_sum += gain
@@ -91,7 +96,7 @@ class Game:
         if a.id in d.claims_received:
             # print(f'      yes')
             claims_received_from_a = d.claims_received[a.id]
-            # Pay back received claims first
+            # Pay back received claims to insurer first
             # TODO reduce d.claims_received by the appropriate amount
             if recoup >= claims_received_from_a:
                 # Defender gets to keep some
@@ -134,11 +139,26 @@ class Game:
             a.victims[self.d_i] = gain
 
         self.attacker_iter_sum += gain
-        # print(self.Attackers[self.a_i].victims)
 
     def insurer_lose(self, i, loss):
         i.lose(loss)
         self.paid_claims += loss
+
+    def insurer_covers_d_for_losses_from_a(self, a, d, claim):
+        # The defender gets to recoup losses from Insurer
+        claims_amount = claim * self.params["CLAIMS"]
+        if (claims_amount > self.Insurer.assets):
+            # Insurer goes bust
+            claims_amount = self.Insurer.assets
+            self.insurer_time_of_death = self.iter_num
+                    
+        self.defender_gain(d, claims_amount) 
+        # TODO make a separate handle claims function
+        if self.a_i in d.claims_received:
+            d.claims_received[a.id] += claims_amount
+        else:
+            d.claims_received[a.id] = claims_amount
+        self.insurer_lose(self.Insurer, claims_amount)
 
     def insurer_recoup(self, recoup):
         self.Insurer.gain(recoup)
@@ -149,10 +169,10 @@ class Game:
 
 
     # TODO problem is that Defenders are getting losses recovered but also get to keep insurance claims...
-    def attacker_payback(self, a):
-        loot = a.assets
-        paybacks = 0
-        # print(f'  assets: {a.assets}')
+    def a_distributes_loot(self, a):
+        self.caught += 1
+
+        # Distribute the loot to victims
         for (k,v) in a.victims.items():
             # Payback for as long as possible
             # print("  --",k,v)
@@ -164,25 +184,21 @@ class Game:
 
                 if a.assets > v:
                     # print("  full payback")
-                    paybacks += v
                     self.defender_recoup(a=a, d=self.Defenders[k], recoup=v)
                     self.attacker_lose(a, v)
                 else:
                     # print("  partial payback")
-                    paybacks += a.assets
                     self.defender_recoup(a=a, d=self.Defenders[k], recoup=a.assets)
                     self.attacker_lose(a, a.assets)
                     break
             else:
                 break
 
-        
+        # Anything remaining goes to the Government
         if (a.assets != 0):
             # print("  government getting ", a.assets)
             self.government_gain(self.Government, a.assets)
             self.attacker_lose(a, a.assets)
-        else:
-            assert abs(loot - paybacks) < 1, f'{self.params}, {loot}, {paybacks}'
         
         # print("============")
 
@@ -211,39 +227,23 @@ class Game:
                 # self.government_gain(self.Government, a.assets)
                 # self.attacker_lose(a, a.assets)
                 # TODO check this above
-                self.caught += 1
+                
                 # print(f'Attacker[{a.id}] caught!')
-                self.attacker_payback(a)
+                self.a_distributes_loot(a)
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
                     # self.a_steals_from_d(a,d,effective_loot) #TODO implement this function to replace the below
                     # print(f'Attacker[{a.id}] stealing {effective_loot} from Defender[{d.id}]')
-                    self.defender_lose(d, effective_loot)
-                    self.attacker_gain(a, effective_loot)
-                    self.amount_stolen += effective_loot # TODO place this in attacker_gain maybe?
+                    self.a_steals_from_d(a=a, d=d, loot=effective_loot)
                     
                     # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets
                     # This is because we assume previous security investments are still valid!
-                    
-                    
+
                     # Recoup losses from Insurer (if Insurer is not dead yet)
-                    # TODO place this into self.receive_claim() function
                     if self.Insurer.assets > 0:
-                        # The defender gets to recoup losses from Insurer
-                        claims_amount = effective_loot * self.params["CLAIMS"]
-                        if (claims_amount > self.Insurer.assets):
-                            # Insurer goes bust
-                            claims_amount = self.Insurer.assets
-                            self.insurer_time_of_death = self.iter_num
-                                    
-                        self.defender_gain(d, claims_amount) 
-                        # TODO make a separate handle claims function
-                        if self.a_i in d.claims_received:
-                            d.claims_received[self.a_i] += claims_amount
-                        else:
-                            d.claims_received[self.a_i] = claims_amount
-                        self.insurer_lose(self.Insurer, claims_amount)
+                        self.insurer_covers_d_for_losses_from_a(a=a, d=d, claim=effective_loot)
+                        
         # print(f'2: defender_iter_sum: {self.defender_iter_sum}')
 
     def is_equilibrium_reached(self):
