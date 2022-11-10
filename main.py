@@ -137,8 +137,7 @@ def main():
 
     init_logs(cfg)
 
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
+    start_time = datetime.now()
 
     inputs = list(itertools.product(cfg.params_ranges["ATTACKERS_range"],
                                         cfg.params_ranges["PAYOFF_range"],
@@ -152,13 +151,17 @@ def main():
                                         cfg.params_ranges["MANDATE_range"]
                                     ))
 
-    print("Starting", len(inputs), "games at", current_time)
+    print("Starting", len(inputs), "games at", start_time.strftime("%H:%M:%S"))
     with Pool(initializer=init_worker, initargs=(cfg,)) as p:
         p.starmap(run_games, inputs)
 
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("\nFinished! at", current_time)
+    end_time = datetime.now()
+    print("\nFinished! at", end_time.strftime("%H:%M:%S"))
+    
+    elapsed_time = end_time - start_time
+    # print(elapsed_time)
+    # a = elapsed_time.strftime("%H:%M:%S")
+    print("Runtime: ", elapsed_time, "\n")
     
 if __name__== "__main__":
   main()
