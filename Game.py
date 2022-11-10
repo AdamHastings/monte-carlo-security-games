@@ -86,10 +86,10 @@ class Game:
 
     def defender_recoup(self, a, d, recoup):
         # Check if the defender has been paid claims for losses to a
-        print(f'    d.claims_received: {d.claims_received}')
-        print(f'    has d has been attacked by Attackers[{self.a_i}]?')
+        # print(f'    d.claims_received: {d.claims_received}')
+        # print(f'    has d has been attacked by Attackers[{self.a_i}]?')
         if a.id in d.claims_received:
-            print(f'      yes')
+            # print(f'      yes')
             claims_received_from_a = d.claims_received[a.id]
             # Pay back received claims first
             # TODO reduce d.claims_received by the appropriate amount
@@ -137,6 +137,9 @@ class Game:
         i.lose(loss)
         self.paid_claims += loss
 
+    def insurer_recoup(self, recoup):
+        pass
+
     def government_gain(self, g, gain):
         g.gain(gain)
 
@@ -145,23 +148,23 @@ class Game:
     def attacker_payback(self, a):
         loot = a.assets
         paybacks = 0
-        print(f'  assets: {a.assets}')
+        # print(f'  assets: {a.assets}')
         for (k,v) in a.victims.items():
             # Payback for as long as possible
-            print("  --",k,v)
+            # print("  --",k,v)
             if a.assets > 0:
                 
                 if self.Defenders[k].assets == 0:
-                    print("reviving the dead")
+                    # print("reviving the dead")
                     self.alive_defenders.append(k)
 
                 if a.assets > v:
-                    print("  full payback")
+                    # print("  full payback")
                     paybacks += v
                     self.defender_recoup(a=a, d=self.Defenders[k], recoup=v)
                     self.attacker_lose(a, v)
                 else:
-                    print("  partial payback")
+                    # print("  partial payback")
                     paybacks += a.assets
                     self.defender_recoup(a=a, d=self.Defenders[k], recoup=a.assets)
                     self.attacker_lose(a, a.assets)
@@ -171,13 +174,13 @@ class Game:
 
         
         if (a.assets != 0):
-            print("  government getting ", a.assets)
+            # print("  government getting ", a.assets)
             self.government_gain(self.Government, a.assets)
             self.attacker_lose(a, a.assets)
         else:
             assert abs(loot - paybacks) < 1, f'{self.params}, {loot}, {paybacks}'
         
-        print("============")
+        # print("============")
 
     def fight(self, a, d):
 
@@ -205,13 +208,13 @@ class Game:
                 # self.attacker_lose(a, a.assets)
                 # TODO check this above
                 self.caught += 1
-                print(f'Attacker[{a.id}] caught!')
+                # print(f'Attacker[{a.id}] caught!')
                 self.attacker_payback(a)
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
                     # self.a_steals_from_d(a,d,effective_loot) #TODO implement this function to replace the below
-                    print(f'Attacker[{a.id}] stealing {effective_loot} from Defender[{d.id}]')
+                    # print(f'Attacker[{a.id}] stealing {effective_loot} from Defender[{d.id}]')
                     self.defender_lose(d, effective_loot)
                     self.attacker_gain(a, effective_loot)
                     self.amount_stolen += effective_loot # TODO place this in attacker_gain maybe?
@@ -291,7 +294,7 @@ class Game:
         assert abs(self.a_end - self.current_attacker_sum_assets) < 1, f'{self.params}'
         assert self.i_init + 1 > self.i_end, f'{self.params}'
         assert self.d_init + 1 > self.d_end, f'{self.params}, d_init={self.d_init}, d_end={self.d_end}'
-        assert self.paid_claims <= (self.i_init + 1) and self.paid_claims >=0, f'{self.params}'
+        assert self.paid_claims <= (self.i_init + 1) and self.paid_claims + 1 >= 0, f'{self.params}, {self.i_init}, {self.paid_claims}'
         assert self.amount_stolen >= self.paid_claims, f'{self.params},'
 
         
@@ -315,7 +318,7 @@ class Game:
         defenders_have_more_than_attackers = True
 
         for self.iter_num in range(1, self.game_settings['SIM_ITERS']+1):
-            print(">>>>>>>> ", self.iter_num, "<<<<<<<<<< current_defender_sum_assets=", self.current_defender_sum_assets)
+            # print(">>>>>>>> ", self.iter_num, "<<<<<<<<<< current_defender_sum_assets=", self.current_defender_sum_assets)
             
             self.defender_iter_sum = 0
             self.attacker_iter_sum = 0
