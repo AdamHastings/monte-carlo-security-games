@@ -100,17 +100,20 @@ class Game:
                 # Pay back the Insurer as much as d is able
                 # TODO don't let a pay Insurer more than their assets allow!
                 if d.assets > claims_received_from_a:
-                    self.Insurer.gain(claims_received_from_a)
+                    # self.Insurer.gain(claims_received_from_a)
+                    self.insurer_recoup(claims_received_from_a)
                     self.defender_lose(d, claims_received_from_a)
                     d.claims_received[a.id] -= claims_received_from_a
                 else:
-                    self.Insurer.gain(d.assets)
+                    # self.Insurer.gain(d.assets)
+                    self.insurer_recoup(claims_received_from_a)
                     self.defender_lose(d, d.assets)
                     d.claims_received[a.id] -= d.assets
                     # TODO remove d from living Defenders
             else:
                 # All goes back to the Insurer
-                self.Insurer.gain(recoup)
+                # self.Insurer.gain(recoup)
+                self.insurer_recoup(claims_received_from_a)
                 d.claims_received[a.id] -= recoup
         else:
             self.defender_gain(d, gain=recoup)
@@ -138,7 +141,8 @@ class Game:
         self.paid_claims += loss
 
     def insurer_recoup(self, recoup):
-        pass
+        self.Insurer.gain(recoup)
+        self.paid_claims -= recoup
 
     def government_gain(self, g, gain):
         g.gain(gain)
