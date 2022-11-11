@@ -32,8 +32,8 @@ class Defender(Agent):
         Defender.ctr += 1
 
         # TODO delete later! for debugging only
-        random.seed(4)
-        np.random.seed(4)
+        # random.seed(4)
+        # np.random.seed(4)
 
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
         self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
@@ -64,8 +64,8 @@ class Attacker(Agent):
         Attacker.ctr += 1
 
         # TODO delete later! for debugging only
-        random.seed(4)
-        np.random.seed(4)
+        # random.seed(4)
+        # np.random.seed(4)
 
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
         self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] # TODO scale this by INEQUALITY later
