@@ -52,15 +52,27 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
 
         for d in Defenders:
             investment = d.assets * params["MANDATE"]
-            
+
+            # TODO split into selfish and selfless
+            # Selfish = Insurance. Provides coverage without changing the landscape (just gives more money to attackers in the long run!)
+            # Selfless = Private security spending + taxes. Actually can improve the situation for *other* defenders as well.
+
             insurance_investment = investment * params["PREMIUM"]
             d.lose(insurance_investment)
             Insurer.gain(insurance_investment)
 
             sec_investment = investment - insurance_investment
-            d.lose(sec_investment)
+            taxes = sec_investment * params["TAX"]
+            d.lose(taxes)
+            Government.gain(taxes)
+
+            personal_security_investment = sec_investment - taxes
+            d.lose(personal_security_investment)
+
             d.costToAttack = d.assets * params["SUCCESS"]
-            d.costToAttack += (sec_investment * params["EFFICIENCY"])
+            d.costToAttack += (personal_security_investment * params["EFFICIENCY"])
+
+
 
             assert d.assets >=0, f'{params}'
 
