@@ -78,7 +78,7 @@ class Game:
         d.lose(loss)
         self.defender_iter_sum -= loss
         # print(f'** defender_iter_sum: {self.defender_iter_sum}')
-        assert d.assets >= 0, f'{self.params},'
+        assert d.assets + 1 >= 0, f'{self.params},'
 
     def a_steals_from_d(self, a, d, loot):
         self.defender_lose(d, loot)
@@ -128,7 +128,7 @@ class Game:
     def attacker_lose(self, a, loss):
         a.lose(loss)
         self.attacker_iter_sum -= loss
-        assert a.assets >= 0, f'{self.params},'
+        assert a.assets + 1 >= 0, f'{self.params},'
 
     def attacker_gain(self, a, gain):
         a.gain(gain)
@@ -143,6 +143,7 @@ class Game:
     def insurer_lose(self, i, loss):
         i.lose(loss)
         self.paid_claims += loss
+        assert i.assets + 1 >= 0, f'{self.params},'
 
     def insurer_covers_d_for_losses_from_a(self, a, d, claim):
         # The defender gets to recoup losses from Insurer
@@ -339,10 +340,11 @@ class Game:
                     dead_attackers.append(self.a_i) 
                 if self.Defenders[self.d_i].assets == 0:
                     dead_defenders.append(self.d_i)
-                assert len(self.Attackers) > self.a_i, f'{self.params}'
-                assert len(self.Defenders) > self.d_i, f'{self.params}'
-                assert self.Attackers[self.a_i].assets + 1 >= 0, f'{self.params}'
-                assert self.Defenders[self.d_i].assets + 1 >= 0, f'{self.params},'
+                # TODO these four asserts slow down performance by 33%.....
+                # assert len(self.Attackers) > self.a_i, f'{self.params}'
+                # assert len(self.Defenders) > self.d_i, f'{self.params}'
+                # assert self.Attackers[self.a_i].assets + 1 >= 0, f'{self.params}'
+                # assert self.Defenders[self.d_i].assets + 1 >= 0, f'{self.params},'
                 # print(f'3: defender_iter_sum: {self.defender_iter_sum}')
 
             # Remove the dead players from the game
@@ -350,7 +352,6 @@ class Game:
                 self.alive_attackers.remove(x)
             for x in dead_defenders:
                 self.alive_defenders.remove(x)
-
             
             # print(f'4: defender_iter_sum: {self.defender_iter_sum}')
 
@@ -358,6 +359,9 @@ class Game:
             self.current_attacker_sum_assets += self.attacker_iter_sum
             # assert abs((self.Insurer.assets + self.current_defender_sum_assets) - (self.current_attacker_sum_assets + self.attacker_expenditures)) < 1, f'{self.params}, {self.Insurer.assets}, {self.current_defender_sum_assets}, {self.current_attacker_sum_assets}, {self.attacker_expenditures}'
             assert self.d_init + 1 > self.current_defender_sum_assets, f'{self.params}, d_init={self.d_init}, current_defender_sum_assets={self.current_defender_sum_assets}'
+            assert ((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures)) + 1 >= 0, f'{self.params},'
+
+
 
             # Check if there has been a crossover point
             if defenders_have_more_than_attackers:
