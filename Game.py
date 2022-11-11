@@ -334,12 +334,10 @@ class Game:
             dead_defenders = []
 
             # Make the pairings between Attackers and Defenders random
-            # Have to make alive_attackers a list though in order to shuffle
+            # Have to make alive_attackers|defenders a list though in order to shuffle
             alive_attackers_list = list(self.alive_attackers)
-            # random.shuffle(alive_attackers_list)
-            # print(alive_attackers_list)
-            
             alive_defenders_list = list(self.alive_defenders)
+
             # Only shuffle the *longer* list
             # So that all players in the longer list get an equal chance to fight
             if len(alive_defenders_list) < len(alive_attackers_list):
@@ -348,9 +346,6 @@ class Game:
                 random.shuffle(alive_defenders_list)
 
             for di, ai in zip(alive_defenders_list, alive_attackers_list):
-                # print(ai)
-                # assert len(self.Attackers) > 0, "0 attackers..?"
-                # assert ai < len(self.Attackers), print("A", ai, len(self.Attackers))
                 self.fight(a=self.Attackers[ai], d=self.Defenders[di])
                 if self.Attackers[ai].assets == 0:
                     dead_attackers.append(ai) 
@@ -358,7 +353,6 @@ class Game:
                     dead_defenders.append(di)
 
             # Remove the dead players from the game
-            # TODO maybe make alive_* a set instead of a list? Might get a big speedup..
             for x in dead_attackers:
                 self.alive_attackers.remove(x)
             for x in dead_defenders:
