@@ -336,12 +336,16 @@ class Game:
             # Make the pairings between Attackers and Defenders random
             # Have to make alive_attackers a list though in order to shuffle
             alive_attackers_list = list(self.alive_attackers)
-            random.shuffle(alive_attackers_list)
+            # random.shuffle(alive_attackers_list)
             # print(alive_attackers_list)
             
             alive_defenders_list = list(self.alive_defenders)
-            random.shuffle(alive_defenders_list)
-            # TODO only shuffle the shorter list
+            # Only shuffle the *longer* list
+            # So that all players in the longer list get an equal chance to fight
+            if len(alive_defenders_list) < len(alive_attackers_list):
+                random.shuffle(alive_attackers_list)
+            else:
+                random.shuffle(alive_defenders_list)
 
             for di, ai in zip(alive_defenders_list, alive_attackers_list):
                 # print(ai)
