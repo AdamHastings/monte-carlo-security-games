@@ -124,6 +124,11 @@ class Game:
         self.attacker_gain(a, loot)
         self.amount_stolen += loot
 
+        if d.id in a.victims:
+            a.victims[d.id] += loot
+        else:
+            a.victims[d.id] = loot
+
     def defender_gain(self, d, gain):
         d.gain(gain)
         self.defender_iter_sum += gain
@@ -141,12 +146,6 @@ class Game:
 
     def attacker_gain(self, a, gain):
         a.gain(gain)
-        # TODO get rid of d_i and instead add a unique id to each Attacker/Defender
-        if self.d_i in a.victims:
-            a.victims[self.d_i] += gain
-        else:
-            a.victims[self.d_i] = gain
-
         self.attacker_iter_sum += gain
 
     def defender_recoup(self, a, d, recoup):
@@ -230,8 +229,8 @@ class Game:
             if a.assets > 0:
                 
                 if self.Defenders[k].assets == 0:
-                    # print("reviving the dead")
-                    self.alive_defenders.append(k)
+                    print("reviving the dead")
+                    self.alive_defenders.insert(k)
 
                 if a.assets > v:
                     # print("  full payback")
@@ -300,18 +299,11 @@ class Game:
             # The attacker might get caught
             # TODO Maybe make this a function of the amount of tax collected (bigger gov = better at catching the criminals)
             if (np.random.uniform(0,1) < self.params["CAUGHT"]):    
-                # Remaining assets are seized by the government
-                # self.government_gain(self.Government, a.assets)
-                # self.attacker_lose(a, a.assets)
-                # TODO check this above
-                
                 # print(f'Attacker[{a.id}] caught! Has {self.Attackers[a.id].assets} to distribute')
                 self.a_distributes_loot(a)
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
-                    # self.a_steals_from_d(a,d,effective_loot) #TODO implement this function to replace the below
-                    # print(f'Attacker[{a.id}] stealing {effective_loot} from Defender[{d.id}]')
                     self.a_steals_from_d(a=a, d=d, loot=effective_loot)
                     
                     # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets
@@ -326,8 +318,9 @@ class Game:
     def run_iterations(self):
 
         # Lists of inidices of which players are still alive
-        self.alive_attackers = list(range(len(self.Attackers)))
-        self.alive_defenders = list(range(len(self.Defenders)))
+        self.alive_attackers = set(range(len(self.Attackers)))
+        self.alive_defenders = set(range(len(self.Defenders)))
+        # print(self.alive_attackers)
 
         defenders_have_more_than_attackers = True
 
@@ -341,23 +334,27 @@ class Game:
             dead_defenders = []
 
             # Make the pairings between Attackers and Defenders random
-            random.shuffle(self.alive_attackers)
+            # Have to make alive_attackers a list though in order to shuffle
+            alive_attackers_list = list(self.alive_attackers)
+            random.shuffle(alive_attackers_list)
+            # print(alive_attackers_list)
+            
+            alive_defenders_list = list(self.alive_defenders)
+            random.shuffle(alive_defenders_list)
+            # TODO only shuffle the shorter list
 
-            for self.a_i, self.d_i in zip(self.alive_attackers, self.alive_defenders):
-                self.fight(a=self.Attackers[self.a_i], d=self.Defenders[self.d_i])
-                if self.Attackers[self.a_i].assets == 0:
-                    dead_attackers.append(self.a_i) 
-                if self.Defenders[self.d_i].assets == 0:
-                    dead_defenders.append(self.d_i)
-                # print("-----------")
-                # TODO these four asserts slow down performance by 33%.....
-                # assert len(self.Attackers) > self.a_i, f'{self.params}'
-                # assert len(self.Defenders) > self.d_i, f'{self.params}'
-                # assert self.Attackers[self.a_i].assets + 1 >= 0, f'{self.params}'
-                # assert self.Defenders[self.d_i].assets + 1 >= 0, f'{self.params},'
-                # print(f'3: defender_iter_sum: {self.defender_iter_sum}')
+            for di, ai in zip(alive_defenders_list, alive_attackers_list):
+                # print(ai)
+                # assert len(self.Attackers) > 0, "0 attackers..?"
+                # assert ai < len(self.Attackers), print("A", ai, len(self.Attackers))
+                self.fight(a=self.Attackers[ai], d=self.Defenders[di])
+                if self.Attackers[ai].assets == 0:
+                    dead_attackers.append(ai) 
+                if self.Defenders[di].assets == 0:
+                    dead_defenders.append(di)
 
             # Remove the dead players from the game
+            # TODO maybe make alive_* a set instead of a list? Might get a big speedup..
             for x in dead_attackers:
                 self.alive_attackers.remove(x)
             for x in dead_defenders:
