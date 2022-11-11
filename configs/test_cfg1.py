@@ -8,10 +8,10 @@ Format: (start, end, increment)
 
 params_ranges = dict(
     # Parameters that affect game initialization
-    MANDATE_range    = np.linspace(0.0, 0.9, 3), # Percentage of assets that are spent on security measures.
-    ATTACKERS_range  = np.linspace(0.1, 1.0, 2), # Percentage of Attackers, relative to BLUE_PLAYERS
-    INEQUALITY_range = np.linspace(0.1, 1.0, 2), # How much poorer Attackers are than Defenders, as a pct
-    PREMIUM_range    = np.linspace(0.0, 1.0, 2), # Percentage of MANDATE that is allocated towards security
+    MANDATE_range    = np.linspace(0.0, 0.9, 2), # Percentage of assets that are spent on security measures.
+    ATTACKERS_range  = np.linspace(0.1, 1.0, 1), # Percentage of Attackers, relative to BLUE_PLAYERS
+    INEQUALITY_range = np.linspace(0.1, 1.0, 1), # How much poorer Attackers are than Defenders, as a pct
+    PREMIUM_range    = np.linspace(0.0, 1.0, 1), # Percentage of MANDATE that is allocated towards security
     EFFICIENCY_range = np.linspace(0.1, 1.0, 2), # Percent of MANDATE that goes towards increasing a defender's costToAttack
     SUCCESS_range    = np.linspace(0.1, 1.0, 2), # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
 

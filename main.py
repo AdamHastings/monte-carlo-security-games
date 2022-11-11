@@ -106,6 +106,7 @@ def init_logs(cfg):
     header = ""
     for k in sorted(cfg.params_ranges.keys()):
         header += k[:-6] + "," # trim off the "_range" of the cfg param names
+    # TODO this needs to be updated
     header += "d_init,d_end,a_init,a_end,i_init,i_end,attacks,crossover,insurer_tod,paid_claims,final_iter,reason\n"
     log.write(header)
     log.close()
