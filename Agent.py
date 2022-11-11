@@ -74,9 +74,6 @@ class Attacker(Agent):
 
         self.victims = dict()
 
-
-# TODO: One shot insurance, or continuous investments?
-#    A: We will do one-shot for now
 class Insurer(Agent):
     def __init__(self):
         Agent.__init__(self, 0)

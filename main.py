@@ -57,22 +57,25 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
             # Selfish = Insurance. Provides coverage without changing the landscape (just gives more money to attackers in the long run!)
             # Selfless = Private security spending + taxes. Actually can improve the situation for *other* defenders as well.
 
-            insurance_investment = investment * params["PREMIUM"]
-            d.lose(insurance_investment)
-            Insurer.gain(insurance_investment)
+            selfish_investment = investment * params["PREMIUM"]
+            d.lose(selfish_investment)
+            Insurer.gain(selfish_investment)
 
-            sec_investment = investment - insurance_investment
-            taxes = sec_investment * params["TAX"]
+            selfless_investment = investment - selfish_investment
+            taxes = selfless_investment * params["TAX"]
             d.lose(taxes)
             Government.gain(taxes)
+            # print("Gov assets: ", Government.assets, Government.get_assets())
 
-            personal_security_investment = sec_investment - taxes
+            personal_security_investment = selfless_investment - taxes
+
+            assert (investment - (selfish_investment + taxes + personal_security_investment)) + 1 >= 0
+            # print(f'investment={investment}, selfish={selfish_investment}, taxes={taxes}, personal={personal_security_investment}')
+
             d.lose(personal_security_investment)
 
             d.costToAttack = d.assets * params["SUCCESS"]
             d.costToAttack += (personal_security_investment * params["EFFICIENCY"])
-
-
 
             assert d.assets >=0, f'{params}'
 
@@ -82,7 +85,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
         g.run_iterations()
         
         log = open(cfg.LOGFILE, 'a')  # write mode
-        log.write(g.toString())
+        log.write(str(g))
         log.close()
 
 
