@@ -241,7 +241,6 @@ class Game:
         self.Government.lose(amount)
         # print(f'gov starting with {self.g_init}, losing {amount}, now has {self.Government.assets}')
 
-    # TODO problem is that Defenders are getting losses recovered but also get to keep insurance claims...
     def a_distributes_loot(self, a):
         self.caught += 1
         # print("    distributing ", a.assets)
@@ -303,7 +302,11 @@ class Game:
     def fight(self, a, d):
 
         effective_loot = d.assets * self.params["PAYOFF"]
-        # TODO maybe mercy kill the Defenders if the loot is very low?
+
+        # Mercy kill the Defenders if the loot is very low?
+        if effective_loot < self.game_settings["EPSILON_DOLLARS"]:
+            effective_loot = d.assets
+
         cost_of_attack = d.costToAttack
         expected_earnings = effective_loot * d.ProbOfAttackSuccess
 
@@ -332,7 +335,11 @@ class Game:
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
+
+                    if effective_loot == d.assets:
+                        print("mercy kill")
                     self.a_steals_from_d(a=a, d=d, loot=effective_loot)
+
                     
                     # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets
                     # This is because we assume previous security investments are still valid!
@@ -384,6 +391,7 @@ class Game:
             for x in dead_attackers:
                 self.alive_attackers.remove(x)
             for x in dead_defenders:
+                print("removing defender ", x)
                 self.alive_defenders.remove(x)
             
             # print(f'4: defender_iter_sum: {self.defender_iter_sum}')
