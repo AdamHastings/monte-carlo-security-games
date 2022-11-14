@@ -95,7 +95,26 @@ class Game:
         assert self.current_defender_sum_assets + 1 >= 0, f'{self.params}'
         assert self.current_attacker_sum_assets + 1 >= 0, f'{self.params}'
         assert self.Insurer.assets + 1 >= 0, f'{self.params}'
-        assert self.Government.assets + 1 >= 0, f'{self.params}'
+
+        # print("<<<", self.Government.assets)
+
+
+        # if self.Government.assets < 0:
+            # print("* * * * * * uh oh!", self.Government.assets)
+            # assert 1 == 0, "* * * * * * * *  * * * * big uh oh" + str(self.Government.assets)
+
+        # print("]]]", self.Government.assets)
+
+        assert self.Government.assets + 1 >= 0, f'{self.params}, {self.Government.assets}'
+
+        
+
+        for a in self.Attackers:
+            assert a.assets + 1 >= 0, f'{self.params}'
+
+        for d in self.Defenders:
+            assert d.assets + 1 >= 0, f'{self.params}'
+
         assert abs(self.current_defender_sum_assets - sum(d.assets for d in self.Defenders)) + 1 >= 0, f'{self.params}'
         assert abs(self.current_attacker_sum_assets - sum(a.assets for a in self.Attackers)) + 1 >= 0, f'{self.params}'
         assert self.i_init + 1 > self.Insurer.assets, f'{self.params}'
@@ -137,12 +156,12 @@ class Game:
         d.lose(loss)
         self.defender_iter_sum -= loss
         # print(f'** defender_iter_sum: {self.defender_iter_sum}')
-        assert d.assets + 1 >= 0, f'{self.params},'
+        # assert d.as sets + 1 >= 0, f'{self.params},'
 
     def attacker_lose(self, a, loss):
         a.lose(loss)
         self.attacker_iter_sum -= loss
-        assert a.assets + 1 >= 0, f'{self.params},'
+        # assert a.assets + 1 >= 0, f'{self.params},'
 
     def attacker_gain(self, a, gain):
         a.gain(gain)
@@ -164,7 +183,7 @@ class Game:
                 # TODO Make sure you revive Insurer...maybe may TOD a list?
                 self.defender_gain(d, gain=recoup - claims_received_from_a)
                 # Pay back the Insurer as much as d is able
-                # TODO don't let a pay Insurer more than their assets allow!
+                # Don't let a pay Insurer more than their assets allow!
                 if d.assets > claims_received_from_a:
                     # self.Insurer.gain(claims_received_from_a)
                     self.insurer_recoup(claims_received_from_a)
@@ -189,7 +208,6 @@ class Game:
     def insurer_lose(self, i, loss):
         i.lose(loss)
         self.paid_claims += loss
-        assert i.assets + 1 >= 0, f'{self.params},'
         # print("insurer losing ", loss)
 
     def insurer_covers_d_for_losses_from_a(self, a, d, claim):
@@ -202,7 +220,7 @@ class Game:
                     
         self.defender_gain(d, claims_amount) 
         # TODO make a separate handle claims function
-        if self.a_i in d.claims_received:
+        if a.id in d.claims_received:
             d.claims_received[a.id] += claims_amount
         else:
             d.claims_received[a.id] = claims_amount
@@ -217,6 +235,11 @@ class Game:
         # print(" -- gov gaining ", amount)
         self.Government.gain(amount)
 
+    def government_lose(self, amount):
+        if amount > self.Government.assets:
+            amount = self.Government.assets
+        self.Government.lose(amount)
+        # print(f'gov starting with {self.g_init}, losing {amount}, now has {self.Government.assets}')
 
     # TODO problem is that Defenders are getting losses recovered but also get to keep insurance claims...
     def a_distributes_loot(self, a):
@@ -229,8 +252,7 @@ class Game:
             if a.assets > 0:
                 
                 if self.Defenders[k].assets == 0:
-                    print("reviving the dead")
-                    self.alive_defenders.insert(k)
+                    self.alive_defenders.add(k)
 
                 if a.assets > v:
                     # print("  full payback")
@@ -297,8 +319,14 @@ class Game:
             self.attacker_expenditures += cost_of_attack
      
             # The attacker might get caught
-            # TODO Maybe make this a function of the amount of tax collected (bigger gov = better at catching the criminals)
-            if (np.random.uniform(0,1) < self.params["CAUGHT"]):    
+            # Scale the chance of getting caught by the relative sizes of the Government and the attacker
+            chance_of_getting_caught = (self.Government.assets / (self.Government.assets + a.assets)) * self.params["CAUGHT"]
+            # TODO should this cost the Government player anything?
+            # Cost to capture the attacker uses same parameter as cost to attack defender
+            self.government_lose(a.assets * self.params["SUCCESS"])
+            # self.verify_state()
+
+            if (np.random.uniform(0,1) < chance_of_getting_caught, chance_of_getting_caught):    
                 # print(f'Attacker[{a.id}] caught! Has {self.Attackers[a.id].assets} to distribute')
                 self.a_distributes_loot(a)
             else:
@@ -363,10 +391,10 @@ class Game:
             self.current_defender_sum_assets += self.defender_iter_sum
             self.current_attacker_sum_assets += self.attacker_iter_sum
             # assert abs((self.Insurer.assets + self.current_defender_sum_assets) - (self.current_attacker_sum_assets + self.attacker_expenditures)) < 1, f'{self.params}, {self.Insurer.assets}, {self.current_defender_sum_assets}, {self.current_attacker_sum_assets}, {self.attacker_expenditures}'
-            assert self.d_init + 1 > self.current_defender_sum_assets, f'{self.params}, d_init={self.d_init}, current_defender_sum_assets={self.current_defender_sum_assets}'
+            # assert self.d_init + 1 > self.current_defender_sum_assets, f'{self.params}, d_init={self.d_init}, current_defender_sum_assets={self.current_defender_sum_assets}'
             
             # Master checksum
-            self.verify_state() # TODO remove later! Just for debugging
+            # self.verify_state() # TODO remove later! Just for debugging
 
 
 
