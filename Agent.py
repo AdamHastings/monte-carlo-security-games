@@ -68,7 +68,7 @@ class Attacker(Agent):
         # np.random.seed(4)
 
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
-        self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] # TODO scale this by INEQUALITY later
+        self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] # scale this by INEQUALITY later
 
         Agent.__init__(self, self.assets)
 
