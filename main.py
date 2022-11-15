@@ -47,7 +47,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS,
         
         for a in Attackers:
             a.assets *= params['INEQUALITY']
-            assert a.assets > 0, f'{params}'
+            assert a.assets > 0, str(params)
 
         for d in Defenders:
             investment = d.assets * params["MANDATE"]
@@ -73,7 +73,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS,
             d.costToAttack = d.assets * params["EFFORT"]
             d.costToAttack += (personal_security_investment * params["EFFICIENCY"])
 
-            assert d.assets >=0, f'{params}'
+            assert d.assets >=0, str(params)
 
         # Create a Game object to hold game parameters
         g = Game(game_settings=cfg.game_settings, params=params, Attackers=Attackers, Defenders=Defenders, Insurer=Insurer, Government=Government)

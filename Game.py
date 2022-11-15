@@ -31,8 +31,6 @@ class Game:
         self.i_init = Insurer.assets
         self.g_init = Government.assets
 
-        # print(f'g_init={self.g_init}')
-
         # Some interesting stats to keep track of
         self.crossovers = []
         self.insurer_times_of_death = []
@@ -94,36 +92,36 @@ class Game:
 
         # Make sure the game has ended in a sane state
         # add 1 here and there to account for floating point imprecsion
-        assert self.current_defender_sum_assets + 1 >= 0, f'{self.params}'
-        assert self.current_attacker_sum_assets + 1 >= 0, f'{self.params}'
-        assert self.Insurer.assets + 1 >= 0, f'{self.params}'
-        assert self.Government.assets + 1 >= 0, f'{self.params}, {self.Government.assets}' 
+        assert self.current_defender_sum_assets + 1 >= 0, str(self.params)
+        assert self.current_attacker_sum_assets + 1 >= 0, str(self.params)
+        assert self.Insurer.assets + 1 >= 0, str(self.params)
+        assert self.Government.assets + 1 >= 0, str(self.params)
 
         for a in self.Attackers:
-            assert a.assets + 1 >= 0, f'{self.params}'
+            assert a.assets + 1 >= 0, str(self.params)
 
         for d in self.Defenders:
-            assert d.assets + 1 >= 0, f'{self.params}'
+            assert d.assets + 1 >= 0, str(self.params)
 
-        assert abs(self.current_defender_sum_assets - sum(d.assets for d in self.Defenders)) + 1 >= 0, f'{self.params}'
-        assert abs(self.current_attacker_sum_assets - sum(a.assets for a in self.Attackers)) + 1 >= 0, f'{self.params}'
-        assert self.i_init + 1 > self.Insurer.assets, f'{self.params}'
-        assert self.d_init + 1 > self.current_defender_sum_assets, f'{self.params}'
-        assert self.paid_claims <= (self.i_init + 1) and self.paid_claims + 1 >= 0, f'{self.params}, {self.i_init}, {self.paid_claims}'
-        assert self.amount_stolen >= self.paid_claims, f'{self.params},'
+        assert abs(self.current_defender_sum_assets - sum(d.assets for d in self.Defenders)) + 1 >= 0, str(self.params)
+        assert abs(self.current_attacker_sum_assets - sum(a.assets for a in self.Attackers)) + 1 >= 0, str(self.params)
+        assert self.i_init + 1 > self.Insurer.assets, str(self.params)
+        assert self.d_init + 1 > self.current_defender_sum_assets, str(self.params)
+        assert self.paid_claims <= (self.i_init + 1) and self.paid_claims + 1 >= 0, str(self.params)
+        assert self.amount_stolen >= self.paid_claims,str(self.params)
 
         if self.outcome == 'E':
-            assert len(self.alive_attackers) > 0, f'{self.params}'
-            assert len(self.alive_defenders) > 0, f'{self.params}'
-            assert self.iter_num >= self.game_settings['DELTA_ITERS'], f'{self.params}'
+            assert len(self.alive_attackers) > 0, str(self.params)
+            assert len(self.alive_defenders) > 0, str(self.params)
+            assert self.iter_num >= self.game_settings['DELTA_ITERS'], str(self.params)
         elif self.outcome == 'D':
-            assert len(self.alive_defenders) == 0, f'{self.params}'
+            assert len(self.alive_defenders) == 0, str(self.params)
         elif self.outcome == 'A':
-            assert len(self.alive_attackers) == 0, f'{self.params}'
+            assert len(self.alive_attackers) == 0, str(self.params)
 
-        assert self.attacks_attempted <= self.attacks_succeeded, f'{self.params}'
+        assert self.attacks_attempted >= self.attacks_succeeded, str(self.params)
 
-        assert ((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures)) + 1 >= 0, f'\n\nMaster checksum failed!\n\n{str(self)}, {self.params},'
+        assert ((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures)) + 1 >= 0, str(self.params)
 
     def conclude_game(self, outcome):
         self.outcome = outcome
@@ -264,8 +262,8 @@ class Game:
             if last_delta_attackers_pop >= self.game_settings["EPSILON_DOLLARS"]:
                 self.outside_epsilon_count_attackers -= 1
 
-        assert self.outside_epsilon_count_attackers >= 0, f'{self.params}'
-        assert self.outside_epsilon_count_defenders >= 0, f'{self.params}'
+        assert self.outside_epsilon_count_attackers >= 0, str(self.params)
+        assert self.outside_epsilon_count_defenders >= 0, str(self.params)
 
         return self.outside_epsilon_count_attackers == 0 and self.outside_epsilon_count_defenders == 0
 
