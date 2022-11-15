@@ -95,19 +95,7 @@ class Game:
         assert self.current_defender_sum_assets + 1 >= 0, f'{self.params}'
         assert self.current_attacker_sum_assets + 1 >= 0, f'{self.params}'
         assert self.Insurer.assets + 1 >= 0, f'{self.params}'
-
-        # print("<<<", self.Government.assets)
-
-
-        # if self.Government.assets < 0:
-            # print("* * * * * * uh oh!", self.Government.assets)
-            # assert 1 == 0, "* * * * * * * *  * * * * big uh oh" + str(self.Government.assets)
-
-        # print("]]]", self.Government.assets)
-
-        assert self.Government.assets + 1 >= 0, f'{self.params}, {self.Government.assets}'
-
-        
+        assert self.Government.assets + 1 >= 0, f'{self.params}, {self.Government.assets}' 
 
         for a in self.Attackers:
             assert a.assets + 1 >= 0, f'{self.params}'
@@ -138,8 +126,6 @@ class Game:
         self.verify_state()
 
     def a_steals_from_d(self, a, d, loot):
-
-        # print("a stealing ", loot)
         self.defender_lose(d, loot)
         self.attacker_gain(a, loot)
         self.amount_stolen += loot
@@ -156,13 +142,10 @@ class Game:
     def defender_lose(self, d, loss):
         d.lose(loss)
         self.defender_iter_sum -= loss
-        # print(f'** defender_iter_sum: {self.defender_iter_sum}')
-        # assert d.as sets + 1 >= 0, f'{self.params},'
 
     def attacker_lose(self, a, loss):
         a.lose(loss)
         self.attacker_iter_sum -= loss
-        # assert a.assets + 1 >= 0, f'{self.params},'
 
     def attacker_gain(self, a, gain):
         a.gain(gain)
@@ -174,11 +157,6 @@ class Game:
             # Split the recoup amount between the defender and the Insurer
 
             if recoup >= d.claims_received[a.id]:
-
-                # print("splitting recoup")
-                # if d.assets <= 0:
-                #     print(f'(1) reviving Defender[{d.id}] with assets={d.assets}')
-
                 # The defender will get to keep what is left after the Insurer has claimed their recovery
                 self.defender_gain(d, recoup - d.claims_received[a.id])
 
@@ -198,22 +176,15 @@ class Game:
                 self.insurer_recoup(recoup)
                 d.claims_received[a.id] -= recoup
         else:
-
-            # if d.assets <= 0:
-            #      print(f'(2) reviving Defender[{d.id}] with assets={d.assets}')
-
             self.alive_defenders.add(d.id)
-
 
             # Defender d has been attacked by a but has not received any claims for it
             # Therefore, d can keep the full recoup amount
-            self.defender_gain(d, gain=recoup)
-            
+            self.defender_gain(d, gain=recoup)         
 
     def insurer_lose(self, i, loss):
         i.lose(loss)
         self.paid_claims += loss
-        # print("insurer losing ", loss)
 
     def insurer_covers_d_for_losses_from_a(self, a, d, claim):
         # The defender gets to recoup losses from Insurer
@@ -224,7 +195,6 @@ class Game:
             self.insurer_times_of_death.append(self.iter_num)
                     
         self.defender_gain(d, claims_amount) 
-        # TODO make a separate handle claims function
         if a.id in d.claims_received:
             d.claims_received[a.id] += claims_amount
         else:
@@ -234,51 +204,41 @@ class Game:
     def insurer_recoup(self, recoup):
         self.Insurer.gain(recoup)
         self.paid_claims -= recoup
-        # print("insurer recouping ", recoup)
 
     def government_gain(self, amount):
-        # print(" -- gov gaining ", amount)
         self.Government.gain(amount)
 
     def government_lose(self, amount):
         if amount > self.Government.assets:
             amount = self.Government.assets
         self.Government.lose(amount)
-        # print(f'gov starting with {self.g_init}, losing {amount}, now has {self.Government.assets}')
 
     def a_distributes_loot(self, a):
         self.caught += 1
-        # print("    distributing ", a.assets)
+
         # Distribute the loot to victims
         for (k,v) in a.victims.items():
-            # Payback for as long as possible
-            # print("  --",k,v)
+            # Payback as many defenders as possible
+            # Order is somewhat arbitrary. Not all participants may be paid back
+            # This is a design decision and may be reconsidered later
             if a.assets > 0:
-                
-                # This is redundant
-                # if self.Defenders[k].assets == 0:
-                #     self.alive_defenders.add(k)
-
                 if a.assets > v:
-                    # print("  full payback")
+                    # Full payback
                     self.defender_recoup(a=a, d=self.Defenders[k], recoup=v)
                     self.attacker_lose(a, v)
                 else:
-                    # print("  partial payback")
+                    # Partial payback
                     self.defender_recoup(a=a, d=self.Defenders[k], recoup=a.assets)
                     self.attacker_lose(a, a.assets)
                     break
             else:
                 break
 
-        # Anything remaining goes to the Government
+        # Anything remaining goes to the Government, who will use the earnings to increase their ability to prosecute
         if (a.assets != 0):
-            # print("  government getting ", a.assets)
             self.government_gain(a.assets)
             self.attacker_lose(a, a.assets)
         
-        # print("============")
-
     def is_equilibrium_reached(self):
 
         last_delta_defenders_pop = self.last_delta_defenders_changes[self.iter_num % self.game_settings["DELTA_ITERS"]]
@@ -309,7 +269,7 @@ class Game:
 
         effective_loot = d.assets * self.params["PAYOFF"]
 
-        # Mercy kill the Defenders if the loot is very low?
+        # Mercy kill the Defenders if the loot is very low
         if d.assets < self.game_settings["EPSILON_DOLLARS"]:
             effective_loot = d.assets
 
@@ -319,8 +279,6 @@ class Game:
         if (expected_earnings > cost_of_attack) and (cost_of_attack < a.assets):
             # Attacker decides that it's worth it to attack
             self.attacks += 1
-
-            # print("worth it to attack")
 
             # Pay the cost of attacking
             self.attacker_lose(a, cost_of_attack)
@@ -335,47 +293,28 @@ class Game:
 
             # This line below was somehow corrupted, making it impossible for attackers to attack....
             if (np.random.uniform(0,1) < chance_of_getting_caught):    
-                # print(f'Attacker[{a.id}] caught! Has {self.Attackers[a.id].assets} to distribute')
                 self.a_distributes_loot(a)
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
-                    # print("!!!!!!!!!!attack!")
-                    # if effective_loot == d.assets:
-                    #     print("mercy kill")
                     self.a_steals_from_d(a=a, d=d, loot=effective_loot)
 
-                    
                     # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets
                     # This is because we assume previous security investments are still valid!
 
                     # Recoup losses from Insurer (if Insurer is not dead yet)
                     if self.Insurer.assets > 0:
                         self.insurer_covers_d_for_losses_from_a(a=a, d=d, claim=effective_loot)
-        else:
-            if not (expected_earnings > cost_of_attack):
-                # print(" - expected earnings not high enough", a.assets, expected_earnings, cost_of_attack)
-                pass
-            elif not (cost_of_attack < a.assets):
-                # print(" - not enough assets to mount attack")
-                pass
-            else:
-                # print("ERROR")
-                pass
-
-        # print(f'2: defender_iter_sum: {self.defender_iter_sum}')
   
     def run_iterations(self):
 
         # Lists of inidices of which players are still alive
         self.alive_attackers = set(range(len(self.Attackers)))
         self.alive_defenders = set(range(len(self.Defenders)))
-        # print(self.alive_attackers)
 
         defenders_have_more_than_attackers = True
 
         for self.iter_num in range(1, self.game_settings['SIM_ITERS']+1):
-            # print(">>>>>>>> ", self.iter_num, "<<<<<<<<<< alive_attackers=", self.alive_attackers)
             
             self.defender_iter_sum = 0
             self.attacker_iter_sum = 0
@@ -394,16 +333,13 @@ class Game:
 
             for di, ai in zip(alive_defenders_list, alive_attackers_list):
 
-                assert ai < len(self.Attackers), f'{ai} out of range!, only {len(self.Attackers)} attackers! {self.params}'
-                assert di < len(self.Defenders), f'{di} out of range, only {len(self.Defenders)} defenders! {self.params}'
-
+                # Make the randomly paired a and d fight each other
                 self.fight(a=self.Attackers[ai], d=self.Defenders[di])
+                
                 # Remove the dead players from the game
                 if self.Attackers[ai].assets == 0:
-                    # print("killing attacker ", ai)
                     self.alive_attackers.remove(ai) 
                 if self.Defenders[di].assets == 0:
-                    # print("removing defender ", di)
                     self.alive_defenders.remove(di)
 
             
