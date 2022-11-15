@@ -176,8 +176,8 @@ class Game:
             if recoup >= d.claims_received[a.id]:
 
                 # print("splitting recoup")
-                if d.assets <= 0:
-                    print(f'(1) reviving Defender[{d.id}] with assets={d.assets}')
+                # if d.assets <= 0:
+                #     print(f'(1) reviving Defender[{d.id}] with assets={d.assets}')
 
                 # The defender will get to keep what is left after the Insurer has claimed their recovery
                 self.defender_gain(d, recoup - d.claims_received[a.id])
@@ -199,8 +199,8 @@ class Game:
                 d.claims_received[a.id] -= recoup
         else:
 
-            if d.assets <= 0:
-                 print(f'(2) reviving Defender[{d.id}] with assets={d.assets}')
+            # if d.assets <= 0:
+            #      print(f'(2) reviving Defender[{d.id}] with assets={d.assets}')
 
             self.alive_defenders.add(d.id)
 
