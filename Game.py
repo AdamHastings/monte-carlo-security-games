@@ -137,7 +137,6 @@ class Game:
         self.outcome = outcome
         self.verify_state()
 
-
     def a_steals_from_d(self, a, d, loot):
 
         # print("a stealing ", loot)
@@ -176,7 +175,9 @@ class Game:
 
             if recoup >= d.claims_received[a.id]:
 
-                print("splitting recoup")
+                # print("splitting recoup")
+                if d.assets <= 0:
+                    print(f'(1) reviving Defender[{d.id}] with assets={d.assets}')
 
                 # The defender will get to keep what is left after the Insurer has claimed their recovery
                 self.defender_gain(d, recoup - d.claims_received[a.id])
@@ -189,7 +190,7 @@ class Game:
                 d.claims_received[a.id] = 0
 
                 # Set insert so it's not problem if d was already in the list of the living
-                self.alive_attackers.add(d.id)
+                self.alive_defenders.add(d.id)
 
             else:
                 # The amount a has stolen from d is equal to or less than the amount that d has recovered in claims.
@@ -197,10 +198,17 @@ class Game:
                 self.insurer_recoup(recoup)
                 d.claims_received[a.id] -= recoup
         else:
+
+            if d.assets <= 0:
+                 print(f'(2) reviving Defender[{d.id}] with assets={d.assets}')
+
+            self.alive_defenders.add(d.id)
+
+
             # Defender d has been attacked by a but has not received any claims for it
             # Therefore, d can keep the full recoup amount
             self.defender_gain(d, gain=recoup)
-
+            
 
     def insurer_lose(self, i, loss):
         i.lose(loss)
@@ -247,8 +255,9 @@ class Game:
             # print("  --",k,v)
             if a.assets > 0:
                 
-                if self.Defenders[k].assets == 0:
-                    self.alive_defenders.add(k)
+                # This is redundant
+                # if self.Defenders[k].assets == 0:
+                #     self.alive_defenders.add(k)
 
                 if a.assets > v:
                     # print("  full payback")
@@ -366,7 +375,7 @@ class Game:
         defenders_have_more_than_attackers = True
 
         for self.iter_num in range(1, self.game_settings['SIM_ITERS']+1):
-            # print(">>>>>>>> ", self.iter_num, "<<<<<<<<<< current_defender_sum_assets=", self.current_defender_sum_assets)
+            # print(">>>>>>>> ", self.iter_num, "<<<<<<<<<< alive_attackers=", self.alive_attackers)
             
             self.defender_iter_sum = 0
             self.attacker_iter_sum = 0
@@ -384,6 +393,10 @@ class Game:
                 random.shuffle(alive_defenders_list)
 
             for di, ai in zip(alive_defenders_list, alive_attackers_list):
+
+                assert ai < len(self.Attackers), f'{ai} out of range!, only {len(self.Attackers)} attackers! {self.params}'
+                assert di < len(self.Defenders), f'{di} out of range, only {len(self.Defenders)} defenders! {self.params}'
+
                 self.fight(a=self.Attackers[ai], d=self.Defenders[di])
                 # Remove the dead players from the game
                 if self.Attackers[ai].assets == 0:
