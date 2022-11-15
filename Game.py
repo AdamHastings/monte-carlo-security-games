@@ -35,7 +35,7 @@ class Game:
 
         # Some interesting stats to keep track of
         self.crossovers = []
-        self.insurer_time_of_death = -1
+        self.insurer_times_of_death = []
         self.paid_claims = 0
         self.attacks = 0
         self.outcome = "X"
@@ -74,7 +74,7 @@ class Game:
         ret += str(self.amount_stolen) + ","
         ret += str(self.attacker_expenditures) + ","
         ret += "\"" + str(self.crossovers) + "\","
-        ret += str(self.insurer_time_of_death) + "," # TODO make this insurer_times_of_death (note the "s")
+        ret += "\"" + str(self.insurer_times_of_death) + "\"," 
         ret += str(round(self.paid_claims)) + ","
         ret += str(self.iter_num) + ","
         ret += str(self.outcome) + "\n"
@@ -168,40 +168,74 @@ class Game:
         self.attacker_iter_sum += gain
 
     def defender_recoup(self, a, d, recoup):
-        # Check if the defender has been paid claims for losses to a
-        # print(f'    d.claims_received: {d.claims_received}')
-        # print(f'    has d has been attacked by Attackers[{self.a_i}]?')
-        # print("      recouping ", recoup)
+        
         if a.id in d.claims_received:
-            # print(f'      yes')
-            claims_received_from_a = d.claims_received[a.id]
-            # Pay back received claims to insurer first
-            # TODO reduce d.claims_received by the appropriate amount
-            if recoup >= claims_received_from_a:
-                # print("      defender gets to recoup some as well")
-                # Defender gets to keep some
-                # TODO Make sure you revive Insurer...maybe may TOD a list?
-                self.defender_gain(d, gain=recoup - claims_received_from_a)
-                # Pay back the Insurer as much as d is able
-                # Don't let a pay Insurer more than their assets allow!
-                if d.assets > claims_received_from_a:
-                    # self.Insurer.gain(claims_received_from_a)
-                    self.insurer_recoup(claims_received_from_a)
-                    self.defender_lose(d, claims_received_from_a)
-                    d.claims_received[a.id] -= claims_received_from_a
-                else:
-                    # self.Insurer.gain(d.assets)
-                    self.insurer_recoup(claims_received_from_a)
-                    self.defender_lose(d, d.assets)
-                    d.claims_received[a.id] -= d.assets
-                    # TODO remove d from living Defenders
+            # Split the recoup amount between the defender and the Insurer
+
+            if recoup >= d.claims_received[a.id]:
+
+                print("splitting recoup")
+
+                # The defender will get to keep what is left after the Insurer has claimed their recovery
+                self.defender_gain(d, recoup - d.claims_received[a.id])
+
+                # Now the defender has to give back what it had already received from the Insurer
+                # By virtue of the above, the defender will have enough to fully pay off the Insurer
+                self.insurer_recoup(d.claims_received[a.id])
+
+                # Debt is fully paid
+                d.claims_received[a.id] = 0
+
+                # Set insert so it's not problem if d was already in the list of the living
+                self.alive_attackers.add(d.id)
+
+
+
+                # Let the Insurer take their cut
+                # TODO add assertion that full recoup amount gets consumed 
+                # insurer_cut = d.claims_received[a.id]
+                # defender_cut = recoup - d.claims_received[a.id]
+
+                # self.insurer_recoup(insurer_cut)
+                # self.defender_gain(d, gain=defender_cut)
+
+                # d.claims_received[a.id] -= insurer_cut
+
+                # TODO if d.claims_received[a.id] == 0: # remove
+                
+                
+
+                # Defender d gets to keep the difference
+                # self.defender_gain(d, gain=recoup - d.claims_received[a.id])
+
+                # # TODO Make sure you revive Insurer...maybe may TOD a list?
+                
+                # # Now d must pay back the Insurer as much as d is able to 
+                # if d.assets > d.claims_received[a.id]:
+                #     # Insurer's recoup comes from d's assets
+                #     self.insurer_recoup(d.claims_received[a.id])
+                #     d.claims_received[a.id] -= d.claims_received[a.id]
+                #     self.defender_lose(d, d.claims_received[a.id])
+                    
+                # else:
+                #     # Defender d cannot fully return the claims received from the Insurer
+                #     # Insurer's recoup comes directly from the recoup itself 
+                #     self.insurer_recoup(d.claims_received[a.id])
+
+                #     # These lines were flipped....
+                #     d.claims_received[a.id] -= d.assets
+                #     self.defender_lose(d, d.assets)
+                    
+                #     # TODO remove d from living Defenders --- should be handled 
+                #     self.dead_defenders.insert(d.id)
             else:
-                # All goes back to the Insurer
-                # self.Insurer.gain(recoup)
-                # print("      all goes back to insurer")
+                # The amount a has stolen from d is equal to or less than the amount that d has recovered in claims.
+                # Therefore all recovered losses should go back to the Insurer
                 self.insurer_recoup(recoup)
                 d.claims_received[a.id] -= recoup
         else:
+            # Defender d has been attacked by a but has not received any claims for it
+            # Therefore, d can keep the full recoup amount
             self.defender_gain(d, gain=recoup)
 
 
@@ -216,7 +250,7 @@ class Game:
         if (claims_amount > self.Insurer.assets):
             # Insurer goes bust
             claims_amount = self.Insurer.assets
-            self.insurer_time_of_death = self.iter_num
+            self.insurer_times_of_death.append(self.iter_num)
                     
         self.defender_gain(d, claims_amount) 
         # TODO make a separate handle claims function
@@ -324,10 +358,9 @@ class Game:
             # The attacker might get caught
             # Scale the chance of getting caught by the relative sizes of the Government and the attacker
             chance_of_getting_caught = (self.Government.assets / (self.Government.assets + a.assets)) * self.params["CAUGHT"]
-            # TODO should this cost the Government player anything?
+
             # Cost to capture the attacker uses same parameter as cost to attack defender
             self.government_lose(a.assets * self.params["SUCCESS"])
-            # self.verify_state()
 
             if (np.random.uniform(0,1) < chance_of_getting_caught, chance_of_getting_caught):    
                 # print(f'Attacker[{a.id}] caught! Has {self.Attackers[a.id].assets} to distribute')
@@ -365,8 +398,8 @@ class Game:
             self.defender_iter_sum = 0
             self.attacker_iter_sum = 0
 
-            dead_attackers = []
-            dead_defenders = []
+            self.dead_attackers = []
+            self.dead_defenders = []
 
             # Make the pairings between Attackers and Defenders random
             # Have to make alive_attackers|defenders a list though in order to shuffle
@@ -383,28 +416,19 @@ class Game:
             for di, ai in zip(alive_defenders_list, alive_attackers_list):
                 self.fight(a=self.Attackers[ai], d=self.Defenders[di])
                 if self.Attackers[ai].assets == 0:
-                    dead_attackers.append(ai) 
+                    self.dead_attackers.append(ai) 
                 if self.Defenders[di].assets == 0:
-                    dead_defenders.append(di)
+                    self.dead_defenders.append(di)
 
             # Remove the dead players from the game
-            for x in dead_attackers:
+            for x in self.dead_attackers:
                 self.alive_attackers.remove(x)
-            for x in dead_defenders:
+            for x in self.dead_defenders:
                 print("removing defender ", x)
                 self.alive_defenders.remove(x)
             
-            # print(f'4: defender_iter_sum: {self.defender_iter_sum}')
-
             self.current_defender_sum_assets += self.defender_iter_sum
             self.current_attacker_sum_assets += self.attacker_iter_sum
-            # assert abs((self.Insurer.assets + self.current_defender_sum_assets) - (self.current_attacker_sum_assets + self.attacker_expenditures)) < 1, f'{self.params}, {self.Insurer.assets}, {self.current_defender_sum_assets}, {self.current_attacker_sum_assets}, {self.attacker_expenditures}'
-            # assert self.d_init + 1 > self.current_defender_sum_assets, f'{self.params}, d_init={self.d_init}, current_defender_sum_assets={self.current_defender_sum_assets}'
-            
-            # Master checksum
-            # self.verify_state() # TODO remove later! Just for debugging
-
-
 
             # Check if there has been a crossover point
             if defenders_have_more_than_attackers:
@@ -417,7 +441,6 @@ class Game:
                     defenders_have_more_than_attackers = True
             
             # Check if the game needs to be ended
-
             # Condition #1: Either the Defenders or the Attackers completely die off
             if len(self.alive_attackers) == 0:
                 self.conclude_game('A')
