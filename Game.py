@@ -140,7 +140,7 @@ class Game:
 
     def a_steals_from_d(self, a, d, loot):
 
-        print("a stealing ", loot)
+        # print("a stealing ", loot)
         self.defender_lose(d, loot)
         self.attacker_gain(a, loot)
         self.amount_stolen += loot
@@ -322,7 +322,7 @@ class Game:
             chance_of_getting_caught = (self.Government.assets / (self.Government.assets + a.assets)) * self.params["CAUGHT"]
 
             # Cost to capture the attacker uses same parameter as cost to attack defender
-            self.government_lose(a.assets * self.params["SUCCESS"])
+            self.government_lose(a.assets * self.params["EFFORT"])
 
             # This line below was somehow corrupted, making it impossible for attackers to attack....
             if (np.random.uniform(0,1) < chance_of_getting_caught):    
@@ -331,9 +331,9 @@ class Game:
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
-                    print("!!!!!!!!!!attack!")
-                    if effective_loot == d.assets:
-                        print("mercy kill")
+                    # print("!!!!!!!!!!attack!")
+                    # if effective_loot == d.assets:
+                    #     print("mercy kill")
                     self.a_steals_from_d(a=a, d=d, loot=effective_loot)
 
                     
@@ -351,8 +351,9 @@ class Game:
                 # print(" - not enough assets to mount attack")
                 pass
             else:
-                print("ERROR")
-                        
+                # print("ERROR")
+                pass
+
         # print(f'2: defender_iter_sum: {self.defender_iter_sum}')
   
     def run_iterations(self):
@@ -389,7 +390,7 @@ class Game:
                     # print("killing attacker ", ai)
                     self.alive_attackers.remove(ai) 
                 if self.Defenders[di].assets == 0:
-                    print("removing defender ", di)
+                    # print("removing defender ", di)
                     self.alive_defenders.remove(di)
 
             

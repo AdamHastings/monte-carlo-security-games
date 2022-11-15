@@ -14,7 +14,7 @@ from copy import deepcopy
 import math
 import os.path
 
-def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS, PREMIUM, TAX, MANDATE):
+def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS, PREMIUM, TAX, MANDATE):
 
     global cfg
     global gDefenders 
@@ -28,7 +28,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
     params["INEQUALITY"] = INEQUALITY
     params["PREMIUM"] = PREMIUM
     params["EFFICIENCY"] = EFFICIENCY
-    params["SUCCESS"] = SUCCESS
+    params["EFFORT"] = EFFORT
     
     params["PAYOFF"] = PAYOFF
     params["CAUGHT"] = CAUGHT
@@ -74,7 +74,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, SUCCESS, CAUGHT, CLAIMS
 
             d.lose(personal_security_investment)
 
-            d.costToAttack = d.assets * params["SUCCESS"]
+            d.costToAttack = d.assets * params["EFFORT"]
             d.costToAttack += (personal_security_investment * params["EFFICIENCY"])
 
             assert d.assets >=0, f'{params}'
@@ -159,7 +159,7 @@ def main():
                                         cfg.params_ranges["PAYOFF_range"],
                                         cfg.params_ranges["INEQUALITY_range"],
                                         cfg.params_ranges["EFFICIENCY_range"],
-                                        cfg.params_ranges["SUCCESS_range"],
+                                        cfg.params_ranges["EFFORT_range"],
                                         cfg.params_ranges["CAUGHT_range"],
                                         cfg.params_ranges["CLAIMS_range"],
                                         cfg.params_ranges["PREMIUM_range"],
