@@ -37,7 +37,8 @@ class Game:
         self.crossovers = []
         self.insurer_times_of_death = []
         self.paid_claims = 0
-        self.attacks = 0
+        self.attacks_attempted = 0
+        self.attacks_succeeded = 0
         self.outcome = "X"
         self.caught = 0
         self.attacker_expenditures = 0
@@ -70,7 +71,8 @@ class Game:
         ret += str(round(self.Insurer.assets))  + ","
         ret += str(round(self.g_init)) + ","
         ret += str(round(self.Government.assets))  + ","
-        ret += str(self.attacks) + ","
+        ret += str(self.attacks_attempted) + ","
+        ret += str(self.attacks_succeeded) + ","
         ret += str(self.amount_stolen) + ","
         ret += str(self.attacker_expenditures) + ","
         ret += "\"" + str(self.crossovers) + "\","
@@ -118,6 +120,8 @@ class Game:
             assert len(self.alive_defenders) == 0, f'{self.params}'
         elif self.outcome == 'A':
             assert len(self.alive_attackers) == 0, f'{self.params}'
+
+        assert self.attacks_attempted <= self.attacks_succeeded, f'{self.params}'
 
         assert ((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures)) + 1 >= 0, f'\n\nMaster checksum failed!\n\n{str(self)}, {self.params},'
 
@@ -278,7 +282,7 @@ class Game:
 
         if (expected_earnings > cost_of_attack) and (cost_of_attack < a.assets):
             # Attacker decides that it's worth it to attack
-            self.attacks += 1
+            self.attacks_attempted += 1
 
             # Pay the cost of attacking
             self.attacker_lose(a, cost_of_attack)
@@ -297,6 +301,7 @@ class Game:
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
                 if (AttackerWins):
+                    self.attacks_succeeded += 1
                     self.a_steals_from_d(a=a, d=d, loot=effective_loot)
 
                     # Note: we do not re-scale a defender's costToAttack to be proportionate to the new level of assets

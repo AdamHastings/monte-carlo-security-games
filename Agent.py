@@ -25,15 +25,10 @@ class Agent:
 class Defender(Agent):
 
     ctr = 0
-
     def __init__(self):
 
         self.id = Defender.ctr
         Defender.ctr += 1
-
-        # TODO delete later! for debugging only
-        random.seed(4)
-        np.random.seed(4)
 
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]
         self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0]
@@ -51,27 +46,24 @@ class Defender(Agent):
         self.ProbOfAttackSuccess = 1 - ProbDefenseSuccess
         self.costToAttack = self.assets 
 
+        # Dictionary to store (attacker id, claims received from attacks from attacker) pairs
         self.claims_received = dict()
 
 
 class Attacker(Agent):
 
     ctr = 0
-
     def __init__(self):
 
         self.id = Attacker.ctr
         Attacker.ctr += 1
 
-        # TODO delete later! for debugging only
-        random.seed(4)
-        np.random.seed(4)
-
         randwealth = [random.randint(0,9999), random.randint(10000,99999), random.randint(100000,999999), random.randint(1000000,9999999)]        
-        self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] # scale this by INEQUALITY later
+        self.assets = choice(randwealth, 1, p=[0.55, 0.33, 0.11, 0.01])[0] # This is scaled by INEQUALITY later
 
         Agent.__init__(self, self.assets)
 
+        # Dictionary to store (defender id, amount stolen) pairs 
         self.victims = dict()
 
 class Insurer(Agent):

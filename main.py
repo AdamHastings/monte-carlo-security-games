@@ -38,7 +38,6 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS,
 
 
     for i in range(cfg.game_settings['NUM_GAMES']):
-        # print(params)
         
         # Create Agents here
         Defenders = deepcopy(gDefenders)
@@ -53,7 +52,6 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS,
         for d in Defenders:
             investment = d.assets * params["MANDATE"]
 
-            # TODO split into selfish and selfless
             # Selfish = Insurance. Provides coverage without changing the landscape (just gives more money to attackers in the long run!)
             # Selfless = Private security spending + taxes. Actually can improve the situation for *other* defenders as well.
 
@@ -65,12 +63,10 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS,
             taxes = selfless_investment * params["TAX"]
             d.lose(taxes)
             Government.gain(taxes)
-            # print("Gov assets: ", Government.assets, Government.get_assets())
 
             personal_security_investment = selfless_investment - taxes
 
             assert (investment - (selfish_investment + taxes + personal_security_investment)) + 1 >= 0
-            # print(f'investment={investment}, selfish={selfish_investment}, taxes={taxes}, personal={personal_security_investment}')
 
             d.lose(personal_security_investment)
 
@@ -84,7 +80,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS,
         
         g.run_iterations()
         
-        log = open(cfg.LOGFILE, 'a')  # write mode
+        log = open(cfg.LOGFILE, 'a') 
         log.write(str(g))
         log.close()
 
@@ -102,12 +98,13 @@ def init_logs(cfg):
             print("\n")
     print("Writing to", cfg.LOGFILE)
 
-    log = open(cfg.LOGFILE, 'w')  # write mode
+    log = open(cfg.LOGFILE, 'w')  # write mode. Overwrite existing file
     header = ""
     for k in sorted(cfg.params_ranges.keys()):
         header += k[:-6] + "," # trim off the "_range" of the cfg param names
-    # TODO this needs to be updated
-    header += "d_init,d_end,a_init,a_end,i_init,i_end,attacks,crossover,insurer_tod,paid_claims,final_iter,reason\n"
+    
+    # Make sure this lines up with what Game's __str__ method returns
+    header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks,amount_stolen,attacker_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome\n"
     log.write(header)
     log.close()
 
