@@ -8,7 +8,7 @@ Format: (start, end, increment)
 
 params_ranges = dict(
     # Parameters that affect game initialization
-    MANDATE_range    = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of assets that are spent on security measures.
+    MANDATE_range    = [0.0                         ], # Percentage of assets that are spent on security measures.
     ATTACKERS_range  = [     0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of Attackers, relative to BLUE_PLAYERS
     INEQUALITY_range = [     0.2, 0.4, 0.6, 0.8, 1.0], # How much poorer Attackers are than Defenders, as a pct
     PREMIUM_range    = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of MANDATE that is allocated towards insurance
