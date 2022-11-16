@@ -29,19 +29,7 @@ game_settings = dict(
     DELTA_ITERS = 50
 )
 
-# Find the params that are pinned to a single value 
-# (and will be run on a single machine)
-_pinned_vals = {}
-for (k,v) in params_ranges.items():
-        if len(v) == 1:
-            _pinned_vals[k] = v
-
 # set global filename to be used by all worker threads
 _cfg_name = __file__.split('/')[-1].split('.')[0]
 
-if (len(_pinned_vals) > 0):
-    _pinned_name = '_'.join([str(k[:-6]) + "=" + str(v[0]) for k,v in _pinned_vals.items()])
-else:
-    _pinned_name = "all"
-
-LOGFILE = "logs/" + _cfg_name + '_' + _pinned_name + ".csv"
+LOGFILE = "logs/" + _cfg_name + ".csv"
