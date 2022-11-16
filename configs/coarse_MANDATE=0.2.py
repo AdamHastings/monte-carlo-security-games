@@ -30,6 +30,6 @@ game_settings = dict(
 )
 
 # set global filename to be used by all worker threads
-_cfg_name = __file__.split('/')[-1].split('.')[0]
+_cfg_name = ".".join(__file__.split('/')[-1].split('.')[:-1])
 
 LOGFILE = "logs/" + _cfg_name + ".csv"

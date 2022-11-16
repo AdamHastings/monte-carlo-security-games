@@ -139,7 +139,15 @@ def init_worker(cfg_in):
 
 def main():
     try:
-        cfg = importlib.import_module("configs." + sys.argv[1])
+        # cfg = importlib.import_module("configs." + sys.argv[1])
+
+        spec = importlib.util.spec_from_file_location(
+            name="cfg",
+            location = "configs/" + sys.argv[1],
+        )
+        cfg = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cfg)
+
         if len(sys.argv) != 2:
             raise Exception("\nERROR: Incorrect number of args!")
     except Exception as e:
