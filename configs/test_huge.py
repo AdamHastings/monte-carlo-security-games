@@ -41,7 +41,7 @@ for (k,v) in params_ranges.items():
 _cfg_name = __file__.split('/')[-1].split('.')[0]
 
 if (len(_pinned_vals) > 0):
-    _pinned_name = '_'.join([str(k) + "=" + str(v[0]) for k,v in _pinned_vals.items()])
+    _pinned_name = '_'.join([str(k[:-6]) + "=" + str(v[0]) for k,v in _pinned_vals.items()])
 else:
     _pinned_name = "all"
 

@@ -13,7 +13,7 @@ params_ranges = dict(
     INEQUALITY_range = np.linspace(0.3, 1.0, 2), # How much poorer Attackers are than Defenders, as a pct
     PREMIUM_range    = np.linspace(0.0, 1.0, 3), # Percentage of MANDATE that is allocated towards security
     EFFICIENCY_range = np.linspace(0.1, 1.0, 2), # Percent of MANDATE that goes towards increasing a defender's costToAttack
-    EFFORT_range    = np.linspace(0.1, 0.4, 2), # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
+    EFFORT_range     = np.linspace(0.1, 0.4, 2), # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
 
     # Parameters that affect gameplay
     PAYOFF_range = np.linspace(0.3, 0.9, 2), # How much of a defender's assets are stolen if attacker is successful
@@ -41,7 +41,7 @@ for (k,v) in params_ranges.items():
 _cfg_name = __file__.split('/')[-1].split('.')[0]
 
 if (len(_pinned_vals) > 0):
-    _pinned_name = '_'.join([str(k) + "=" + str(v[0]) for k,v in _pinned_vals.items()])
+    _pinned_name = '_'.join([str(k[:-6]) + "=" + str(v[0]) for k,v in _pinned_vals.items()])
 else:
     _pinned_name = "all"
 
