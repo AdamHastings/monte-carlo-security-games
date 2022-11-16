@@ -6,7 +6,7 @@ from Game import *
 from multiprocessing import Pool
 import itertools
 import numpy as np
-import importlib
+import importlib.util
 import sys
 import random
 from numpy.random import choice
