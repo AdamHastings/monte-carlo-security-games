@@ -8,18 +8,18 @@ Format: (start, end, increment)
 
 params_ranges = dict(
     # Parameters that affect game initialization
-    MANDATE_range    = [0], # Percentage of assets that are spent on security measures.
-    ATTACKERS_range  = np.linspace(0.0, 1.0, 5), # Percentage of Attackers, relative to BLUE_PLAYERS
-    INEQUALITY_range = np.linspace(0.0, 1.0, 5), # How much poorer Attackers are than Defenders, as a pct
-    PREMIUM_range    = np.linspace(0.0, 1.0, 5), # Percentage of MANDATE that is allocated towards security
-    EFFICIENCY_range = np.linspace(0.0, 1.0, 5), # Percent of MANDATE that goes towards increasing a defender's costToAttack
-    EFFORT_range     = np.linspace(0.0, 1.0, 5), # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
+    MANDATE_range    = [0.0], # Percentage of assets that are spent on security measures.
+    ATTACKERS_range  = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of Attackers, relative to BLUE_PLAYERS
+    INEQUALITY_range = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # How much poorer Attackers are than Defenders, as a pct
+    PREMIUM_range    = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of MANDATE that is allocated towards security
+    EFFICIENCY_range = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percent of MANDATE that goes towards increasing a defender's costToAttack
+    EFFORT_range     = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
 
     # Parameters that affect gameplay
-    PAYOFF_range = np.linspace(0.0, 1.0, 5), # How much of a defender's assets are stolen if attacker is successful
-    CAUGHT_range = np.linspace(0.0, 1.0, 5), # Probability that an attacker is caught and has their assets confiscated
-    CLAIMS_range = np.linspace(0.0, 1.0, 5), # Percentage of losses paid back to defender by Insurer
-    TAX_range    = np.linspace(0.0, 1.0, 5), # Percentage of selfless MANDATE is sent to the government (to increase prosecution)
+    PAYOFF_range     = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # How much of a defender's assets are stolen if attacker is successful
+    CAUGHT_range     = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Probability that an attacker is caught and has their assets confiscated
+    CLAIMS_range     = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of losses paid back to defender by Insurer
+    TAX_range        = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0], # Percentage of selfless MANDATE is sent to the government (to increase prosecution)
 )
 
 game_settings = dict(

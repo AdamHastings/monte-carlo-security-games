@@ -145,7 +145,7 @@ def main():
     except Exception as e:
         print(e)
         print("\nExample of how to run config test_cfg1")
-        print("\n     $ python3 game.py test_cfg1\n\n")
+        print("\n     $ python3 game.py test_small\n\n")
         sys.exit(0)
 
     init_logs(cfg)
