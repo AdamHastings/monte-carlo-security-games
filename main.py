@@ -76,7 +76,7 @@ def run_games(ATTACKERS, PAYOFF, INEQUALITY, EFFICIENCY, EFFORT, CAUGHT, CLAIMS,
             assert d.assets >=0, str(params)
 
         # Create a Game object to hold game parameters
-        g = Game(game_settings=cfg.game_settings, params=params, Attackers=Attackers, Defenders=Defenders, Insurer=Insurer, Government=Government)
+        g = Game(game_settings=cfg.game_settings, params=params, Attackers=Attackers, Defenders=Defenders, Insurer=Insurer, Government=Government, verbose=cfg.verbose)
         
         g.run_iterations()
         
@@ -104,19 +104,18 @@ def init_logs(cfg):
         header += k[:-6] + "," # trim off the "_range" of the cfg param names
     
     # Make sure this lines up with what Game's __str__ method returns
-    header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome\n"
+    header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome"
     
     try:
         if cfg.verbose:
-            print("verbose found!")
-        else:
-            print("not verbose, but no error")
+            header += ",defenders_cumulative_assets,attackers_cumulative_assets,insurer_cumulative_assets,government_cumulative_assets"
     except:
-        print("verbose not found!")
+        cfg.verbose=False
+
+    header += "\n"
     
     log.write(header)
     log.close()
-    sys.exit(0)
 
 
 '''
@@ -163,7 +162,7 @@ def main():
     except Exception as e:
         print(e)
         print("\nExample of how to run config test_cfg1")
-        print("\n     $ python3 game.py test_small\n\n")
+        print("\n     $ python3 game.py test_small.py\n\n")
         sys.exit(0)
 
     init_logs(cfg)

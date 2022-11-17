@@ -18,13 +18,14 @@ A Game object is a collection of const values plus the game results
 '''
 class Game:
         
-    def __init__(self, game_settings, params, Attackers, Defenders, Insurer, Government):
+    def __init__(self, game_settings, params, Attackers, Defenders, Insurer, Government, verbose=False):
         self.params = params
         self.game_settings = game_settings
         self.Defenders = Defenders
         self.Attackers = Attackers
         self.Insurer = Insurer
         self.Government = Government
+        self.verbose = verbose
 
         self.d_init = sum(d.assets for d in self.Defenders)
         self.a_init = sum(a.assets for a in self.Attackers)
@@ -58,6 +59,12 @@ class Game:
         self.outside_epsilon_count_attackers = self.game_settings["DELTA_ITERS"]
         self.outside_epsilon_count_defenders = self.game_settings["DELTA_ITERS"]
 
+        if (self.verbose):
+            self.defenders_cumulative_assets  = [self.d_init]
+            self.attackers_cumulative_assets  = [self.a_init]
+            self.insurer_cumulative_assets    = [self.i_init]
+            self.government_cumulative_assets = [self.g_init]
+
     def __str__(self):
         ret = ""
         ret += ",".join(str(round(self.params[k], 2)).lstrip('0') for k in sorted(self.params.keys())) + ","
@@ -77,7 +84,15 @@ class Game:
         ret += "\"" + str(self.insurer_times_of_death) + "\"," 
         ret += str(round(self.paid_claims)) + ","
         ret += str(self.iter_num) + ","
-        ret += str(self.outcome) + "\n"
+        ret += str(self.outcome) + ","
+
+        if (self.verbose):
+            ret += "\"" + str(self.defenders_cumulative_assets)  + "\","
+            ret += "\"" + str(self.attackers_cumulative_assets)  + "\","
+            ret += "\"" + str(self.insurer_cumulative_assets)    + "\","
+            ret += "\"" + str(self.government_cumulative_assets) + "\","
+        
+        ret += "\n"
         return ret
 
     '''
@@ -358,6 +373,12 @@ class Game:
                 if (self.current_attacker_sum_assets < self.current_defender_sum_assets):
                     self.crossovers.append(self.iter_num)
                     defenders_have_more_than_attackers = True
+
+            if self.verbose:
+                self.defenders_cumulative_assets.append(self.current_defender_sum_assets)
+                self.attackers_cumulative_assets.append(self.current_attacker_sum_assets)
+                self.insurer_cumulative_assets.append(self.Insurer.assets)
+                self.government_cumulative_assets.append(self.Government.assets)
             
             # Check if the game needs to be ended
             # Condition #1: Either the Defenders or the Attackers completely die off

@@ -7,23 +7,20 @@ Format: (start, end, increment)
 """
 
 params_ranges = dict(
-    # Parameters that affect game initialization
-    MANDATE_range    = [0.1], # Percentage of assets that are spent on security measures.
-    ATTACKERS_range  = [0.5], # Percentage of Attackers, relative to BLUE_PLAYERS
-    INEQUALITY_range = [1.0], # How much poorer Attackers are than Defenders, as a pct
-    PREMIUM_range    = [0.0], # Percentage of MANDATE that is allocated towards security
-    EFFICIENCY_range = [1.0], # Percent of MANDATE that goes towards increasing a defender's costToAttack
-    EFFORT_range     = [0.1], # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
-
-    # Parameters that affect gameplay
-    PAYOFF_range     = [0.3], # How much of a defender's assets are stolen if attacker is successful
+    ATTACKERS_range  = [0.6], # Percentage of Attackers, relative to BLUE_PLAYERS
     CAUGHT_range     = [0.1], # Probability that an attacker is caught and has their assets confiscated
-    CLAIMS_range     = [0.1], # Percentage of losses paid back to defender by Insurer
+    CLAIMS_range     = [1.0], # Percentage of losses paid back to defender by Insurer
+    EFFICIENCY_range = [0.2], # Percent of MANDATE that goes towards increasing a defender's costToAttack
+    EFFORT_range     = [0.2], # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
+    INEQUALITY_range = [0.2], # How much poorer Attackers are than Defenders, as a pct
+    MANDATE_range    = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], # Percentage of assets that are spent on security measures.
+    PAYOFF_range     = [0.8], # How much of a defender's assets are stolen if attacker is successful
+    PREMIUM_range    = [0.4], # Percentage of MANDATE that is allocated towards security
     TAX_range        = [0.5], # Percentage of confiscated assets that are retained by Government
 )
 
 game_settings = dict(
-    BLUE_PLAYERS = 40,
+    BLUE_PLAYERS = 1000,
     SIM_ITERS = 10000,
     NUM_GAMES = 1,
     EPSILON_DOLLARS = 100,
@@ -40,11 +37,6 @@ for (k,v) in params_ranges.items():
             _pinned_vals[k] = v
 
 # set global filename to be used by all worker threads
-_cfg_name = __file__.split('/')[-1].split('.')[0]
+_cfg_name = ".".join(__file__.split('/')[-1].split('.')[:-1])
 
-if (len(_pinned_vals) > 0):
-    _pinned_name = '_'.join([str(k[:-6]) + "=" + str(v[0]) for k,v in _pinned_vals.items()])
-else:
-    _pinned_name = "all"
-
-LOGFILE = "logs/" + _cfg_name + '_' + _pinned_name + ".csv"
+LOGFILE = "logs/" + _cfg_name + ".csv"
