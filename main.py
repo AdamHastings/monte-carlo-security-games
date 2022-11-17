@@ -105,8 +105,18 @@ def init_logs(cfg):
     
     # Make sure this lines up with what Game's __str__ method returns
     header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome\n"
+    
+    try:
+        if cfg.verbose:
+            print("verbose found!")
+        else:
+            print("not verbose, but no error")
+    except:
+        print("verbose not found!")
+    
     log.write(header)
     log.close()
+    sys.exit(0)
 
 
 '''

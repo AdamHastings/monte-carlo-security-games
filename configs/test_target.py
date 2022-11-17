@@ -30,6 +30,8 @@ game_settings = dict(
     DELTA_ITERS = 50
 )
 
+verbose=True
+
 # Find the params that are pinned to a single value 
 # (and will be run on a single machine)
 _pinned_vals = {}
