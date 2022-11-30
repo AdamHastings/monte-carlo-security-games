@@ -345,8 +345,10 @@ class Game:
             # Only shuffle the *longer* list
             # So that all players in the longer list get an equal chance to fight
             if len(alive_defenders_list) < len(alive_attackers_list):
+                alive_attackers_list = random.sample(alive_attackers_list, len(alive_defenders_list))
                 random.shuffle(alive_attackers_list)
             else:
+                alive_defenders_list = random.sample(alive_defenders_list, len(alive_attackers_list))
                 random.shuffle(alive_defenders_list)
 
             for di, ai in zip(alive_defenders_list, alive_attackers_list):
