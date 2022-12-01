@@ -1,7 +1,7 @@
 CXX=g++
-CPPFLAGS=-g -O3
+CPPFLAGS=-g -O3 -Itbb/latest/include
 LDFLAGS=-g
-LDLIBS=
+LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ -ltbb
 
 SRCS=main.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
