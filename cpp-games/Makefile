@@ -8,10 +8,10 @@ OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: game
 
-game: $(OBJS)
+game: $(OBJS) Player.h
 	$(CXX) $(LDFLAGS) -o game $(OBJS) $(LDLIBS)
 
-game.o: main.cpp Player.h
+game.o: main.cpp Player.cpp
 
 clean:
 	rm $(OBJS)

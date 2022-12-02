@@ -10,10 +10,10 @@ class Player {
         float get_assets();
 };
 
-// class Defender : public Player {
-//     public:
-//         static int ctr;
-//         int id;
+class Defender : public Player {
+    public:
+        static int ctr;
+        int id;
 
-//         Defender();
-// }
+        Defender();
+};

@@ -17,7 +17,7 @@ float Player::get_assets() {
 }
 
 
-// Defender::Defender() {
-//     id = ctr;
-//     ctr += 1;
-// }
+Defender::Defender() : Player() {
+    id = ctr;
+    ctr += 1;
+}
