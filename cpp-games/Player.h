@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 class Player {
     public:
         float assets;
@@ -12,8 +14,34 @@ class Player {
 
 class Defender : public Player {
     public:
-        static int ctr;
         int id;
+        float probAttackSuccess;
+        float costToAttack;
+        std::map<int, float> claimsReceived;
 
         Defender();
+
+    private:
+        static int s_ctr;
+};
+
+class Attacker : public Player {
+    public:
+        int id;
+        std::map<int, float> victims;
+
+        Attacker();
+
+    private:
+        static int s_ctr;
+};
+
+class Insurer : public Player {
+    public:
+        Insurer(){};
+};
+
+class Government : public Player {
+    public:
+        Government(){};
 };
