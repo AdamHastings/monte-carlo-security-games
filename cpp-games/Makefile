@@ -1,19 +1,21 @@
 CXX=g++
-CPPFLAGS=-g -O3 -Itbb/latest/include
-LDFLAGS=-g
+CPPFLAGS=-g -O3 
+INCLUDES=-Itbb/latest/include
 LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ -ltbb
+TARGET=run_games
 
 SRCS=main.cpp Player.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
-all: game
+all: $(TARGET)
 
-game: $(OBJS) Player.h
-	$(CXX) $(LDFLAGS) -o game $(OBJS) $(LDLIBS)
+$(TARGET): $(OBJS) 
+	$(CXX) $(CPPFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) $(LDLIBS) $(LDFLAGS)
 
-game.o: main.cpp Player.cpp
-
+%.o: %.c
+	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $(input) -o $(output)
+	
 clean:
-	rm $(OBJS)
+	rm $(OBJS) $(TARGET)
 
 

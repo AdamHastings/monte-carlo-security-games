@@ -16,6 +16,7 @@ float Player::get_assets() {
     return assets;
 }
 
+int Defender::ctr = 0;
 
 Defender::Defender() : Player() {
     id = ctr;
