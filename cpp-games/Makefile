@@ -3,7 +3,7 @@ CPPFLAGS=-g -O3 -Itbb/latest/include
 LDFLAGS=-g
 LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ -ltbb
 
-SRCS=main.cpp
+SRCS=main.cpp Player.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: game
@@ -11,7 +11,7 @@ all: game
 game: $(OBJS)
 	$(CXX) $(LDFLAGS) -o game $(OBJS) $(LDLIBS)
 
-game.o: main.cpp
+game.o: main.cpp Player.h
 
 clean:
 	rm $(OBJS)

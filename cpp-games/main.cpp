@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "oneapi/tbb.h"
+#include "Player.h"
 
 
 using namespace oneapi::tbb;
@@ -102,8 +103,13 @@ int main() {
     // }
 
     // ParallelApplyFoo(cart, cart.size());
-    ParallelApplyFoo(v, v.size());
-    ParallelApplyVectorFoo(cart, cart.size());
+    // ParallelApplyFoo(v, v.size());
+    // ParallelApplyVectorFoo(cart, cart.size());
+
+    Player p = Player();
+    cout << p.get_assets() << endl;
+    p.gain(100);
+    cout << p.get_assets() << endl;
     
     return 0;
 }
