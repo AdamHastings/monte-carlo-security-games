@@ -72,7 +72,7 @@ class cfg {
 void RunGame(Params p) {
     
     Insurer insurer = Insurer();
-    Government goverment = Government();
+    Government government = Government();
 
     // TODO put a lot of this into constructor
     // And pass in Insurer and Government as pointers.
@@ -86,7 +86,7 @@ void RunGame(Params p) {
 
         float tax = selfless_investment;
         d.lose(tax);
-        goverment.gain(tax);
+        government.gain(tax);
 
         float insurance = selfless_investment * p.PREMIUM;
         d.lose(insurance);
@@ -104,6 +104,9 @@ void RunGame(Params p) {
         Attacker a = Attacker(p.INEQUALITY);
         attackers.push_back(a);
     }
+
+    Game g = Game(p, defenders, attackers, insurer, government);
+
 }
 
 void ParallelRunGames(vector<Params> a, size_t n ) {

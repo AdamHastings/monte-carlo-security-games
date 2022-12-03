@@ -37,6 +37,15 @@ class Game {
         }
 
     private:
+
+        Params p;
+        std::vector<Defender> defenders;
+        std::vector<Attacker> attackers;
+        Insurer insurer;
+        Government government;
+
+
+
         float d_init, a_init, i_init, g_init;
         std::vector<int> crossovers;
         std::vector<int> insurerTimesOfDeath;
