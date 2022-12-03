@@ -12,10 +12,10 @@ using namespace std;
 
 class cfg {
     public:
-        vector<float> MANDATE_range    = {0.1};
-        vector<float> ATTACKERS_range  = {0.1};
+        vector<float> MANDATE_range    = {0.1, 0.2};
+        vector<float> ATTACKERS_range  = {0.1, 0.2};
         vector<float> INEQUALITY_range = {0.1};
-        vector<float> PREMIUM_range    = {0.1};
+        vector<float> PREMIUM_range    = {0.1, 0.9};
         vector<float> EFFICIENCY_range = {0.1};
         vector<float> EFFORT_range     = {0.1};
         vector<float> PAYOFF_range     = {0.1};
@@ -66,7 +66,7 @@ class cfg {
                 p.D          = E;
 
                 p.verbose    = verbose;
-                
+
                 ret.push_back(p);
             }}}}}}}}}}
 
@@ -112,6 +112,9 @@ void RunGame(Params p) {
     }
 
     Game g = Game(p, defenders, attackers, insurer, government);
+    g.run_iterations();
+
+    // Write response to log file;
 
 }
 

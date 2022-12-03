@@ -71,7 +71,7 @@ class Game {
 
         float paidClaims = 0;
         int attacksAttempted = 0, attacksSucceeded = 0;
-        std::string final_outcome = 0;
+        std::string final_outcome = "X";
         int caught = 0;
         float attackerExpenditures = 0, attackerLoots = 0;
 

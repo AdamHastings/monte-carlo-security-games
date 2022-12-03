@@ -13,8 +13,8 @@ static std::random_device rd;  // Will be used to obtain a seed for the random n
 static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 std::uniform_real_distribution<> uniform(0.0, 1.0);
 
-Game::Game(Params p, std::vector<Defender> d, std::vector<Attacker> a, Insurer i, Government g) {
-    p = p;
+Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, Insurer i, Government g) {
+    p = prm;
     defenders = d;
     attackers = a;
     insurer = i;
@@ -160,7 +160,6 @@ void Game::a_distributes_loot(Attacker a) {
     for (const auto& pair : a.victims) {
         int k = pair.first;
         float v = pair.second;
-        std::cout << k << v << std::endl;
 
         if (a.assets > 0) {
             if (a.assets > v) {
@@ -222,6 +221,8 @@ void Game::fight(Attacker a, Defender d) {
 }
 
 void Game::run_iterations() {
+
+    std::cout << "in running iterations! N = " << p.N << std::endl;
 
     bool defenders_have_more_than_attackers = true;
 
