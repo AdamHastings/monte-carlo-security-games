@@ -4,7 +4,7 @@ INCLUDES=-Itbb/latest/include
 LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ -ltbb
 TARGET=run_games
 
-SRCS=main.cpp Player.cpp
+SRCS=main.cpp Player.cpp Game.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: $(TARGET)

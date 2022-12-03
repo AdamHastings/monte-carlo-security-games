@@ -3,6 +3,7 @@
 #include <string>
 #include "oneapi/tbb.h"
 #include "Player.h"
+#include "Game.h"
 
 
 using namespace oneapi::tbb;
@@ -24,8 +25,8 @@ class cfg {
 
         int B = 1000;
         int N = 10000;
-        int epsilon = 10;
-        int delta = 50;
+        int E = 10;
+        int D = 50;
 
 
         // cfg::cfg/() {} // Nothing to initialize for now
@@ -58,8 +59,8 @@ class cfg {
 
                 next["B"]          = B;
                 next["N"]          = N;
-                next["delta"]      = delta;
-                next["epsilon"]    = epsilon;
+                next["E"]          = D;
+                next["D"]          = E;
                 ret.push_back(next);
             }}}}}}}}}}
 
@@ -67,12 +68,13 @@ class cfg {
         }
 };
 
+// TODO make params its own class
 void RunGame(map<std::string, float> params) {
     
     Insurer insurer = Insurer();
     Government goverment = Government();
 
-    // TODO put a lot of this into constructor?
+    // TODO put a lot of this into constructor
     // And pass in Insurer and Government as pointers.
     std::vector<Defender> defenders;
     for (int i=0; i < params["B"]; i++) {
