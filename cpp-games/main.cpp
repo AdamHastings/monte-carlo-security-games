@@ -28,6 +28,8 @@ class cfg {
         int E = 10;
         int D = 50;
 
+        bool verbose = false;
+
 
         // cfg::cfg/() {} // Nothing to initialize for now
 
@@ -57,10 +59,14 @@ class cfg {
                 p.CAUGHT     = h;
                 p.CLAIMS     = i;
                 p.TAX        = j;
+
                 p.B          = B;
                 p.N          = N;
                 p.E          = D;
                 p.D          = E;
+
+                p.verbose    = verbose;
+                
                 ret.push_back(p);
             }}}}}}}}}}
 

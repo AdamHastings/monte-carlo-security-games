@@ -20,6 +20,8 @@ struct Params {
     int N;
     int E;
     int D;
+
+    bool verbose;
 };
 
 class Game {
@@ -50,6 +52,16 @@ class Game {
         std::vector<int> crossovers;
         std::vector<int> insurerTimesOfDeath;
 
+        float current_defender_sum_assets = 0, current_attacker_sum_assets = 0;
+        
+        std::vector<float> defenders_cumulative_assets;
+        std::vector<float> attackers_cumulative_assets;
+        std::vector<float> insurer_cumulative_assets;
+        std::vector<float> government_cumulative_assets;
+
+        std::vector<float> last_delta_defenders_changes;
+        std::vector<float> last_delta_attackers_changes;
+
         float paidClaims = 0;
         int attacksAttempted = 0, attacksSucceeded = 0;
         char outcome = 0;
@@ -57,5 +69,7 @@ class Game {
         float attackerExpenditures = 0, attackerLoots = 0;
 
         void fight(Attacker a, Defender d);
+        void conclude_game(std::string outcome);
+        bool is_equilibrium_reached();
 
 };
