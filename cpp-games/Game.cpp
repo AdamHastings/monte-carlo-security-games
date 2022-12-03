@@ -28,6 +28,7 @@ Game::Game(Params p, std::vector<Defender> d, std::vector<Attacker> a, Insurer i
 }
 
 void Game::fight(Attacker a, Defender d) {
+    return;
 }
 
 void Game::run_iterations() {
