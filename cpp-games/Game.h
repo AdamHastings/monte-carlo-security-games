@@ -56,5 +56,6 @@ class Game {
         int caught = 0;
         float attackerExpenditures = 0, attackerLoots = 0;
 
+        void fight(Attacker a, Defender d);
 
 };
