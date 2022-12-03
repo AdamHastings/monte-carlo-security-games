@@ -20,17 +20,17 @@ float Player::get_assets() {
 
 int Defender::s_ctr = 0;
 
+static std::default_random_engine generator;
+static std::lognormal_distribution<float> wealth(10.0, 1.0);
+static std::normal_distribution<float> p_defense_success(0.388,0.062);
+
 Defender::Defender() : Player() {
     id = s_ctr;
     s_ctr += 1;
 
-    std::default_random_engine generator;
+    assets = wealth(generator);
 
-    std::lognormal_distribution<float> lognormal(10.0, 1.0);
-    assets = lognormal(generator);
-
-    std::normal_distribution<double> normal(0.388,0.062);
-    probAttackSuccess = 1 - normal(generator);
+    probAttackSuccess = 1 - p_defense_success(generator);
     if (probAttackSuccess < 0) {
         probAttackSuccess = 0;
     } else if (probAttackSuccess > 1) {

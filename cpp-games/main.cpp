@@ -12,16 +12,16 @@ using namespace std;
 
 class cfg {
     public:
-        vector<float> MANDATE_range    = {0.1, 0.9};
-        vector<float> ATTACKERS_range  = {0.1, 0.9};
-        vector<float> INEQUALITY_range = {0.1, 0.9};
-        vector<float> PREMIUM_range    = {0.1, 0.9};
-        vector<float> EFFICIENCY_range = {0.1, 0.9};
-        vector<float> EFFORT_range     = {0.1, 0.9};
-        vector<float> PAYOFF_range     = {0.1, 0.9};
-        vector<float> CAUGHT_range     = {0.1, 0.9};
-        vector<float> CLAIMS_range     = {0.1, 0.9};
-        vector<float> TAX_range        = {0.1, 0.9};
+        vector<float> MANDATE_range    = {0.1};
+        vector<float> ATTACKERS_range  = {0.1};
+        vector<float> INEQUALITY_range = {0.1};
+        vector<float> PREMIUM_range    = {0.1};
+        vector<float> EFFICIENCY_range = {0.1};
+        vector<float> EFFORT_range     = {0.1};
+        vector<float> PAYOFF_range     = {0.1};
+        vector<float> CAUGHT_range     = {0.1};
+        vector<float> CLAIMS_range     = {0.1};
+        vector<float> TAX_range        = {0.1};
 
         int B = 1000;
         int N = 10000;
