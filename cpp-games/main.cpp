@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include "oneapi/tbb.h"
 #include "Player.h"
 
@@ -24,9 +25,9 @@ class cfg {
 
         // cfg::cfg/() {} // Nothing to initialize for now
 
-        vector<vector<float>> get_cartesian() {
+        vector<map<std::string, float>> get_cartesian() {
             
-            vector<vector<float>> ret;
+            vector<map<std::string, float>> ret;
 
             for (auto a : MANDATE_range) {
             for (auto b : ATTACKERS_range) {
@@ -38,7 +39,17 @@ class cfg {
             for (auto h : CAUGHT_range) {
             for (auto i : CLAIMS_range) {
             for (auto j : TAX_range) {
-                vector<float> next = {a,b,c,d,e,f,g,h,i,j};
+                std::map<std::string, float> next;
+                next["MANDATE"]    = a;
+                next["ATTACKERS"]  = b;
+                next["INEQUALITY"] = c;
+                next["PREMIUM"]    = d;
+                next["EFFICIENCY"] = e;
+                next["EFFORT"]     = f;
+                next["PAYOFF"]     = g;
+                next["CAUGHT"]     = h;
+                next["CLAIMS"]     = i;
+                next["TAX"]        = j;
                 ret.push_back(next);
             }}}}}}}}}}
 
@@ -46,38 +57,17 @@ class cfg {
         }
 };
 
-
-void Foo(float x) {
-    cout << x << endl;
+void RunGame(map<std::string, float> params) {
+    for (const auto &[k, v] : params)
+        std::cout << "m[" << k << "] = " << v << ", ";
+    std::cout << endl;
 }
 
-void vFoo(vector<float> x) {
-    cout << "( ";
-    for (auto i: x){
-        std::cout << i <<  " ";
-    }
-    cout << ")" << endl;
-}
-
-
-// void ParallelApplyFoo(std::vector<vector<double>> v, size_t n) {
-//     parallel_for(size_t(0), n, [=](size_t i) {Foo(v[i]);});
-// }
-
-void ParallelApplyVectorFoo(vector<vector<float>> a, size_t n ) {
+void ParallelRunGames(vector<map<std::string, float>> a, size_t n ) {
     parallel_for( blocked_range<size_t>(0,n),
         [=](const blocked_range<size_t>& r) {
             for(size_t i=r.begin(); i!=r.end(); ++i)
-                vFoo(a[i]);
-            }
-    );
-}
-
-void ParallelApplyFoo(vector<float> a, size_t n ) {
-    parallel_for( blocked_range<size_t>(0,n),
-        [=](const blocked_range<size_t>& r) {
-            for(size_t i=r.begin(); i!=r.end(); ++i)
-                Foo(a[i]);
+                RunGame(a[i]);
             }
     );
 }
@@ -93,7 +83,7 @@ int main() {
     }
     cfg c = cfg();
     // cout << c << endl;
-    vector<vector<float>> cart = c.get_cartesian();
+    vector<map<std::string, float>> cart = c.get_cartesian();
     // for (auto i: cart){
     //     cout << "(";
     //     for (auto j: i) {
@@ -102,14 +92,13 @@ int main() {
     //     cout << ")" << endl;
     // }
 
-    // ParallelApplyFoo(cart, cart.size());
-    // ParallelApplyFoo(v, v.size());
     // ParallelApplyVectorFoo(cart, cart.size());
+    ParallelRunGames(cart, cart.size());
 
     Player p = Player();
     cout << p.get_assets() << endl;
     p.gain(100);
     cout << p.get_assets() << endl;
-    
+
     return 0;
 }
