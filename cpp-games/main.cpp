@@ -31,9 +31,9 @@ class cfg {
 
         // cfg::cfg/() {} // Nothing to initialize for now
 
-        vector<map<std::string, float>> get_cartesian() {
+        vector<Params> make_all_params() {
             
-            vector<map<std::string, float>> ret;
+            vector<Params> ret;
 
             for (auto a : MANDATE_range) {
             for (auto b : ATTACKERS_range) {
@@ -45,23 +45,23 @@ class cfg {
             for (auto h : CAUGHT_range) {
             for (auto i : CLAIMS_range) {
             for (auto j : TAX_range) {
-                std::map<std::string, float> next;
-                next["MANDATE"]    = a;
-                next["ATTACKERS"]  = b;
-                next["INEQUALITY"] = c;
-                next["PREMIUM"]    = d;
-                next["EFFICIENCY"] = e;
-                next["EFFORT"]     = f;
-                next["PAYOFF"]     = g;
-                next["CAUGHT"]     = h;
-                next["CLAIMS"]     = i;
-                next["TAX"]        = j;
 
-                next["B"]          = B;
-                next["N"]          = N;
-                next["E"]          = D;
-                next["D"]          = E;
-                ret.push_back(next);
+                Params p;
+                p.MANDATE    = a;
+                p.ATTACKERS  = b;
+                p.INEQUALITY = c;
+                p.PREMIUM    = d;
+                p.EFFICIENCY = e;
+                p.EFFORT     = f;
+                p.PAYOFF     = g;
+                p.CAUGHT     = h;
+                p.CLAIMS     = i;
+                p.TAX        = j;
+                p.B          = B;
+                p.N          = N;
+                p.E          = D;
+                p.D          = E;
+                ret.push_back(p);
             }}}}}}}}}}
 
             return ret;
@@ -69,7 +69,7 @@ class cfg {
 };
 
 // TODO make params its own class
-void RunGame(map<std::string, float> params) {
+void RunGame(Params p) {
     
     Insurer insurer = Insurer();
     Government goverment = Government();
@@ -77,36 +77,36 @@ void RunGame(map<std::string, float> params) {
     // TODO put a lot of this into constructor
     // And pass in Insurer and Government as pointers.
     std::vector<Defender> defenders;
-    for (int i=0; i < params["B"]; i++) {
+    for (int i=0; i < p.B; i++) {
         Defender d = Defender();
 
-        float investment = d.assets * params["MANDATE"];
-        float selfless_investment = investment * params["TAX"];
+        float investment = d.assets * p.MANDATE;
+        float selfless_investment = investment * p.TAX;
         float selfish_investment  = investment - selfless_investment;
 
         float tax = selfless_investment;
         d.lose(tax);
         goverment.gain(tax);
 
-        float insurance = selfless_investment * params["PREMIUM"];
+        float insurance = selfless_investment * p.PREMIUM;
         d.lose(insurance);
         insurer.gain(insurance);
 
         float personal_security_investment = selfish_investment - insurance;
-        d.costToAttack = d.assets * params["EFFORT"];
-        d.costToAttack += personal_security_investment * params["EFFORT"];
+        d.costToAttack = d.assets * p.EFFORT;
+        d.costToAttack += personal_security_investment * p.EFFORT;
 
         defenders.push_back(Defender(d));
     }
 
     std::vector<Attacker> attackers;
-    for (int i=0; i < params["B"] * params["ATTACKERS"]; i++) {
-        Attacker a = Attacker(params["INEQUALITY"]);
+    for (int i=0; i < p.B * p.ATTACKERS; i++) {
+        Attacker a = Attacker(p.INEQUALITY);
         attackers.push_back(a);
     }
 }
 
-void ParallelRunGames(vector<map<std::string, float>> a, size_t n ) {
+void ParallelRunGames(vector<Params> a, size_t n ) {
     parallel_for( blocked_range<size_t>(0,n),
         [=](const blocked_range<size_t>& r) {
             for(size_t i=r.begin(); i!=r.end(); ++i)
@@ -125,7 +125,7 @@ int main() {
         v.push_back(i);
     }
     cfg c = cfg();
-    vector<map<std::string, float>> cart = c.get_cartesian();
+    vector<Params> cart = c.make_all_params();
 
     ParallelRunGames(cart, cart.size());
 
