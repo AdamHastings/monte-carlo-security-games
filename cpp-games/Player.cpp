@@ -42,13 +42,13 @@ Defender::Defender() : Player() {
 
 int Attacker::s_ctr = 0;
 
-Attacker::Attacker() : Player() {
+Attacker::Attacker(float INEQUALITY) : Player() {
     id = s_ctr;
     s_ctr += 1;
     
     std::default_random_engine generator;
 
     std::lognormal_distribution<float> lognormal(10.0, 1.0);
-    assets = lognormal(generator); // This is scaled by INEQUALITY later
+    assets = lognormal(generator) * INEQUALITY;
 
 }

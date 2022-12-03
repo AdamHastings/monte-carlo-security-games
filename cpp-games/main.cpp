@@ -22,6 +22,11 @@ class cfg {
         vector<float> CLAIMS_range     = {0.1, 0.9};
         vector<float> TAX_range        = {0.1, 0.9};
 
+        int B = 1000;
+        int N = 10000;
+        int epsilon = 10;
+        int delta = 50;
+
 
         // cfg::cfg/() {} // Nothing to initialize for now
 
@@ -50,6 +55,11 @@ class cfg {
                 next["CAUGHT"]     = h;
                 next["CLAIMS"]     = i;
                 next["TAX"]        = j;
+
+                next["B"]          = B;
+                next["N"]          = N;
+                next["delta"]      = delta;
+                next["epsilon"]    = epsilon;
                 ret.push_back(next);
             }}}}}}}}}}
 
@@ -58,9 +68,40 @@ class cfg {
 };
 
 void RunGame(map<std::string, float> params) {
-    for (const auto &[k, v] : params)
-        std::cout << "m[" << k << "] = " << v << ", ";
-    std::cout << endl;
+    
+    Insurer insurer = Insurer();
+    Government goverment = Government();
+
+    // TODO put a lot of this into constructor?
+    // And pass in Insurer and Government as pointers.
+    std::vector<Defender> defenders;
+    for (int i=0; i < params["B"]; i++) {
+        Defender d = Defender();
+
+        float investment = d.assets * params["MANDATE"];
+        float selfless_investment = investment * params["TAX"];
+        float selfish_investment  = investment - selfless_investment;
+
+        float tax = selfless_investment;
+        d.lose(tax);
+        goverment.gain(tax);
+
+        float insurance = selfless_investment * params["PREMIUM"];
+        d.lose(insurance);
+        insurer.gain(insurance);
+
+        float personal_security_investment = selfish_investment - insurance;
+        d.costToAttack = d.assets * params["EFFORT"];
+        d.costToAttack += personal_security_investment * params["EFFORT"];
+
+        defenders.push_back(Defender(d));
+    }
+
+    std::vector<Attacker> attackers;
+    for (int i=0; i < params["B"] * params["ATTACKERS"]; i++) {
+        Attacker a = Attacker(params["INEQUALITY"]);
+        attackers.push_back(a);
+    }
 }
 
 void ParallelRunGames(vector<map<std::string, float>> a, size_t n ) {
@@ -82,17 +123,8 @@ int main() {
         v.push_back(i);
     }
     cfg c = cfg();
-    // cout << c << endl;
     vector<map<std::string, float>> cart = c.get_cartesian();
-    // for (auto i: cart){
-    //     cout << "(";
-    //     for (auto j: i) {
-    //         cout << j << " ";
-    //     }
-    //     cout << ")" << endl;
-    // }
 
-    // ParallelApplyVectorFoo(cart, cart.size());
     ParallelRunGames(cart, cart.size());
 
     Player p = Player();

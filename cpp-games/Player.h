@@ -30,7 +30,7 @@ class Attacker : public Player {
         int id;
         std::map<int, float> victims;
 
-        Attacker();
+        Attacker(float INEQUALITY);
 
     private:
         static int s_ctr;
