@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <random>
+#include <map>
 
 
 Player::Player() {
@@ -46,9 +47,5 @@ Attacker::Attacker(float INEQUALITY) : Player() {
     id = s_ctr;
     s_ctr += 1;
     
-    std::default_random_engine generator;
-
-    std::lognormal_distribution<float> lognormal(10.0, 1.0);
-    assets = lognormal(generator) * INEQUALITY;
-
+    assets = wealth(generator) * INEQUALITY;
 }
