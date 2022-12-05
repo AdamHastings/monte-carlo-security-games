@@ -9,6 +9,9 @@
 #include <cassert>
 #include "Game.h"
 
+#define ASSERT(condition, input) { if(!(condition)){ std::cerr << "ASSERT FAILED: " << #condition << " with input " << std::to_string(input) << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl; } }
+
+
 
 static std::random_device rd;  // Will be used to obtain a seed for the random number engine
 static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
@@ -53,7 +56,32 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, Insurer
 }
 
 void Game::verify_state() {
+    // assert(round(current_defender_sum_assets) >= 0);
+    // assert(round(current_attacker_sum_assets) >= 0);
+    // // assert((round(insurer.assets)  == 0) && (std::to_string(insurer.assets) != ""));
+    // // ASSERT((round(insurer.assets)  >= 0), insurer.assets)
+    // assert(round(insurer.assets) >= 0);
+    // assert(round(government.assets) >= 0);
+
+    // float checksum_attacker_sum_assets = 0;
+    // for (auto a : attackers) {
+    //     assert(round(a.assets) >= 0);
+    //     checksum_attacker_sum_assets += a.assets;
+    // }
+    // // std::cout << current_attacker_sum_assets << " " << checksum_attacker_sum_assets << std::endl;
+    // // TODO this seems like it will always pass no matter what...? look into it...
+    // assert(abs(current_attacker_sum_assets - checksum_attacker_sum_assets) >= 0);
+
+
+    // float checksum_defender_sum_assets = 0;
+    // for (auto d : defenders) {
+    //     assert(round(d.assets) >= 0);
+    //     checksum_defender_sum_assets += d.assets;
+    // }
+    // // TODO look into this as well
+    // assert(abs(current_defender_sum_assets - checksum_defender_sum_assets) >= 0);
     return;
+    
 }
 
 void Game::conclude_game(std::string outcome) {
@@ -251,7 +279,7 @@ void Game::fight(Attacker a, Defender d) {
 
 void Game::run_iterations() {
 
-    std::cout << "in running iterations! N = " << p.N << std::endl;
+    // std::cout << "in running iterations! N = " << p.N << std::endl;
 
     bool defenders_have_more_than_attackers = true;
 

@@ -23,6 +23,23 @@ struct Params {
     int D;
 
     bool verbose;
+
+    std::string to_string() {
+        std::string str = "";
+        str += "MANDATE=" + std::to_string(MANDATE);
+        str += "ATTACKERS=" +     std::to_string(ATTACKERS);
+        str += "INEQUALITY=" +     std::to_string(INEQUALITY);
+        str += "PREMIUM=" +     std::to_string(PREMIUM);
+        str += "EFFICIENCY=" +     std::to_string(EFFICIENCY);
+        str += "EFFORT=" +     std::to_string(EFFORT);
+        str += "PAYOFF=" +     std::to_string(PAYOFF);
+        str += "CAUGHT=" +     std::to_string(CAUGHT);
+        str += "CLAIMS=" +     std::to_string(CLAIMS);
+        str += "TAX=" +     std::to_string(TAX);
+
+
+        return str;
+    }
 };
 
 class Game {

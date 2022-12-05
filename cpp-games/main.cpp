@@ -14,16 +14,38 @@ using namespace std;
 
 class cfg {
     public:
-        vector<float> MANDATE_range    = {0.1, 0.2, 0.3, 0.4, 0.5};
-        vector<float> ATTACKERS_range  = {0.1, 0.2};
-        vector<float> INEQUALITY_range = {0.1};
+        // vector<float> MANDATE_range    = {0.1, 0.2, 0.3, 0.4, 0.5};
+        // vector<float> ATTACKERS_range  = {0.1, 0.2};
+        // vector<float> INEQUALITY_range = {0.1};
+        // vector<float> PREMIUM_range    = {0.1, 0.9};
+        // vector<float> EFFICIENCY_range = {0.1};
+        // vector<float> EFFORT_range     = {0.1};
+        // vector<float> PAYOFF_range     = {0.1};
+        // vector<float> CAUGHT_range     = {0.1};
+        // vector<float> CLAIMS_range     = {0.1};
+        // vector<float> TAX_range        = {0.1};
+
+        // vector<float> MANDATE_range    = {0.1, 0.5, 0.9};
+        // vector<float> ATTACKERS_range  = {0.1, 0.5, 1.0};
+        // vector<float> INEQUALITY_range = {0.1, 0.5, 1.0};
+        // vector<float> PREMIUM_range    = {0.0, 0.5, 1.0};
+        // vector<float> EFFICIENCY_range = {0.1, 0.5, 1.0};
+        // vector<float> EFFORT_range     = {0.1, 0.5, 1.0};
+        // vector<float> PAYOFF_range     = {0.1, 0.5, 1.0};
+        // vector<float> CAUGHT_range     = {0.1, 0.5, 1.0};
+        // vector<float> CLAIMS_range     = {0.1, 0.5, 1.0};
+        // vector<float> TAX_range        = {0.1, 0.5, 1.0};
+
+        vector<float> MANDATE_range    = {0.1, 0.9};
+        vector<float> ATTACKERS_range  = {0.1, 0.9};
+        vector<float> INEQUALITY_range = {0.1, 0.9};
         vector<float> PREMIUM_range    = {0.1, 0.9};
-        vector<float> EFFICIENCY_range = {0.1};
-        vector<float> EFFORT_range     = {0.1};
-        vector<float> PAYOFF_range     = {0.1};
-        vector<float> CAUGHT_range     = {0.1};
-        vector<float> CLAIMS_range     = {0.1};
-        vector<float> TAX_range        = {0.1};
+        vector<float> EFFICIENCY_range = {0.1, 0.9};
+        vector<float> EFFORT_range     = {0.1, 0.9};
+        vector<float> PAYOFF_range     = {0.1, 0.9};
+        vector<float> CAUGHT_range     = {0.1, 0.9};
+        vector<float> CLAIMS_range     = {0.1, 0.9};
+        vector<float> TAX_range        = {0.1, 0.9};
 
         int B = 1000;
         int N = 10000;
@@ -144,7 +166,7 @@ int main() {
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-    std::cout << "started computation at " << std::ctime(&start_time);
+    std::cout << "started " << std::to_string(cart.size()) << " games at " << std::ctime(&start_time);
 
     ParallelRunGames(cart, cart.size());
 
