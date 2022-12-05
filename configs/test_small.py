@@ -24,9 +24,9 @@ params_ranges = dict(
 
 game_settings = dict(
     BLUE_PLAYERS = 1000,
-    SIM_ITERS = 10000,
+    SIM_ITERS = 1000,
     NUM_GAMES = 1,
-    EPSILON_DOLLARS = 10,
+    EPSILON_DOLLARS = 100,
     DELTA_ITERS = 50
 )
 
