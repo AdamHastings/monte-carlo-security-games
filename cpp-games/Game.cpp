@@ -24,10 +24,12 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, Insurer
     insurer = i;
     government = g;
 
+    d_init = 0;
     for (auto di : defenders) {
         d_init += di.get_assets();
     }
 
+    a_init = 0;
     for (auto ai : attackers) {
         a_init += ai.get_assets();
     }
@@ -43,8 +45,8 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, Insurer
         alive_defenders.insert(i);
     }
 
-    last_delta_defenders_changes.assign(p.E, p.D);
-    last_delta_attackers_changes.assign(p.E, p.D);
+    last_delta_defenders_changes.assign(p.D, p.E);
+    last_delta_attackers_changes.assign(p.D, p.E);
 
     if (p.verbose) {
         defenders_cumulative_assets.push_back(d_init);
@@ -70,7 +72,7 @@ void Game::verify_state() {
     // }
     // // std::cout << current_attacker_sum_assets << " " << checksum_attacker_sum_assets << std::endl;
     // // TODO this seems like it will always pass no matter what...? look into it...
-    // assert(abs(current_attacker_sum_assets - checksum_attacker_sum_assets) >= 0);
+    // assert(round(current_attacker_sum_assets - checksum_attacker_sum_assets) >= 0);
 
 
     // float checksum_defender_sum_assets = 0;
@@ -79,7 +81,7 @@ void Game::verify_state() {
     //     checksum_defender_sum_assets += d.assets;
     // }
     // // TODO look into this as well
-    // assert(abs(current_defender_sum_assets - checksum_defender_sum_assets) >= 0);
+    // assert(round(current_defender_sum_assets - checksum_defender_sum_assets) >= 0);
     return;
     
 }
@@ -252,6 +254,7 @@ void Game::fight(Attacker a, Defender d) {
     float cost_of_attack = d.costToAttack;
     float expected_earnings = effective_loot * d.probAttackSuccess;
 
+    // Note slight logic change
     if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
         attacksAttempted += 1;
 
@@ -299,7 +302,7 @@ void Game::run_iterations() {
             std::shuffle(alive_attackers_list.begin(), alive_attackers_list.end(), g);
             shorter_length = alive_defenders_list.size();
         } else {
-            std::shuffle(alive_attackers_list.begin(), alive_attackers_list.end(), g);
+            std::shuffle(alive_defenders_list.begin(), alive_defenders_list.end(), g);
             shorter_length = alive_attackers_list.size();
         }
 
@@ -309,10 +312,10 @@ void Game::run_iterations() {
             fight(a, d);
 
             if (std::round(a.assets) <= 0) {
-                alive_attackers.erase(i);
+                alive_attackers.erase(a.id);
             }
             if (std::round(d.assets) <= 0) {
-                alive_defenders.erase(i);
+                alive_defenders.erase(d.id);
             }
         }
 

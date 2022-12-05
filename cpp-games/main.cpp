@@ -36,20 +36,21 @@ class cfg {
         // vector<float> CLAIMS_range     = {0.1, 0.5, 1.0};
         // vector<float> TAX_range        = {0.1, 0.5, 1.0};
 
-        vector<float> MANDATE_range    = {0.1, 0.9};
-        vector<float> ATTACKERS_range  = {0.1, 0.9};
-        vector<float> INEQUALITY_range = {0.1, 0.9};
-        vector<float> PREMIUM_range    = {0.1, 0.9};
-        vector<float> EFFICIENCY_range = {0.1, 0.9};
-        vector<float> EFFORT_range     = {0.1, 0.9};
-        vector<float> PAYOFF_range     = {0.1, 0.9};
-        vector<float> CAUGHT_range     = {0.1, 0.9};
-        vector<float> CLAIMS_range     = {0.1, 0.9};
-        vector<float> TAX_range        = {0.1, 0.9};
+        // test_small
+        vector<float> MANDATE_range    = {0.1, 0.8};
+        vector<float> ATTACKERS_range  = {0.5, 1.0};
+        vector<float> INEQUALITY_range = {0.3, 1.0};
+        vector<float> PREMIUM_range    = {0.0, 0.5, 1.0};
+        vector<float> EFFICIENCY_range = {0.1, 1.0};
+        vector<float> EFFORT_range     = {0.1, 0.4};
+        vector<float> PAYOFF_range     = {0.3, 0.9};
+        vector<float> CAUGHT_range     = {0.1, 0.6};
+        vector<float> CLAIMS_range     = {0.1, 1.0};
+        vector<float> TAX_range        = {0.0, 0.5, 1.0};
 
         int B = 1000;
         int N = 10000;
-        int E = 10;
+        int E = 100;
         int D = 50;
 
         bool verbose = false;
@@ -153,8 +154,6 @@ void ParallelRunGames(vector<Params> a, size_t n ) {
 
 
 int main() {
-    std::cout << "Hello world" << std::endl;
-
     std::vector<float> v;
 
     for (auto i = 0; i < 200; i++) {

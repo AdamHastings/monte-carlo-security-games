@@ -1,5 +1,5 @@
 CXX=g++
-CPPFLAGS=-g -O3  -std=c++17
+CPPFLAGS=-g3 -O3  -std=c++17
 INCLUDES=-Itbb/latest/include
 LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ -ltbb
 TARGET=run_games
