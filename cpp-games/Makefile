@@ -12,7 +12,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS) 
 	$(CXX) $(CPPFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) $(LDLIBS) $(LDFLAGS)
 
-%.o: %.c
+%.o: %.c %.h
 	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $(input) -o $(output)
 	
 clean:
