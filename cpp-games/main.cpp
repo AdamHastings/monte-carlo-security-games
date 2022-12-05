@@ -12,7 +12,7 @@ using namespace std;
 
 class cfg {
     public:
-        vector<float> MANDATE_range    = {0.1, 0.2};
+        vector<float> MANDATE_range    = {0.1, 0.2, 0.3, 0.4, 0.5};
         vector<float> ATTACKERS_range  = {0.1, 0.2};
         vector<float> INEQUALITY_range = {0.1};
         vector<float> PREMIUM_range    = {0.1, 0.9};

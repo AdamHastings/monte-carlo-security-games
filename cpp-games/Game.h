@@ -47,14 +47,13 @@ class Game {
         Insurer insurer;
         Government government;
 
-
-
         float d_init, a_init, i_init, g_init;
         int iter_num;
         std::vector<int> crossovers;
         std::vector<int> insurerTimesOfDeath;
 
-        float current_defender_sum_assets = 0, current_attacker_sum_assets = 0;
+        float current_defender_sum_assets = 0;
+        float current_attacker_sum_assets = 0;
         float defender_iter_sum = 0, attacker_iter_sum = 0;
 
         std::vector<float> defenders_cumulative_assets;
@@ -64,6 +63,9 @@ class Game {
 
         std::vector<float> last_delta_defenders_changes;
         std::vector<float> last_delta_attackers_changes;
+
+        int outside_epsilon_count_defenders = 0;
+        int outside_epsilon_count_attackers = 0;
 
         std::set<int> alive_attackers;
         std::set<int> alive_defenders;

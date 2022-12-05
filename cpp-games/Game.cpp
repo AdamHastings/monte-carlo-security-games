@@ -6,6 +6,7 @@
 #include <cmath>
 #include <ctime>
 #include <iostream>
+#include <cassert>
 #include "Game.h"
 
 
@@ -57,11 +58,39 @@ void Game::verify_state() {
 
 void Game::conclude_game(std::string outcome) {
     final_outcome = outcome;
+    // std::cout << "concluding with outcome: " << outcome << std::endl;
     verify_state();
 }
 
 bool Game::is_equilibrium_reached() {
-    return false; // TODO
+    float last_delta_defenders_pop = last_delta_defenders_changes[iter_num % p.D];
+    float last_delta_attackers_pop = last_delta_attackers_changes[iter_num % p.D];
+    last_delta_defenders_changes[iter_num % p.D] = defender_iter_sum;
+    last_delta_attackers_changes[iter_num % p.D] = attacker_iter_sum;
+
+    if (defender_iter_sum >= p.E) {
+        if (last_delta_defenders_pop < p.E) {
+            outside_epsilon_count_defenders += 1;
+        }
+    } else {
+        if (last_delta_defenders_pop >= p.E) {
+            outside_epsilon_count_defenders -= 1;
+        }
+    }
+
+    if (attacker_iter_sum >= p.E) {
+        if (last_delta_attackers_pop < p.E) {
+            outside_epsilon_count_attackers += 1;
+        }
+    } else {
+        if (last_delta_attackers_pop >= p.E) {
+            outside_epsilon_count_attackers -= 1;
+        }
+    }
+
+    // TODO add some asserts?
+    // Don't understand this part..
+    return ((outside_epsilon_count_attackers == 0) && (outside_epsilon_count_defenders == 0));
 }
 
 void Game::a_steals_from_d(Attacker a, Defender d, float loot) {
