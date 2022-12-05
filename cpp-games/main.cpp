@@ -25,16 +25,17 @@ class cfg {
         // vector<double> CLAIMS_range     = {0.1};
         // vector<double> TAX_range        = {0.1};
 
-        // vector<double> MANDATE_range    = {0.1, 0.5, 0.9};
-        // vector<double> ATTACKERS_range  = {0.1, 0.5, 1.0};
-        // vector<double> INEQUALITY_range = {0.1, 0.5, 1.0};
-        // vector<double> PREMIUM_range    = {0.0, 0.5, 1.0};
-        // vector<double> EFFICIENCY_range = {0.1, 0.5, 1.0};
-        // vector<double> EFFORT_range     = {0.1, 0.5, 1.0};
-        // vector<double> PAYOFF_range     = {0.1, 0.5, 1.0};
-        // vector<double> CAUGHT_range     = {0.1, 0.5, 1.0};
-        // vector<double> CLAIMS_range     = {0.1, 0.5, 1.0};
-        // vector<double> TAX_range        = {0.1, 0.5, 1.0};
+        // test_medium
+        vector<double> MANDATE_range    = {0.1, 0.5, 0.9};
+        vector<double> ATTACKERS_range  = {0.1, 0.5, 1.0};
+        vector<double> INEQUALITY_range = {0.1, 0.5, 1.0};
+        vector<double> PREMIUM_range    = {0.0, 0.5, 1.0};
+        vector<double> EFFICIENCY_range = {0.1, 0.5, 1.0};
+        vector<double> EFFORT_range     = {0.1, 0.5, 1.0};
+        vector<double> PAYOFF_range     = {0.1, 0.5, 1.0};
+        vector<double> CAUGHT_range     = {0.1, 0.5, 1.0};
+        vector<double> CLAIMS_range     = {0.1, 0.5, 1.0};
+        vector<double> TAX_range        = {0.1, 0.5, 1.0};
 
         // test_small
         // vector<double> MANDATE_range    = {0.1, 0.8};
@@ -49,16 +50,16 @@ class cfg {
         // vector<double> TAX_range        = {0.0, 0.5, 1.0};
 
         // test_tiny2
-        vector<double> MANDATE_range    = {0.1, 0.8};
-        vector<double> ATTACKERS_range  = {0.1}; // TODO change to 0.5 to realign with test_tiny
-        vector<double> INEQUALITY_range = {0.3};
-        vector<double> PREMIUM_range    = {0.0, 1.0};
-        vector<double> EFFICIENCY_range = {0.1};
-        vector<double> EFFORT_range     = {0.1, 0.4};
-        vector<double> PAYOFF_range     = {0.3, 0.9};
-        vector<double> CAUGHT_range     = {0.1, 0.6};
-        vector<double> CLAIMS_range     = {0.1, 1.0};
-        vector<double> TAX_range        = {0.0, 1.0};
+        // vector<double> MANDATE_range    = {0.1, 0.8};
+        // vector<double> ATTACKERS_range  = {0.5}; // TODO change to 0.5 to realign with test_tiny
+        // vector<double> INEQUALITY_range = {0.3};
+        // vector<double> PREMIUM_range    = {0.0, 1.0};
+        // vector<double> EFFICIENCY_range = {0.1};
+        // vector<double> EFFORT_range     = {0.1, 0.4};
+        // vector<double> PAYOFF_range     = {0.3, 0.9};
+        // vector<double> CAUGHT_range     = {0.1, 0.6};
+        // vector<double> CLAIMS_range     = {0.1, 1.0};
+        // vector<double> TAX_range        = {0.0, 1.0};
 
         int B = 100;
         int N = 10;
@@ -142,7 +143,7 @@ void RunGame(Params p) {
         d.costToAttack += personal_security_investment * p.EFFORT;
         d.lose(personal_security_investment);
 
-        std::cout << "Making new defenders with d.assets=" << d.assets << std::endl;
+        // std::cout << "Making new defenders with d.assets=" << d.assets << std::endl;
         defenders.push_back(Defender(d));
     }
 

@@ -78,11 +78,11 @@ void Game::verify_state() {
     }
     // std::cout << current_attacker_sum_assets << " " << checksum_attacker_sum_assets << std::endl;
     // TODO this seems like it will always pass no matter what...? look into it...
-    if (round(current_attacker_sum_assets - checksum_attacker_sum_assets) != 0) {
-        std::cout << "  a_init: " << a_init << std::endl;
-        std::cout << "  current_attacker_sum_assets: " << current_attacker_sum_assets << std::endl;
-        std::cout << "  checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
-    }
+    // if (round(current_attacker_sum_assets - checksum_attacker_sum_assets) != 0) {
+    //     std::cout << "  a_init: " << a_init << std::endl;
+    //     std::cout << "  current_attacker_sum_assets: " << current_attacker_sum_assets << std::endl;
+    //     std::cout << "  checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
+    // }
     assert(round(current_attacker_sum_assets - checksum_attacker_sum_assets) == 0);
 
 
@@ -92,13 +92,13 @@ void Game::verify_state() {
         checksum_defender_sum_assets += d.assets;
     }
 
-    if (round(current_defender_sum_assets - checksum_defender_sum_assets) != 0) {
-        std::cout << "  d_init: " << d_init << std::endl;
-        std::cout << "  current_defender_sum_assets: " << current_defender_sum_assets << std::endl;
-        std::cout << "  checksum_defender_sum_assets: " << checksum_defender_sum_assets << std::endl;
-         std::cout << "  difference: " << round(current_defender_sum_assets - checksum_defender_sum_assets) << std::endl;
+    // if (round(current_defender_sum_assets - checksum_defender_sum_assets) != 0) {
+    //     std::cout << "  d_init: " << d_init << std::endl;
+    //     std::cout << "  current_defender_sum_assets: " << current_defender_sum_assets << std::endl;
+    //     std::cout << "  checksum_defender_sum_assets: " << checksum_defender_sum_assets << std::endl;
+    //      std::cout << "  difference: " << round(current_defender_sum_assets - checksum_defender_sum_assets) << std::endl;
 
-    }
+    // }
     assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
 
     return;
@@ -107,7 +107,7 @@ void Game::verify_state() {
 
 void Game::conclude_game(std::string outcome) {
     final_outcome = outcome;
-    std::cout << "concluding with outcome: " << outcome << std::endl;
+    // std::cout << "concluding with outcome: " << outcome << std::endl;
     verify_state();
 }
 
@@ -144,7 +144,7 @@ bool Game::is_equilibrium_reached() {
 
 void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
     d_lose(d, loot);
-    std::cout << " Attacker " << a.id << " is stealing " << loot << " from Defender " << d.id << std::endl;
+    // std::cout << " Attacker " << a.id << " is stealing " << loot << " from Defender " << d.id << std::endl;
     // std::cout << "   assets before: " << a.assets << std::endl;
     a_gain(a, loot);
     // std::cout << "   assets after:  " << a.assets << std::endl;
@@ -164,7 +164,7 @@ void Game::d_gain(Defender &d, double gain) {
 }
 
 void Game::d_lose(Defender &d, double loss) {
-    std::cout << " -> Defender " << d.id << " losing " << loss << std::endl;
+    // std::cout << " -> Defender " << d.id << " losing " << loss << std::endl;
     d.lose(loss);
     defender_iter_sum -= loss;
 }
@@ -270,7 +270,7 @@ void Game::a_distributes_loot(Attacker &a) {
 // TODO TODO TODO make sure you're passing by reference, not by value! Check throughout!!
 void Game::fight(Attacker &a, Defender &d) {
 
-    std::cout << "Attacker " << a.id << " fighting Defender " << d.id << std::endl;
+    // std::cout << "Attacker " << a.id << " fighting Defender " << d.id << std::endl;
 
     double effective_loot = d.assets * p.PAYOFF;
 
@@ -314,7 +314,7 @@ void Game::run_iterations() {
 
     bool defenders_have_more_than_attackers = true;
 
-    std::cout << p.to_string() << std::endl;
+    // std::cout << p.to_string() << std::endl;
 
     // std::cout << " attackers: ";
     // for (auto i : alive_attackers) {
@@ -328,18 +328,18 @@ void Game::run_iterations() {
     // }
     // std::cout << std::endl;
 
-    for (auto d : defenders) {
-        if (round(d.assets) < 0) {
-            std::cout << " ------ Defender " << d.id << " has " << d.assets << std::endl;
-        }
-    }
+    // for (auto d : defenders) {
+    //     if (round(d.assets) < 0) {
+    //         std::cout << " ------ Defender " << d.id << " has " << d.assets << std::endl;
+    //     }
+    // }
 
     for (iter_num = 1; iter_num < p.N + 1; iter_num++) {
 
         defender_iter_sum = 0;
         attacker_iter_sum = 0;
 
-        std::cout << " -------- Round " << iter_num << " -----------" << std::endl;
+        // std::cout << " -------- Round " << iter_num << " -----------" << std::endl;
 
         std::vector<int> alive_attackers_list(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
         std::vector<int> alive_defenders_list(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later
@@ -375,24 +375,24 @@ void Game::run_iterations() {
         // std::cout << " -> current_attacker_sum_assets: " << current_attacker_sum_assets << std::endl;
 
         /////////////////////
-        double checksum_defender_sum_assets = 0;
-        for (auto d : defenders) {
-            if (round(d.assets) < 0) {
-                std::cout << "Defender " << d.id << " has " << d.assets << std::endl;
-            }
+        // double checksum_defender_sum_assets = 0;
+        // for (auto d : defenders) {
+        //     if (round(d.assets) < 0) {
+        //         std::cout << "Defender " << d.id << " has " << d.assets << std::endl;
+        //     }
 
-            assert(round(d.assets) >= 0);
-            checksum_defender_sum_assets += d.assets;
-        }
+        //     assert(round(d.assets) >= 0);
+        //     checksum_defender_sum_assets += d.assets;
+        // }
         
-        if (round(current_defender_sum_assets - checksum_defender_sum_assets) != 0) {
-            std::cout << "  d_init: " << d_init << std::endl;
-            std::cout << "  current_defender_sum_assets: " << current_defender_sum_assets << std::endl;
-            std::cout << "  checksum_defender_sum_assets: " << checksum_defender_sum_assets << std::endl;
-            std::cout << "  difference: " << round(current_defender_sum_assets - checksum_defender_sum_assets) << std::endl;
+        // if (round(current_defender_sum_assets - checksum_defender_sum_assets) != 0) {
+        //     std::cout << "  d_init: " << d_init << std::endl;
+        //     std::cout << "  current_defender_sum_assets: " << current_defender_sum_assets << std::endl;
+        //     std::cout << "  checksum_defender_sum_assets: " << checksum_defender_sum_assets << std::endl;
+        //     std::cout << "  difference: " << round(current_defender_sum_assets - checksum_defender_sum_assets) << std::endl;
 
-        }
-        assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
+        // }
+        // assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
         //////////////
 
 
