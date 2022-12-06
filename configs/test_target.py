@@ -7,15 +7,15 @@ Format: (start, end, increment)
 """
 
 params_ranges = dict(
-    ATTACKERS_range  = [0.6], # Percentage of Attackers, relative to BLUE_PLAYERS
-    CAUGHT_range     = [0.1], # Probability that an attacker is caught and has their assets confiscated
-    CLAIMS_range     = [1.0], # Percentage of losses paid back to defender by Insurer
-    EFFICIENCY_range = [0.2], # Percent of MANDATE that goes towards increasing a defender's costToAttack
-    EFFORT_range     = [0.2], # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
-    INEQUALITY_range = [0.2], # How much poorer Attackers are than Defenders, as a pct
-    MANDATE_range    = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], # Percentage of assets that are spent on security measures.
-    PAYOFF_range     = [0.8], # How much of a defender's assets are stolen if attacker is successful
-    PREMIUM_range    = [0.4], # Percentage of MANDATE that is allocated towards security
+    ATTACKERS_range  = [0.1], # Percentage of Attackers, relative to BLUE_PLAYERS
+    CAUGHT_range     = [1.0], # Probability that an attacker is caught and has their assets confiscated
+    CLAIMS_range     = [0.1], # Percentage of losses paid back to defender by Insurer
+    EFFICIENCY_range = [0.1], # Percent of MANDATE that goes towards increasing a defender's costToAttack
+    EFFORT_range     = [0.55], # Percentage of a defender's assets that must be spent by an Attacker to attempt an attack
+    INEQUALITY_range = [0.1], # How much poorer Attackers are than Defenders, as a pct
+    MANDATE_range    = [0.9], # Percentage of assets that are spent on security measures.
+    PAYOFF_range     = [1.0], # How much of a defender's assets are stolen if attacker is successful
+    PREMIUM_range    = [0.5], # Percentage of MANDATE that is allocated towards security
     TAX_range        = [0.5], # Percentage of confiscated assets that are retained by Government
 )
 
