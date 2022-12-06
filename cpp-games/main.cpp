@@ -177,9 +177,10 @@ void RunGame(Params p) {
 
     // Write response to log file;
 
-    // std::string filename = p.filename;
+    // std::string filename = "logs/test.csv";
+    std::string filename = p.filename;
     ofstream log;
-    log.open (p.filename, ios::out | ios::app);
+    log.open (filename, ios::out | ios::app);
     log << g.to_string();
     log.close();
 
@@ -204,17 +205,17 @@ void SerialRunGames(vector<Params> a) {
 
 void init_logs(cfg &c) {
     std::string fpath =  c.filename;
+    // std::string fpath = "logs/test.csv";
     if (std::experimental::filesystem::exists(fpath)) {
-        std::cout << "\nThis file already exists: " << c.filename << "\nDo you want to replace it? Y/n\n >> ";
+        std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
         std::string response;
         std::cin >> response;
         if (response != "y" && response != "Y") {
-            std::cout << "\nOK, this program will not overwrite " << c.filename << ".\nThis program will now exit.\n";
+            std::cout << "\nOK, this program will not overwrite " << fpath << ".\nThis program will now exit.\n";
             std::exit(0);
         }
     }
 
-    std::string filename = fpath;
     ofstream log;
 
     std::string header = "";
@@ -233,7 +234,7 @@ void init_logs(cfg &c) {
     // TODO double check that this is correct
     header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,government_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome";
     
-    log.open (filename, ios::out);
+    log.open (fpath, ios::out);
     log << header;
     log.close();
 }
