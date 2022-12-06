@@ -92,6 +92,7 @@ class Game {
         std::string final_outcome = "X";
         int caught = 0;
         double attackerExpenditures = 0, attackerLoots = 0;
+        double governmentExpenditures = 0;
 
         void fight(Attacker &a, Defender &d);
         void conclude_game(std::string outcome);

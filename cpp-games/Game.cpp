@@ -35,7 +35,7 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
     }
 
     i_init = insurer.get_assets();
-    g_init = insurer.get_assets();
+    g_init = government.get_assets();
 
     for (int i=0; i<attackers.size(); i++) {
         alive_attackers.insert(i);
@@ -100,6 +100,33 @@ void Game::verify_state() {
 
     // }
     assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
+
+    assert(round(i_init - insurer.assets) >= 0);
+    assert(round(d_init - current_defender_sum_assets) >= 0);
+    assert(round(i_init - paidClaims) >= 0);
+    assert(round(paidClaims) >= 0);
+    assert(round(attackerLoots - paidClaims) >= 0);
+
+    if (final_outcome == "E") {
+        assert(alive_attackers.size() > 0);
+        assert(alive_defenders.size() > 0);
+        assert(iter_num >= p.D); 
+    } else if (final_outcome == "D") {
+        assert(alive_defenders.size() == 0);
+    } else if (final_outcome == "A") {
+        assert(alive_attackers.size() == 0);
+    }
+
+    double init_ = d_init + a_init + g_init + i_init;
+    double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures;
+
+
+    if (round(init_ - end_) != 0) {
+        std::cout << init_ << " " << end_ << std::endl;
+    }
+    assert(round(init_ - end_) == 0);
+    
+
 
     return;
     
@@ -231,10 +258,6 @@ void Game::government_gain(double gain) {
 }
 
 void Game::government_lose(double loss) {
-    // government.lose(loss); // TODO this is different than Python!! is this ok? check!
-    if (loss > government.assets) { // TODO should the other loss functions be like this as well?
-        loss = government.assets;
-    }
     government.lose(loss);
 }
 
@@ -285,18 +308,26 @@ void Game::fight(Attacker &a, Defender &d) {
     // Note slight logic change
     if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
         attacksAttempted += 1;
-
+        // std::cout << " -- a attacks" << std::endl;
         a_lose(a, cost_of_attack);
         attackerExpenditures += cost_of_attack;
 
         double chance_of_getting_caught = (government.assets / (government.assets + a.assets)) * p.CAUGHT;
-        government_lose(a.assets * p.EFFORT);
+        
+        double gov_cost = a.assets * p.EFFORT;
+        if (gov_cost > government.assets) {
+            gov_cost = government.assets;
+        }
+        government_lose(gov_cost);
+        governmentExpenditures += gov_cost;
 
         if (uniform(gen) < chance_of_getting_caught) {
+            // std::cout << " -- a is caught!" << std::endl;
             a_distributes_loot(a);
         } else {
             bool attacker_wins = (uniform(gen) < d.probAttackSuccess);
             if (attacker_wins) {
+                // std::cout << " -- a wins!" << std::endl;
                 attacksSucceeded += 1;
                 a_steals_from_d(a, d, effective_loot);
 
@@ -305,7 +336,9 @@ void Game::fight(Attacker &a, Defender &d) {
                 }
             }
         }
-    }
+    } // else {
+    //     std::cout << " -- a does NOT attack" << std::endl;
+    // }
 }
 
 void Game::run_iterations() {
@@ -371,6 +404,20 @@ void Game::run_iterations() {
 
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;
+
+        double init_ = d_init + a_init + g_init + i_init;
+        double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures;
+
+
+        if (round(init_ - end_) != 0) {
+            std::cout << "checksum failed! " << init_ << " " << end_ << std::endl;
+            std::cout << d_init << " " << current_defender_sum_assets << std::endl;
+            std::cout << a_init << " " << current_attacker_sum_assets << " " << attackerExpenditures << std::endl;
+            std::cout << i_init << " " << insurer.assets << std::endl;
+            std::cout << g_init << " " << government.assets << std::endl;
+        }
+        assert(round(init_ - end_) == 0);
+    
 
         // std::cout << " -> current_attacker_sum_assets: " << current_attacker_sum_assets << std::endl;
 
