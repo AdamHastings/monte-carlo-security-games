@@ -75,8 +75,8 @@ class cfg {
         // vector<double> TAX_range        = {1.0};
 
 
-        int B = 100;
-        int N = 10;
+        int B = 1000;
+        int N = 1000;
         int E = 100;
         int D = 50;
 
