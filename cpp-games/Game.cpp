@@ -7,6 +7,7 @@
 #include <ctime>
 #include <iostream>
 #include <cassert>
+#include <string.h>
 #include "Game.h"
 
 #define ASSERT(condition, input) { if(!(condition)){ std::cerr << "ASSERT FAILED: " << #condition << " with input " << std::to_string(input) << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl; } }
@@ -60,8 +61,61 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
         insurer_cumulative_assets.push_back(i_init);
         government_cumulative_assets.push_back(g_init);
     }
+}
+
+std::string Game::to_string() {
+    std::string ret = "";
+    // ret += ",".join(str(round(self.params[k], 2)).lstrip('0') for k in sorted(self.params.keys())) + ","
+    // TODO round perhaps?
+    ret += std::to_string(p.MANDATE) + ",";
+    ret += std::to_string(p.ATTACKERS) + ",";
+    ret += std::to_string(p.INEQUALITY) + ",";
+    ret += std::to_string(p.PREMIUM) + ",";
+    ret += std::to_string(p.EFFICIENCY) + ",";
+    ret += std::to_string(p.EFFORT) + ",";
+    ret += std::to_string(p.PAYOFF) + ",";
+    ret += std::to_string(p.CAUGHT) + ",";
+    ret += std::to_string(p.CLAIMS) + ",";
+    ret += std::to_string(p.TAX) + ",";
+    ret += std::to_string(round(d_init)) + ",";
+    ret += std::to_string(round(current_defender_sum_assets))  + ",";
+    ret += std::to_string(round(a_init)) + ",";
+    ret += std::to_string(round(current_attacker_sum_assets))  + ",";
+    ret += std::to_string(round(i_init)) + ",";
+    ret += std::to_string(round(insurer.assets))  + ",";
+    ret += std::to_string(round(g_init)) + ",";
+    ret += std::to_string(round(government.assets))  + ",";
+    ret += std::to_string(attacksAttempted) + ",";
+    ret += std::to_string(attacksSucceeded) + ",";
+    ret += std::to_string(attackerLoots) + ",";
+    ret += std::to_string(attackerExpenditures) + ",";
+    ret += std::to_string(governmentExpenditures) + ",";
+    ret += "\"[";
+    for (auto i : crossovers) {
+        ret += i + ",";
+    }
+    ret += "]\"";
+    ret += "\"[";
+    for (auto i : insurerTimesOfDeath) {
+        ret += i + ",";
+    }
+    ret += "]\"";
+    ret += std::to_string(round(paidClaims)) + ",";
+    ret += std::to_string(iter_num) + ",";
+    ret += final_outcome + ",";
+
+    // TODO
+    // if (verbose):
+    //     ret += "\"" + str(self.defenders_cumulative_assets)  + "\","
+    //     ret += "\"" + str(self.attackers_cumulative_assets)  + "\","
+    //     ret += "\"" + str(self.insurer_cumulative_assets)    + "\","
+    //     ret += "\"" + str(self.government_cumulative_assets) + "\","
+    
+    ret += "\n";
+    return ret;
 
 }
+
 
 void Game::verify_state() {
     assert(round(current_defender_sum_assets) >= 0);

@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <fstream>
 #include <ctime>  
 #include "oneapi/tbb.h"
 #include "Player.h"
@@ -171,6 +172,13 @@ void RunGame(Params p) {
     g.run_iterations();
 
     // Write response to log file;
+
+    std::string filename = "logs/test.csv";
+    ofstream log;
+    log.open (filename, ios::out | ios::app);
+    log << g.to_string();
+    log.close();
+
 
 }
 

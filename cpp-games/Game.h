@@ -47,6 +47,8 @@ class Game {
         Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insurer &i, Government &g);
         void run_iterations();
 
+        std::string to_string();
+
         //  // Overload the "<<" operator for outputting MyClass objects
         // friend std::ostream& operator<<(std::ostream& os, const Game& obj)
         // {
