@@ -25,7 +25,7 @@ class cfg {
         // vector<double> CLAIMS_range     = {0.1};
         // vector<double> TAX_range        = {0.1};
 
-        // test_medium
+        // // test_medium
         vector<double> MANDATE_range    = {0.1, 0.5, 0.9};
         vector<double> ATTACKERS_range  = {0.1, 0.5, 1.0};
         vector<double> INEQUALITY_range = {0.1, 0.5, 1.0};
@@ -49,7 +49,7 @@ class cfg {
         // vector<double> CLAIMS_range     = {0.1, 1.0};
         // vector<double> TAX_range        = {0.0, 0.5, 1.0};
 
-        // test_tiny2
+        // test_tiny
         // vector<double> MANDATE_range    = {0.1, 0.8};
         // vector<double> ATTACKERS_range  = {0.5}; // TODO change to 0.5 to realign with test_tiny
         // vector<double> INEQUALITY_range = {0.3};
@@ -60,6 +60,19 @@ class cfg {
         // vector<double> CAUGHT_range     = {0.1, 0.6};
         // vector<double> CLAIMS_range     = {0.1, 1.0};
         // vector<double> TAX_range        = {0.0, 1.0};
+
+        // test_target
+        // vector<double> MANDATE_range    = {0.5};
+        // vector<double> ATTACKERS_range  = {0.1}; // TODO change to 0.5 to realign with test_tiny
+        // vector<double> INEQUALITY_range = {0.1};
+        // vector<double> PREMIUM_range    = {0.5};
+        // vector<double> EFFICIENCY_range = {0.5};
+        // vector<double> EFFORT_range     = {1.0};
+        // vector<double> PAYOFF_range     = {1.0};
+        // vector<double> CAUGHT_range     = {0.5};
+        // vector<double> CLAIMS_range     = {1.0};
+        // vector<double> TAX_range        = {1.0};
+
 
         int B = 100;
         int N = 10;

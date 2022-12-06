@@ -188,12 +188,15 @@ void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
 void Game::d_gain(Defender &d, double gain) {
     d.gain(gain);
     defender_iter_sum += gain;
+    std::cout << "defender_iter_sum = " << defender_iter_sum << std::endl;
 }
 
 void Game::d_lose(Defender &d, double loss) {
     // std::cout << " -> Defender " << d.id << " losing " << loss << std::endl;
     d.lose(loss);
     defender_iter_sum -= loss;
+    std::cout << "defender_iter_sum = " << defender_iter_sum << " (loss)" << std::endl;
+
 }
 
 void Game::a_gain(Attacker &a, double gain) {
@@ -212,19 +215,27 @@ void Game::d_recoup(Attacker &a, Defender &d, double recoup_amount) {
     if (d.claimsReceived.find(a.id) != d.claimsReceived.end()) {
         // Split the recoup amount between the defender and the Insurer
 
+        std::cout << "    defender[" << d.id << "] has claimed " << d.claimsReceived[a.id] << " and has lost " << a.victims[d.id] << std::endl;
+
         if (recoup_amount >= d.claimsReceived[a.id]) {
+            std::cout << "      gets to keep " << recoup_amount - d.claimsReceived[a.id] << std::endl;
+            std::cout << "      insurer keeps " << d.claimsReceived[a.id] << std::endl;
             d_gain(d, recoup_amount - d.claimsReceived[a.id]);
             insurer_recoup(d.claimsReceived[a.id]);
             d.claimsReceived[a.id] = 0;
             alive_defenders.insert(d.id);
         } else {
+            std::cout << "      insurer gets all  " << recoup_amount << std::endl;
             insurer_recoup(recoup_amount);
             d.claimsReceived[a.id] -= recoup_amount;
         }
     } else {
+
+        std::cout << "    defender has not claimed anything and gets everything" << std::endl;
         alive_defenders.insert(d.id);
         d_gain(d, recoup_amount);
     }
+    assert(round(d_init - current_defender_sum_assets) >= 0);
 }
 
 void Game::insurer_lose(double loss) {
@@ -268,24 +279,34 @@ void Game::a_distributes_loot(Attacker &a) {
         int k = pair.first;
         double v = pair.second;
 
+        std::cout << "  attacker[" << a.id << "] distributing " << v << " to defender[" << k << "]" << std::endl;
+
         if (a.assets > 0) {
             if (a.assets > v) {
+                std::cout << "    a.assets > v" << std::endl;
                 d_recoup(a, defenders[k], v);
                 a_lose(a, v);
             } else {
+                std::cout << "    a.assets <= v" << std::endl;
                 d_recoup(a, defenders[k], a.assets);
                 a_lose(a, a.assets);
                 break;
             }
         } else {
+            std::cout << "    all out of recoup juice" << std::endl;
             break;
         }
+        assert(round(d_init - current_defender_sum_assets) >= 0);
+
     }
 
     if (a.assets > 0) {
         government_gain(a.assets);
         a_lose(a, a.assets);
     }
+
+    assert(round(d_init - current_defender_sum_assets) >= 0);
+    std::cout << "done distributing" << std::endl;
 }
 
 
@@ -308,7 +329,7 @@ void Game::fight(Attacker &a, Defender &d) {
     // Note slight logic change
     if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
         attacksAttempted += 1;
-        // std::cout << " -- a attacks" << std::endl;
+        std::cout << " -- a attacks" << std::endl;
         a_lose(a, cost_of_attack);
         attackerExpenditures += cost_of_attack;
 
@@ -322,18 +343,23 @@ void Game::fight(Attacker &a, Defender &d) {
         governmentExpenditures += gov_cost;
 
         if (uniform(gen) < chance_of_getting_caught) {
-            // std::cout << " -- a is caught!" << std::endl;
+            std::cout << " -- a is caught!" << std::endl;
             a_distributes_loot(a);
         } else {
             bool attacker_wins = (uniform(gen) < d.probAttackSuccess);
             if (attacker_wins) {
-                // std::cout << " -- a wins!" << std::endl;
+                std::cout << " -- a wins!" << std::endl;
                 attacksSucceeded += 1;
                 a_steals_from_d(a, d, effective_loot);
 
                 if (insurer.assets > 0) {
+                    std::cout << " -- insurer covers losses" << std::endl;
                     insurer_covers_d_for_losses_from_a(a, d, effective_loot);
+                } else {
+                    std::cout << " -- insurer can't cover losses!" << std::endl;
                 }
+            } else {
+                std::cout << " -- a loses!" << std::endl;
             }
         }
     } // else {
@@ -347,7 +373,7 @@ void Game::run_iterations() {
 
     bool defenders_have_more_than_attackers = true;
 
-    // std::cout << p.to_string() << std::endl;
+    std::cout << p.to_string() << std::endl;
 
     // std::cout << " attackers: ";
     // for (auto i : alive_attackers) {
@@ -372,7 +398,7 @@ void Game::run_iterations() {
         defender_iter_sum = 0;
         attacker_iter_sum = 0;
 
-        // std::cout << " -------- Round " << iter_num << " -----------" << std::endl;
+        std::cout << " -------- Round " << iter_num << " -----------" << std::endl;
 
         std::vector<int> alive_attackers_list(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
         std::vector<int> alive_defenders_list(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later
@@ -393,6 +419,8 @@ void Game::run_iterations() {
             Attacker *a = &attackers[alive_attackers_list[i]];
             Defender *d = &defenders[alive_defenders_list[i]];
             fight(*a, *d);
+            assert(round(d_init - current_defender_sum_assets) >= 0);
+
 
             if (std::round(attackers[i].assets) <= 0) {
                 alive_attackers.erase(alive_attackers_list[i]);
@@ -405,18 +433,23 @@ void Game::run_iterations() {
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;
 
-        double init_ = d_init + a_init + g_init + i_init;
-        double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures;
+        // double init_ = d_init + a_init + g_init + i_init;
+        // double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures;
 
 
-        if (round(init_ - end_) != 0) {
-            std::cout << "checksum failed! " << init_ << " " << end_ << std::endl;
-            std::cout << d_init << " " << current_defender_sum_assets << std::endl;
-            std::cout << a_init << " " << current_attacker_sum_assets << " " << attackerExpenditures << std::endl;
-            std::cout << i_init << " " << insurer.assets << std::endl;
-            std::cout << g_init << " " << government.assets << std::endl;
-        }
-        assert(round(init_ - end_) == 0);
+        // if (round(init_ - end_) != 0) {
+        //     std::cout << "checksum failed! " << init_ << " " << end_ << std::endl;
+        //     std::cout << d_init << " " << current_defender_sum_assets << std::endl;
+        //     std::cout << a_init << " " << current_attacker_sum_assets << " " << attackerExpenditures << std::endl;
+        //     std::cout << i_init << " " << insurer.assets << std::endl;
+        //     std::cout << g_init << " " << government.assets << std::endl;
+        // }
+        // assert(round(init_ - end_) == 0);
+
+        std::cout << d_init << " " << current_defender_sum_assets << " " << defender_iter_sum << std::endl;
+        
+        // new assert
+        assert(round(d_init - current_defender_sum_assets) >= 0);
     
 
         // std::cout << " -> current_attacker_sum_assets: " << current_attacker_sum_assets << std::endl;
