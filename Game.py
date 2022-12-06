@@ -136,7 +136,7 @@ class Game:
 
         assert self.attacks_attempted >= self.attacks_succeeded, str(self.params)
 
-        assert ((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures)) + 1 >= 0, str(self.params)
+        assert round((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures)) == 0, str(self.params)
 
     def conclude_game(self, outcome):
         self.outcome = outcome
