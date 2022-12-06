@@ -138,11 +138,7 @@ class Game:
 
         assert self.attacks_attempted >= self.attacks_succeeded, str(self.params)
 
-
-        print(self.d_init, self.current_defender_sum_assets)
-        print(self.a_init, self.current_attacker_sum_assets, self.attacker_expenditures)
-        print(self.i_init, self.Insurer.assets)
-        print(self.g_init, self.Government.assets)
+        # Master checksum
         assert round((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures + self.government_expenditures)) == 0, str(self.params)
 
     def conclude_game(self, outcome):
@@ -169,7 +165,6 @@ class Game:
 
     def attacker_lose(self, a, loss):
         a.lose(loss)
-        print("  -- a losing ", loss)
         self.attacker_iter_sum -= loss
 
     def attacker_gain(self, a, gain):
@@ -231,25 +226,20 @@ class Game:
         self.paid_claims -= recoup
 
     def government_gain(self, amount):
-        print("Gov has: ", self.Government.assets)
-        print("Gov gaining ", amount)
         self.Government.gain(amount)
-        print("Gov now has: ", self.Government.assets)
 
     def government_lose(self, amount):
-        print("Government losing ", amount)
         self.Government.lose(amount)
 
     def a_distributes_loot(self, a):
         self.caught += 1
-        print(" -- a has ", a.assets)
+
         # Distribute the loot to victims
         for (k,v) in a.victims.items():
             # Payback as many defenders as possible
             # Order is somewhat arbitrary. Not all participants may be paid back
             # This is a design decision and may be reconsidered later
 
-            print(k, v)
             if a.assets > 0:
                 if a.assets > v:
                     # Full payback
@@ -306,7 +296,6 @@ class Game:
         expected_earnings = effective_loot * d.ProbOfAttackSuccess
 
         if (expected_earnings > cost_of_attack) and (cost_of_attack < a.assets):
-            print(" -- a attacks")
 
             # Attacker decides that it's worth it to attack
             self.attacks_attempted += 1
@@ -329,7 +318,6 @@ class Game:
 
             # This line below was somehow corrupted, making it impossible for attackers to attack....
             if (np.random.uniform(0,1) < chance_of_getting_caught):    
-                print(" -- a is caught!")
                 self.a_distributes_loot(a)
             else:
                 AttackerWins = (np.random.uniform(0,1) < d.ProbOfAttackSuccess)
@@ -353,8 +341,6 @@ class Game:
         defenders_have_more_than_attackers = True
 
         for self.iter_num in range(1, self.game_settings['SIM_ITERS']+1):
-
-            print("------------- iter_num=", self.iter_num, " ---------------")
             
             self.defender_iter_sum = 0
             self.attacker_iter_sum = 0
@@ -403,13 +389,6 @@ class Game:
                 self.attackers_cumulative_assets.append(self.current_attacker_sum_assets)
                 self.insurer_cumulative_assets.append(self.Insurer.assets)
                 self.government_cumulative_assets.append(self.Government.assets)
-
-            print(self.d_init, self.current_defender_sum_assets)
-            print(self.a_init, self.current_attacker_sum_assets, self.attacker_expenditures)
-            print(self.i_init, self.Insurer.assets)
-            print(self.g_init, self.Government.assets, self.government_expenditures)
-            assert round((self.d_init + self.a_init + self.g_init + self.i_init) - (self.current_defender_sum_assets + self.current_attacker_sum_assets + self.Insurer.assets + self.Government.assets + self.attacker_expenditures + self.government_expenditures)) == 0, str(self.params)
-
             
             # Check if the game needs to be ended
             # Condition #1: Either the Defenders or the Attackers completely die off

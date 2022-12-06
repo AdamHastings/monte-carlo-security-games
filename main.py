@@ -104,7 +104,7 @@ def init_logs(cfg):
         header += k[:-6] + "," # trim off the "_range" of the cfg param names
     
     # Make sure this lines up with what Game's __str__ method returns
-    header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome"
+    header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,government_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome"
     
     try:
         if cfg.verbose:
