@@ -67,24 +67,24 @@ std::string Game::to_string() {
     std::string ret = "";
     // ret += ",".join(str(round(self.params[k], 2)).lstrip('0') for k in sorted(self.params.keys())) + ","
     // TODO round perhaps?
-    ret += std::to_string(p.MANDATE) + ",";
-    ret += std::to_string(p.ATTACKERS) + ",";
-    ret += std::to_string(p.INEQUALITY) + ",";
-    ret += std::to_string(p.PREMIUM) + ",";
-    ret += std::to_string(p.EFFICIENCY) + ",";
-    ret += std::to_string(p.EFFORT) + ",";
-    ret += std::to_string(p.PAYOFF) + ",";
-    ret += std::to_string(p.CAUGHT) + ",";
-    ret += std::to_string(p.CLAIMS) + ",";
-    ret += std::to_string(p.TAX) + ",";
-    ret += std::to_string(round(d_init)) + ",";
-    ret += std::to_string(round(current_defender_sum_assets))  + ",";
-    ret += std::to_string(round(a_init)) + ",";
-    ret += std::to_string(round(current_attacker_sum_assets))  + ",";
-    ret += std::to_string(round(i_init)) + ",";
-    ret += std::to_string(round(insurer.assets))  + ",";
-    ret += std::to_string(round(g_init)) + ",";
-    ret += std::to_string(round(government.assets))  + ",";
+    ret += std::to_string(p.MANDATE).substr(1,2) + ",";
+    ret += std::to_string(p.ATTACKERS).substr(1,2) + ",";
+    ret += std::to_string(p.INEQUALITY).substr(1,2) + ",";
+    ret += std::to_string(p.PREMIUM).substr(1,2) + ",";
+    ret += std::to_string(p.EFFICIENCY).substr(1,2) + ",";
+    ret += std::to_string(p.EFFORT).substr(1,2) + ",";
+    ret += std::to_string(p.PAYOFF).substr(1,2) + ",";
+    ret += std::to_string(p.CAUGHT).substr(1,2) + ",";
+    ret += std::to_string(p.CLAIMS).substr(1,2) + ",";
+    ret += std::to_string(p.TAX).substr(1,2) + ",";
+    ret += std::to_string(int(round(d_init))) + ",";
+    ret += std::to_string(int(round(current_defender_sum_assets))) + ",";
+    ret += std::to_string(int(round(a_init))) + ",";
+    ret += std::to_string(int(round(current_attacker_sum_assets))) + ",";
+    ret += std::to_string(int(round(i_init))) + ",";
+    ret += std::to_string(int(round(insurer.assets))) + ",";
+    ret += std::to_string(int(round(g_init))) + ",";
+    ret += std::to_string(int(round(government.assets))) + ",";
     ret += std::to_string(attacksAttempted) + ",";
     ret += std::to_string(attacksSucceeded) + ",";
     ret += std::to_string(attackerLoots) + ",";
@@ -92,14 +92,14 @@ std::string Game::to_string() {
     ret += std::to_string(governmentExpenditures) + ",";
     ret += "\"[";
     for (auto i : crossovers) {
-        ret += i + ",";
+        ret += std::to_string(i) + ",";
     }
-    ret += "]\"";
+    ret += "]\",";
     ret += "\"[";
     for (auto i : insurerTimesOfDeath) {
-        ret += i + ",";
+        ret += std::to_string(i) + ",";
     }
-    ret += "]\"";
+    ret += "]\",";
     ret += std::to_string(round(paidClaims)) + ",";
     ret += std::to_string(iter_num) + ",";
     ret += final_outcome + ",";
