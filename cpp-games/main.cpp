@@ -4,6 +4,8 @@
 #include <chrono>
 #include <fstream>
 #include <ctime>  
+#include <cstdlib>
+#include <experimental/filesystem>
 #include "oneapi/tbb.h"
 #include "Player.h"
 #include "Game.h"
@@ -81,6 +83,7 @@ class cfg {
         int D = 50;
 
         bool verbose = false;
+        std::string filename = "logs/test.csv";
 
 
         // cfg::cfg/() {} // Nothing to initialize for now
@@ -118,6 +121,7 @@ class cfg {
                 p.D          = E;
 
                 p.verbose    = verbose;
+                p.filename   = filename;
 
                 ret.push_back(p);
             }}}}}}}}}}
@@ -173,9 +177,9 @@ void RunGame(Params p) {
 
     // Write response to log file;
 
-    std::string filename = "logs/test.csv";
+    // std::string filename = p.filename;
     ofstream log;
-    log.open (filename, ios::out | ios::app);
+    log.open (p.filename, ios::out | ios::app);
     log << g.to_string();
     log.close();
 
@@ -198,15 +202,48 @@ void SerialRunGames(vector<Params> a) {
 }
 
 
-int main() {
-    std::vector<double> v;
-
-    for (auto i = 0; i < 200; i++) {
-        v.push_back(i);
+void init_logs(cfg &c) {
+    std::string fpath =  c.filename;
+    if (std::experimental::filesystem::exists(fpath)) {
+        std::cout << "\nThis file already exists: " << c.filename << "\nDo you want to replace it? Y/n\n >> ";
+        std::string response;
+        std::cin >> response;
+        if (response != "y" && response != "Y") {
+            std::cout << "\nOK, this program will not overwrite " << c.filename << ".\nThis program will now exit.\n";
+            std::exit(0);
+        }
     }
+
+    std::string filename = fpath;
+    ofstream log;
+
+    std::string header = "";
+
+    header += "MANDATE,";
+    header += "ATTACKERS,";
+    header += "INEQUALITY,";
+    header += "PREMIUM,";
+    header += "EFFICIENCY,";
+    header += "EFFORT,";
+    header += "PAYOFF,";
+    header += "CAUGHT,";
+    header += "CLAIMS,";
+    header += "TAX,";
+
+    // TODO double check that this is correct
+    header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,government_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome";
+    
+    log.open (filename, ios::out);
+    log << header;
+    log.close();
+}
+
+int main() {
+
     cfg c = cfg();
     vector<Params> cart = c.make_all_params();
 
+    init_logs(c);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);

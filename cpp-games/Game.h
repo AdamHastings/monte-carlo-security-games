@@ -23,6 +23,7 @@ struct Params {
     int D;
 
     bool verbose;
+    std::string filename;
 
     std::string to_string() {
         std::string str = "";
