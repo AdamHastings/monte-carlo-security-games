@@ -79,7 +79,7 @@ class cfg {
 
         int B = 1000;
         int N = 1000;
-        int E = 100;
+        int E = 100; // error if E > D...why??? see lines 120--121...
         int D = 50;
 
         bool verbose = false;
@@ -117,8 +117,8 @@ class cfg {
 
                 p.B          = B;
                 p.N          = N;
-                p.E          = D;
-                p.D          = E;
+                p.E          = E;
+                p.D          = D;
 
                 p.verbose    = verbose;
                 p.filename   = filename;
@@ -233,7 +233,7 @@ void init_logs(cfg &c) {
 
     // TODO double check that this is correct
     header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,government_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome";
-    
+    header += "\n";
     log.open (fpath, ios::out);
     log << header;
     log.close();

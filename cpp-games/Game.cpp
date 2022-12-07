@@ -85,11 +85,11 @@ std::string Game::to_string() {
     ret += std::to_string(int(round(insurer.assets))) + ",";
     ret += std::to_string(int(round(g_init))) + ",";
     ret += std::to_string(int(round(government.assets))) + ",";
-    ret += std::to_string(attacksAttempted) + ",";
-    ret += std::to_string(attacksSucceeded) + ",";
-    ret += std::to_string(attackerLoots) + ",";
-    ret += std::to_string(attackerExpenditures) + ",";
-    ret += std::to_string(governmentExpenditures) + ",";
+    ret += std::to_string(int(round(attacksAttempted))) + ",";
+    ret += std::to_string(int(round(attacksSucceeded))) + ",";
+    ret += std::to_string(int(round(attackerLoots))) + ",";
+    ret += std::to_string(int(round(attackerExpenditures))) + ",";
+    ret += std::to_string(int(round(governmentExpenditures))) + ",";
     ret += "\"[";
     for (auto i : crossovers) {
         ret += std::to_string(i) + ",";
@@ -100,9 +100,9 @@ std::string Game::to_string() {
         ret += std::to_string(i) + ",";
     }
     ret += "]\",";
-    ret += std::to_string(round(paidClaims)) + ",";
+    ret += std::to_string(int(round(paidClaims))) + ",";
     ret += std::to_string(iter_num) + ",";
-    ret += final_outcome + ",";
+    ret += final_outcome;
 
     // TODO
     // if (verbose):
@@ -193,11 +193,14 @@ void Game::conclude_game(std::string outcome) {
 }
 
 bool Game::is_equilibrium_reached() {
+    // std::cout << "checking equilibrium...";
     double last_delta_defenders_pop = last_delta_defenders_changes[iter_num % p.D];
     double last_delta_attackers_pop = last_delta_attackers_changes[iter_num % p.D];
     last_delta_defenders_changes[iter_num % p.D] = defender_iter_sum;
     last_delta_attackers_changes[iter_num % p.D] = attacker_iter_sum;
 
+    // std::cout << "sums: " << defender_iter_sum << ", " << attacker_iter_sum << std::endl;
+    // std::cout << "pops: " << last_delta_attackers_pop << ", " << last_delta_attackers_pop << std::endl;
     if (defender_iter_sum >= p.E) {
         if (last_delta_defenders_pop < p.E) {
             outside_epsilon_count_defenders += 1;
@@ -217,6 +220,8 @@ bool Game::is_equilibrium_reached() {
             outside_epsilon_count_attackers -= 1;
         }
     }
+    // std::cout << "done!" << std::endl;
+    // std::cout << outside_epsilon_count_attackers << ", " << outside_epsilon_count_defenders << std::endl;
 
     // TODO add some asserts?
     // Don't understand this part..
@@ -473,8 +478,6 @@ void Game::run_iterations() {
             Attacker *a = &attackers[alive_attackers_list[i]];
             Defender *d = &defenders[alive_defenders_list[i]];
             fight(*a, *d);
-            // assert(round(d_init - current_defender_sum_assets) >= 0);
-
 
             if (std::round(attackers[i].assets) <= 0) {
                 alive_attackers.erase(alive_attackers_list[i]);
@@ -483,6 +486,8 @@ void Game::run_iterations() {
                 alive_defenders.erase(alive_defenders_list[i]);
             }
         }
+
+        // std::cout << "fights done\n";
 
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;
@@ -542,6 +547,8 @@ void Game::run_iterations() {
             }
         }
 
+        // std::cout << "done with adding crossovers" << std::endl;
+
         if (p.verbose) {
             defenders_cumulative_assets.push_back(current_defender_sum_assets);
             attackers_cumulative_assets.push_back(current_attacker_sum_assets);
@@ -556,6 +563,7 @@ void Game::run_iterations() {
             conclude_game("D");
             return;
         } else if (is_equilibrium_reached()) {
+            // std::cout << "equilibrium!!!!" << std::endl;
             conclude_game("E");
             return;
         }
