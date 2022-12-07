@@ -19,15 +19,12 @@ double Player::get_assets() {
     return assets;
 }
 
-int Defender::s_ctr = 0;
-
 static std::default_random_engine generator;
 static std::lognormal_distribution<double> wealth(10.0, 1.0);
 static std::normal_distribution<double> p_defense_success(0.388,0.062);
 
-Defender::Defender() : Player() {
-    id = s_ctr;
-    s_ctr += 1;
+Defender::Defender(int id_in) : Player() {
+    id = id_in;
 
     assets = wealth(generator);
 
@@ -41,19 +38,7 @@ Defender::Defender() : Player() {
     costToAttack = assets;
 }
 
-void Defender::reset_ctr() {
-    s_ctr = 0;
-}
-
-int Attacker::s_ctr = 0;
-
-Attacker::Attacker(double INEQUALITY) : Player() {
-    id = s_ctr;
-    s_ctr += 1;
-    
+Attacker::Attacker(int id_in, double INEQUALITY) : Player() {
+    int id = id_in;
     assets = wealth(generator) * INEQUALITY;
-}
-
-void Attacker::reset_ctr() {
-    s_ctr = 0;
 }

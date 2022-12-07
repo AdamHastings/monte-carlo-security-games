@@ -67,16 +67,16 @@ std::string Game::to_string() {
     std::string ret = "";
     // ret += ",".join(str(round(self.params[k], 2)).lstrip('0') for k in sorted(self.params.keys())) + ","
     // TODO round perhaps?
-    ret += std::to_string(p.MANDATE).substr(1,2) + ",";
-    ret += std::to_string(p.ATTACKERS).substr(1,2) + ",";
-    ret += std::to_string(p.INEQUALITY).substr(1,2) + ",";
-    ret += std::to_string(p.PREMIUM).substr(1,2) + ",";
-    ret += std::to_string(p.EFFICIENCY).substr(1,2) + ",";
-    ret += std::to_string(p.EFFORT).substr(1,2) + ",";
-    ret += std::to_string(p.PAYOFF).substr(1,2) + ",";
-    ret += std::to_string(p.CAUGHT).substr(1,2) + ",";
-    ret += std::to_string(p.CLAIMS).substr(1,2) + ",";
-    ret += std::to_string(p.TAX).substr(1,2) + ",";
+    ret += std::to_string(p.MANDATE).substr(0,3) + ",";
+    ret += std::to_string(p.ATTACKERS).substr(0,3) + ",";
+    ret += std::to_string(p.INEQUALITY).substr(0,3) + ",";
+    ret += std::to_string(p.PREMIUM).substr(0,3) + ",";
+    ret += std::to_string(p.EFFICIENCY).substr(0,3) + ",";
+    ret += std::to_string(p.EFFORT).substr(0,3) + ",";
+    ret += std::to_string(p.PAYOFF).substr(0,3) + ",";
+    ret += std::to_string(p.CAUGHT).substr(0,3) + ",";
+    ret += std::to_string(p.CLAIMS).substr(0,3) + ",";
+    ret += std::to_string(p.TAX).substr(0,3) + ",";
     ret += std::to_string(int(round(d_init))) + ",";
     ret += std::to_string(int(round(current_defender_sum_assets))) + ",";
     ret += std::to_string(int(round(a_init))) + ",";
@@ -236,11 +236,29 @@ void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
     // std::cout << "   assets after:  " << a.assets << std::endl;
     attackerLoots += loot;
 
+    // return;
     // Check if this d has previously been attacked by a
     if (a.victims.find(d.id) != a.victims.end()) {
+        // std::cout << "found!\n";
         a.victims[d.id] += loot;
     } else {
-        a.victims[d.id] = loot;
+        // std::cout << "not found!\n";
+        // return;
+        // std::cout << a.victims.size() << std::endl;
+
+        // if (d.id > defenders.size()) {
+        //     std::cout << "~~~~ gonna cause a big problem! d.id = " << d.id << std::endl;
+        //     return;
+        // }
+        // return;
+        
+        a.victims.insert({d.id, loot});
+        // } catch(std::bad_alloc& ex) {
+        // std::cerr << " Out of memory!";
+        // cin.get();
+        // exit(1);
+
+        // std::cout << "done!\n";
     }
 }
 
@@ -333,12 +351,17 @@ void Game::government_lose(double loss) {
 
 void Game::a_distributes_loot(Attacker &a) {
     caught += 1;
+    // return;
 
     for (const auto& pair : a.victims) {
         int k = pair.first;
         double v = pair.second;
 
         // std::cout << "  attacker[" << a.id << "] distributing " << v << " to defender[" << k << "]" << std::endl;
+        // if (k > defenders.size()) {
+        //     std::cout << "whoaa big problem! k = " << k << std::endl;
+        //     return;
+        // }
 
         if (a.assets > 0) {
             if (a.assets > v) {
@@ -409,16 +432,16 @@ void Game::fight(Attacker &a, Defender &d) {
             if (attacker_wins) {
                 // std::cout << " -- a wins!" << std::endl;
                 attacksSucceeded += 1;
+                // if (d.id > defenders.size()) {
+                //     std::cout << " --- trouble brewing...\n";
+                // } else {
+                //     std::cout << "  A OK\n";
+                // }
                 a_steals_from_d(a, d, effective_loot);
-
                 if (insurer.assets > 0) {
                     // std::cout << " -- insurer covers losses" << std::endl;
                     insurer_covers_d_for_losses_from_a(a, d, effective_loot);
-                } else {
-                    // std::cout << " -- insurer can't cover losses!" << std::endl;
                 }
-            } else {
-                // std::cout << " -- a loses!" << std::endl;
             }
         }
     } // else {
@@ -454,6 +477,7 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.N + 1; iter_num++) {
 
+
         defender_iter_sum = 0;
         attacker_iter_sum = 0;
 
@@ -486,11 +510,12 @@ void Game::run_iterations() {
                 alive_defenders.erase(alive_defenders_list[i]);
             }
         }
-
         // std::cout << "fights done\n";
 
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;
+
+
 
         // double init_ = d_init + a_init + g_init + i_init;
         // double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures;

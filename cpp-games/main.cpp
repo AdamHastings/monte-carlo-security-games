@@ -139,10 +139,9 @@ void RunGame(Params p) {
     // TODO put a lot of this into constructor
     // And pass in Insurer and Government as pointers.
 
-    Defender::reset_ctr();
     std::vector<Defender> defenders;
     for (int i=0; i < p.B; i++) {
-        Defender d = Defender();
+        Defender d = Defender(i);
 
         double investment = d.assets * p.MANDATE;
         double selfless_investment = investment * p.TAX;
@@ -165,10 +164,9 @@ void RunGame(Params p) {
         defenders.push_back(Defender(d));
     }
 
-    Attacker::reset_ctr();
     std::vector<Attacker> attackers;
     for (int i=0; i < p.B * p.ATTACKERS; i++) {
-        Attacker a = Attacker(p.INEQUALITY);
+        Attacker a = Attacker(i, p.INEQUALITY);
         attackers.push_back(a);
     }
 
@@ -187,13 +185,15 @@ void RunGame(Params p) {
 
 }
 
-void ParallelRunGames(vector<Params> a, size_t n ) {
-    parallel_for( blocked_range<size_t>(0,n),
-        [=](const blocked_range<size_t>& r) {
-            for(size_t i=r.begin(); i!=r.end(); ++i)
+void ParallelRunGames(vector<Params> a) {
+    parallel_for( blocked_range<int>(0,a.size()),
+        [&](blocked_range<int> r) 
+    {
+            for(int i=r.begin(); i < r.end(); ++i)
+            {
                 RunGame(a[i]);
             }
-    );
+    });
 }
 
 void SerialRunGames(vector<Params> a) {
@@ -250,8 +250,8 @@ int main() {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "started " << std::to_string(cart.size()) << " games at " << std::ctime(&start_time);
 
-    // ParallelRunGames(cart, cart.size());
-    SerialRunGames(cart);
+    ParallelRunGames(cart);
+    // SerialRunGames(cart);
 
     auto end = std::chrono::system_clock::now();
  

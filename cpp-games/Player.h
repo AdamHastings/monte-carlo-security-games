@@ -19,12 +19,10 @@ class Defender : public Player {
         double costToAttack;
         std::map<int, double> claimsReceived;
 
-        Defender();
+        Defender(int id_in);
 
         static void reset_ctr();
 
-    private:
-        static int s_ctr;
 };
 
 class Attacker : public Player {
@@ -32,12 +30,9 @@ class Attacker : public Player {
         int id;
         std::map<int, double> victims;
 
-        Attacker(double INEQUALITY);
+        Attacker(int id_in, double INEQUALITY);
 
         static void reset_ctr();
-
-    private:
-        static int s_ctr;
 };
 
 class Insurer : public Player {
