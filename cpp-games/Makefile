@@ -10,10 +10,10 @@ OBJS=$(subst .cpp,.o,$(SRCS))
 all: $(TARGET)
 
 $(TARGET): $(OBJS) 
-	$(CXX) $(CPPFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) $(LDLIBS) $(LDFLAGS) -lstdc++fs
+	$(CXX) $(CPPFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) $(LDLIBS) $(LDFLAGS) -lstdc++fs -ljsoncpp
 
 %.o: %.c %.h
-	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $(input) -o $(output) -lstdc++fs
+	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $(input) -o $(output) -lstdc++fs -ljsoncpp
 	
 clean:
 	rm $(OBJS) $(TARGET)

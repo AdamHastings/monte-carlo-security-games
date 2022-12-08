@@ -6,6 +6,7 @@
 #include <ctime>  
 #include <cstdlib>
 #include <experimental/filesystem>
+#include <jsoncpp/json/json.h>
 #include "oneapi/tbb.h"
 #include "Player.h"
 #include "Game.h"
@@ -15,122 +16,6 @@ using namespace oneapi::tbb;
 using namespace std;
 
 
-class cfg {
-    public:
-        // vector<double> MANDATE_range    = {0.1, 0.2, 0.3, 0.4, 0.5};
-        // vector<double> ATTACKERS_range  = {0.1, 0.2};
-        // vector<double> INEQUALITY_range = {0.1};
-        // vector<double> PREMIUM_range    = {0.1, 0.9};
-        // vector<double> EFFICIENCY_range = {0.1};
-        // vector<double> EFFORT_range     = {0.1};
-        // vector<double> PAYOFF_range     = {0.1};
-        // vector<double> CAUGHT_range     = {0.1};
-        // vector<double> CLAIMS_range     = {0.1};
-        // vector<double> TAX_range        = {0.1};
-
-        // // test_medium
-        vector<double> MANDATE_range    = {0.1, 0.5, 0.9};
-        vector<double> ATTACKERS_range  = {0.1, 0.5, 1.0};
-        vector<double> INEQUALITY_range = {0.1, 0.5, 1.0};
-        vector<double> PREMIUM_range    = {0.0, 0.5, 1.0};
-        vector<double> EFFICIENCY_range = {0.1, 0.5, 1.0};
-        vector<double> EFFORT_range     = {0.1, 0.5, 1.0};
-        vector<double> PAYOFF_range     = {0.1, 0.5, 1.0};
-        vector<double> CAUGHT_range     = {0.1, 0.5, 1.0};
-        vector<double> CLAIMS_range     = {0.1, 0.5, 1.0};
-        vector<double> TAX_range        = {0.1, 0.5, 1.0};
-
-        // test_small
-        // vector<double> MANDATE_range    = {0.1, 0.8};
-        // vector<double> ATTACKERS_range  = {0.5, 1.0};
-        // vector<double> INEQUALITY_range = {0.3, 1.0};
-        // vector<double> PREMIUM_range    = {0.0, 0.5, 1.0};
-        // vector<double> EFFICIENCY_range = {0.1, 1.0};
-        // vector<double> EFFORT_range     = {0.1, 0.4};
-        // vector<double> PAYOFF_range     = {0.3, 0.9};
-        // vector<double> CAUGHT_range     = {0.1, 0.6};
-        // vector<double> CLAIMS_range     = {0.1, 1.0};
-        // vector<double> TAX_range        = {0.0, 0.5, 1.0};
-
-        // test_tiny
-        // vector<double> MANDATE_range    = {0.1, 0.8};
-        // vector<double> ATTACKERS_range  = {0.5}; // TODO change to 0.5 to realign with test_tiny
-        // vector<double> INEQUALITY_range = {0.3};
-        // vector<double> PREMIUM_range    = {0.0, 1.0};
-        // vector<double> EFFICIENCY_range = {0.1};
-        // vector<double> EFFORT_range     = {0.1, 0.4};
-        // vector<double> PAYOFF_range     = {0.3, 0.9};
-        // vector<double> CAUGHT_range     = {0.1, 0.6};
-        // vector<double> CLAIMS_range     = {0.1, 1.0};
-        // vector<double> TAX_range        = {0.0, 1.0};
-
-        // test_target
-        // vector<double> MANDATE_range    = {0.5};
-        // vector<double> ATTACKERS_range  = {0.1}; // TODO change to 0.5 to realign with test_tiny
-        // vector<double> INEQUALITY_range = {0.1};
-        // vector<double> PREMIUM_range    = {0.5};
-        // vector<double> EFFICIENCY_range = {0.5};
-        // vector<double> EFFORT_range     = {1.0};
-        // vector<double> PAYOFF_range     = {1.0};
-        // vector<double> CAUGHT_range     = {0.5};
-        // vector<double> CLAIMS_range     = {1.0};
-        // vector<double> TAX_range        = {1.0};
-
-
-        int B = 1000;
-        int N = 1000;
-        int E = 100; // error if E > D...why??? see lines 120--121...
-        int D = 50;
-
-        bool verbose = false;
-        std::string filename = "logs/test.csv";
-
-
-        // cfg::cfg/() {} // Nothing to initialize for now
-
-        vector<Params> make_all_params() {
-            
-            vector<Params> ret;
-
-            for (auto a : MANDATE_range) {
-            for (auto b : ATTACKERS_range) {
-            for (auto c : INEQUALITY_range) {
-            for (auto d : PREMIUM_range) {
-            for (auto e : EFFICIENCY_range) {
-            for (auto f : EFFORT_range) {
-            for (auto g : PAYOFF_range) {
-            for (auto h : CAUGHT_range) {
-            for (auto i : CLAIMS_range) {
-            for (auto j : TAX_range) {
-
-                Params p;
-                p.MANDATE    = a;
-                p.ATTACKERS  = b;
-                p.INEQUALITY = c;
-                p.PREMIUM    = d;
-                p.EFFICIENCY = e;
-                p.EFFORT     = f;
-                p.PAYOFF     = g;
-                p.CAUGHT     = h;
-                p.CLAIMS     = i;
-                p.TAX        = j;
-
-                p.B          = B;
-                p.N          = N;
-                p.E          = E;
-                p.D          = D;
-
-                p.verbose    = verbose;
-                p.filename   = filename;
-
-                ret.push_back(p);
-            }}}}}}}}}}
-
-            return ret;
-        }
-};
-
-// TODO make params its own class
 void RunGame(Params p) {
     
     Insurer insurer = Insurer();
@@ -176,9 +61,9 @@ void RunGame(Params p) {
     // Write response to log file;
 
     // std::string filename = "logs/test.csv";
-    std::string filename = p.filename;
+    std::string logname = p.logname;
     ofstream log;
-    log.open (filename, ios::out | ios::app);
+    log.open (logname, ios::out | ios::app);
     log << g.to_string();
     log.close();
 
@@ -196,16 +81,8 @@ void ParallelRunGames(vector<Params> a) {
     });
 }
 
-void SerialRunGames(vector<Params> a) {
-    for (int i=0; i<a.size(); i++) {
-        RunGame(a[i]);
-    }
-}
+void init_logs(std::string fpath) {
 
-
-void init_logs(cfg &c) {
-    std::string fpath =  c.filename;
-    // std::string fpath = "logs/test.csv";
     if (std::experimental::filesystem::exists(fpath)) {
         std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
         std::string response;
@@ -239,22 +116,114 @@ void init_logs(cfg &c) {
     log.close();
 }
 
-int main() {
+std::vector<double> jsonArrayToVector(std::string arr) {
+    arr = arr.substr(1, arr.size() - 2);
+    std::cout << arr << std::endl;
+}
 
-    cfg c = cfg();
-    vector<Params> cart = c.make_all_params();
+std::vector<Params> load_cfg(std::string cfgname) {
+    std::string fpath = "configs/" + cfgname;
+    std::string basename = cfgname.substr(0, cfgname.find("."));
+    
+    ifstream file(fpath);
 
-    init_logs(c);
+    Json::Reader reader;
+    Json::Value jsonData;
+    reader.parse(file, jsonData);
+  
+    std::vector<double> MANDATE_range;
+    std::vector<double> ATTACKERS_range;
+    std::vector<double> INEQUALITY_range;
+    std::vector<double> PREMIUM_range;
+    std::vector<double> EFFICIENCY_range;
+    std::vector<double> EFFORT_range;
+    std::vector<double> PAYOFF_range;
+    std::vector<double> CAUGHT_range;
+    std::vector<double> CLAIMS_range;
+    std::vector<double> TAX_range;
+    
+    MANDATE_range.reserve(jsonData["MANDATE_range"].size());
+    ATTACKERS_range.reserve(jsonData["ATTACKERS"].size());
+    INEQUALITY_range.reserve(jsonData["INEQUALITY"].size());
+    PREMIUM_range.reserve(jsonData["PREMIUM"].size());
+    EFFICIENCY_range.reserve(jsonData["EFFICIENCY"].size());
+    EFFORT_range.reserve(jsonData["EFFORT"].size());
+    PAYOFF_range.reserve(jsonData["PAYOFF"].size());
+    CAUGHT_range.reserve(jsonData["CAUGHT"].size());
+    CLAIMS_range.reserve(jsonData["CLAIMS"].size());
+    TAX_range.reserve(jsonData["TAX"].size());
+
+    std::transform(jsonData["MANDATE_range"].begin(), jsonData["MANDATE_range"].end(), std::back_inserter(MANDATE_range), [](const auto& e) { return e.asDouble(); });
+    std::transform(jsonData["ATTACKERS_range"].begin(), jsonData["ATTACKERS_range"].end(), std::back_inserter(ATTACKERS_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["INEQUALITY_range"].begin(), jsonData["INEQUALITY_range"].end(), std::back_inserter(INEQUALITY_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["PREMIUM_range"].begin(), jsonData["PREMIUM_range"].end(), std::back_inserter(PREMIUM_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["EFFICIENCY_range"].begin(), jsonData["EFFICIENCY_range"].end(), std::back_inserter(EFFICIENCY_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["EFFORT_range"].begin(), jsonData["EFFORT_range"].end(), std::back_inserter(EFFORT_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["PAYOFF_range"].begin(), jsonData["PAYOFF_range"].end(), std::back_inserter(PAYOFF_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["CAUGHT_range"].begin(), jsonData["CAUGHT_range"].end(), std::back_inserter(CAUGHT_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["CLAIMS_range"].begin(), jsonData["CLAIMS_range"].end(), std::back_inserter(CLAIMS_range), [](const auto& e) {return e.asDouble(); });
+    std::transform(jsonData["TAX_range"].begin(), jsonData["TAX_range"].end(), std::back_inserter(TAX_range), [](const auto& e) {return e.asDouble(); });
+
+    std::vector<Params> ret;
+
+    for (auto a : MANDATE_range) {
+    for (auto b : ATTACKERS_range) {
+    for (auto c : INEQUALITY_range) {
+    for (auto d : PREMIUM_range) {
+    for (auto e : EFFICIENCY_range) {
+    for (auto f : EFFORT_range) {
+    for (auto g : PAYOFF_range) {
+    for (auto h : CAUGHT_range) {
+    for (auto i : CLAIMS_range) {
+    for (auto j : TAX_range) {
+
+        Params p;
+        p.MANDATE    = a;
+        p.ATTACKERS  = b;
+        p.INEQUALITY = c;
+        p.PREMIUM    = d;
+        p.EFFICIENCY = e;
+        p.EFFORT     = f;
+        p.PAYOFF     = g;
+        p.CAUGHT     = h;
+        p.CLAIMS     = i;
+        p.TAX        = j;
+
+        p.B          = jsonData["B"].asInt();
+        p.N          = jsonData["N"].asInt();
+        p.E          = jsonData["E"].asInt();
+        p.D          = jsonData["D"].asInt();
+
+        p.verbose    = jsonData["verbose"].asBool();
+        p.logname   = "logs/" + basename + ".csv";
+
+        ret.push_back(p);
+    }}}}}}}}}}
+
+    return ret;
+}
+
+int main(int argc, char** argv) {
+
+    // Validate the inputs
+    if (argc != 2) {
+        std::cerr << "\nERROR: Incorrect number of args!";
+        std::cerr << "\nExample of how to run config test_medium (located in configs/):";
+        std::cerr << "\n     $ ./run_games test_medium.json\n\n";
+        std::exit(1);
+    }
+
+    std::string cfgname(argv[1]);
+    vector<Params> v = load_cfg(cfgname);
+    init_logs(cfgname);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-    std::cout << "started " << std::to_string(cart.size()) << " games at " << std::ctime(&start_time);
+    std::cout << "started " << std::to_string(v.size()) << " games at " << std::ctime(&start_time);
 
-    ParallelRunGames(cart);
-    // SerialRunGames(cart);
+    ParallelRunGames(v);
 
     auto end = std::chrono::system_clock::now();
- 
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
  

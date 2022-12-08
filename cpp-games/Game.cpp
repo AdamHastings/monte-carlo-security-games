@@ -65,8 +65,7 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
 
 std::string Game::to_string() {
     std::string ret = "";
-    // ret += ",".join(str(round(self.params[k], 2)).lstrip('0') for k in sorted(self.params.keys())) + ","
-    // TODO round perhaps?
+
     ret += std::to_string(p.MANDATE).substr(0,3) + ",";
     ret += std::to_string(p.ATTACKERS).substr(0,3) + ",";
     ret += std::to_string(p.INEQUALITY).substr(0,3) + ",";
@@ -120,8 +119,6 @@ std::string Game::to_string() {
 void Game::verify_state() {
     assert(round(current_defender_sum_assets) >= 0);
     assert(round(current_attacker_sum_assets) >= 0);
-    // assert((round(insurer.assets)  == 0) && (std::to_string(insurer.assets) != ""));
-    // ASSERT((round(insurer.assets)  >= 0), insurer.assets)
     assert(round(insurer.assets) >= 0);
     assert(round(government.assets) >= 0);
 
@@ -130,15 +127,8 @@ void Game::verify_state() {
         assert(round(a.assets) >= 0);
         checksum_attacker_sum_assets += a.assets;
     }
-    // std::cout << current_attacker_sum_assets << " " << checksum_attacker_sum_assets << std::endl;
-    // TODO this seems like it will always pass no matter what...? look into it...
-    // if (round(current_attacker_sum_assets - checksum_attacker_sum_assets) != 0) {
-    //     std::cout << "  a_init: " << a_init << std::endl;
-    //     std::cout << "  current_attacker_sum_assets: " << current_attacker_sum_assets << std::endl;
-    //     std::cout << "  checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
-    // }
-    assert(round(current_attacker_sum_assets - checksum_attacker_sum_assets) == 0);
 
+    assert(round(current_attacker_sum_assets - checksum_attacker_sum_assets) == 0);
 
     double checksum_defender_sum_assets = 0;
     for (auto d : defenders) {
@@ -146,17 +136,10 @@ void Game::verify_state() {
         checksum_defender_sum_assets += d.assets;
     }
 
-    // if (round(current_defender_sum_assets - checksum_defender_sum_assets) != 0) {
-    //     std::cout << "  d_init: " << d_init << std::endl;
-    //     std::cout << "  current_defender_sum_assets: " << current_defender_sum_assets << std::endl;
-    //     std::cout << "  checksum_defender_sum_assets: " << checksum_defender_sum_assets << std::endl;
-    //      std::cout << "  difference: " << round(current_defender_sum_assets - checksum_defender_sum_assets) << std::endl;
-
-    // }
     assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
 
     assert(round(i_init - insurer.assets) >= 0);
-    // assert(round(d_init - current_defender_sum_assets) >= 0);
+    // assert(round(d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
     assert(round(i_init - paidClaims) >= 0);
     assert(round(paidClaims) >= 0);
     assert(round(attackerLoots - paidClaims) >= 0);
@@ -171,19 +154,15 @@ void Game::verify_state() {
         assert(alive_attackers.size() == 0);
     }
 
+    // Master checksum
     double init_ = d_init + a_init + g_init + i_init;
     double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures;
-
 
     if (round(init_ - end_) != 0) {
         std::cout << init_ << " " << end_ << std::endl;
     }
     assert(round(init_ - end_) == 0);
-    
-
-
-    return;
-    
+  
 }
 
 void Game::conclude_game(std::string outcome) {
@@ -491,9 +470,11 @@ void Game::run_iterations() {
 
         int shorter_length;
         if (alive_defenders_list.size() < alive_attackers_list.size()) {
+            // TODO shuffle sampels instead of full array
             std::shuffle(alive_attackers_list.begin(), alive_attackers_list.end(), g);
             shorter_length = alive_defenders_list.size();
         } else {
+            // TODO shuffle samples instead of full array
             std::shuffle(alive_defenders_list.begin(), alive_defenders_list.end(), g);
             shorter_length = alive_attackers_list.size();
         }
