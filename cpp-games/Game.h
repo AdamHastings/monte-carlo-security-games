@@ -23,6 +23,7 @@ struct Params {
     int D;
 
     bool verbose;
+    bool safetychecks_on;
     std::string logname;
 
     std::string to_string() {
@@ -100,7 +101,9 @@ class Game {
         void fight(Attacker &a, Defender &d);
         void conclude_game(std::string outcome);
         bool is_equilibrium_reached();
-        void verify_state();
+
+        void verify_init();
+        void verify_outcome();
 
         void a_steals_from_d(Attacker &a, Defender &d, double loot);
         void d_gain(Defender &d, double gain);

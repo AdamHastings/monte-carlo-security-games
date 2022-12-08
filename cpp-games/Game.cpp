@@ -61,6 +61,9 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
         insurer_cumulative_assets.push_back(i_init);
         government_cumulative_assets.push_back(g_init);
     }
+
+    // Let's make sure everything got set up correctly
+    verify_init();
 }
 
 std::string Game::to_string() {
@@ -115,8 +118,33 @@ std::string Game::to_string() {
 
 }
 
+void Game::verify_init() {
 
-void Game::verify_state() {
+    // TODO store each D's init conditions? To compare against later...?
+    for (auto d : defenders) {
+        assert(d.id >= 0);
+        assert(d.id < defenders.size());
+        assert(d.assets >= 0);
+        assert(d.costToAttack >= 0);
+        assert(d.probAttackSuccess >= 0);
+        assert(d.probAttackSuccess <= 1);
+    }
+
+    for (auto a : attackers) {
+        assert(a.id >= 0);
+        if (a.id >= attackers.size())  {
+            std::cout << a.id << " >= " << attackers.size() << std::endl;
+        }
+        assert(a.id < attackers.size());
+        assert(a.assets >= 0);
+    }
+
+    assert(insurer.assets >= 0);
+    assert(government.assets >= 0);
+}
+
+
+void Game::verify_outcome() {
     assert(round(current_defender_sum_assets) >= 0);
     assert(round(current_attacker_sum_assets) >= 0);
     assert(round(insurer.assets) >= 0);
@@ -143,6 +171,8 @@ void Game::verify_state() {
     assert(round(i_init - paidClaims) >= 0);
     assert(round(paidClaims) >= 0);
     assert(round(attackerLoots - paidClaims) >= 0);
+    assert(attackerExpenditures >= 0);
+    assert(governmentExpenditures >= 0);
 
     if (final_outcome == "E") {
         assert(alive_attackers.size() > 0);
@@ -168,7 +198,7 @@ void Game::verify_state() {
 void Game::conclude_game(std::string outcome) {
     final_outcome = outcome;
     // std::cout << "concluding with outcome: " << outcome << std::endl;
-    verify_state();
+    verify_outcome();
 }
 
 bool Game::is_equilibrium_reached() {
@@ -385,6 +415,7 @@ void Game::fight(Attacker &a, Defender &d) {
     }
 
     double cost_of_attack = d.costToAttack;
+
     double expected_earnings = effective_loot * d.probAttackSuccess;
 
     // Note slight logic change
@@ -430,11 +461,10 @@ void Game::fight(Attacker &a, Defender &d) {
 
 void Game::run_iterations() {
 
-    // std::cout << "in running iterations! N = " << p.N << std::endl;
+    // std::cout << p.to_string() << std::endl;
 
     bool defenders_have_more_than_attackers = true;
 
-    // std::cout << p.to_string() << std::endl;
 
     // std::cout << " attackers: ";
     // for (auto i : alive_attackers) {

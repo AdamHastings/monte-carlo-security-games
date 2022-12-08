@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <cassert>
+
 
 class Player {
     public:
@@ -20,9 +22,6 @@ class Defender : public Player {
         std::map<int, double> claimsReceived;
 
         Defender(int id_in);
-
-        static void reset_ctr();
-
 };
 
 class Attacker : public Player {
@@ -31,8 +30,6 @@ class Attacker : public Player {
         std::map<int, double> victims;
 
         Attacker(int id_in, double INEQUALITY);
-
-        static void reset_ctr();
 };
 
 class Insurer : public Player {

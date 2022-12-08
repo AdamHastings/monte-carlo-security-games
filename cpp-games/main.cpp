@@ -17,6 +17,8 @@ using namespace std;
 
 
 void RunGame(Params p) {
+
+    std::cout << p.to_string() << std::endl;
     
     Insurer insurer = Insurer();
     Government government = Government();
@@ -50,10 +52,25 @@ void RunGame(Params p) {
     }
 
     std::vector<Attacker> attackers;
-    for (int i=0; i < p.B * p.ATTACKERS; i++) {
+    for (int i=0; i < (p.B * p.ATTACKERS); i++) {
+        std::cout << i << ", ";
         Attacker a = Attacker(i, p.INEQUALITY);
+        std::cout << a.id << std::endl;
         attackers.push_back(a);
     }
+    std::cout << " ========= " << endl;
+
+    for (int i=0; i < attackers.size(); i++) {
+        Attacker a = attackers[i];
+        assert(a.id >= 0);
+        std::cout << a.id << ", ";
+        if (a.id >= attackers.size())  {
+            std::cout << a.id << " >= " << attackers.size() << std::endl;
+        }
+        assert(a.id < attackers.size());
+        assert(a.assets >= 0);
+    }
+    std::cout << endl;
 
     Game g = Game(p, defenders, attackers, insurer, government);
     g.run_iterations();
@@ -74,6 +91,12 @@ void ParallelRunGames(vector<Params> a) {
                 RunGame(a[i]);
             }
     });
+}
+
+void SerialRunGames(vector<Params> a) {
+    for (int i=0; i < a.size(); i++) {
+        RunGame(a[i]);
+    }
 }
 
 void init_logs(std::string basename) {
@@ -230,7 +253,8 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "started " << std::to_string(v.size()) << " games at " << std::ctime(&start_time);
 
-    ParallelRunGames(v);
+    // ParallelRunGames(v);
+    SerialRunGames(v);
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

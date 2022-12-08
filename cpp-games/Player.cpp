@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <random>
 #include <map>
+#include <iostream>
 
 
 Player::Player() {
@@ -27,6 +28,9 @@ Defender::Defender(int id_in) : Player() {
     id = id_in;
 
     assets = wealth(generator);
+    if (assets < 0) {
+        assets = 0;
+    }
 
     probAttackSuccess = 1 - p_defense_success(generator);
     if (probAttackSuccess < 0) {
@@ -40,5 +44,12 @@ Defender::Defender(int id_in) : Player() {
 
 Attacker::Attacker(int id_in, double INEQUALITY) : Player() {
     int id = id_in;
+
     assets = wealth(generator) * INEQUALITY;
+    if (assets < 0) {
+        assets = 0;
+    }
+
+    std::cout << id << " ,";
+
 }
