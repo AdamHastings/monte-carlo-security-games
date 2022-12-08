@@ -494,33 +494,46 @@ void Game::run_iterations() {
         std::vector<int> alive_attackers_list(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
         std::vector<int> alive_defenders_list(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later
 
-        std::random_device rd;
         std::mt19937 g(rd());
-
-        int shorter_length;
-        if (alive_defenders_list.size() < alive_attackers_list.size()) {
-            // TODO shuffle sampels instead of full array
-            std::shuffle(alive_attackers_list.begin(), alive_attackers_list.end(), g);
-            shorter_length = alive_defenders_list.size();
-        } else {
-            // TODO shuffle samples instead of full array
-            std::shuffle(alive_defenders_list.begin(), alive_defenders_list.end(), g);
+        uint shorter_length, offset;
+        bool more_defenders_than_attackers = (alive_defenders_list.size() > alive_attackers_list.size());
+        if (more_defenders_than_attackers) {
+            // Shuffle smaller list
+            // Then pair it up at a random point in the opposing list
+            std::shuffle(alive_attackers_list.begin(), alive_attackers_list.end(), gen);
+            std::uniform_int_distribution<> distr(0, alive_defenders_list.size() - alive_attackers_list.size());
+            offset = distr(gen);
             shorter_length = alive_attackers_list.size();
+        } else {
+            // Shuffle smaller list
+            // Then pair it up at a random point in the opposing list
+            std::shuffle(alive_defenders_list.begin(), alive_defenders_list.end(), gen);
+            std::uniform_int_distribution<> distr(0, alive_attackers_list.size() - alive_defenders_list.size());
+            offset = distr(gen);
+            shorter_length = alive_defenders_list.size();
         }
+        
+        for (uint i=0; i<shorter_length; i++) {
+            uint a_idx, d_idx;
+            if (more_defenders_than_attackers) {
+                a_idx = i;
+                d_idx = i + offset;
+            } else {
+                a_idx = i + offset;
+                d_idx = i;
+            }
 
-        for (int i=0; i<shorter_length; i++) {
-            Attacker *a = &attackers[alive_attackers_list[i]];
-            Defender *d = &defenders[alive_defenders_list[i]];
+            Attacker *a = &attackers[alive_attackers_list[a_idx]];
+            Defender *d = &defenders[alive_defenders_list[d_idx]];
             fight(*a, *d);
 
             if (std::round(a->assets) <= 0) {
-                alive_attackers.erase(alive_attackers_list[i]);
+                alive_attackers.erase(a->id);
             }
             if (std::round(d->assets) <= 0) {
-                alive_defenders.erase(alive_defenders_list[i]);
+                alive_defenders.erase(d->id);
             }
         }
-        // std::cout << "fights done\n";
 
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;
