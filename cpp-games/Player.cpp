@@ -43,13 +43,10 @@ Defender::Defender(int id_in) : Player() {
 }
 
 Attacker::Attacker(int id_in, double INEQUALITY) : Player() {
-    int id = id_in;
+    id = id_in;
 
     assets = wealth(generator) * INEQUALITY;
     if (assets < 0) {
         assets = 0;
     }
-
-    std::cout << id << " ,";
-
 }

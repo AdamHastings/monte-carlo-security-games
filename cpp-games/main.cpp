@@ -18,7 +18,7 @@ using namespace std;
 
 void RunGame(Params p) {
 
-    std::cout << p.to_string() << std::endl;
+    // std::cout << p.to_string() << std::endl;
     
     Insurer insurer = Insurer();
     Government government = Government();
@@ -46,31 +46,22 @@ void RunGame(Params p) {
         d.costToAttack = d.assets * p.EFFORT;
         d.costToAttack += personal_security_investment * p.EFFORT;
         d.lose(personal_security_investment);
-
-        // std::cout << "Making new defenders with d.assets=" << d.assets << std::endl;
+        
         defenders.push_back(Defender(d));
     }
 
     std::vector<Attacker> attackers;
     for (int i=0; i < (p.B * p.ATTACKERS); i++) {
-        std::cout << i << ", ";
         Attacker a = Attacker(i, p.INEQUALITY);
-        std::cout << a.id << std::endl;
         attackers.push_back(a);
     }
-    std::cout << " ========= " << endl;
 
     for (int i=0; i < attackers.size(); i++) {
         Attacker a = attackers[i];
         assert(a.id >= 0);
-        std::cout << a.id << ", ";
-        if (a.id >= attackers.size())  {
-            std::cout << a.id << " >= " << attackers.size() << std::endl;
-        }
         assert(a.id < attackers.size());
         assert(a.assets >= 0);
     }
-    std::cout << endl;
 
     Game g = Game(p, defenders, attackers, insurer, government);
     g.run_iterations();
