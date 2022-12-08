@@ -245,8 +245,8 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "started " << std::to_string(v.size()) << " games at " << std::ctime(&start_time);
 
-    // ParallelRunGames(v);
-    SerialRunGames(v);
+    ParallelRunGames(v);
+    // SerialRunGames(v);
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

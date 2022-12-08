@@ -513,10 +513,10 @@ void Game::run_iterations() {
             Defender *d = &defenders[alive_defenders_list[i]];
             fight(*a, *d);
 
-            if (std::round(attackers[i].assets) <= 0) {
+            if (std::round(a->assets) <= 0) {
                 alive_attackers.erase(alive_attackers_list[i]);
             }
-            if (std::round(defenders[i].assets) <= 0) {
+            if (std::round(d->assets) <= 0) {
                 alive_defenders.erase(alive_defenders_list[i]);
             }
         }
