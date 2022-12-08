@@ -24,6 +24,9 @@ void RunGame(Params p) {
     // TODO put a lot of this into constructor
     // And pass in Insurer and Government as pointers.
 
+
+    // std::cout << p.to_string();
+
     std::vector<Defender> defenders;
     for (int i=0; i < p.B; i++) {
         Defender d = Defender(i);
@@ -36,7 +39,7 @@ void RunGame(Params p) {
         d.lose(tax);
         government.gain(tax);
 
-        double insurance = selfless_investment * p.PREMIUM;
+        double insurance = selfish_investment * p.PREMIUM;
         d.lose(insurance);
         insurer.gain(insurance);
 
@@ -46,6 +49,12 @@ void RunGame(Params p) {
         d.lose(personal_security_investment);
 
         defenders.push_back(Defender(d));
+
+        if (p.assertions_on) {
+            assert(tax >= 0);
+            assert(personal_security_investment >= 0);
+            assert(insurance >= 0);
+        }
     }
 
     std::vector<Attacker> attackers;
