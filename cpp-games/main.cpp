@@ -59,15 +59,10 @@ void RunGame(Params p) {
     g.run_iterations();
 
     // Write response to log file;
-
-    // std::string filename = "logs/test.csv";
-    std::string logname = p.logname;
     ofstream log;
-    log.open (logname, ios::out | ios::app);
+    log.open(p.logname, ios::out | ios::app);
     log << g.to_string();
     log.close();
-
-
 }
 
 void ParallelRunGames(vector<Params> a) {
@@ -81,7 +76,9 @@ void ParallelRunGames(vector<Params> a) {
     });
 }
 
-void init_logs(std::string fpath) {
+void init_logs(std::string basename) {
+
+    std::string fpath = "logs/" + basename + ".csv";
 
     if (std::experimental::filesystem::exists(fpath)) {
         std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
@@ -109,21 +106,32 @@ void init_logs(std::string fpath) {
     header += "TAX,";
 
     // TODO double check that this is correct
-    header += "d_init,d_end,a_init,a_end,i_init,i_end,g_init,g_end,attacks_attempted,attacks_succeeded,amount_stolen,attacker_expenditures,government_expenditures,crossovers,insurer_tod,paid_claims,final_iter,outcome";
+    header += "d_init,"
+    header += "d_end,"
+    header += "a_init,"
+    header += "a_end,"
+    header += "i_init,"
+    header += "i_end,"
+    header += "g_init,"
+    header += "g_end,"
+    header += "attacks_attempted,"
+    header += "attacks_succeeded,"
+    header += "amount_stolen,"
+    header += "attacker_expenditures,"
+    header += "government_expenditures,"
+    header += "crossovers,"
+    header += "insurer_tod,"
+    header += "paid_claims,"
+    header += "final_iter,"
+    header += "outcome"
     header += "\n";
     log.open (fpath, ios::out);
     log << header;
     log.close();
 }
 
-std::vector<double> jsonArrayToVector(std::string arr) {
-    arr = arr.substr(1, arr.size() - 2);
-    std::cout << arr << std::endl;
-}
-
-std::vector<Params> load_cfg(std::string cfgname) {
-    std::string fpath = "configs/" + cfgname;
-    std::string basename = cfgname.substr(0, cfgname.find("."));
+std::vector<Params> load_cfg(std::string basename) {
+    std::string fpath = "configs/" + basename + ".json";
     
     ifstream file(fpath);
 
@@ -213,9 +221,10 @@ int main(int argc, char** argv) {
         std::exit(1);
     }
 
-    std::string cfgname(argv[1]);
-    vector<Params> v = load_cfg(cfgname);
-    init_logs(cfgname);
+    std::string basename(argv[1]);
+    basename = basename.substr(0, basename.find("."));
+    init_logs(basename);
+    vector<Params> v = load_cfg(basename);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
