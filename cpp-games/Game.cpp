@@ -494,7 +494,6 @@ void Game::run_iterations() {
         std::vector<int> alive_attackers_list(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
         std::vector<int> alive_defenders_list(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later
 
-        std::mt19937 g(rd());
         uint shorter_length, offset;
         bool more_defenders_than_attackers = (alive_defenders_list.size() > alive_attackers_list.size());
         if (more_defenders_than_attackers) {
