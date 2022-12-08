@@ -23,7 +23,7 @@ struct Params {
     int D;
 
     bool verbose;
-    bool safetychecks_on;
+    bool assertions_on;
     std::string logname;
 
     std::string to_string() {

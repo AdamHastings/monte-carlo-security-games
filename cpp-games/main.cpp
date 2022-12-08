@@ -17,8 +17,6 @@ using namespace std;
 
 
 void RunGame(Params p) {
-
-    // std::cout << p.to_string() << std::endl;
     
     Insurer insurer = Insurer();
     Government government = Government();
@@ -46,7 +44,7 @@ void RunGame(Params p) {
         d.costToAttack = d.assets * p.EFFORT;
         d.costToAttack += personal_security_investment * p.EFFORT;
         d.lose(personal_security_investment);
-        
+
         defenders.push_back(Defender(d));
     }
 
@@ -54,13 +52,6 @@ void RunGame(Params p) {
     for (int i=0; i < (p.B * p.ATTACKERS); i++) {
         Attacker a = Attacker(i, p.INEQUALITY);
         attackers.push_back(a);
-    }
-
-    for (int i=0; i < attackers.size(); i++) {
-        Attacker a = attackers[i];
-        assert(a.id >= 0);
-        assert(a.id < attackers.size());
-        assert(a.assets >= 0);
     }
 
     Game g = Game(p, defenders, attackers, insurer, government);
@@ -216,8 +207,9 @@ std::vector<Params> load_cfg(std::string basename) {
         p.E          = jsonData["E"].asInt();
         p.D          = jsonData["D"].asInt();
 
-        p.verbose    = jsonData["verbose"].asBool();
-        p.logname   = "logs/" + basename + ".csv";
+        p.verbose       = jsonData["verbose"].asBool();
+        p.assertions_on = jsonData["assertions_on"].asBool();
+        p.logname       = "logs/" + basename + ".csv";
 
         ret.push_back(p);
     }}}}}}}}}}

@@ -1,5 +1,5 @@
 CXX=g++
-CPPFLAGS= -std=c++17 -g3 -fno-builtin-memset -fno-lifetime-dse -O0
+CPPFLAGS= -std=c++17 -g3 -fno-builtin-memset -fno-lifetime-dse -O3
 INCLUDES=-Itbb/latest/include
 LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ -ltbb
 TARGET=run_games

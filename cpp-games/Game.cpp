@@ -63,7 +63,9 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
     }
 
     // Let's make sure everything got set up correctly
-    verify_init();
+    if (p.assertions_on) {
+        verify_init();  
+    }
 }
 
 std::string Game::to_string() {
@@ -132,9 +134,6 @@ void Game::verify_init() {
 
     for (auto a : attackers) {
         assert(a.id >= 0);
-        if (a.id >= attackers.size())  {
-            std::cout << a.id << " >= " << attackers.size() << std::endl;
-        }
         assert(a.id < attackers.size());
         assert(a.assets >= 0);
     }
