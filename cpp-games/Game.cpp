@@ -38,11 +38,11 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
     i_init = insurer.get_assets();
     g_init = government.get_assets();
 
-    for (int i=0; i<attackers.size(); i++) {
+    for (uint i=0; i<attackers.size(); i++) {
         alive_attackers.insert(i);
     }
     
-    for (int i=0; i<defenders.size(); i++) {
+    for (uint i=0; i<defenders.size(); i++) {
         alive_defenders.insert(i);
     }
 

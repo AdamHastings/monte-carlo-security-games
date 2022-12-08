@@ -76,7 +76,7 @@ void ParallelRunGames(vector<Params> a) {
 }
 
 void SerialRunGames(vector<Params> a) {
-    for (int i=0; i < a.size(); i++) {
+    for (uint i=0; i < a.size(); i++) {
         RunGame(a[i]);
     }
 }

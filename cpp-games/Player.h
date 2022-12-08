@@ -16,7 +16,7 @@ class Player {
 
 class Defender : public Player {
     public:
-        int id;
+        uint id;
         double probAttackSuccess;
         double costToAttack;
         std::map<int, double> claimsReceived;
@@ -26,7 +26,7 @@ class Defender : public Player {
 
 class Attacker : public Player {
     public:
-        int id;
+        uint id;
         std::map<int, double> victims;
 
         Attacker(int id_in, double INEQUALITY);
