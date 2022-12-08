@@ -106,24 +106,24 @@ void init_logs(std::string basename) {
     header += "TAX,";
 
     // TODO double check that this is correct
-    header += "d_init,"
-    header += "d_end,"
-    header += "a_init,"
-    header += "a_end,"
-    header += "i_init,"
-    header += "i_end,"
-    header += "g_init,"
-    header += "g_end,"
-    header += "attacks_attempted,"
-    header += "attacks_succeeded,"
-    header += "amount_stolen,"
-    header += "attacker_expenditures,"
-    header += "government_expenditures,"
-    header += "crossovers,"
-    header += "insurer_tod,"
-    header += "paid_claims,"
-    header += "final_iter,"
-    header += "outcome"
+    header += "d_init,";
+    header += "d_end,";
+    header += "a_init,";
+    header += "a_end,";
+    header += "i_init,";
+    header += "i_end,";
+    header += "g_init,";
+    header += "g_end,";
+    header += "attacks_attempted,";
+    header += "attacks_succeeded,";
+    header += "amount_stolen,";
+    header += "attacker_expenditures,";
+    header += "government_expenditures,";
+    header += "crossovers,";
+    header += "insurer_tod,";
+    header += "paid_claims,";
+    header += "final_iter,";
+    header += "outcome";
     header += "\n";
     log.open (fpath, ios::out);
     log << header;
