@@ -87,8 +87,11 @@ class Game {
         int outside_epsilon_count_defenders;
         int outside_epsilon_count_attackers;
 
-        std::set<int> alive_attackers;
-        std::set<int> alive_defenders;
+        // std::set<int> alive_attackers;
+        // std::set<int> alive_defenders;
+        std::vector<int> alive_attackers_indices; //(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
+        std::vector<int> alive_defenders_indices; //(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later. Try just using a list instead of having to copy to a list each time..?
+        
         
 
         double paidClaims = 0;

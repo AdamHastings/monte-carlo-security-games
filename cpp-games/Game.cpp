@@ -38,13 +38,22 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
     i_init = insurer.get_assets();
     g_init = government.get_assets();
 
+    // for (uint i=0; i<attackers.size(); i++) {
+    //     alive_attackers.insert(i);
+    // }
+
+    // for (uint i=0; i<defenders.size(); i++) {
+    //     alive_defenders.insert(i);
+    // }
+
     for (uint i=0; i<attackers.size(); i++) {
-        alive_attackers.insert(i);
+        alive_attackers_indices.push_back(i);
+    }
+
+    for (uint i=0; i<defenders.size(); i++) {
+        alive_defenders_indices.push_back(i);
     }
     
-    for (uint i=0; i<defenders.size(); i++) {
-        alive_defenders.insert(i);
-    }
 
     outside_epsilon_count_defenders = p.D;
     outside_epsilon_count_attackers = p.D;
@@ -123,6 +132,7 @@ std::string Game::to_string() {
 void Game::verify_init() {
 
     // TODO store each D's init conditions? To compare against later...?
+    uint i = 0;
     for (auto d : defenders) {
         assert(d.id >= 0);
         assert(d.id < defenders.size());
@@ -130,12 +140,17 @@ void Game::verify_init() {
         assert(d.costToAttack >= 0);
         assert(d.probAttackSuccess >= 0);
         assert(d.probAttackSuccess <= 1);
+        assert(d.id == i);
+        i++;
     }
 
+    i = 0;
     for (auto a : attackers) {
         assert(a.id >= 0);
         assert(a.id < attackers.size());
         assert(a.assets >= 0);
+        assert(a.id == i);
+        i++;
     }
 
     assert(insurer.assets >= 0);
@@ -174,13 +189,13 @@ void Game::verify_outcome() {
     assert(governmentExpenditures >= 0);
 
     if (final_outcome == "E") {
-        assert(alive_attackers.size() > 0);
-        assert(alive_defenders.size() > 0);
+        assert(alive_attackers_indices.size() > 0);
+        assert(alive_defenders_indices.size() > 0);
         assert(iter_num >= p.D); 
     } else if (final_outcome == "D") {
-        assert(alive_defenders.size() == 0);
+        assert(alive_defenders_indices.size() == 0);
     } else if (final_outcome == "A") {
-        assert(alive_attackers.size() == 0);
+        assert(alive_attackers_indices.size() == 0);
     }
 
     // Master checksum
@@ -296,7 +311,9 @@ void Game::a_lose(Attacker &a, double loss) {
     attacker_iter_sum -= loss;
 }
 
+
 void Game::d_recoup(Attacker &a, Defender &d, double recoup_amount) {
+
     if (d.claimsReceived.find(a.id) != d.claimsReceived.end()) {
         // Split the recoup amount between the defender and the Insurer
 
@@ -308,17 +325,23 @@ void Game::d_recoup(Attacker &a, Defender &d, double recoup_amount) {
             d_gain(d, recoup_amount - d.claimsReceived[a.id]);
             insurer_recoup(d.claimsReceived[a.id]);
             d.claimsReceived[a.id] = 0;
-            alive_defenders.insert(d.id);
+            // int d_idx = std::find(alive_defenders_indices.begin(), alive_defenders_indices.end(), d.id);
+            if (std::find(alive_defenders_indices.begin(), alive_defenders_indices.end(), d.id) == alive_defenders_indices.end()) {
+                alive_defenders_indices.push_back(d.id);
+            }
+            // alive_defenders.insert(d.id);
         } else {
             // std::cout << "      insurer gets all  " << recoup_amount << std::endl;
             insurer_recoup(recoup_amount);
             d.claimsReceived[a.id] -= recoup_amount;
         }
     } else {
-
-        // std::cout << "    defender has not claimed anything and gets everything" << std::endl;
-        alive_defenders.insert(d.id);
         d_gain(d, recoup_amount);
+        // std::cout << "    defender has not claimed anything and gets everything" << std::endl;
+        // alive_defenders.insert(d.id);
+        if (std::find(alive_defenders_indices.begin(), alive_defenders_indices.end(), d.id) == alive_defenders_indices.end()) {
+            alive_defenders_indices.push_back(d.id);
+        }
     }
     // assert(round(d_init - current_defender_sum_assets) >= 0);
 }
@@ -491,25 +514,22 @@ void Game::run_iterations() {
 
         // std::cout << " -------- Round " << iter_num << " -----------" << std::endl;
 
-        std::vector<int> alive_attackers_list(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
-        std::vector<int> alive_defenders_list(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later
-
         uint shorter_length, offset;
-        bool more_defenders_than_attackers = (alive_defenders_list.size() > alive_attackers_list.size());
+        bool more_defenders_than_attackers = (alive_defenders_indices.size() > alive_attackers_indices.size());
         if (more_defenders_than_attackers) {
             // Shuffle smaller list
             // Then pair it up at a random point in the opposing list
-            std::shuffle(alive_attackers_list.begin(), alive_attackers_list.end(), gen);
-            std::uniform_int_distribution<> distr(0, alive_defenders_list.size() - alive_attackers_list.size());
+            std::shuffle(alive_attackers_indices.begin(), alive_attackers_indices.end(), gen);
+            std::uniform_int_distribution<> distr(0, alive_defenders_indices.size() - alive_attackers_indices.size());
             offset = distr(gen);
-            shorter_length = alive_attackers_list.size();
+            shorter_length = alive_attackers_indices.size();
         } else {
             // Shuffle smaller list
             // Then pair it up at a random point in the opposing list
-            std::shuffle(alive_defenders_list.begin(), alive_defenders_list.end(), gen);
-            std::uniform_int_distribution<> distr(0, alive_attackers_list.size() - alive_defenders_list.size());
+            std::shuffle(alive_defenders_indices.begin(), alive_defenders_indices.end(), gen);
+            std::uniform_int_distribution<> distr(0, alive_attackers_indices.size() - alive_defenders_indices.size());
             offset = distr(gen);
-            shorter_length = alive_defenders_list.size();
+            shorter_length = alive_defenders_indices.size();
         }
         
         for (uint i=0; i<shorter_length; i++) {
@@ -522,15 +542,22 @@ void Game::run_iterations() {
                 d_idx = i;
             }
 
-            Attacker *a = &attackers[alive_attackers_list[a_idx]];
-            Defender *d = &defenders[alive_defenders_list[d_idx]];
+            // Attacker *a = &attackers[alive_attackers_indices[a_idx]];
+            // Defender *d = &defenders[alive_defenders_indices[d_idx]];
+            Attacker *a = &attackers[a_idx];
+            Defender *d = &defenders[d_idx];
+
             fight(*a, *d);
 
             if (std::round(a->assets) <= 0) {
-                alive_attackers.erase(a->id);
+                // alive_attackers.erase(a->id);
+                // erase alive_attackers_indices at the index a_idx
+                alive_attackers_indices.erase(alive_attackers_indices.begin() + a_idx);
             }
             if (std::round(d->assets) <= 0) {
-                alive_defenders.erase(d->id);
+                // alive_defenders.erase(d->id);
+                // erase alive_defenders_indices at the index d_idx
+                alive_defenders_indices.erase(alive_defenders_indices.begin() + d_idx);
             }
         }
 
@@ -603,10 +630,10 @@ void Game::run_iterations() {
             government_cumulative_assets.push_back(government.assets);
         }
 
-        if (alive_attackers.size() == 0) {
+        if (alive_attackers_indices.size() == 0) {
             conclude_game("A");
             return;
-        } else if (alive_defenders.size() == 0) {
+        } else if (alive_defenders_indices.size() == 0) {
             conclude_game("D");
             return;
         } else if (is_equilibrium_reached()) {
