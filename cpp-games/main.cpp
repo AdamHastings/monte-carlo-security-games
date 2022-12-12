@@ -6,7 +6,7 @@
 #include <ctime>  
 #include <cstdlib>
 #include <experimental/filesystem>
-#include "jsoncpp/json/json.h"
+#include "json/json.h"
 #include "oneapi/tbb.h"
 #include "Player.h"
 #include "Game.h"
