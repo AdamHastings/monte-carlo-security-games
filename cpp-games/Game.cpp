@@ -528,12 +528,14 @@ void Game::run_iterations() {
             shorter_length = alive_attackers_indices.size();
 
             // Prime new_alive_defenders_indices with values that won't be inlcuded in this round of fighting
-            for (uint i=0; i<offset; i++) {
-                new_alive_defenders_indices.push_back(alive_defenders_indices[i]);
-            }
-            for (uint i=offset + alive_attackers_indices.size(); i < alive_defenders_indices.size(); i++) {
-                new_alive_defenders_indices.push_back(alive_defenders_indices[i]);
-            }
+            // for (uint i=0; i<offset; i++) {
+            //     new_alive_defenders_indices.push_back(alive_defenders_indices[i]);
+            // }
+            // for (uint i=offset + alive_attackers_indices.size(); i < alive_defenders_indices.size(); i++) {
+            //     new_alive_defenders_indices.push_back(alive_defenders_indices[i]);
+            // }
+            new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin(), alive_defenders_indices.begin() + offset );
+            new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin() + offset + alive_attackers_indices.size(), alive_defenders_indices.end() );
 
         } else {
             // Shuffle smaller list
@@ -543,12 +545,16 @@ void Game::run_iterations() {
             offset = distr(gen);
             shorter_length = alive_defenders_indices.size();
 
-            for (uint i=0; i<offset; i++) {
-                new_alive_attackers_indices.push_back(alive_attackers_indices[i]);
-            }
-            for (uint i=offset + alive_defenders_indices.size(); i < alive_attackers_indices.size(); i++) {
-                new_alive_attackers_indices.push_back(alive_attackers_indices[i]);
-            }
+            // for (uint i=0; i<offset; i++) {
+            //     new_alive_attackers_indices.push_back(alive_attackers_indices[i]);
+            // }
+            // for (uint i=offset + alive_defenders_indices.size(); i < alive_attackers_indices.size(); i++) {
+            //     new_alive_attackers_indices.push_back(alive_attackers_indices[i]);
+            // }
+
+            new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin(), alive_attackers_indices.begin() + offset );
+            new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin() + offset + alive_defenders_indices.size(), alive_attackers_indices.end() );
+
         }
         
         for (uint i=0; i<shorter_length; i++) {
