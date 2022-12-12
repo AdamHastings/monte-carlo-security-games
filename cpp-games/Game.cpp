@@ -15,7 +15,8 @@
 
 
 static std::random_device rd;  // Will be used to obtain a seed for the random number engine
-static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+// static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+static std::mt19937 gen(0);
 std::uniform_real_distribution<> uniform(0.0, 1.0);
 
 Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insurer &i, Government &g) {
@@ -513,6 +514,8 @@ void Game::run_iterations() {
         attacker_iter_sum = 0;
 
         // std::cout << " -------- Round " << iter_num << " -----------" << std::endl;
+        std::vector<int> new_alive_defenders_indices;
+        std::vector<int> new_alive_attackers_indices;
 
         uint shorter_length, offset;
         bool more_defenders_than_attackers = (alive_defenders_indices.size() > alive_attackers_indices.size());
@@ -523,6 +526,15 @@ void Game::run_iterations() {
             std::uniform_int_distribution<> distr(0, alive_defenders_indices.size() - alive_attackers_indices.size());
             offset = distr(gen);
             shorter_length = alive_attackers_indices.size();
+
+            // Prime new_alive_defenders_indices with values that won't be inlcuded in this round of fighting
+            for (uint i=0; i<offset; i++) {
+                new_alive_defenders_indices.push_back(alive_defenders_indices[i]);
+            }
+            for (uint i=offset + alive_attackers_indices.size(); i < alive_defenders_indices.size(); i++) {
+                new_alive_defenders_indices.push_back(alive_defenders_indices[i]);
+            }
+
         } else {
             // Shuffle smaller list
             // Then pair it up at a random point in the opposing list
@@ -530,16 +542,23 @@ void Game::run_iterations() {
             std::uniform_int_distribution<> distr(0, alive_attackers_indices.size() - alive_defenders_indices.size());
             offset = distr(gen);
             shorter_length = alive_defenders_indices.size();
+
+            for (uint i=0; i<offset; i++) {
+                new_alive_attackers_indices.push_back(alive_attackers_indices[i]);
+            }
+            for (uint i=offset + alive_defenders_indices.size(); i < alive_attackers_indices.size(); i++) {
+                new_alive_attackers_indices.push_back(alive_attackers_indices[i]);
+            }
         }
         
         for (uint i=0; i<shorter_length; i++) {
             uint a_idx, d_idx;
             if (more_defenders_than_attackers) {
-                a_idx = i;
-                d_idx = i + offset;
+                a_idx = alive_attackers_indices[i];
+                d_idx = alive_defenders_indices[i + offset];
             } else {
-                a_idx = i + offset;
-                d_idx = i;
+                a_idx = alive_attackers_indices[i + offset];
+                d_idx = alive_defenders_indices[i];
             }
 
             // Attacker *a = &attackers[alive_attackers_indices[a_idx]];
@@ -549,17 +568,26 @@ void Game::run_iterations() {
 
             fight(*a, *d);
 
-            if (std::round(a->assets) <= 0) {
+            if (std::round(a->assets) > 0) {
                 // alive_attackers.erase(a->id);
                 // erase alive_attackers_indices at the index a_idx
-                alive_attackers_indices.erase(alive_attackers_indices.begin() + a_idx);
+                // std::cout << alive_attackers_indices[a_idx] << std::endl;
+                // alive_attackers_indices.erase(alive_attackers_indices.begin() + a_idx);
+                // dead_attackers.push_back(a_idx);
+                new_alive_attackers_indices.push_back(a_idx);
             }
-            if (std::round(d->assets) <= 0) {
+            if (std::round(d->assets) > 0) {
                 // alive_defenders.erase(d->id);
                 // erase alive_defenders_indices at the index d_idx
-                alive_defenders_indices.erase(alive_defenders_indices.begin() + d_idx);
+                // alive_defenders_indices.erase(alive_defenders_indices.begin() + d_idx);
+                // dead_defenders.push_back(d_idx);
+                new_alive_defenders_indices.push_back(d_idx);
             }
         }
+
+        // TODO remove dead_(attackers|defenders) from alive_(attackers|defenders)_indices 
+        alive_attackers_indices = new_alive_attackers_indices;
+        alive_defenders_indices = new_alive_defenders_indices;
 
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;

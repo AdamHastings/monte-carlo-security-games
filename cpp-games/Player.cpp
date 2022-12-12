@@ -20,7 +20,10 @@ double Player::get_assets() {
     return assets;
 }
 
-static std::default_random_engine generator;
+static std::random_device rd;  // Will be used to obtain a seed for the random number engine
+// static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+static std::mt19937 generator(0);
+// static std::default_random_engine generator;
 static std::lognormal_distribution<double> wealth(10.0, 1.0);
 static std::normal_distribution<double> p_defense_success(0.388,0.062);
 
