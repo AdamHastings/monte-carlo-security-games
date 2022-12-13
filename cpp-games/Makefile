@@ -6,12 +6,12 @@ LDFLAGS= -ltbb -lstdc++fs
 TARGET=run_games
 
 SRCS=main.cpp Player.cpp Game.cpp
-OBJS=$(subst .cpp,.o,$(SRCS))
+OBJS=$(subst .cpp,.o,$(SRCS)) jsoncpp.o
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS) 
-	$(CXX) $(CPPFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) jsoncpp.o $(LDLIBS) $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) $(LDLIBS) $(LDFLAGS)
 
 %.o: %.c %.h
 	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $(input) -o $(output) $(LDLIBS) $(LDFLAGS)
