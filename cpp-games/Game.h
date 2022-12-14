@@ -96,6 +96,9 @@ class Game {
 
         double paidClaims = 0;
         int attacksAttempted = 0, attacksSucceeded = 0;
+        int roundAttacks = 0;
+        int consecutiveNoAttacks=0;
+
         std::string final_outcome = "X";
         int caught = 0;
         double attackerExpenditures = 0, attackerLoots = 0;

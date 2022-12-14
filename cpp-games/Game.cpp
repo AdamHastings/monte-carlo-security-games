@@ -62,8 +62,8 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
     current_defender_sum_assets = d_init;
     current_attacker_sum_assets = a_init;
 
-    last_delta_defenders_changes.assign(p.D, p.E);
-    last_delta_attackers_changes.assign(p.D, p.E);
+    // last_delta_defenders_changes.assign(p.D, p.E);
+    // last_delta_attackers_changes.assign(p.D, p.E);
 
     if (p.verbose) {
         defenders_cumulative_assets.push_back(d_init);
@@ -217,39 +217,49 @@ void Game::conclude_game(std::string outcome) {
 }
 
 bool Game::is_equilibrium_reached() {
+
+
+    if (roundAttacks == 0) {
+        consecutiveNoAttacks++;
+    } else {
+        consecutiveNoAttacks = 0;
+    }
+
+    return (consecutiveNoAttacks >= p.D);
+
     // std::cout << "checking equilibrium...";
-    double last_delta_defenders_pop = last_delta_defenders_changes[iter_num % p.D];
-    double last_delta_attackers_pop = last_delta_attackers_changes[iter_num % p.D];
-    last_delta_defenders_changes[iter_num % p.D] = defender_iter_sum;
-    last_delta_attackers_changes[iter_num % p.D] = attacker_iter_sum;
+    // double last_delta_defenders_pop = last_delta_defenders_changes[iter_num % p.D];
+    // double last_delta_attackers_pop = last_delta_attackers_changes[iter_num % p.D];
+    // last_delta_defenders_changes[iter_num % p.D] = defender_iter_sum;
+    // last_delta_attackers_changes[iter_num % p.D] = attacker_iter_sum;
 
-    // std::cout << "sums: " << defender_iter_sum << ", " << attacker_iter_sum << std::endl;
-    // std::cout << "pops: " << last_delta_attackers_pop << ", " << last_delta_attackers_pop << std::endl;
-    if (defender_iter_sum >= p.E) {
-        if (last_delta_defenders_pop < p.E) {
-            outside_epsilon_count_defenders += 1;
-        }
-    } else {
-        if (last_delta_defenders_pop >= p.E) {
-            outside_epsilon_count_defenders -= 1;
-        }
-    }
+    // // std::cout << "sums: " << defender_iter_sum << ", " << attacker_iter_sum << std::endl;
+    // // std::cout << "pops: " << last_delta_attackers_pop << ", " << last_delta_attackers_pop << std::endl;
+    // if (defender_iter_sum >= p.E) {
+    //     if (last_delta_defenders_pop < p.E) {
+    //         outside_epsilon_count_defenders += 1;
+    //     }
+    // } else {
+    //     if (last_delta_defenders_pop >= p.E) {
+    //         outside_epsilon_count_defenders -= 1;
+    //     }
+    // }
 
-    if (attacker_iter_sum >= p.E) {
-        if (last_delta_attackers_pop < p.E) {
-            outside_epsilon_count_attackers += 1;
-        }
-    } else {
-        if (last_delta_attackers_pop >= p.E) {
-            outside_epsilon_count_attackers -= 1;
-        }
-    }
+    // if (attacker_iter_sum >= p.E) {
+    //     if (last_delta_attackers_pop < p.E) {
+    //         outside_epsilon_count_attackers += 1;
+    //     }
+    // } else {
+    //     if (last_delta_attackers_pop >= p.E) {
+    //         outside_epsilon_count_attackers -= 1;
+    //     }
+    // }
     // std::cout << "done!" << std::endl;
     // std::cout << outside_epsilon_count_attackers << ", " << outside_epsilon_count_defenders << std::endl;
 
     // TODO add some asserts?
     // Don't understand this part..
-    return ((outside_epsilon_count_attackers == 0) && (outside_epsilon_count_defenders == 0));
+    // return ((outside_epsilon_count_attackers == 0) && (outside_epsilon_count_defenders == 0));
 }
 
 void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
@@ -444,6 +454,7 @@ void Game::fight(Attacker &a, Defender &d) {
     // Note slight logic change
     if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
         attacksAttempted += 1;
+        roundAttacks += 1;
         // std::cout << " -- a attacks" << std::endl;
         a_lose(a, cost_of_attack);
         attackerExpenditures += cost_of_attack;
@@ -484,8 +495,6 @@ void Game::fight(Attacker &a, Defender &d) {
 
 void Game::run_iterations() {
 
-    // std::cout << p.to_string() << std::endl;
-
     bool defenders_have_more_than_attackers = true;
 
 
@@ -512,6 +521,7 @@ void Game::run_iterations() {
 
         defender_iter_sum = 0;
         attacker_iter_sum = 0;
+        roundAttacks = 0;
 
         // std::cout << " -------- Round " << iter_num << " -----------" << std::endl;
         std::vector<int> new_alive_defenders_indices;
