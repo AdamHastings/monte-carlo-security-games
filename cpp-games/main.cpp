@@ -5,7 +5,7 @@
 #include <fstream>
 #include <ctime>  
 #include <cstdlib>
-#include <experimental/filesystem>
+// #include <experimental/filesystem>
 #include "json/json.h"
 #include "oneapi/tbb.h"
 #include "Player.h"
@@ -94,15 +94,15 @@ void init_logs(std::string basename) {
 
     std::string fpath = "logs/" + basename + ".csv";
 
-    if (std::experimental::filesystem::exists(fpath)) {
-        std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
-        std::string response;
-        std::cin >> response;
-        if (response != "y" && response != "Y") {
-            std::cout << "\nOK, this program will not overwrite " << fpath << ".\nThis program will now exit.\n";
-            std::exit(0);
-        }
-    }
+    // if (std::experimental::filesystem::exists(fpath)) {
+    //     std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
+    //     std::string response;
+    //     std::cin >> response;
+    //     if (response != "y" && response != "Y") {
+    //         std::cout << "\nOK, this program will not overwrite " << fpath << ".\nThis program will now exit.\n";
+    //         std::exit(0);
+    //     }
+    // }
 
     ofstream log;
 
@@ -153,63 +153,30 @@ std::vector<Params> load_cfg(std::string basename) {
     Json::Value jsonData;
     reader.parse(file, jsonData);
   
-    std::vector<double> MANDATE_range;
-    std::vector<double> ATTACKERS_range;
-    std::vector<double> INEQUALITY_range;
-    std::vector<double> PREMIUM_range;
-    std::vector<double> EFFICIENCY_range;
-    std::vector<double> EFFORT_range;
-    std::vector<double> PAYOFF_range;
-    std::vector<double> CAUGHT_range;
-    std::vector<double> CLAIMS_range;
-    std::vector<double> TAX_range;
-    
-    MANDATE_range.reserve(jsonData["MANDATE_range"].size());
-    ATTACKERS_range.reserve(jsonData["ATTACKERS"].size());
-    INEQUALITY_range.reserve(jsonData["INEQUALITY"].size());
-    PREMIUM_range.reserve(jsonData["PREMIUM"].size());
-    EFFICIENCY_range.reserve(jsonData["EFFICIENCY"].size());
-    EFFORT_range.reserve(jsonData["EFFORT"].size());
-    PAYOFF_range.reserve(jsonData["PAYOFF"].size());
-    CAUGHT_range.reserve(jsonData["CAUGHT"].size());
-    CLAIMS_range.reserve(jsonData["CLAIMS"].size());
-    TAX_range.reserve(jsonData["TAX"].size());
-
-    std::transform(jsonData["MANDATE_range"].begin(), jsonData["MANDATE_range"].end(), std::back_inserter(MANDATE_range), [](const auto& e) { return e.asDouble(); });
-    std::transform(jsonData["ATTACKERS_range"].begin(), jsonData["ATTACKERS_range"].end(), std::back_inserter(ATTACKERS_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["INEQUALITY_range"].begin(), jsonData["INEQUALITY_range"].end(), std::back_inserter(INEQUALITY_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["PREMIUM_range"].begin(), jsonData["PREMIUM_range"].end(), std::back_inserter(PREMIUM_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["EFFICIENCY_range"].begin(), jsonData["EFFICIENCY_range"].end(), std::back_inserter(EFFICIENCY_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["EFFORT_range"].begin(), jsonData["EFFORT_range"].end(), std::back_inserter(EFFORT_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["PAYOFF_range"].begin(), jsonData["PAYOFF_range"].end(), std::back_inserter(PAYOFF_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["CAUGHT_range"].begin(), jsonData["CAUGHT_range"].end(), std::back_inserter(CAUGHT_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["CLAIMS_range"].begin(), jsonData["CLAIMS_range"].end(), std::back_inserter(CLAIMS_range), [](const auto& e) {return e.asDouble(); });
-    std::transform(jsonData["TAX_range"].begin(), jsonData["TAX_range"].end(), std::back_inserter(TAX_range), [](const auto& e) {return e.asDouble(); });
-
     std::vector<Params> ret;
 
-    for (auto a : MANDATE_range) {
-    for (auto b : ATTACKERS_range) {
-    for (auto c : INEQUALITY_range) {
-    for (auto d : PREMIUM_range) {
-    for (auto e : EFFICIENCY_range) {
-    for (auto f : EFFORT_range) {
-    for (auto g : PAYOFF_range) {
-    for (auto h : CAUGHT_range) {
-    for (auto i : CLAIMS_range) {
-    for (auto j : TAX_range) {
+    for (auto a : jsonData["MANDATE_range"]) {
+    for (auto b : jsonData["ATTACKERS_range"]) {
+    for (auto c : jsonData["INEQUALITY_range"]) {
+    for (auto d : jsonData["PREMIUM_range"]) {
+    for (auto e : jsonData["EFFICIENCY_range"]) {
+    for (auto f : jsonData["EFFORT_range"]) {
+    for (auto g : jsonData["PAYOFF_range"]) {
+    for (auto h : jsonData["CAUGHT_range"]) {
+    for (auto i : jsonData["CLAIMS_range"]) {
+    for (auto j : jsonData["TAX_range"]) {
 
         Params p;
-        p.MANDATE    = a;
-        p.ATTACKERS  = b;
-        p.INEQUALITY = c;
-        p.PREMIUM    = d;
-        p.EFFICIENCY = e;
-        p.EFFORT     = f;
-        p.PAYOFF     = g;
-        p.CAUGHT     = h;
-        p.CLAIMS     = i;
-        p.TAX        = j;
+        p.MANDATE    = a.asDouble();
+        p.ATTACKERS  = b.asDouble();
+        p.INEQUALITY = c.asDouble();
+        p.PREMIUM    = d.asDouble();
+        p.EFFICIENCY = e.asDouble();
+        p.EFFORT     = f.asDouble();
+        p.PAYOFF     = g.asDouble();
+        p.CAUGHT     = h.asDouble();
+        p.CLAIMS     = i.asDouble();
+        p.TAX        = j.asDouble();
 
         p.B          = jsonData["B"].asInt();
         p.N          = jsonData["N"].asInt();
