@@ -25,7 +25,7 @@ double Player::get_assets() {
 static std::mt19937 generator(0);
 // static std::default_random_engine generator;
 static std::lognormal_distribution<double> wealth(10.0, 1.0);
-static std::normal_distribution<double> p_defense_success(0.388,0.062);
+static std::normal_distribution<double> p_defense_success(0.388,0.062); // TODO justify these numbers.... BEFORE staring sims...
 
 Defender::Defender(int id_in) : Player() {
     id = id_in;
