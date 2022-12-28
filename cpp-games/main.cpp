@@ -94,6 +94,8 @@ void init_logs(std::string basename) {
 
     std::string fpath = "logs/" + basename + ".csv";
 
+    std::cout << "Creating log " << fpath << std::endl;
+
     // if (std::experimental::filesystem::exists(fpath)) {
     //     std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
     //     std::string response;
@@ -204,7 +206,7 @@ int main(int argc, char** argv) {
     }
 
     std::string basename(argv[1]);
-    basename = basename.substr(0, basename.find("."));
+    basename = basename.substr(0, basename.find_last_of("."));
     init_logs(basename);
     vector<Params> v = load_cfg(basename);
 
