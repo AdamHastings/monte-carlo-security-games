@@ -15,17 +15,21 @@
 using namespace oneapi::tbb;
 using namespace std;
 
+std::vector<double> MANDATE_range;
+std::vector<double> ATTACKERS_range;
+std::vector<double> INEQUALITY_range;
+std::vector<double> PREMIUM_range;
+std::vector<double> EFFICIENCY_range;
+std::vector<double> EFFORT_range;
+std::vector<double> PAYOFF_range;
+std::vector<double> CAUGHT_range;
+std::vector<double> CLAIMS_range;
+std::vector<double> TAX_range;
 
 void RunGame(Params p) {
     
     Insurer insurer = Insurer();
     Government government = Government();
-
-    // TODO put a lot of this into constructor
-    // And pass in Insurer and Government as pointers.
-
-
-    // std::cout << p.to_string();
 
     std::vector<Defender> defenders;
     for (int i=0; i < p.B; i++) {
@@ -88,6 +92,29 @@ void SerialRunGames(vector<Params> a) {
     for (uint i=0; i < a.size(); i++) {
         RunGame(a[i]);
     }
+}
+
+void RunChunkOfGames(Params p) {
+
+    for (auto i : CLAIMS_range) {
+    for (auto j : TAX_range) {
+        p.CLAIMS     = i;
+        p.TAX        = j;
+
+        RunGame(p);
+    }}
+}
+
+void SerialParallelRunGames(vector<Params> a) {
+    
+    parallel_for( blocked_range<int>(0,a.size()),
+        [&](blocked_range<int> r) 
+    {
+            for(int i=r.begin(); i < r.end(); ++i)
+            {
+                RunChunkOfGames(a[i]);
+            }
+    });
 }
 
 void init_logs(std::string basename) {
@@ -157,28 +184,38 @@ std::vector<Params> load_cfg(std::string basename) {
   
     std::vector<Params> ret;
 
-    for (auto a : jsonData["MANDATE_range"]) {
-    for (auto b : jsonData["ATTACKERS_range"]) {
-    for (auto c : jsonData["INEQUALITY_range"]) {
-    for (auto d : jsonData["PREMIUM_range"]) {
-    for (auto e : jsonData["EFFICIENCY_range"]) {
-    for (auto f : jsonData["EFFORT_range"]) {
-    for (auto g : jsonData["PAYOFF_range"]) {
-    for (auto h : jsonData["CAUGHT_range"]) {
-    for (auto i : jsonData["CLAIMS_range"]) {
-    for (auto j : jsonData["TAX_range"]) {
+    for (auto a : jsonData["MANDATE_range"]) {MANDATE_range.push_back(a.asDouble());}
+    for (auto a : jsonData["ATTACKERS_range"]) {ATTACKERS_range.push_back(a.asDouble());}
+    for (auto a : jsonData["INEQUALITY_range"]) {INEQUALITY_range.push_back(a.asDouble());}
+    for (auto a : jsonData["PREMIUM_range"]) {PREMIUM_range.push_back(a.asDouble());}
+    for (auto a : jsonData["EFFICIENCY_range"]) {EFFICIENCY_range.push_back(a.asDouble());}
+    for (auto a : jsonData["EFFORT_range"]) {EFFORT_range.push_back(a.asDouble());}
+    for (auto a : jsonData["PAYOFF_range"]) {PAYOFF_range.push_back(a.asDouble());}
+    for (auto a : jsonData["CAUGHT_range"]) {CAUGHT_range.push_back(a.asDouble());}
+    for (auto a : jsonData["CLAIMS_range"]) {CLAIMS_range.push_back(a.asDouble());}
+    for (auto a : jsonData["TAX_range"]) {TAX_range.push_back(a.asDouble());}
+
+    for (auto a : MANDATE_range) {
+    for (auto b : ATTACKERS_range) {
+    for (auto c : INEQUALITY_range) {
+    for (auto d : PREMIUM_range) {
+    for (auto e : EFFICIENCY_range) {
+    for (auto f : EFFORT_range) {
+    for (auto g : PAYOFF_range) {
+    for (auto h : CAUGHT_range) {
+
+        // Important: Some parameter values are filled in later
+        // Otherwise, a completed ret vector would be over a TB big!
 
         Params p;
-        p.MANDATE    = a.asDouble();
-        p.ATTACKERS  = b.asDouble();
-        p.INEQUALITY = c.asDouble();
-        p.PREMIUM    = d.asDouble();
-        p.EFFICIENCY = e.asDouble();
-        p.EFFORT     = f.asDouble();
-        p.PAYOFF     = g.asDouble();
-        p.CAUGHT     = h.asDouble();
-        p.CLAIMS     = i.asDouble();
-        p.TAX        = j.asDouble();
+        p.MANDATE    = a;
+        p.ATTACKERS  = b;
+        p.INEQUALITY = c;
+        p.PREMIUM    = d;
+        p.EFFICIENCY = e;
+        p.EFFORT     = f;
+        p.PAYOFF     = g;
+        p.CAUGHT     = h;
 
         p.B          = jsonData["B"].asInt();
         p.N          = jsonData["N"].asInt();
@@ -190,7 +227,8 @@ std::vector<Params> load_cfg(std::string basename) {
         p.logname       = "logs/" + basename + ".csv";
 
         ret.push_back(p);
-    }}}}}}}}}}
+    }}}}}}}}
+    // }}}}
 
     return ret;
 }
@@ -208,14 +246,20 @@ int main(int argc, char** argv) {
     std::string basename(argv[1]);
     basename = basename.substr(0, basename.find_last_of("."));
     init_logs(basename);
+
+    // vector of *incomplete* params, due to constraints on memory.
+    // params need to be completed in ParallelRunGames
     vector<Params> v = load_cfg(basename);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-    std::cout << "started " << std::to_string(v.size()) << " games at " << std::ctime(&start_time);
 
-    ParallelRunGames(v);
+    int num_games = v.size() * CLAIMS_range.size() * TAX_range.size();
+    std::cout << "started " << std::to_string(num_games) << " games at " << std::ctime(&start_time);
+
+    // ParallelRunGames(v);
     // SerialRunGames(v);
+    SerialParallelRunGames(v);
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
