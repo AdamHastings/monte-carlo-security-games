@@ -5,7 +5,6 @@
 #include <fstream>
 #include <ctime>  
 #include <cstdlib>
-// #include <experimental/filesystem>
 #include "json/json.h"
 #include "oneapi/tbb.h"
 #include "Player.h"
@@ -123,15 +122,17 @@ void init_logs(std::string basename) {
 
     std::cout << "Creating log " << fpath << std::endl;
 
-    // if (std::experimental::filesystem::exists(fpath)) {
-    //     std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
-    //     std::string response;
-    //     std::cin >> response;
-    //     if (response != "y" && response != "Y") {
-    //         std::cout << "\nOK, this program will not overwrite " << fpath << ".\nThis program will now exit.\n";
-    //         std::exit(0);
-    //     }
-    // }
+    // Check if log file already exists so that we don't accidentally write over it
+    ifstream f(fpath.c_str());
+    if (f.good()) {
+        std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
+        std::string response;
+        std::cin >> response;
+        if (response != "y" && response != "Y") {
+            std::cout << "\nOK, this program will not overwrite " << fpath << ".\nThis program will now exit.\n";
+            std::exit(0);
+        }
+    }
 
     ofstream log;
 
