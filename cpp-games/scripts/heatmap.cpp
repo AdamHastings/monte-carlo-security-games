@@ -50,7 +50,7 @@ int main() {
         string line;
         int count = 0;
         getline(infile, line); // throwaway first line
-
+        cout << "MANDATE=" << s << endl;
 
         while (getline(infile, line))
         {       
@@ -97,11 +97,11 @@ int main() {
                 initial_assets = d_init / MANDATE;
             }
             double efficiency = (initial_assets - d_end) / initial_assets;
-            cout << efficiency << endl;
+            // cout << efficiency << endl;
             int i = (int)round(TAX*10);
             int j = (int)round(PREMIUM*10);
             double result = (eta * (efficiency - averages[i][j]));
-            cout << result << endl;
+            // cout << result << endl;
             averages[i][j] += result;
 
             // // TODO remove later
