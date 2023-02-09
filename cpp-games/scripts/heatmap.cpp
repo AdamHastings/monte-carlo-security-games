@@ -35,8 +35,9 @@ vector<string> splitline(string line) {
 
 double averages[TAX_len][PREMIUM_len] = {0};
 int lc = 1331000000;
-int fudge = 10000;
-double eta = 1/lc * fudge;
+// double lc = 100000;
+double fudge = 1;
+double eta = 1/lc;
 
 vector<string> MANDATE_range = {"0.0", "0.1", "0.2", "0.3", "0.4"};
 
@@ -89,18 +90,24 @@ int main() {
             string outcome = split[27];
 
             // Turn into a metric of efficiency
-            double initial_assets = d_init / MANDATE;
+            double initial_assets;
+            if (MANDATE == 0.0) {
+                initial_assets = d_init;
+            } else {
+                initial_assets = d_init / MANDATE;
+            }
             double efficiency = (initial_assets - d_end) / initial_assets;
-
+            cout << efficiency << endl;
             int i = (int)round(TAX*10);
             int j = (int)round(PREMIUM*10);
             double result = (eta * (efficiency - averages[i][j]));
+            cout << result << endl;
             averages[i][j] += result;
 
-            // TODO remove later
-            if (count >= 100000) {
-                break;
-            }
+            // // TODO remove later
+            // if (count >= lc) {
+            //     break;
+            // }
         }
 
         string outfilename = "averages_MANDATE=" + s + ".csv";
