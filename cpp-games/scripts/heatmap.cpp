@@ -36,10 +36,10 @@ vector<string> splitline(string line) {
 double averages[TAX_len][PREMIUM_len] = {0};
 int lc = 1331000000;
 // double lc = 100000;
-double fudge = 1;
-double eta = 1/lc;
+double fudge = 10000000;
+double eta = fudge/lc;
 
-vector<string> MANDATE_range = {"0.0", "0.1", "0.2", "0.3", "0.4"};
+vector<string> MANDATE_range = {"0.0", "0.1", "0.3", "0.4"};
 
 int main() {
     
@@ -101,7 +101,6 @@ int main() {
             int i = (int)round(TAX*10);
             int j = (int)round(PREMIUM*10);
             double result = (eta * (efficiency - averages[i][j]));
-            // cout << result << endl;
             averages[i][j] += result;
 
             // // TODO remove later
@@ -115,7 +114,7 @@ int main() {
         outfile.open(outfilename);
         for (int i=0; i<TAX_len; i++) {
             for (int j=0; j<PREMIUM_len; j++) {
-                outfile << averages[i][j] << ",";
+                outfile << averages[i][j]/fudge << ",";
             }
             outfile << "\n";
         }
