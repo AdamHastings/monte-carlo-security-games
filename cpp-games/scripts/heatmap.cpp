@@ -92,16 +92,19 @@ int main() {
             // Turn into a metric of efficiency
             double initial_assets;
             if (MANDATE == 0.0) {
-                initial_assets = d_init;
+                initial_assets = (double) d_init;
             } else {
-                initial_assets = d_init / MANDATE;
+                // TODO this is wrong
+                initial_assets = (double) d_init / (1.0 - MANDATE);
             }
-            double efficiency = (initial_assets - d_end) / initial_assets;
+            // TODO this is wrong. 
+            double efficiency = (initial_assets - (double) d_end) / initial_assets;
             // cout << efficiency << endl;
             int i = (int)round(TAX*10);
             int j = (int)round(PREMIUM*10);
             double result = (eta * (efficiency - averages[i][j]));
             averages[i][j] += result;
+            // TODO remove games/situations where no attacks happen?
 
             // // TODO remove later
             // if (count >= lc) {
