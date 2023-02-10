@@ -6,11 +6,15 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
+import sys
 
  
+if len(sys.argv) != 2:
+    print("Error: Wrong number of args")
+    sys.exit(-1)
 
 # CSVdata = open("averages_MANDATE=0.4.csv")
-data = np.genfromtxt("averages_MANDATE=0.4.csv", delimiter=',')[:,:-1]
+data = np.genfromtxt(sys.argv[1], delimiter=',')
 
 
 fig = plt.figure()
@@ -20,8 +24,6 @@ ax = fig.gca(projection='3d')
 X = np.linspace(0, 1, 11)
 Y = np.linspace(0, 1, 11)
 X, Y = np.meshgrid(X, Y)
-R = np.sqrt(X**2 + Y**2)
-Z = np.sin(R)
 Z = data
 
 
@@ -34,7 +36,7 @@ colors = cm.rainbow(values)
 surf = ax.bar3d(X.ravel(), Y.ravel(), Z.ravel()*0, 0.05, 0.05, Z.ravel(), color=colors, shade=True)
 
 # Customize the z axis.
-ax.set_zlim(0, 0.1)
+# ax.set_zlim(0.4, 0.1)
 ax.set_xlabel('PREMIUM')
 ax.set_ylabel('TAX')
 ax.set_zlabel('Efficiency')
@@ -44,7 +46,7 @@ ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 # Add a color bar which maps values to colors.
 # fig.colorbar(surf, shrink=0.5, aspect=5)
 
-plt.show()
+plt.savefig("figures/" + sys.argv[1] + ".png")
 
 # # Creating dataset
 # x = np.linspace(0.0, 1.0, 11)
@@ -58,7 +60,18 @@ plt.show()
 # ax = plt.axes(projection ='3d')
  
 # # Creating plot
-# ax.plot_surface(x, y, z)
+# plt.clf()
+ax.clear()
+surf = ax.plot_surface(X, Y, Z,  cmap=cm.coolwarm, linewidth=4, antialiased=True)
+# Add a color bar which maps values to colors.
+
+# ax.set_zlim(0, 1)
+ax.set_xlabel('PREMIUM')
+ax.set_ylabel('TAX')
+ax.set_zlabel('Efficiency')
+fig.colorbar(surf, shrink=0.5, aspect=5)
+
+plt.savefig("figures/surface_" + sys.argv[1] + ".png")
  
 # # show plot
 # plt.show()
