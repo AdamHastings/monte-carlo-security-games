@@ -34,32 +34,54 @@ vector<string> splitline(string line) {
 
 
 double averages[TAX_len][PREMIUM_len] = {0};
-int lc = 1331000000;
+int counts[TAX_len][PREMIUM_len] = {0};
+
+double lc = 1331000000;
 // double lc = 100000;
-double fudge = 10000000;
-double eta = fudge/lc;
+// double fudge = 10000000;
+// double eta = fudge/lc;
 
 vector<string> MANDATE_range = {"0.0", "0.1", "0.3", "0.4"};
 
-int main() {
+int main(int argc, char *argv[]) {
     
-    for (string s : MANDATE_range) {
-    
-        string filename = "../logs/MANDATE=" + s + ".csv";
+
+    // for (string s : MANDATE_range) {
+
+        if (argc != 2) {
+            cerr << "no input file provided!" << endl;
+            return -1;
+        }        
+
+        string filename = argv[1];
         ifstream infile(filename);
+        if (!infile.good()) {
+            cerr << "bad input filename" << endl;
+            return -1;
+        }
+
         string line;
         int count = 0;
         getline(infile, line); // throwaway first line
-        cout << "MANDATE=" << s << endl;
+        
+        size_t mandpos  = filename.find("MANDATE");
+        string MANDATE_level = filename.substr(mandpos + 7 + 1, 3);
+        string outfilename = "averages_MANDATE=" + MANDATE_level + ".csv";
+        ofstream outfile;
+        
+        cout << "MANDATE: " << MANDATE_level << endl;
 
+
+        vector<string> split;
         while (getline(infile, line))
         {       
 
 
             count += 1; 
             // First parse the line
-            vector<string> split = splitline(line);
+            split = splitline(line);
 
+            // Most of this should be optimized out by the compiler...
             double MANDATE = stod(split[0]);
             double ATTACKERS = stod(split[1]);
             double INEQUALITY = stod(split[2]);
@@ -89,40 +111,51 @@ int main() {
             int final_iter = stoi(split[26]);
             string outcome = split[27];
 
-            // Turn into a metric of efficiency
-            double initial_assets;
-            if (MANDATE == 0.0) {
-                initial_assets = (double) d_init;
-            } else {
-                // TODO this is wrong
-                initial_assets = (double) d_init / (1.0 - MANDATE);
-            }
+            double initial_assets = (double) d_init / (1.0 - MANDATE);
+        
             // TODO this is wrong. 
-            double efficiency = (initial_assets - (double) d_end) / initial_assets;
-            // cout << efficiency << endl;
+            double efficiency = 1 - (initial_assets - (double) d_end) / initial_assets;
+            
             int i = (int)round(TAX*10);
             int j = (int)round(PREMIUM*10);
-            double result = (eta * (efficiency - averages[i][j]));
-            averages[i][j] += result;
+            // double result = (eta * (efficiency - averages[i][j]));
+            // averages[i][j] += result;
+            averages[i][j] += efficiency;
+            counts[i][j] += 1;
             // TODO remove games/situations where no attacks happen?
-
-            // // TODO remove later
-            // if (count >= lc) {
-            //     break;
+            
+            // if (i == 0 && j == 0) {
+            //     cout << efficiency << ", " << averages[i][j] << ", " << count << ", " <<  averages[i][j]/ (double) count << endl;
             // }
+
+
+            // TODO remove later
+            if (count % 100000 == 0) {
+
+                outfile.open(outfilename);
+                for (int i=0; i<TAX_len; i++) {
+                    for (int j=0; j<PREMIUM_len; j++) {
+                        double avg = averages[i][j]/ (double) counts[i][j];
+                        outfile << avg;
+                        if (j < PREMIUM_len - 1) {
+                            outfile << ",";
+                        }
+                    }
+                    outfile << "\n";
+                }
+                outfile.close();
+            }
         }
 
-        string outfilename = "averages_MANDATE=" + s + ".csv";
-        ofstream outfile;
         outfile.open(outfilename);
         for (int i=0; i<TAX_len; i++) {
             for (int j=0; j<PREMIUM_len; j++) {
-                outfile << averages[i][j]/fudge << ",";
+                outfile << averages[i][j]/ (double) count << ",";
             }
             outfile << "\n";
         }
         outfile.close();
-    }
+    // }
 
 
     // write to file
