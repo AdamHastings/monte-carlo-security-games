@@ -150,7 +150,11 @@ int main(int argc, char *argv[]) {
         outfile.open(outfilename);
         for (int i=0; i<TAX_len; i++) {
             for (int j=0; j<PREMIUM_len; j++) {
-                outfile << averages[i][j]/ (double) count << ",";
+                double avg = averages[i][j]/ (double) counts[i][j];
+                outfile << avg;
+                if (j < PREMIUM_len - 1) {
+                    outfile << ",";
+                }
             }
             outfile << "\n";
         }
