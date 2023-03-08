@@ -67,21 +67,21 @@ for i in ["0.0", "0.1", "0.2", "0.3", "0.4"]:
     # # Creating plot
     # plt.clf()
     ax.clear()
-    zmin = 0.65
-    zmax = 0.85
+    zmin = 0.3
+    zmax = 0.8
 
     surf = ax.plot_surface(X, Y, Z,  cmap=cm.coolwarm, linewidth=4, antialiased=True, vmin=zmin, vmax=zmax)
     # surf = ax.plot_surface(X, Y, Z,  cmap=cm.coolwarm, linewidth=4, antialiased=True)
     # Add a color bar which maps values to colors.
 
-    # ax.set_zlim(0.6, 0.9)
-    ax.set_zlim(zmin, zmax)
+    ax.set_zlim(0.6, 0.9)
+    # ax.set_zlim(0, 1)
     ax.set_xlabel('PREMIUM')
     ax.set_ylabel('TAX')
     ax.set_zlabel('Efficiency')
     plt.colorbar(surf, shrink=0.5, aspect=5, pad=0.1)
     plt.tight_layout()
-    plt.savefig("figures/surface_MANDATE=" + i + ".png")
+    plt.savefig("figures/surface_closeup_MANDATE=" + i + ".png")
     
     # # show plot
     # plt.show()
