@@ -29,41 +29,76 @@ vector<string> splitline(string line) {
     return v;
 }
 
-int main() {
+string getMANDATE(string filename) {
+    size_t start = filename.find("=") + 1;
+    string output = filename.substr(start, 3);
+    return output;
+}
 
-    string filename = "../logs/MANDATE=0.0.csv";
+int main(int argc, char *argv[]) {
+
+    if (argc != 2) {
+        cerr << "no input file provided!" << endl;
+        return -1;
+    }        
+
+    string filename = argv[1];
     ifstream infile(filename);
+    if (!infile.good()) {
+        cerr << "bad input filename" << endl;
+        return -1;
+    }
+
+
+    string mandate = getMANDATE(filename);
+
     string line;
     int count = 0;
     int splitcount = 0;
     getline(infile, line); // throwaway first line
+    string firstline = line;
 
     ofstream outfile;
-    string outfilename = "../plausible/plausible_MANDATE=0.0.csv";
-    if( remove(outfilename.c_str()) != 0 ) {
-        cout << "Error deleting file" << endl;
-    } else {
-        cout << "File successfully deleted" << endl;
+    string outfilename = "../split/";
+    const int TAX_size = 11;
+    const int PREMIUM_size=11;
+    ofstream out[TAX_size][PREMIUM_size];
+
+    // if( remove(outfilename.c_str()) != 0 ) {
+    //     cout << "Error deleting file" << endl;
+    // } else {
+    //     cout << "File successfully deleted" << endl;
+    // }
+
+
+    for (int i=0; i<TAX_size; i++) {
+        for (int j=0; j<PREMIUM_size; j++) {
+            string taxstr = i<10 ? "0." + to_string(i): "1.0";
+            string premstr = j<10 ? "0." + to_string(j): "1.0";
+            string ofilename = "../split/MANDATE=" + mandate + "_TAX=" + taxstr + "_PREMIUM=" + premstr + ".csv";
+            out[i][j].open(ofilename);
+            out[i][j] << firstline;
+        }
     }
 
-    outfile.open(outfilename, std::ios_base::app); // append instead of overwrite
-    outfile << line << endl;
+    // outfile.open(outfilename, std::ios_base::app); // append instead of overwrite
+    // outfile << line << endl;
 
     while (getline(infile, line)) {       
         count += 1; 
         // First parse the line
         vector<string> split = splitline(line);
 
-        double MANDATE = stod(split[0]);
-        double ATTACKERS = stod(split[1]);
-        double INEQUALITY = stod(split[2]);
-        double PREMIUM = stod(split[3]);
-        double EFFICIENCY = stod(split[4]);
-        double EFFORT = stod(split[5]);
-        double PAYOFF = stod(split[6]);
-        double CAUGHT = stod(split[7]);
-        double CLAIMS = stod(split[8]);
-        double TAX = stod(split[9]);
+        string MANDATE = split[0];
+        string ATTACKERS = split[1];
+        string INEQUALITY = split[2];
+        string PREMIUM = split[3];
+        string EFFICIENCY = split[4];
+        string EFFORT = split[5];
+        string PAYOFF = split[6];
+        string CAUGHT = split[7];
+        string CLAIMS = split[8];
+        string TAX = split[9];
         int d_init = stoi(split[10]);
         int d_end = stoi(split[11]);
         int a_init = stoi(split[12]);
@@ -83,15 +118,18 @@ int main() {
         int final_iter = stoi(split[26]);
         string outcome = split[27];
 
-        if (amount_stolen > 0) {
-            if (TAX == 0 && PREMIUM == 0) {
-                outfile << line << endl;
-                splitcount += 1;
-            }
-        }
+        int taxidx = round(stod(TAX) * 10);
+        int premidx = round(stod(PREMIUM) * 10);
+        out[taxidx][premidx] << line << endl;
     }
 
-    outfile.close();
+    // outfile.close();
+
+    for (int i=0; i<TAX_size; i++) {
+        for (int j=0; j<PREMIUM_size; j++) {
+            out[i][j].close();
+        }
+    }
 
     return 0;
 }
