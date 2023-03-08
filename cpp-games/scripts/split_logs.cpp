@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
             string premstr = j<10 ? "0." + to_string(j): "1.0";
             string ofilename = "../split/MANDATE=" + mandate + "_TAX=" + taxstr + "_PREMIUM=" + premstr + ".csv";
             out[i][j].open(ofilename);
-            out[i][j] << firstline;
+            out[i][j] << firstline << endl;
         }
     }
 
