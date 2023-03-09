@@ -43,40 +43,21 @@ struct LineStruct {
 
     bool operator < (const LineStruct& lineB) const
     {
-
-        
-        // cout << "comparing " << endl << full_line  << endl << lineB.full_line  << endl << "___________" << endl;
-        // cout << "comparing " << idx << " and " << lineB.idx << endl;
-
-
-        if (full_line == "") {
-            cout << "empty!" << endl;
-            cout << "idx=" << idx << endl;
-            // while(1);
-            cout << ATTACKERS << ", " << ATTACKERS << ", " << INEQUALITY << ", " << EFFICIENCY << ", " << EFFORT << ", " << PAYOFF << ", " << CAUGHT << ", " << CLAIMS << endl;
+        if (CLAIMS != lineB.CLAIMS) {
+            return CLAIMS < lineB.CLAIMS;
+        } else if (CAUGHT != lineB.CAUGHT){
+            return CAUGHT < lineB.CAUGHT;
+        } else if (PAYOFF != lineB.PAYOFF) {
+            return PAYOFF < lineB.PAYOFF;
+        } else if (EFFORT != lineB.EFFORT) {
+            return EFFORT < lineB.EFFORT;
+        } else if (EFFICIENCY != lineB.EFFICIENCY) {
+            return EFFICIENCY < lineB.EFFICIENCY;
+        } else if (INEQUALITY != lineB.INEQUALITY) {
+            return INEQUALITY < lineB.INEQUALITY;
+        } else {
+            return ATTACKERS < lineB.ATTACKERS;
         }
-        // cout << "CLAIMS: " << CLAIMS << " -- " << lineB.CLAIMS << endl;
-        // cout << "CAUGHT: " << CAUGHT << " -- " << lineB.CAUGHT << endl;
-        // cout << "PAYOFF: " << PAYOFF << " -- " << lineB.PAYOFF << endl;
-        // cout << "EFFORT: " << EFFORT << " -- " << lineB.EFFORT << endl;
-        // cout << "EFFICIENCY: " << EFFICIENCY << " -- " << lineB.EFFICIENCY << endl;
-        // cout << "INEQUALITY: " << INEQUALITY << " -- " << lineB.INEQUALITY << endl;
-        // cout << "ATTACKERS: " << ATTACKERS << " -- " << lineB.ATTACKERS << endl;
-
-        // return lineB.CLAIMS > CLAIMS;
-
-        if (CLAIMS < lineB.CLAIMS)     return true;
-        if (CAUGHT < lineB.CAUGHT)     return true;
-        if (PAYOFF < lineB.PAYOFF)     return true;
-        if (EFFORT < lineB.EFFORT)     return true;
-        if (EFFICIENCY < lineB.EFFICIENCY) return true;
-        if (INEQUALITY < lineB.INEQUALITY) return true;
-        if (ATTACKERS < lineB.ATTACKERS)  return true;
-        
-        // cout << " -- line B greater" << endl;
-        // // while(1);
-
-        return false;
     }
 };
  
@@ -136,7 +117,7 @@ int main(int argc, char* argv[]) {
     cout << "All lines loaded. Attempting to sort..." << endl;
 
     for (auto ls : lines) {
-        if (ls.idx == 0) {
+        if (ls.full_line == "") {
             cout << ls.ATTACKERS << ", " << ls.INEQUALITY << ", " << ls.EFFICIENCY << ", " << ls.EFFORT << ", " << ls.PAYOFF << ", " << ls.CAUGHT << ", " << ls.CLAIMS << endl;
             cout << ls.full_line << endl;
         }
