@@ -63,9 +63,9 @@ struct LineStruct {
         else if (INEQUALITY != lineB.INEQUALITY) return INEQUALITY < lineB.INEQUALITY;
         else if (EFFICIENCY != lineB.EFFICIENCY) return EFFICIENCY < lineB.EFFICIENCY;
         else if (EFFORT     != lineB.EFFORT    ) return EFFORT     < lineB.EFFORT;
+        else if (PAYOFF     != lineB.PAYOFF    ) return PAYOFF     < lineB.PAYOFF;
         else if (CAUGHT     != lineB.CAUGHT    ) return CAUGHT     < lineB.CAUGHT;
-        else if (CLAIMS     != lineB.CLAIMS    ) return CLAIMS     < lineB.CLAIMS;
-        else                                     return ATTACKERS  < lineB.ATTACKERS;
+        else                                     return CLAIMS     < lineB.CLAIMS;
     }
 };
  
