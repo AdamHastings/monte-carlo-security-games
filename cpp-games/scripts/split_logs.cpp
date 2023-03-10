@@ -120,7 +120,9 @@ int main(int argc, char *argv[]) {
 
         int taxidx = round(stod(TAX) * 10);
         int premidx = round(stod(PREMIUM) * 10);
-        out[taxidx][premidx] << line << endl;
+        if (taxidx == 10 && premidx >= 8) {
+            out[taxidx][premidx] << line << endl;
+        }
     }
 
     // outfile.close();
