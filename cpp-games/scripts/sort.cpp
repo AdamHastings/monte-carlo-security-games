@@ -78,8 +78,8 @@ int main(int argc, char* argv[]) {
     const int TAX_size = 11;
     const int PREMIUM_size=11;
 
-    for (int i=10; i<TAX_size; i++) {
-        for (int j=8; j<PREMIUM_size; j++) {
+    for (int i=0; i<TAX_size; i++) {
+        for (int j=0; j<PREMIUM_size; j++) {
             
             string taxstr = i<10 ? "0." + to_string(i): "1.0";
             string premstr = j<10 ? "0." + to_string(j): "1.0";
