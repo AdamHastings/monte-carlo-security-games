@@ -4,3 +4,4 @@ split
 sort
 find_best
 parse_sorted
+trim
