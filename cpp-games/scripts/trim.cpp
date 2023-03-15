@@ -48,8 +48,12 @@ int main(int argc, char *argv[]) {
     logfile << "TAX,PREMIUM,";
     for (int k=0; k<MANDATE_size; k++) {
         logfile << "keep" << k << ",neighbors" << k << ",toss" << k;
+        if (k == MANDATE_size - 1) {
+            logfile << endl;
+        } else {
+            logfile << ",";
+        }
     }
-    logfile << endl;
     
 
     for (int i=0; i<TAX_size; i++) {
@@ -77,18 +81,17 @@ int main(int argc, char *argv[]) {
                 cout << "." << flush;
             }
 
-            cout << " loaded! Parsing..." << flush;
+            cout << "loaded! Parsing..." << flush;
+
+            string lines[MANDATE_size];
 
             // handle the first line
             for (int k=0; k<MANDATE_size; k++) {
-                string line;
-                getline(infiles[k], line);
-                outfiles[k] << line << endl;
+                getline(infiles[k], lines[k]);
+                outfiles[k] << lines[k] << endl;
             }
 
-
             int attacks_attempted[MANDATE_size] = {0};
-            string lines[MANDATE_size] = {0};
 
             int lc_max = 11000000;
             for (int lc = 0; lc < lc_max; lc ++) {
@@ -99,9 +102,8 @@ int main(int argc, char *argv[]) {
                 }
 
                 int* max = max_element(attacks_attempted, attacks_attempted + MANDATE_size);
-                cout << "max=" << max << flush;
                 
-                if (max > 0) {
+                if (*max > 0) {
                     for (int k=0; k<MANDATE_size; k++) {
                         outfiles[k] << lines[k] << endl;
                         if (attacks_attempted[k] == 0 ) {
@@ -118,7 +120,7 @@ int main(int argc, char *argv[]) {
             }
 
             // write logfile
-            logfile << taxstr << "," << premstr;
+            logfile << taxstr << "," << premstr << ",";
             for (int k=0; k<MANDATE_size; k++) {
                 logfile << keep[k] << "," << keep_for_neighbors[k] << ",";
                 if (k == MANDATE_size - 1) {
