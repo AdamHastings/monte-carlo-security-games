@@ -91,22 +91,22 @@ int main(int argc, char *argv[]) {
                 outfiles[k] << lines[k] << endl;
             }
 
-            int attacks_attempted[MANDATE_size] = {0};
+            int amount_stolen[MANDATE_size] = {0};
 
             int lc_max = 11000000;
             for (int lc = 0; lc < lc_max; lc ++) {
                 for (int k=0; k<MANDATE_size; k++) {
                     getline(infiles[k], lines[k]);   
                     vector<string> split = splitline(lines[k]);
-                    attacks_attempted[k] = stoi(split[18]);
+                    amount_stolen[k] = stoi(split[20]);
                 }
 
-                int* max = max_element(attacks_attempted, attacks_attempted + MANDATE_size);
+                int* max = max_element(amount_stolen, amount_stolen + MANDATE_size);
                 
                 if (*max > 0) {
                     for (int k=0; k<MANDATE_size; k++) {
                         outfiles[k] << lines[k] << endl;
-                        if (attacks_attempted[k] == 0 ) {
+                        if (amount_stolen[k] == 0 ) {
                             keep_for_neighbors[k]++;
                         } else {
                             keep[k]++;
