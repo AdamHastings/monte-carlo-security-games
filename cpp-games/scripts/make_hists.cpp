@@ -15,6 +15,7 @@ using namespace std;
 #define PREMIUM_size 11
 
 #define NUM_PARAMS 10
+#define PARAM_RANGE 11 
 
 vector<string> splitline(string line) {
     vector<string> v;
@@ -43,9 +44,9 @@ int main(int argc, char *argv[]) {
     map<string, vector<int>> hist_vals;
     string params[NUM_PARAMS] = {"MANDATE","ATTACKERS","INEQUALITY","PREMIUM","EFFICIENCY","EFFORT","PAYOFF","CAUGHT","CLAIMS","TAX"};
     for (string p : params) {
-        hist_vals[p] = vector<int>(NUM_PARAMS, 0);
-    }
 
+        hist_vals[p] = vector<int>(PARAM_RANGE, 0);
+    }
 
     for (int i=0; i<TAX_size; i++) {
         for (int j=0; j<PREMIUM_size; j++) {
@@ -55,6 +56,7 @@ int main(int argc, char *argv[]) {
                 string mandstr = "0." + to_string(k);
 
                 string ifilename = "../trimmed/MANDATE=" + mandstr + "_TAX=" + taxstr + "_PREMIUM=" + premstr + ".csv";
+                cout << "loading " << ifilename << "..." << flush;
                 ifstream infile;
                 infile.open(ifilename);
 
@@ -77,6 +79,7 @@ int main(int argc, char *argv[]) {
                     int CLAIMS = (int) round(stod(split[8]) * 10);
                     int TAX = (int) round(stod(split[9]) * 10);
 
+
                     hist_vals["MANDATE"][MANDATE]++;
                     hist_vals["ATTACKERS"][ATTACKERS]++;
                     hist_vals["INEQUALITY"][INEQUALITY]++;
@@ -92,21 +95,29 @@ int main(int argc, char *argv[]) {
                 ofstream outfile;
                 outfile.open("make_hists_log.txt");
 
-
+                cout << "writing log..." << flush;
                 outfile << "param,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0" << endl;
                 for (auto p : hist_vals) {
                     string param = p.first;
                     vector<int> counts = p.second;
 
-                    for (int c=0; c<NUM_PARAMS; c++) {
+                    outfile << param << ",";
+
+                    for (int c=0; c<PARAM_RANGE; c++) {
                         if (c == 0 && (param == "ATTACKERS" || param == "INEQUALITY" || param == "EFFICIENCY" || param == "EFFORT" || param == "PAYOFF" || param == "CLAIMS")) {
                             outfile << "x,";
                         }
                         else if (c > 5 && param == "MANDATE") {
-                            outfile << "x,";
+                            outfile << "x";
+                            if (c == PARAM_RANGE - 1) {
+                                outfile << endl;
+                            } else {
+                                outfile << ",";
+                            }
+
                         } else {
                             outfile << counts[c];
-                            if (c == NUM_PARAMS - 1) {
+                            if (c == PARAM_RANGE - 1) {
                                 outfile << endl;
                             } else {
                                 outfile << ",";
@@ -114,6 +125,7 @@ int main(int argc, char *argv[]) {
                         }
                     }
                 }
+                cout << "done!" << endl;
             }
         }
     }
