@@ -105,10 +105,10 @@ int main(int argc, char *argv[]) {
 
                     for (int c=0; c<PARAM_RANGE; c++) {
                         if (c == 0 && (param == "ATTACKERS" || param == "INEQUALITY" || param == "EFFICIENCY" || param == "EFFORT" || param == "PAYOFF" || param == "CLAIMS")) {
-                            outfile << "x,";
+                            outfile << ",";
                         }
                         else if (c > 5 && param == "MANDATE") {
-                            outfile << "x";
+                            outfile << "";
                             if (c == PARAM_RANGE - 1) {
                                 outfile << endl;
                             } else {
