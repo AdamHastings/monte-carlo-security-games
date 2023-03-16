@@ -10,22 +10,22 @@ print(df)
 plt.figure(figsize=(4, 3))
 # plt.title("Useful Monte-Carlo simulation parameter distributions")
 plt.xlabel("Parameter values")
-# plt.xticks(si_nums)
+# ticks = 
+# print(ticks)
+# plt.xticks(list(map(float, df.columns)))
 plt.ylabel("Number of games")
-plt.grid()
-plt.xlim(0,1)
+# plt.grid()
 # plt.ylim(0, 50000)
 
 for index, row in df.iterrows():
-    # print(index, row)
-    print(index)
-    print(row)
+    tmp = row.dropna()
+    xvals = list(map(float, tmp.index))
+    yvals = tmp.tolist()
+    
+    plt.plot(xvals, yvals, label=index)
 
-    xvals = row.to_numpy()
-    # xvals = row.loc[df[index] != "x"]
-    # yvals = 
-    # xvals = df.loc[~(df==0).all(axis=1)]
-    # xvals = df
-
-    print(xvals)
+plt.legend(loc='best',title="Game parameter:", bbox_to_anchor=(1.0, 0.6, 0.3, 0.5), fancybox=True, shadow=True, ncol=1)
+plt.tight_layout()
+plt.savefig("figures/hist_mc.pdf")
+plt.savefig("figures/hist_mc.png")
 
