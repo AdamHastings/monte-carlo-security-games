@@ -1,0 +1,18 @@
+{
+    "MANDATE_range":   [                         0.5                         ],
+    "ATTACKERS_range": [                         0.5                         ],
+    "INEQUALITY_range":[                         0.5                         ],
+    "PREMIUM_range":   [                         0.5                         ],
+    "EFFICIENCY_range":[                         0.5                         ],
+    "EFFORT_range":    [                         0.5                         ],
+    "PAYOFF_range":    [                         0.5                         ],
+    "CAUGHT_range":    [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    "CLAIMS_range":    [                         0.5                         ],
+    "TAX_range":       [                         0.5                         ],
+    "B":1000,
+    "N":1000,
+    "E":100,
+    "D":50,
+    "verbose":false,
+    "assertions_on":true
+}
