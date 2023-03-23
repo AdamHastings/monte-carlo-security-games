@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
             for (int k=0; k<MANDATE_size; k++) {
                 string mandstr = "0." + to_string(k);
                 string ifilename = "../sorted/MANDATE=" + mandstr + "_TAX=" + taxstr + "_PREMIUM=" + premstr + ".csv";
-                string ofilename = "../trimmed/MANDATE=" + mandstr + "_TAX=" + taxstr + "_PREMIUM=" + premstr + ".csv";
+                string ofilename = "../trimmed_with_coMANDATEs/MANDATE=" + mandstr + "_TAX=" + taxstr + "_PREMIUM=" + premstr + ".csv";
                 infiles[k].open(ifilename);
                 outfiles[k].open(ofilename);
                 cout << "." << flush;
