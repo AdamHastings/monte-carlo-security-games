@@ -67,6 +67,9 @@ int main(int argc, char *argv[]) {
 
                 while(getline(infile, line)) {
                     vector<string> split = splitline(line);
+                    if (split.size() != 28) {
+                        cout << "split.size() != 28!" << endl;
+                    }
 
                     int MANDATE = (int) round(stod(split[0]) * 10);
                     int ATTACKERS = (int) round(stod(split[1]) * 10);
