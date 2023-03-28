@@ -19,7 +19,7 @@ df['d_init_original'] = df['d_init'] / (1 - df['MANDATE'])
 
 
 df['loss'] = df['d_end'] / df['d_init_original']
-print(df)
+print(df[['MANDATE', 'd_init', 'd_init_original', 'd_end', 'loss']])
 
 fig, ax = plt.subplots()
 
@@ -29,9 +29,12 @@ for p in params:
     yvals = df.loc[df['target'] == p, 'loss'].values
     xvals = df.loc[df['target'] == p, p].values
 
-    print(xvals, yvals)
-
-    ax.plot(xvals, yvals, label=p)
+    yvals_sorted = [y for _,y in sorted(zip(xvals, yvals))] 
+    xvals_sorted = sorted(xvals)
+    # print(xvals, yvals)
+    # print(xvals_sorted, yvals_sorted)
+    # print('----')
+    ax.plot(xvals_sorted, yvals_sorted, label=p)
 
 
 plt.xlabel('parameter')
