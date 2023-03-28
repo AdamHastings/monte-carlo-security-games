@@ -1,0 +1,40 @@
+Results from find_averages.py:
+
+mean:
+param
+ATTACKERS     0.6
+CAUGHT        0.5
+CLAIMS        0.6
+EFFICIENCY    0.5
+EFFORT        0.3
+INEQUALITY    0.6
+MANDATE       0.2
+PAYOFF        0.6
+PREMIUM       0.5
+TAX           0.5
+
+median:
+param
+ATTACKERS     0.6
+CAUGHT        0.5
+CLAIMS        0.6
+EFFICIENCY    0.5
+EFFORT        0.3
+INEQUALITY    0.6
+MANDATE       0.2
+PAYOFF        0.6
+PREMIUM       0.5
+TAX           0.5
+
+mode:
+param
+ATTACKERS     1.0
+CAUGHT        0.0
+CLAIMS        0.3
+EFFICIENCY    0.6
+EFFORT        0.1
+INEQUALITY    1.0
+MANDATE       0.0
+PAYOFF        1.0
+PREMIUM       1.0
+TAX           1.0

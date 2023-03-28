@@ -5,6 +5,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+out = open('mean_median_mode.txt', 'w')
+
 df = pd.read_csv("make_hists_log.txt", index_col=0, header=0)
 print(df)
 
@@ -37,5 +40,15 @@ print("\nmedian:")
 median = df.apply(lambda row: get_median(row, row.sum()), axis=1)
 print(median)
 
+
+out.write("Results from find_averages.py:\n\n")
+out.write("mean:\n")
+out.write(mean.to_string())
+out.write("\n\nmedian:\n")
+out.write(median.to_string())
+out.write("\n\nmode:\n")
+out.write(mode.to_string())
+
+out.close()
 
 
