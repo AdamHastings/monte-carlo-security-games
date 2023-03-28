@@ -71,7 +71,7 @@ void RunGame(Params p) {
 
     // Write response to log file;
     ofstream log;
-    log.open(p.logname, ios::out | ios::app);
+    log.open(p.logname, ios::app);
     log << g.to_string();
     log.close();
 }
@@ -122,18 +122,6 @@ void init_logs(std::string basename) {
 
     std::cout << "Creating log " << fpath << std::endl;
 
-    // Check if log file already exists so that we don't accidentally write over it
-    ifstream f(fpath.c_str());
-    if (f.good()) {
-        std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Y/n\n >> ";
-        std::string response;
-        std::cin >> response;
-        if (response != "y" && response != "Y") {
-            std::cout << "\nOK, this program will not overwrite " << fpath << ".\nThis program will now exit.\n";
-            std::exit(0);
-        }
-    }
-
     ofstream log;
 
     std::string header = "";
@@ -169,9 +157,29 @@ void init_logs(std::string basename) {
     header += "final_iter,";
     header += "outcome";
     header += "\n";
-    log.open (fpath, ios::out);
-    log << header;
-    log.close();
+
+    // Check if log file already exists so that we don't accidentally write over it
+    ifstream f(fpath.c_str());
+    if (f.good()) {
+        std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Or append to it? Y/A/n\n >> ";
+        std::string response;
+        std::cin >> response;
+        if (response == "a" || response == "A") {
+            log.open (fpath, ios::app);
+            log.close();
+        } else if (response != "y" && response != "Y") {
+            std::cout << "\nOK, this program will not overwrite " << fpath << ".\nThis program will now exit.\n";
+            std::exit(0);
+        } else {
+            log.open (fpath, ios::out);
+            log << header;
+            log.close();
+        }
+    }  else {
+        log.open (fpath, ios::out);
+        log << header;
+        log.close();
+    }  
 }
 
 std::vector<Params> load_cfg(std::string basename) {
