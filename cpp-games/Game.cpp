@@ -81,16 +81,16 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
 std::string Game::to_string() {
     std::string ret = "";
 
-    ret += std::to_string(p.MANDATE).substr(0,3) + ",";
-    ret += std::to_string(p.ATTACKERS).substr(0,3) + ",";
-    ret += std::to_string(p.INEQUALITY).substr(0,3) + ",";
-    ret += std::to_string(p.PREMIUM).substr(0,3) + ",";
-    ret += std::to_string(p.EFFICIENCY).substr(0,3) + ",";
-    ret += std::to_string(p.EFFORT).substr(0,3) + ",";
-    ret += std::to_string(p.PAYOFF).substr(0,3) + ",";
-    ret += std::to_string(p.CAUGHT).substr(0,3) + ",";
-    ret += std::to_string(p.CLAIMS).substr(0,3) + ",";
-    ret += std::to_string(p.TAX).substr(0,3) + ",";
+    ret += std::to_string(p.MANDATE).substr(0,4) + ",";
+    ret += std::to_string(p.ATTACKERS).substr(0,4) + ",";
+    ret += std::to_string(p.INEQUALITY).substr(0,4) + ",";
+    ret += std::to_string(p.PREMIUM).substr(0,4) + ",";
+    ret += std::to_string(p.EFFICIENCY).substr(0,4) + ",";
+    ret += std::to_string(p.EFFORT).substr(0,4) + ",";
+    ret += std::to_string(p.PAYOFF).substr(0,4) + ",";
+    ret += std::to_string(p.CAUGHT).substr(0,4) + ",";
+    ret += std::to_string(p.CLAIMS).substr(0,4) + ",";
+    ret += std::to_string(p.TAX).substr(0,4) + ",";
     ret += std::to_string(int(round(d_init))) + ",";
     ret += std::to_string(int(round(current_defender_sum_assets))) + ",";
     ret += std::to_string(int(round(a_init))) + ",";
