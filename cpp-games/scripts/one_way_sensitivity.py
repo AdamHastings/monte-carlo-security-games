@@ -17,19 +17,26 @@ for p in params:
 df['d_init_original'] = df['d_init'] / (1 - df['MANDATE'])
 
 df['loss'] = 1 - df['d_end'] / df['d_init_original']
-print(df[['MANDATE', 'd_init', 'd_init_original', 'd_end', 'loss']])
+# print(df[['MANDATE', 'd_init', 'd_init_original', 'd_end', 'loss']])
+
 
 # print(df)
-# df = df.groupby(params)['loss'].mean()
+groups = params + ['target']
+# print(groups)
+df = df.groupby(groups, as_index=False).mean()
 
-print(df)
+# print(df)
+
+# print(df.columns)
+# print(df[df['target'] == 'MANDATE'])
+
 
 
 fig, ax = plt.subplots()
 
 
 for p in params:
-    print(p)
+    # print(p)
     yvals = df.loc[df['target'] == p, 'loss'].values
     xvals = df.loc[df['target'] == p, p].values
 
