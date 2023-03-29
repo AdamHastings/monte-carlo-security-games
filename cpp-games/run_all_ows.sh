@@ -12,7 +12,7 @@ echo "y" | ./run_games ows_PREMIUM.json
 echo "y" | ./run_games ows_TAX.json
 
 
-for i in {1..9}
+for i in {1..999}
 do
     echo "a" | ./run_games ows_ATTACKERS.json
     echo "a" | ./run_games ows_CAUGHT.json
