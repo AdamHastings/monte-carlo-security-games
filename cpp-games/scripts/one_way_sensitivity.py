@@ -2,7 +2,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
-
+# from matplotlib.pyplot import figure
 
 params = ['MANDATE','ATTACKERS','INEQUALITY','PREMIUM','EFFICIENCY','EFFORT','PAYOFF','CAUGHT','CLAIMS','TAX']
 
@@ -34,6 +34,11 @@ df = df.groupby(groups, as_index=False).mean()
 
 fig, ax = plt.subplots()
 
+fig.set_figwidth(8)
+fig.set_figheight(4)
+
+
+
 
 for p in params:
     # print(p)
@@ -48,11 +53,13 @@ for p in params:
     ax.plot(xvals_sorted, yvals_sorted, label=p)
 
 
-plt.xlabel('parameter')
+plt.xlabel('parameter value')
 plt.ylabel('loss')
 ax.yaxis.set_major_formatter(mtick.PercentFormatter(1.0))
 
 plt.legend(loc='best',title="Game parameter:", bbox_to_anchor=(1.0, 0.6, 0.3, 0.5), fancybox=True, shadow=True, ncol=1)
+# plt.legend(fancybox=True, shadow=True)
+plt.title("Parameter Sensitivity (subject to baseline parameter setting)")
 plt.tight_layout()
 plt.savefig("figures/ows.png")
 plt.savefig("figures/ows.pdf")
