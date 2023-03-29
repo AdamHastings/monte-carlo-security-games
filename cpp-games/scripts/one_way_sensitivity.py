@@ -19,8 +19,8 @@ df['d_init_original'] = df['d_init'] / (1 - df['MANDATE'])
 df['loss'] = 1 - df['d_end'] / df['d_init_original']
 print(df[['MANDATE', 'd_init', 'd_init_original', 'd_end', 'loss']])
 
-print(df)
-df = df.groupby(params)['loss'].mean()
+# print(df)
+# df = df.groupby(params)['loss'].mean()
 
 print(df)
 
