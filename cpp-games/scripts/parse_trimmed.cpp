@@ -5,8 +5,6 @@
 *
 */
 
-
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -20,6 +18,10 @@ using namespace std;
 #define MANDATE_size  6
 #define TAX_size 11
 #define PREMIUM_size 11
+#define CLAIMS_size 10
+#define CAUGHT_size 11
+#define NUM_BUCKETS 200
+#define I_INIT_DIVISOR 10000000 // max i_init = 115057498
 
 vector<string> splitline(string line) {
     vector<string> v;
@@ -109,16 +111,58 @@ Line linestr_to_line(string linestr) {
     return line;
 }
 
+struct InsuranceHistItems {
+    int count = 0;
+    double avg_loss = 0;
+    double avg_duration = 0;
+
+    void update_avg_loss(double new_loss) {
+
+    }
+
+    void update_avg_duration(int new_duration) {
+
+    }
+
+    string to_string() {
+        string ret = "";
+        // TODO add details here
+        return ret;
+    }
+};
+
+
 void insurance_init() {
     // max i_init = 115057498
     // Bounds will be 0 - 150000000 at 10000000 increments
+
 }
 
-void insurance_step() {
 
+
+// // TODO should change 2nd to PARAM_RANGE and just ignore the cols with 0s?
+InsuranceHistItems insurance_CLAIMS[NUM_BUCKETS][CLAIMS_size];
+InsuranceHistItems insurance_CAUGHT[NUM_BUCKETS][CAUGHT_size];
+
+
+void insurance_step(Line line) {
+    // TODO add assertion that index is valid
+    int i_init_bucket = line.i_init / I_INIT_DIVISOR;
+
+    int claims_bucket = (int) round((line.CLAIMS - 0.1) * 10);
+    int caught_bucket = (int) round(line.CAUGHT * 10);
+
+    double loss = 0; // TODO compute loss
+    insurance_CLAIMS[i_init_bucket][claims_bucket].update_avg_loss(loss);
+    insurance_CLAIMS[i_init_bucket][claims_bucket].update_avg_duration(line.final_iter);
+
+    insurance_CAUGHT[i_init_bucket][caught_bucket].update_avg_loss(loss);
+    insurance_CAUGHT[i_init_bucket][caught_bucket].update_avg_duration(line.final_iter);
 }
 
 void insurance_end() {
+
+    // Write results to log file
 
 }
 
@@ -141,13 +185,21 @@ int main(int argc, char *argv[]) {
                 ifstream infile(ifilename);
 
                 string linestr;
+                int count = 0;;
                 getline(infile, linestr); // throwaway first line
 
                 while (getline(infile, linestr)) {    
                     Line line = linestr_to_line(linestr);
                     
                     // Do you in-loop steps here
-                    insurance_step();
+                    insurance_step(line);
+
+                    count++;
+
+                    // Periodically save results
+                    if (count % 100000 == 0) {
+                        insurance_end();
+                    }
                 }
             }
         }
