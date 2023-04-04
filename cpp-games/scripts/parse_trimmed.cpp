@@ -10,6 +10,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <cassert>
 #include <math.h>
 #include <stdio.h>
 
@@ -112,16 +113,19 @@ Line linestr_to_line(string linestr) {
 }
 
 struct InsuranceHistItems {
+    int midpoint = 0;
+    int lowval = 0;
+    int highval = 0;
     int count = 0;
     double avg_loss = 0;
     double avg_duration = 0;
 
     void update_avg_loss(double new_loss) {
-
+        avg_loss = avg_loss + ((new_loss - avg_loss) / (double) count);
     }
 
     void update_avg_duration(int new_duration) {
-
+        avg_duration = avg_duration + ((new_duration - avg_duration) / (double) count);
     }
 
     string to_string() {
@@ -132,38 +136,90 @@ struct InsuranceHistItems {
 };
 
 
-void insurance_init() {
-    // max i_init = 115057498
-    // Bounds will be 0 - 150000000 at 10000000 increments
-
-}
-
-
-
-// // TODO should change 2nd to PARAM_RANGE and just ignore the cols with 0s?
 InsuranceHistItems insurance_CLAIMS[NUM_BUCKETS][CLAIMS_size];
 InsuranceHistItems insurance_CAUGHT[NUM_BUCKETS][CAUGHT_size];
 
+void insurance_init() {
+    // max i_init = 115057498
+    // Bounds will be 0 - 200000000 at I_INIT_DIVISOR increments
 
-void insurance_step(Line line) {
-    // TODO add assertion that index is valid
-    int i_init_bucket = line.i_init / I_INIT_DIVISOR;
+      for (int i=0; i<NUM_BUCKETS; i++) {
+        for (int j=0; j<CLAIMS_size; j++) {
+            insurance_CLAIMS[i][j].lowval   = i * I_INIT_DIVISOR;
+            insurance_CLAIMS[i][j].midpoint = insurance_CLAIMS[i][j].lowval + I_INIT_DIVISOR/2;
+            insurance_CLAIMS[i][j].highval  = insurance_CLAIMS[i][j].lowval + I_INIT_DIVISOR - 1;
+        }
+    }
 
-    int claims_bucket = (int) round((line.CLAIMS - 0.1) * 10);
-    int caught_bucket = (int) round(line.CAUGHT * 10);
-
-    double loss = 0; // TODO compute loss
-    insurance_CLAIMS[i_init_bucket][claims_bucket].update_avg_loss(loss);
-    insurance_CLAIMS[i_init_bucket][claims_bucket].update_avg_duration(line.final_iter);
-
-    insurance_CAUGHT[i_init_bucket][caught_bucket].update_avg_loss(loss);
-    insurance_CAUGHT[i_init_bucket][caught_bucket].update_avg_duration(line.final_iter);
+    for (int i=0; i<NUM_BUCKETS; i++) {
+        for (int j=0; j<CAUGHT_size; j++) {
+            insurance_CAUGHT[i][j].lowval   = i * I_INIT_DIVISOR;
+            insurance_CAUGHT[i][j].midpoint = insurance_CAUGHT[i][j].lowval + I_INIT_DIVISOR/2;
+            insurance_CAUGHT[i][j].highval  = insurance_CAUGHT[i][j].lowval + I_INIT_DIVISOR - 1;
+        }
+    }
 }
 
 void insurance_end() {
 
     // Write results to log file
+    ofstream claims_outfile;
+    claims_outfile.open("parse_results/trimmed/insurance_hist_items.csv");
+    claims_outfile << "lowval,midpoint,highval,count,avg_duration,avg_loss\n";
+    
+    for (int i=0; i<NUM_BUCKETS; i++) {
+        for (int j=0; j<CLAIMS_size; j++) {
+            claims_outfile << insurance_CLAIMS[i][j].lowval << "," \
+                           << insurance_CLAIMS[i][j].midpoint << ","\
+                           << insurance_CLAIMS[i][j].highval << ","\
+                           << insurance_CLAIMS[i][j].count << ","\
+                           << insurance_CLAIMS[i][j].avg_duration << ","\
+                           << insurance_CLAIMS[i][j].avg_loss << "\n";
+        }
+    }
 
+    // Repeat for CAUGHT
+    ofstream caught_outfile;
+    caught_outfile.open("parse_results/trimmed/insurance_hist_items.csv");
+    caught_outfile << "lowval,midpoint,highval,count,avg_duration,avg_loss\n";
+    
+    for (int i=0; i<NUM_BUCKETS; i++) {
+        for (int j=0; j<CAUGHT_size; j++) {
+            caught_outfile << insurance_CAUGHT[i][j].lowval << "," \
+                           << insurance_CAUGHT[i][j].midpoint << ","\
+                           << insurance_CAUGHT[i][j].highval << ","\
+                           << insurance_CAUGHT[i][j].count << ","\
+                           << insurance_CAUGHT[i][j].avg_duration << ","\
+                           << insurance_CAUGHT[i][j].avg_loss << "\n";
+        }
+    }
+}
+
+void insurance_step(Line line) {
+    // TODO add assertion that index is valid
+    assert(line.i_init < 200000000);
+    int i_init_bucket = line.i_init / I_INIT_DIVISOR;
+
+
+    int claims_bucket = (int) round((line.CLAIMS - 0.1) * 10);
+    int caught_bucket = (int) round(line.CAUGHT * 10);
+
+    double loss = 0; // TODO compute loss
+    insurance_CLAIMS[i_init_bucket][claims_bucket].count++;
+    insurance_CLAIMS[i_init_bucket][claims_bucket].update_avg_loss(loss);
+    insurance_CLAIMS[i_init_bucket][claims_bucket].update_avg_duration(line.final_iter);
+
+    insurance_CAUGHT[i_init_bucket][caught_bucket].count++;
+    insurance_CAUGHT[i_init_bucket][caught_bucket].update_avg_loss(loss);
+    insurance_CAUGHT[i_init_bucket][caught_bucket].update_avg_duration(line.final_iter);
+
+    static int counter = 0;
+    counter++;
+
+    // Periodically save results
+    if (counter % 100000 == 0) {
+        insurance_end();
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -185,7 +241,6 @@ int main(int argc, char *argv[]) {
                 ifstream infile(ifilename);
 
                 string linestr;
-                int count = 0;;
                 getline(infile, linestr); // throwaway first line
 
                 while (getline(infile, linestr)) {    
@@ -194,12 +249,6 @@ int main(int argc, char *argv[]) {
                     // Do you in-loop steps here
                     insurance_step(line);
 
-                    count++;
-
-                    // Periodically save results
-                    if (count % 100000 == 0) {
-                        insurance_end();
-                    }
                 }
             }
         }
