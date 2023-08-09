@@ -76,8 +76,8 @@ def main():
         print(human_readable[sweep_vars.index(sweep_var)])
 
         plt.legend(reversed(handles), reversed(labels), title="MANDATE:", bbox_to_anchor=(1.3,1), loc="upper right", fancybox=True, shadow=True, ncol=1)
-        plt.xlabel(human_readable[sweep_vars.index(sweep_var)] + ": (0, 1]")
-        plt.xticks(si_nums)
+        plt.xlabel(human_readable[sweep_vars.index(sweep_var)])
+        # plt.xticks(si_nums)
         plt.ylabel("Total Defender losses (%)")
         plt.ylim(0,100)
         plt.xlim(0.1,1.1)
