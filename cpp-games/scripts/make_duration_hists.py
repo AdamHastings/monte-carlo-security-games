@@ -27,12 +27,18 @@ for m in ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5"]:
 
             plt.plot(hist_array, label="PREMIUM=" + p)
 
+    plt.ylim(None,None)
     plt.ylabel("count")
     plt.xlabel("duruation (# iterations)")
     plt.legend()
     plt.title=("MANDATE=" + m)
     plt.savefig("figures/durations/MANDATE=" + m + ".pdf")
     plt.savefig("figures/durations/MANDATE=" + m + ".png")
+
+    plt.ylim(0, 5500)
+    plt.savefig("figures/durations/MANDATE=" + m + "_ylim.pdf")
+    plt.savefig("figures/durations/MANDATE=" + m + "_ylim.png")
+
             
 
             
