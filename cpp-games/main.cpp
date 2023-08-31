@@ -183,7 +183,7 @@ void init_logs(std::string basename) {
 }
 
 std::vector<Params> load_cfg(std::string basename) {
-    std::string fpath = "configs/" + basename + ".json";
+    std::string fpath = basename + ".json";
     
     ifstream file(fpath);
 
@@ -237,7 +237,6 @@ std::vector<Params> load_cfg(std::string basename) {
 
         ret.push_back(p);
     }}}}}}}}
-    // }}}}
 
     return ret;
 }
@@ -248,7 +247,7 @@ int main(int argc, char** argv) {
     if (argc != 2) {
         std::cerr << "\nERROR: Incorrect number of args!";
         std::cerr << "\nExample of how to run config test_medium (located in configs/):";
-        std::cerr << "\n     $ ./run_games test_medium.json\n\n";
+        std::cerr << "\n     $ ./run_games configs/test_medium.json\n\n";
         std::exit(1);
     }
 
