@@ -26,6 +26,8 @@ struct Params {
     bool assertions_on;
     std::string logname;
 
+    bool uniform;
+
     std::string to_string() {
         std::string str = "";
         str += "MANDATE="    + std::to_string(MANDATE)    + ",";

@@ -4,6 +4,7 @@
 #include <chrono>
 #include <fstream>
 #include <ctime>  
+#include <cstring>
 #include <cstdlib>
 #include <random>
 #include "json/json.h"
@@ -224,12 +225,17 @@ std::vector<Params> load_uniform_cfg(Json::Value jsonData, string basename) {
         p.E          = jsonData["E"].asInt();
         p.D          = jsonData["D"].asInt();
 
+        p.uniform    = true;
+
         p.verbose       = jsonData["verbose"].asBool();
         p.assertions_on = jsonData["assertions_on"].asBool();
         p.logname       = "logs/" + basename + ".csv";
 
         ret.push_back(p);
     }}}}}}}}
+
+    cout << ret.size() << endl;
+
 
     return ret;
 }
@@ -243,9 +249,8 @@ class Distribution {
 
 class UniformRealDistribution : public Distribution {
     public: 
-        // UniformRealDistribution() {
-            
-        // }
+        std::uniform_real_distribution<double> dist;
+        UniformRealDistribution(double min, double max) : dist(min, max) {}
         double draw() {
             static std::uniform_real_distribution<double> dist(0,1);
             return dist(generator);
@@ -258,25 +263,31 @@ class NormalDistribution : public Distribution {
         NormalDistribution(double mean, double stddev) : dist(mean, stddev) {}
         double draw() {
             return dist(generator);
-            // return 0;
         }
 };
 
-Distribution* dist_draw(Json::Value d) {
+Distribution* createDistribution(Json::Value d) {
     Distribution* dist;
 
     if (d["distribution"] == "uniform") {
-        dist = new UniformRealDistribution();
+        if (!d["min"] || !d["max"]) {
+            std::cerr << "Must provide \"min\" and \"max\" with uniform distribution in config file" << std::endl;
+            std::cerr << "Offending parameter: " << d << endl;
+            exit(2);
+        }
+        double min = d["min"].asDouble();
+        double max = d["max"].asDouble();
+        dist = new UniformRealDistribution(min, max);
     }
     else if (d["distribution"] == "normal") {
-        double mean = 100;
-        // double mean = d["distribution"]["mean"].asDouble();
-        cout << mean << endl;
-        // double stddev = d["distribution"]["stddev"].asDouble();
-        double stddev = 1;
-        cout << stddev << endl;
+        if (!d["mean"] || !d["stddev"]) {
+            std::cerr << "Must provide \"min\" and \"max\" with uniform distribution in config file" << std::endl;
+            std::cerr << "Offending parameter: " << d << endl;
+            exit(2);
+        }
+        double mean = d["mean"].asDouble();
+        double stddev = d["stddev"].asDouble();
         dist = new NormalDistribution(mean, stddev);
-        // dist = new UniformRealDistribution();
     }
     else {
         std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
@@ -288,45 +299,56 @@ Distribution* dist_draw(Json::Value d) {
 std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
     std::vector<Params> ret;
 
-    // for (int i=0; i<jsonData["num_games"].asInt(); i++) {
-    //     Params p;
-
-    //     // check distribution type      
-    //     // cout << jsonData["MANDATE"]["distribution"] << endl;
-    //     p.MANDATE = dist_draw(jsonData["MANDATE"]);
-
-    //     ret.push_back(p);
-    // }
-
-    auto MANDATE_distribution = dist_draw(jsonData["MANDATE"]);
-    auto CLAIMS_distribution  = dist_draw(jsonData["CLAIMS"]);
-
-    for (int i=0; i<100; i++) {
-        cout << MANDATE_distribution->draw() << " ";
-    }
-    cout << endl;
-
-    for (int i=0; i<100; i++) {
-        cout << CLAIMS_distribution->draw() << " ";
-    }
-    cout << endl;
+    auto MANDATE_distribution    = createDistribution(jsonData["MANDATE"]);
+    auto ATTACKERS_distribution  = createDistribution(jsonData["ATTACKERS"]);
+    auto PREMIUM_distribution    = createDistribution(jsonData["PREMIUM"]);
+    auto EFFICIENCY_distribution = createDistribution(jsonData["EFFICIENCY"]);
+    auto EFFORT_distribution     = createDistribution(jsonData["EFFORT"]);
+    auto PAYOFF_distribution     = createDistribution(jsonData["PAYOFF"]);
+    auto CAUGHT_distribution     = createDistribution(jsonData["CAUGHT"]);
+    auto CLAIMS_distribution     = createDistribution(jsonData["CLAIMS"]);
+    auto TAX_distribution        = createDistribution(jsonData["TAX"]);
     
+    cout << jsonData["num_games"] << endl;
 
-    // TODO check if i equals num_games?
+    for (int i=0; i<jsonData["num_games"].asInt(); i++) {
+        Params p;
+    
+        p.MANDATE    = MANDATE_distribution->draw();
+        p.ATTACKERS  = ATTACKERS_distribution->draw();
+        p.PREMIUM    = PREMIUM_distribution->draw();
+        p.EFFICIENCY = EFFICIENCY_distribution->draw();
+        p.EFFORT     = EFFORT_distribution->draw();
+        p.PAYOFF     = PAYOFF_distribution->draw();
+        p.CAUGHT     = CAUGHT_distribution->draw();
+        p.CLAIMS     = CLAIMS_distribution->draw();
+        p.TAX        = TAX_distribution->draw();
 
-    exit(0);
+        p.B          = jsonData["B"].asInt();
+        p.N          = jsonData["N"].asInt();
+        p.E          = jsonData["E"].asInt();
+        p.D          = jsonData["D"].asInt();
+
+        p.uniform    = false;
+
+        p.verbose       = jsonData["verbose"].asBool();
+        p.assertions_on = jsonData["assertions_on"].asBool();
+        p.logname       = "logs/" + basename + ".csv";
+
+        ret.push_back(p);
+    }
+
     return ret;
 }
 
 std::vector<Params> load_cfg(std::string basename) {
-    std::string fpath = basename + ".json";
+    std::string fpath = "configs/" + basename + ".json";
     
     ifstream file(fpath);
 
     Json::Reader reader;
     Json::Value jsonData;
     reader.parse(file, jsonData);
-  
 
     if (jsonData["distribution_type"]) {
         return load_nonuniform_cfg(jsonData, basename);
@@ -334,6 +356,17 @@ std::vector<Params> load_cfg(std::string basename) {
         return load_uniform_cfg(jsonData, basename);
     }   
 }
+
+void run_uniform_games(vector<Params> v) {
+    // ParallelRunGames(v);
+    // SerialRunGames(v);
+    SerialParallelRunGames(v);
+}
+
+void run_nonuniform_games(vector<Params> v) {
+    SerialRunGames(v);
+}
+
 
 int main(int argc, char** argv) {
 
@@ -346,22 +379,27 @@ int main(int argc, char** argv) {
     }
 
     std::string basename(argv[1]);
-    basename = basename.substr(0, basename.find_last_of("."));
+    basename.erase(0, strlen("configs/"));
+    basename.erase(basename.find_last_of("."));
     init_logs(basename);
 
-    // vector of *incomplete* params, due to constraints on memory.
+    // vector of *incomplete* params, due to constraints on memory. IF UNIFORM PARAMETERS.
     // params need to be completed in ParallelRunGames
     vector<Params> v = load_cfg(basename);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
-    int num_games = v.size() * CLAIMS_range.size() * TAX_range.size();
-    std::cout << "started " << std::to_string(num_games) << " games at " << std::ctime(&start_time);
-
-    // ParallelRunGames(v);
-    // SerialRunGames(v);
-    SerialParallelRunGames(v);
+    assert (v.size() > 0);
+    if (v[0].uniform) {
+        int num_games = v.size() * CLAIMS_range.size() * TAX_range.size();
+        std::cout << "started " << std::to_string(num_games) << " uniform games at " << std::ctime(&start_time);
+        run_uniform_games(v);
+    } else {
+        int num_games = v.size(); 
+        std::cout << "started " << std::to_string(num_games) << " nonuniform games at " << std::ctime(&start_time);
+        run_nonuniform_games(v);
+    }
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
