@@ -16,6 +16,7 @@ struct Params {
     double CAUGHT;
     double CLAIMS;
     double TAX;
+    double DELAY;
 
     int B;
     int N;

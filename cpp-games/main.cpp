@@ -308,6 +308,7 @@ std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
     auto CAUGHT_distribution     = createDistribution(jsonData["CAUGHT"]);
     auto CLAIMS_distribution     = createDistribution(jsonData["CLAIMS"]);
     auto TAX_distribution        = createDistribution(jsonData["TAX"]);
+    auto DELAY_distribution      = createDistribution(jsonData["DELAY"]);
     
     cout << jsonData["num_games"] << endl;
 
@@ -323,6 +324,7 @@ std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
         p.CAUGHT     = CAUGHT_distribution->draw();
         p.CLAIMS     = CLAIMS_distribution->draw();
         p.TAX        = TAX_distribution->draw();
+        p.DELAY      = DELAY_distribution->draw();
 
         p.B          = jsonData["B"].asInt();
         p.N          = jsonData["N"].asInt();
