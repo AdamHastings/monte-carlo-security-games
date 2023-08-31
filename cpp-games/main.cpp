@@ -243,6 +243,9 @@ class Distribution {
 
 class UniformRealDistribution : public Distribution {
     public: 
+        // UniformRealDistribution() {
+            
+        // }
         double draw() {
             static std::uniform_real_distribution<double> dist(0,1);
             return dist(generator);
@@ -251,19 +254,29 @@ class UniformRealDistribution : public Distribution {
 
 class NormalDistribution : public Distribution {
     public: 
+        std::normal_distribution<double> dist;
+        NormalDistribution(double mean, double stddev) : dist(mean, stddev) {}
         double draw() {
-            static std::normal_distribution<double> dist(100,1);
             return dist(generator);
+            // return 0;
         }
 };
 
 Distribution* dist_draw(Json::Value d) {
     Distribution* dist;
+
     if (d["distribution"] == "uniform") {
         dist = new UniformRealDistribution();
     }
     else if (d["distribution"] == "normal") {
-        dist = new NormalDistribution();
+        double mean = 100;
+        // double mean = d["distribution"]["mean"].asDouble();
+        cout << mean << endl;
+        // double stddev = d["distribution"]["stddev"].asDouble();
+        double stddev = 1;
+        cout << stddev << endl;
+        dist = new NormalDistribution(mean, stddev);
+        // dist = new UniformRealDistribution();
     }
     else {
         std::cerr << "unknown distribution type specified. Terminating..." << std::endl;

@@ -47,7 +47,7 @@
     {
         "distribution" : "normal",
         "mean" : 5,
-        "std_dev" : 0.1
+        "stddev" : 0.1
     },
     "TAX" :
     {
