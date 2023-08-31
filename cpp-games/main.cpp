@@ -5,6 +5,7 @@
 #include <fstream>
 #include <ctime>  
 #include <cstdlib>
+#include <random>
 #include "json/json.h"
 #include "oneapi/tbb.h"
 #include "Player.h"
@@ -120,7 +121,7 @@ void init_logs(std::string basename) {
 
     std::string fpath = "logs/" + basename + ".csv";
 
-    std::cout << "Creating log " << fpath << std::endl;
+    std::cout << "Creating " << fpath << std::endl;
 
     ofstream log;
 
@@ -182,15 +183,7 @@ void init_logs(std::string basename) {
     }  
 }
 
-std::vector<Params> load_cfg(std::string basename) {
-    std::string fpath = basename + ".json";
-    
-    ifstream file(fpath);
-
-    Json::Reader reader;
-    Json::Value jsonData;
-    reader.parse(file, jsonData);
-  
+std::vector<Params> load_uniform_cfg(Json::Value jsonData, string basename) {
     std::vector<Params> ret;
 
     for (auto a : jsonData["MANDATE_range"]) {MANDATE_range.push_back(a.asDouble());}
@@ -239,6 +232,94 @@ std::vector<Params> load_cfg(std::string basename) {
     }}}}}}}}
 
     return ret;
+}
+
+static std::mt19937 generator(0);
+
+class Distribution {
+    public:
+        virtual double draw() =0;
+};
+
+class UniformRealDistribution : public Distribution {
+    public: 
+        double draw() {
+            static std::uniform_real_distribution<double> dist(0,1);
+            return dist(generator);
+        }
+};
+
+class NormalDistribution : public Distribution {
+    public: 
+        double draw() {
+            static std::normal_distribution<double> dist(100,1);
+            return dist(generator);
+        }
+};
+
+Distribution* dist_draw(Json::Value d) {
+    Distribution* dist;
+    if (d["distribution"] == "uniform") {
+        dist = new UniformRealDistribution();
+    }
+    else if (d["distribution"] == "normal") {
+        dist = new NormalDistribution();
+    }
+    else {
+        std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
+        exit(1);
+    }
+    return dist;
+}
+
+std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
+    std::vector<Params> ret;
+
+    // for (int i=0; i<jsonData["num_games"].asInt(); i++) {
+    //     Params p;
+
+    //     // check distribution type      
+    //     // cout << jsonData["MANDATE"]["distribution"] << endl;
+    //     p.MANDATE = dist_draw(jsonData["MANDATE"]);
+
+    //     ret.push_back(p);
+    // }
+
+    auto MANDATE_distribution = dist_draw(jsonData["MANDATE"]);
+    auto CLAIMS_distribution  = dist_draw(jsonData["CLAIMS"]);
+
+    for (int i=0; i<100; i++) {
+        cout << MANDATE_distribution->draw() << " ";
+    }
+    cout << endl;
+
+    for (int i=0; i<100; i++) {
+        cout << CLAIMS_distribution->draw() << " ";
+    }
+    cout << endl;
+    
+
+    // TODO check if i equals num_games?
+
+    exit(0);
+    return ret;
+}
+
+std::vector<Params> load_cfg(std::string basename) {
+    std::string fpath = basename + ".json";
+    
+    ifstream file(fpath);
+
+    Json::Reader reader;
+    Json::Value jsonData;
+    reader.parse(file, jsonData);
+  
+
+    if (jsonData["distribution_type"]) {
+        return load_nonuniform_cfg(jsonData, basename);
+    } else {
+        return load_uniform_cfg(jsonData, basename);
+    }   
 }
 
 int main(int argc, char** argv) {

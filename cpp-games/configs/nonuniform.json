@@ -1,5 +1,6 @@
 {
     "distribution_type" : "nonuniform",
+    "num_games" : 1000,
     "MANDATE" :
     {
         "distribution" : "uniform",
