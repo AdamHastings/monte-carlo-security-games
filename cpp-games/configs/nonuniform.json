@@ -51,9 +51,11 @@
     },
     "CLAIMS" :
     {
-        "distribution" : "normal",
+        "distribution" : "truncated_normal",
         "mean" : 5,
-        "stddev" : 0.1
+        "stddev" : 0.1,
+        "min" : 0.0,
+        "max" : 1.0
     },
     "TAX" :
     {
@@ -63,9 +65,8 @@
     },
     "DELAY" :
     {
-        "distribution" : "normal",
-        "mean" : 5,
-        "stddev" : 1
+        "distribution" : "poisson",
+        "lambda" : 5
     },
     "B":1000,
     "N":1000,
