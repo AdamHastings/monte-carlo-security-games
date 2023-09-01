@@ -11,6 +11,6 @@
 #SBATCH --mem-per-cpu=1gb        # The memory the job will use per cpu core.
 #SBATCH -o output/slurm-%j.out # Output location
 
-./run_games test_medium.json
+./run_games configs/test_medium.json
  
 # End of script

@@ -16,6 +16,7 @@ struct Params {
     double CAUGHT;
     double CLAIMS;
     double TAX;
+    double DELAY;
 
     int B;
     int N;
@@ -25,6 +26,8 @@ struct Params {
     bool verbose;
     bool assertions_on;
     std::string logname;
+
+    bool uniform;
 
     std::string to_string() {
         std::string str = "";
