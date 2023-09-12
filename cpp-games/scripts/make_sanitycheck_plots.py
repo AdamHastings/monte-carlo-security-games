@@ -296,6 +296,8 @@ def multi_sweep(df):
         plt.xlim(0.1,1.1)
         plt.tight_layout()
         plt.savefig('figures/' + sweep_var +  '_MANDATE_sweep.pdf',bbox_inches='tight')
+        plt.savefig('figures/' + sweep_var +  '_MANDATE_sweep.png',bbox_inches='tight')
+
 
 
 # Sanity checks to make sure model matches 
