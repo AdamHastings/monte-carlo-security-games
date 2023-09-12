@@ -114,9 +114,14 @@ def make_cdfs(bigdf):
 def total_loot_hist(df):
     # fig,a =  plt.subplots(2,5,sharey=True, sharex=True)
 
+    # df = df.loc[df['d_end'] == 0]
+    # df = df.loc[df['final_iter'] > 50]
+    # print(df.info())
+
     plt.clf()
     fig = plt.figure(figsize=(4,2))
     a_win = fig.add_subplot(1,1,1)
+
 
     #neither_win = fig.add_subplot(1,3,3)
 
@@ -172,11 +177,11 @@ def total_loot_hist(df):
         #d_win.step(X2, F2, label=str(int(m * 100)) + "%")
         #neither_win.step(X3, F3, label=str(int(m * 100)) + "%")
 
-    plt.ylim(0, 375)
+    # plt.ylim(0, 375)
     # plt.title("PDF of simulation iterations when attackers win")
     #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
     # plt.yscale("log")
-    plt.xlim(left=0, right=600)
+    # plt.xlim(left=0, right=600)
     plt.minorticks_on()
     plt.grid(True, which='both')
     plt.xlabel("Duration of games (iterations)")
@@ -194,6 +199,7 @@ def multi_sweep(df):
 
     si_labels = np.arange(0, 1.1, 0.1).tolist()
     si_nums = [round(num,1) for num in si_labels]
+    print(si_nums)
     # rounded_labels = [(str(int(float(num) * 100)) + "%") for num in si_nums]
 
     # si_xvals = [round(num, 2) for num in si_labels]
@@ -201,6 +207,15 @@ def multi_sweep(df):
     norm_vals = np.arange(0.1, 1.1, 0.1).tolist()
     xvals = [round(num,2) for num in norm_vals]
     print(xvals)
+
+
+
+    df = df.loc[df["ATTACKERS"] ==  0.5]
+    df = df.loc[df["INEQUALITY"] == 0.5]
+
+    PAYOFF_DEFAULT = 0.8
+    EFFORT_DEFAULT = 0.3
+    EFFICIENCY_DEFAULT = 0.5
 
 
     for sweep_var in sweep_vars:
@@ -215,20 +230,45 @@ def multi_sweep(df):
             #another array to store total percent loss relative to original assets
             total_graph = []
                 
-            dframe = df.loc[df["MANDATE"] ==  str(si_nums[num])]
+            # print("MANDATE = ", si_nums[num])
+            dframe = df.loc[df['MANDATE'] == si_nums[num]]
+            
+            if sweep_var == "PAYOFF":
+                dframe = dframe.loc[dframe['EFFORT'] == EFFORT_DEFAULT]
+                dframe = dframe.loc[dframe['EFFICIENCY'] == EFFICIENCY_DEFAULT]
+            elif sweep_var == "EFFORT":
+                dframe = dframe.loc[dframe['PAYOFF'] == PAYOFF_DEFAULT]
+                dframe = dframe.loc[dframe['EFFICIENCY'] == EFFICIENCY_DEFAULT]
+            elif sweep_var == "EFFICIENCY":
+                dframe = dframe.loc[dframe['PAYOFF'] == PAYOFF_DEFAULT]
+                dframe = dframe.loc[dframe['EFFORT'] == EFFORT_DEFAULT]
+
+            with pd.option_context('display.max_rows', None,):
+                print(dframe)
             # if sweep_var == 'SEC_INVESTMENT':
             #     dframe = pd.read_csv(base_path + sweep_var  + '.csv', index_col=False, header=0)
-            
+            print("here")
             i=0
+            # for payoff_val in dframe[param_names[sweep_vars.index(sweep_var)]]:
+
+            print(dframe[sweep_var])
+            print(dframe['d_init'])
+            print(dframe['d_init'].iloc[0])
             for payoff_val in dframe[sweep_var]:
+
+                print(sweep_var)
+                print(payoff_val)
+                print(dframe['d_init'].iloc[i])
+                print("no keyerror yet...")
                 #make relative
                 #sweep_graph.append((dframe['d_init'][i] - dframe['d_end'][i]) / (dframe['d_init'][i]))
-                if dframe['d_init'][i] != 0:
-                    sweep_graph.append(((dframe['d_init'][i]/(1 - dframe['MANDATE'][i])) - dframe['d_end'][i] ) / (dframe['d_init'][i]/(1 - dframe['MANDATE'][i])))
+                if dframe['d_init'].iloc[i] != 0:
+                    sweep_graph.append(((dframe['d_init'].iloc[i]/(1 - dframe['MANDATE'].iloc[i])) - dframe['d_end'].iloc[i] ) / (dframe['d_init'].iloc[i]/(1 - dframe['MANDATE'].iloc[i])))
                 else:
                     sweep_graph.append(1)
                 i+=1
             
+            print("done")
             sweep_graph = np.array(sweep_graph) * 100
 
             ax.plot(xvals, sweep_graph, label=str(num*10) + "%")
@@ -260,13 +300,17 @@ def multi_sweep(df):
 
 # Sanity checks to make sure model matches 
 def main():
-    filename = "../logs/test_no_gov.csv"
+    filename = "../logs/sanitycheck.csv"
     print("loading " + filename)
     df = pd.read_csv(filename)
     # print(df.info())
-
     # make_cdfs(df) # uncomment to run
-    total_loot_hist(df)
+
+    # df = df.loc[df['PREMIUM'] == 0.0]
+
+    # df.to_csv("../logs/sanitycheck.csv", index=False)
+    # print(df.info())
+    # total_loot_hist(df)
     multi_sweep(df)
 
 
