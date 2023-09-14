@@ -240,6 +240,8 @@ std::vector<Params> load_uniform_cfg(Json::Value jsonData, string basename) {
     return ret;
 }
 
+
+// TODO put Distribution in its own class file
 static std::mt19937 generator(0);
 
 class Distribution {
@@ -282,6 +284,8 @@ class TruncatedNormalDistribution : public Distribution {
                 draw = dist(generator);
                 if (draw >= min && draw <= max) {
                     break;
+                } else {
+                    std::cout << " -- truncated normal draw out of range! Re-drawing..." << std::endl;
                 }
             }
             return draw;
@@ -359,8 +363,6 @@ std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
     auto TAX_distribution        = createDistribution(jsonData["TAX"]);
     auto DELAY_distribution      = createDistribution(jsonData["DELAY"]);
     
-    cout << jsonData["num_games"] << endl;
-
     for (int i=0; i<jsonData["num_games"].asInt(); i++) {
         Params p;
     
@@ -371,7 +373,7 @@ std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
         p.EFFORT     = EFFORT_distribution->draw();
         p.PAYOFF     = PAYOFF_distribution->draw();
         p.CAUGHT     = CAUGHT_distribution->draw();
-        p.CLAIMS     = CLAIMS_distribution->draw();
+        p.CLAIMS     = CLAIMS_distribution->draw(); // truncated_normal is broken?
         p.TAX        = TAX_distribution->draw();
         p.DELAY      = DELAY_distribution->draw();
 
@@ -415,7 +417,7 @@ void run_uniform_games(vector<Params> v) {
 }
 
 void run_nonuniform_games(vector<Params> v) {
-    SerialRunGames(v);
+    ParallelRunGames(v);
 }
 
 

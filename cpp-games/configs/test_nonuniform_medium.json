@@ -1,6 +1,6 @@
 {
     "distribution_type" : "nonuniform",
-    "num_games" : 1000,
+    "num_games" : 100000,
     "MANDATE" :
     {
         "distribution" : "uniform",
@@ -52,7 +52,7 @@
     "CLAIMS" :
     {
         "distribution" : "truncated_normal",
-        "mean" : 5,
+        "mean" : 0.5,
         "stddev" : 0.1,
         "min" : 0.0,
         "max" : 1.0
