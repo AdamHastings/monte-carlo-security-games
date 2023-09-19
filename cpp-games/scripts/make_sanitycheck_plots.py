@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 
 
+config = "discrete"
+
 def make_cdfs(bigdf):
     # For each PREMIUM:
     for p in  ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"]:
@@ -32,10 +34,10 @@ def make_cdfs(bigdf):
 
                 # df = pd.read_csv(ofname)
                 df = bigdf.loc[(bigdf['MANDATE'] == float(m)) & (bigdf['PREMIUM'] == float(p)) & (bigdf['TAX'] == float(t))]
-                print(df.info())
+                # print(df.info())
 
                 # initial * (1 - MANDATE) = d_init
-                # initial = d_init / (1 - MANDATE)
+                # inilogfile =tial = d_init / (1 - MANDATE)
                 # the amount Defenders have *before* any mandate is applied
                 df['d_init_init'] = df['d_init'] / (1 - df['MANDATE'])
                 df['loss'] = df['d_end'] / df['d_init_init']
@@ -107,8 +109,8 @@ def make_cdfs(bigdf):
         # plt.xaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
         # plt.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
         plt.tight_layout() 
-        plt.savefig("figures/old_cdfs/pdf/PREMIUM=" + p + ".pdf")
-        plt.savefig("figures/old_cdfs/png/PREMIUM=" + p + ".png")
+        plt.savefig("figures/old_cdfs/pdf/" + config + "_PREMIUM=" + p + ".pdf")
+        plt.savefig("figures/old_cdfs/png/" + config + "_PREMIUM=" + p + ".png")
 
 
 def total_loot_hist(df):
@@ -122,7 +124,6 @@ def total_loot_hist(df):
     fig = plt.figure(figsize=(4,2))
     a_win = fig.add_subplot(1,1,1)
 
-
     #neither_win = fig.add_subplot(1,3,3)
 
     mandates = sorted(df['MANDATE'].unique())
@@ -132,7 +133,7 @@ def total_loot_hist(df):
             continue
 
         mands = df.loc[df['MANDATE'] == m]
-        print(str(mands.to_numpy().size) + " is total size for this mandate")
+        # print(str(mands.to_numpy().size) + " is total size for this mandate")
         
         #Probe convergence conditions
         attacker_wins = mands.loc[mands['d_end'] == 0]
@@ -145,10 +146,10 @@ def total_loot_hist(df):
         a_convergences = attacker_wins['final_iter'].to_numpy()
         d_convergences = defender_wins['final_iter'].to_numpy()
         n_convergences = neither_wins['final_iter']
-        print("Neither wins: " + str(n_convergences.to_numpy().size) + " scenarios")
+        # print("Neither wins: " + str(n_convergences.to_numpy().size) + " scenarios")
         
-        print("Defenders totally looted in " + str(a_convergences.size) + " scenarios")
-        print("Attackers completely looted in " + str(d_convergences.size) + " scenarios")
+        # print("Defenders totally looted in " + str(a_convergences.size) + " scenarios")
+        # print("Attackers completely looted in " + str(d_convergences.size) + " scenarios")
 
         print("Total: " + str(a_convergences.size + d_convergences.size + n_convergences.size) + " simulations")
         
@@ -189,7 +190,7 @@ def total_loot_hist(df):
     plt.legend(loc="upper right", title="MANDATE:", fancybox=True, shadow=True, ncol=1)
     plt.tight_layout()
     # plt.show() 
-    plt.savefig("figures/total_loot.pdf", pad_inches=0)
+    plt.savefig("figures/" + config + "_total_loot.pdf", pad_inches=0)
 
 def multi_sweep(df):
     
@@ -199,14 +200,14 @@ def multi_sweep(df):
 
     si_labels = np.arange(0, 1.1, 0.1).tolist()
     si_nums = [round(num,1) for num in si_labels]
-    print(si_nums)
+    # print(si_nums)
     # rounded_labels = [(str(int(float(num) * 100)) + "%") for num in si_nums]
 
     # si_xvals = [round(num, 2) for num in si_labels]
 
     norm_vals = np.arange(0.1, 1.1, 0.1).tolist()
     xvals = [round(num,2) for num in norm_vals]
-    print(xvals)
+    # print(xvals)
 
 
 
@@ -225,7 +226,7 @@ def multi_sweep(df):
         ax = fig.add_subplot(1,1,1)
         
 
-        for num in range(0, 8):
+        for num in range(0, 4):
             sweep_graph = []
             #another array to store total percent loss relative to original assets
             total_graph = []
@@ -250,7 +251,7 @@ def multi_sweep(df):
             print("here")
             i=0
             # for payoff_val in dframe[param_names[sweep_vars.index(sweep_var)]]:
-
+            print(sweep_var)
             print(dframe[sweep_var])
             print(dframe['d_init'])
             print(dframe['d_init'].iloc[0])
@@ -286,6 +287,7 @@ def multi_sweep(df):
             plt.grid(True, which='both')
             # plt.title("Total inclusive relative defender losses vs. " + human_readable[sweep_vars.index(sweep_var)])
 
+        print("printing sweep_var")
         print(sweep_var)
 
         plt.legend(reversed(handles), reversed(labels), title="MANDATE:", bbox_to_anchor=(1.3,1), loc="upper right", fancybox=True, shadow=True, ncol=1)
@@ -295,20 +297,18 @@ def multi_sweep(df):
         plt.ylim(0,100)
         plt.xlim(0.1,1.1)
         plt.tight_layout()
-        plt.savefig('figures/' + sweep_var +  '_MANDATE_sweep.pdf',bbox_inches='tight')
-        plt.savefig('figures/' + sweep_var +  '_MANDATE_sweep.png',bbox_inches='tight')
+        plt.savefig('figures/' + config + '_' + sweep_var +  '_MANDATE_sweep.pdf',bbox_inches='tight')
+        plt.savefig('figures/' + config + '_' + sweep_var +  '_MANDATE_sweep.png',bbox_inches='tight')
 
 
 
 # Sanity checks to make sure model matches 
 def main():
-    filename = "../logs/sanitycheck.csv"
+    filename = "../logs/" + config + ".csv"
     print("loading " + filename)
     df = pd.read_csv(filename)
     # print(df.info())
     # make_cdfs(df) # uncomment to run
-
-    # df = df.loc[df['PREMIUM'] == 0.0]
 
     # df.to_csv("../logs/sanitycheck.csv", index=False)
     # print(df.info())
