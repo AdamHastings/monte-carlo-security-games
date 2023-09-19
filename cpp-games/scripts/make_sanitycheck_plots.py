@@ -312,8 +312,8 @@ def main():
 
     # df.to_csv("../logs/sanitycheck.csv", index=False)
     # print(df.info())
-    # total_loot_hist(df)
-    multi_sweep(df)
+    total_loot_hist(df)
+    # multi_sweep(df)
 
 
 

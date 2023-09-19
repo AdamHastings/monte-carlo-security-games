@@ -437,10 +437,12 @@ void Game::run_iterations() {
 
             fight(*a, *d);
 
-            if (std::round(a->assets) > 0) {
+            // if (std::round(a->assets) > 0) {
+            if (a->assets > 0) {
                 new_alive_attackers_indices.push_back(a_idx);
             }
-            if (std::round(d->assets) > 0) {
+            // if (std::round(d->assets) > 0) {
+            if (d->assets > 0) {
                 new_alive_defenders_indices.push_back(d_idx);
             }
         }
