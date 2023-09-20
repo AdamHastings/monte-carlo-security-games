@@ -344,9 +344,9 @@ void Game::fight(Attacker &a, Defender &d) {
     double effective_loot = d.assets * p.PAYOFF;
 
     // Mercy kill the Defenders if the loot is very low
-    if (d.assets < p.E) {
-        effective_loot = d.assets;
-    }
+    // if (d.assets < p.E) {
+    //     effective_loot = d.assets;
+    // }
 
     double cost_of_attack = d.costToAttack;
 

@@ -127,4 +127,6 @@ class Game {
         void government_lose(double loss);
         void a_distributes_loot(Attacker &a);
 
+        void prune();
+
 };
