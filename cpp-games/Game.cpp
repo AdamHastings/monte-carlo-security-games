@@ -204,6 +204,7 @@ void Game::conclude_game(std::string outcome) {
     verify_outcome();
 }
 
+// Different from Python games
 bool Game::is_equilibrium_reached() {
 
 
@@ -214,6 +215,18 @@ bool Game::is_equilibrium_reached() {
     }
 
     return (consecutiveNoAttacks >= p.D);
+
+    // if (abs(attacker_iter_sum - prev_attacker_iter_sum) < p.E && abs(defender_iter_sum - prev_defender_iter_sum) < p.E) {
+    //     consecutiveNoAttacks++; // placeholder variable name since it already existed...should be "stable_count"
+    //     if (consecutiveNoAttacks >= p.E) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // } else {
+    //     consecutiveNoAttacks = 0;
+    //     return false;
+    // }
 }
 
 void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
@@ -352,7 +365,7 @@ void Game::fight(Attacker &a, Defender &d) {
 
     double expected_earnings = effective_loot * d.probAttackSuccess;
 
-    if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
+    if (expected_earnings > cost_of_attack && cost_of_attack < a.assets) {
         attacksAttempted += 1;
         roundAttacks += 1;
         a_lose(a, cost_of_attack);
@@ -452,6 +465,9 @@ void Game::run_iterations() {
 
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;
+
+        prev_defender_iter_sum = defender_iter_sum;
+        prev_attacker_iter_sum = attacker_iter_sum;
 
         if (defenders_have_more_than_attackers) {
             if (current_attacker_sum_assets > current_defender_sum_assets) {

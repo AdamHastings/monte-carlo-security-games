@@ -50,7 +50,7 @@ void RunGame(Params p) {
 
         double personal_security_investment = selfish_investment - insurance;
         d.costToAttack = d.assets * p.EFFORT;
-        d.costToAttack += personal_security_investment * p.EFFORT;
+        d.costToAttack += personal_security_investment * p.EFFICIENCY;
         d.lose(personal_security_investment);
 
         defenders.push_back(Defender(d));

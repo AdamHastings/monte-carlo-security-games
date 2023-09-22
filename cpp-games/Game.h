@@ -129,4 +129,7 @@ class Game {
 
         void prune();
 
+        int prev_defender_iter_sum;
+        int prev_attacker_iter_sum;
+
 };
