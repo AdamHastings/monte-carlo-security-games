@@ -148,7 +148,7 @@ def total_loot_hist(df):
         n_convergences = neither_wins['final_iter']
         # print("Neither wins: " + str(n_convergences.to_numpy().size) + " scenarios")
         
-        # print("Defenders totally looted in " + str(a_convergences.size) + " scenarios")
+        print("Defenders totally looted in " + str(a_convergences.size) + " scenarios")
         # print("Attackers completely looted in " + str(d_convergences.size) + " scenarios")
 
         print("Total: " + str(a_convergences.size + d_convergences.size + n_convergences.size) + " simulations")
@@ -161,12 +161,15 @@ def total_loot_hist(df):
         #Good for CDF, but we are changing to PDF
         #X1 = np.sort(a_convergences)
         #F1 = np.array(range(N))/float(N) * 100
+
+        print(a_convergences)
         
-        binsize = 50
-        round_vals = [int(val/binsize) * binsize for val in a_convergences]
-        (vals, counts) = np.unique(round_vals, return_counts=True)
-        X1 = vals
-        F1 = counts
+        # binsize = 50
+        # round_vals = [int(val/binsize) * binsize for val in a_convergences]
+        # (vals, counts) = np.unique(round_vals, return_counts=True)
+        # X1 = vals
+        # F1 = counts
+        a_win.hist(a_convergences, bins=50, label=str(int(m * 100)) + "%", histtype='step')
         
         # X2 = np.sort(d_convergences)
         # F2 = np.array(range(N))/float(N) * 100
@@ -174,7 +177,7 @@ def total_loot_hist(df):
         # X3 = np.sort(n_convergences)
         # F3 = np.array(range(N))/float(N) * 100
 
-        a_win.plot(X1, F1, label=str(int(m * 100)) + "%", linewidth=2)
+        # a_win.plot(X1, F1, label=str(int(m * 100)) + "%", linewidth=2)
         #d_win.step(X2, F2, label=str(int(m * 100)) + "%")
         #neither_win.step(X3, F3, label=str(int(m * 100)) + "%")
 
@@ -182,7 +185,7 @@ def total_loot_hist(df):
     # plt.title("PDF of simulation iterations when attackers win")
     #ax.yaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
     # plt.yscale("log")
-    # plt.xlim(left=0, right=600)
+    plt.xlim(left=0, right=600)
     plt.minorticks_on()
     plt.grid(True, which='both')
     plt.xlabel("Duration of games (iterations)")
@@ -244,23 +247,19 @@ def multi_sweep(df):
                 dframe = dframe.loc[dframe['PAYOFF'] == PAYOFF_DEFAULT]
                 dframe = dframe.loc[dframe['EFFORT'] == EFFORT_DEFAULT]
 
-            with pd.option_context('display.max_rows', None,):
-                print(dframe)
+            # with pd.option_context('display.max_rows', None,):
+            #     print(dframe)
             # if sweep_var == 'SEC_INVESTMENT':
             #     dframe = pd.read_csv(base_path + sweep_var  + '.csv', index_col=False, header=0)
-            print("here")
+            # print("here")
             i=0
             # for payoff_val in dframe[param_names[sweep_vars.index(sweep_var)]]:
-            print(sweep_var)
-            print(dframe[sweep_var])
-            print(dframe['d_init'])
-            print(dframe['d_init'].iloc[0])
+        
             for payoff_val in dframe[sweep_var]:
 
-                print(sweep_var)
-                print(payoff_val)
-                print(dframe['d_init'].iloc[i])
-                print("no keyerror yet...")
+                # print(sweep_var)
+                # print(payoff_val)
+                # print(dframe['d_init'].iloc[i])
                 #make relative
                 #sweep_graph.append((dframe['d_init'][i] - dframe['d_end'][i]) / (dframe['d_init'][i]))
                 if dframe['d_init'].iloc[i] != 0:
@@ -269,7 +268,6 @@ def multi_sweep(df):
                     sweep_graph.append(1)
                 i+=1
             
-            print("done")
             sweep_graph = np.array(sweep_graph) * 100
 
             ax.plot(xvals, sweep_graph, label=str(num*10) + "%")
@@ -287,7 +285,7 @@ def multi_sweep(df):
             plt.grid(True, which='both')
             # plt.title("Total inclusive relative defender losses vs. " + human_readable[sweep_vars.index(sweep_var)])
 
-        print("printing sweep_var")
+        # print("printing sweep_var")
         print(sweep_var)
 
         plt.legend(reversed(handles), reversed(labels), title="MANDATE:", bbox_to_anchor=(1.3,1), loc="upper right", fancybox=True, shadow=True, ncol=1)
