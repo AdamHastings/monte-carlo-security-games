@@ -3,6 +3,11 @@
 #include <map>
 #include <cassert>
 
+struct PolicyType {
+    double premium;
+    double retention;
+};
+
 
 class Player {
     public:
@@ -22,6 +27,9 @@ class Defender : public Player {
         std::map<int, double> claimsReceived;
 
         Defender(int id_in);
+
+    private:
+        void make_investment();
 };
 
 class Attacker : public Player {
@@ -35,6 +43,11 @@ class Attacker : public Player {
 class Insurer : public Player {
     public:
         Insurer(){};
+
+        PolicyType provide_a_quote(double assets, double posture);
+
+    private:
+        double median_attacker_assets; // need to init somehow
 };
 
 class Government : public Player {

@@ -100,6 +100,7 @@ class Game {
         double paidClaims = 0;
         int attacksAttempted = 0, attacksSucceeded = 0;
         int roundAttacks = 0;
+        int prevRoundAttacks = 0;
         int consecutiveNoAttacks=0;
 
         std::string final_outcome = "X";
@@ -127,6 +128,8 @@ class Game {
         void government_lose(double loss);
         void a_distributes_loot(Attacker &a);
 
-        // void buy_insurance(Defender &d);
+        // void requeset_a_quote(Defender &d);
+
+        // double find_p_attacker_has_enough_to_attack();
 
 };

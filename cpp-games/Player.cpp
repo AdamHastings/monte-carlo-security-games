@@ -4,6 +4,7 @@
 #include <iostream>
 
 
+
 Player::Player() {
     assets = 0;
 }
@@ -45,6 +46,15 @@ Defender::Defender(int id_in) : Player() {
     costToAttack = assets * posture;
 }
 
+void Defender::make_investment() {
+    // Get insurance policy from insurer
+
+    // find optimum security investment
+
+    // decided which strategy is optimal.
+}
+
+
 Attacker::Attacker(int id_in, double INEQUALITY) : Player() {
     id = id_in;
 
@@ -52,4 +62,23 @@ Attacker::Attacker(int id_in, double INEQUALITY) : Player() {
     if (assets < 0) {
         assets = 0;
     }
+}
+
+PolicyType Insurer::provide_a_quote(double assets, double posture) {
+    PolicyType policy;
+    
+    policy.premium = 0;
+    policy.retention = 0;
+
+    double OVerhead = 0.20; // 20% overhead
+    double r = 20; // TODO double check retention regression factor
+
+    double p_L = 0; // TODO calculate
+    double u_P = 0; // TODO calculate
+    
+    policy.premium = (p_L * u_P * assets) / (r * p_L + OVerhead);
+    policy.retention = r * policy.premium;
+
+
+    return policy;
 }

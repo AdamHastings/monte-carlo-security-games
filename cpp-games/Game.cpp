@@ -383,22 +383,20 @@ void Game::fight(Attacker &a, Defender &d) {
     } 
 }
 
-// void Game::buy_insurance(Defender &d) {
+// double Game::find_p_attacker_has_enough_to_attack() {
+//     // probably need to do a binary search of the sorted attacker assets distribution
+//     return 0; // TODO
+// }
+
+
+
+// void Game::requeset_a_quote(Defender &d) {
 //     double a2d_ratio = attackers.size() / defenders.size();
-//     double p_attack_attempt = std::min(1.0, a2d_ratio);
-//     std::cout << p_attack_attempt << std::endl;
+//     double p_attacker_has_enough_to_attack = find_p_attacker_has_enough_to_attack();
+//     double p_getting_attacked = std::min(1.0, a2d_ratio);
+//     double p_a = p_getting_attacked * p_attacker_has_enough_to_attack;
 
-//     // posture is a linear function based on investments
-//     // y = mx + b 
-//     // (x = investments)
-//     double hypothetical_posture_m = p.EFFICIENCY;
-//     double hypothetical_posture_b = d.probAttackSuccess;
-
-//     // y = ax^n
-//     double retention_a = 1.307;
-//     double retention_n = 0.5538;
-    
-//     double overhead = 0.20; // 20% goes to insurer
+//     double p_a_hat = prevRoundAttacks / 
 
 // }
 
@@ -440,6 +438,7 @@ void Game::run_iterations() {
             new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin() + offset + alive_defenders_indices.size(), alive_attackers_indices.end() );
 
         }
+
         
         for (uint i=0; i<shorter_length; i++) {
             uint a_idx, d_idx;
@@ -454,7 +453,10 @@ void Game::run_iterations() {
             Attacker *a = &attackers[a_idx];
             Defender *d = &defenders[d_idx];
 
-            // buy_insurance(*d);
+            // buy_insurance(*d); 
+            // d needs to pick its optimal strategy here
+            // or maybe beforehand? Before the round so the insurer can collect
+
             fight(*a, *d);
 
             if (std::round(a->assets) > 0) {
@@ -464,6 +466,8 @@ void Game::run_iterations() {
                 new_alive_defenders_indices.push_back(d_idx);
             }
         }
+
+        prevRoundAttacks = roundAttacks;
 
         alive_attackers_indices = new_alive_attackers_indices;
         alive_defenders_indices = new_alive_defenders_indices;
