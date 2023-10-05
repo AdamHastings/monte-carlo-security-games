@@ -2,6 +2,7 @@
 #include <random>
 #include <map>
 #include <iostream>
+#include <algorithm>
 
 
 
@@ -47,9 +48,31 @@ Defender::Defender(int id_in) : Player() {
 }
 
 void Defender::make_investment() {
-    // Get insurance policy from insurer
 
-    // find optimum security investment
+    double p_L_hat = 0; // TODO Defender's best guess estimate of the probability of being attacked
+    double u_E = 0; // TODO fill in later
+    double u_P = 0; // TODO fill in later
+
+
+    // 1. Get insurance policy from insurer
+    PolicyType policy = Insurer::provide_a_quote(assets, posture); // 
+    double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
+
+    // 2. Find optimum security investment
+    double optimal_investment = 0; // TODO
+    double expected_loss_with_optimal_investment = p_L_hat*(assets - optimal_investment) * u_P - optimal_investment;
+
+    // 3. Find cost to achieve perfect security
+    double expected_loss_with_perfect_security = (assets * (1 - posture))/ (u_E * posture);
+
+    // Choose the optimal strategy.
+    double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
+    if (minimum == expected_loss_with_insurance) {
+        // buy insurnace
+        return;
+    }
+
+    return;
 
     // decided which strategy is optimal.
 }
@@ -64,16 +87,14 @@ Attacker::Attacker(int id_in, double INEQUALITY) : Player() {
     }
 }
 
-PolicyType Insurer::provide_a_quote(double assets, double posture) {
+PolicyType Insurer::provide_a_quote(double assets, double estimated_posture) {
     PolicyType policy;
-    
-    policy.premium = 0;
-    policy.retention = 0;
 
     double OVerhead = 0.20; // 20% overhead
     double r = 20; // TODO double check retention regression factor
 
-    double p_L = 0; // TODO calculate
+    double p_A = 0; // TODO calculate
+    double p_L = p_A * (1 - estimated_posture); 
     double u_P = 0; // TODO calculate
     
     policy.premium = (p_L * u_P * assets) / (r * p_L + OVerhead);

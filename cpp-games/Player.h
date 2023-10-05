@@ -44,7 +44,7 @@ class Insurer : public Player {
     public:
         Insurer(){};
 
-        PolicyType provide_a_quote(double assets, double posture);
+        static PolicyType provide_a_quote(double assets, double posture);
 
     private:
         double median_attacker_assets; // need to init somehow
