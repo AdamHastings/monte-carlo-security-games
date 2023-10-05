@@ -128,8 +128,8 @@ void Game::verify_init() {
         assert(d.id < defenders.size());
         assert(d.assets >= 0);
         assert(d.costToAttack >= 0);
-        assert(d.probAttackSuccess >= 0);
-        assert(d.probAttackSuccess <= 1);
+        assert(d.posture >= 0);
+        assert(d.posture <= 1);
         assert(d.id == i);
         i++;
     }
@@ -350,7 +350,7 @@ void Game::fight(Attacker &a, Defender &d) {
 
     double cost_of_attack = d.costToAttack;
 
-    double expected_earnings = effective_loot * d.probAttackSuccess;
+    double expected_earnings = effective_loot * d.posture; // TODO wrong
 
     if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
         attacksAttempted += 1;
@@ -370,7 +370,7 @@ void Game::fight(Attacker &a, Defender &d) {
         if (uniform(gen) < chance_of_getting_caught) {
             a_distributes_loot(a);
         } else {
-            bool attacker_wins = (uniform(gen) < d.probAttackSuccess);
+            bool attacker_wins = (uniform(gen) < d.posture); // TODO wrong
             if (attacker_wins) {
                 attacksSucceeded += 1;
 
@@ -382,6 +382,25 @@ void Game::fight(Attacker &a, Defender &d) {
         }
     } 
 }
+
+// void Game::buy_insurance(Defender &d) {
+//     double a2d_ratio = attackers.size() / defenders.size();
+//     double p_attack_attempt = std::min(1.0, a2d_ratio);
+//     std::cout << p_attack_attempt << std::endl;
+
+//     // posture is a linear function based on investments
+//     // y = mx + b 
+//     // (x = investments)
+//     double hypothetical_posture_m = p.EFFICIENCY;
+//     double hypothetical_posture_b = d.probAttackSuccess;
+
+//     // y = ax^n
+//     double retention_a = 1.307;
+//     double retention_n = 0.5538;
+    
+//     double overhead = 0.20; // 20% goes to insurer
+
+// }
 
 void Game::run_iterations() {
 
@@ -435,6 +454,7 @@ void Game::run_iterations() {
             Attacker *a = &attackers[a_idx];
             Defender *d = &defenders[d_idx];
 
+            // buy_insurance(*d);
             fight(*a, *d);
 
             if (std::round(a->assets) > 0) {

@@ -24,31 +24,31 @@ double Player::get_assets() {
 // static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 static std::mt19937 generator(0);
 // static std::default_random_engine generator;
-static std::lognormal_distribution<double> wealth(9.875392795, 1.682545179);
-static std::normal_distribution<double> p_defense_success(0.388,0.062); // TODO justify these numbers.... BEFORE staring sims...
+static std::lognormal_distribution<double> wealth_dist(9.875392795, 1.682545179);
+static std::normal_distribution<double> posture_dist(0.388,0.062); // TODO justify these numbers.... BEFORE staring sims...
 
 Defender::Defender(int id_in) : Player() {
     id = id_in;
 
-    assets = wealth(generator);
+    assets = wealth_dist(generator);
     if (assets < 0) {
         assets = 0;
     }
 
-    probAttackSuccess = 1 - p_defense_success(generator);
-    if (probAttackSuccess < 0) {
-        probAttackSuccess = 0;
-    } else if (probAttackSuccess > 1) {
-        probAttackSuccess = 1;
+    posture = posture_dist(generator);
+    if (posture < 0) {
+        posture = 0;
+    } else if (posture > 1) {
+        posture = 1;
     }
 
-    costToAttack = assets;
+    costToAttack = assets * posture;
 }
 
 Attacker::Attacker(int id_in, double INEQUALITY) : Player() {
     id = id_in;
 
-    assets = wealth(generator) * INEQUALITY;
+    assets = wealth_dist(generator) * INEQUALITY;
     if (assets < 0) {
         assets = 0;
     }

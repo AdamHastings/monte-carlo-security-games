@@ -17,7 +17,7 @@ class Player {
 class Defender : public Player {
     public:
         uint id;
-        double probAttackSuccess;
+        double posture;
         double costToAttack;
         std::map<int, double> claimsReceived;
 
