@@ -15,6 +15,7 @@ struct Params {
     int NUM_GAMES;
     int E;
     int D;
+    int I;
 
     bool verbose;
     bool assertions_on;

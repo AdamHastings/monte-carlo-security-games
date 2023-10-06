@@ -42,6 +42,7 @@
     "NUM_GAMES":1000,
     "E":100,
     "D":50,
+    "I":1,
     "verbose":false,
     "assertions_on":true
 }

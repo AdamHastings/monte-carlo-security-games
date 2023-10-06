@@ -19,12 +19,12 @@ static std::random_device rd;  // Will be used to obtain a seed for the random n
 static std::mt19937 gen(0);
 std::uniform_real_distribution<> uniform(0.0, 1.0);
 
-Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insurer &i, Government &g) {
+Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::vector<Insurer> i) {
     p = prm;
     defenders = d;
     attackers = a;
-    insurer = i;
-    government = g;
+    insurers = i;
+    // government = g;
 
     d_init = 0;
     for (auto di : defenders) {
@@ -36,8 +36,11 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
         a_init += ai.get_assets();
     }
 
-    i_init = insurer.get_assets();
-    g_init = government.get_assets();
+    i_init = 0;  // TODO should insurers get a start assets?
+    for (auto ii : insurers) {
+        i_init += ii.get_assets();
+    }
+    // g_init = government.get_assets();
 
     for (uint i=0; i<attackers.size(); i++) {
         alive_attackers_indices.push_back(i);
@@ -58,7 +61,7 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
         defenders_cumulative_assets.push_back(d_init);
         attackers_cumulative_assets.push_back(a_init);
         insurer_cumulative_assets.push_back(i_init);
-        government_cumulative_assets.push_back(g_init);
+        // government_cumulative_assets.push_back(g_init);
     }
 
     // Let's make sure everything got set up correctly
@@ -77,9 +80,9 @@ std::string Game::to_string() {
     ret += std::to_string(int(round(a_init))) + ",";
     ret += std::to_string(int(round(current_attacker_sum_assets))) + ",";
     ret += std::to_string(int(round(i_init))) + ",";
-    ret += std::to_string(int(round(insurer.assets))) + ",";
+    // ret += std::to_string(int(round(insurer.assets))) + ","; // TODO add back in
     ret += std::to_string(int(round(g_init))) + ",";
-    ret += std::to_string(int(round(government.assets))) + ",";
+    // ret += std::to_string(int(round(government.assets))) + ",";
     ret += std::to_string(int(round(attacksAttempted))) + ",";
     ret += std::to_string(int(round(attacksSucceeded))) + ",";
     ret += std::to_string(int(round(attackerLoots))) + ",";
@@ -135,15 +138,15 @@ void Game::verify_init() {
         i++;
     }
 
-    assert(insurer.assets >= 0);
-    assert(government.assets >= 0);
+    // assert(insurer.assets >= 0);  // TODO add back in
+    // assert(government.assets >= 0);
 }
 
 void Game::verify_outcome() {
     assert(round(current_defender_sum_assets) >= 0);
     assert(round(current_attacker_sum_assets) >= 0);
-    assert(round(insurer.assets) >= 0);
-    assert(round(government.assets) >= 0);
+    // assert(round(insurer.assets) >= 0); // TODO add back in
+    // assert(round(government.assets) >= 0);
 
     double checksum_attacker_sum_assets = 0;
     for (auto a : attackers) {
@@ -161,7 +164,7 @@ void Game::verify_outcome() {
 
     assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
 
-    assert(round(i_init - insurer.assets) >= 0);
+    // assert(round(i_init - insurer.assets) >= 0); // TODO add back in
     // assert(round(d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
     assert(round(i_init - paidClaims) >= 0);
     assert(round(paidClaims) >= 0);
@@ -180,13 +183,14 @@ void Game::verify_outcome() {
     }
 
     // Master checksum
-    double init_ = d_init + a_init + g_init + i_init;
-    double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures;
+    // double init_ = d_init + a_init + g_init + i_init; // TODO add back in after fixing insurer
+    // double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures; // TODO add insurer
 
-    if (round(init_ - end_) != 0) {
-        std::cout << init_ << " " << end_ << std::endl;
-    }
-    assert(round(init_ - end_) == 0);
+    // TODO add back in after fixing insurer
+    // if (round(init_ - end_) != 0) {
+    //     std::cout << init_ << " " << end_ << std::endl;
+    // }
+    // assert(round(init_ - end_) == 0); // TODO add back in after fixing insurer
   
 }
 
@@ -242,38 +246,38 @@ void Game::a_lose(Attacker &a, double loss) {
 }
 
 
-void Game::d_recoup(Attacker &a, Defender &d, double recoup_amount) {
+// void Game::d_recoup(Attacker &a, Defender &d, double recoup_amount) {
 
-    if (d.claimsReceived.find(a.id) != d.claimsReceived.end()) {
-        // Split the recoup amount between the defender and the Insurer
+//     if (d.claimsReceived.find(a.id) != d.claimsReceived.end()) {
+//         // Split the recoup amount between the defender and the Insurer
 
-        if (recoup_amount >= d.claimsReceived[a.id]) {
+//         if (recoup_amount >= d.claimsReceived[a.id]) {
 
-            d_gain(d, recoup_amount - d.claimsReceived[a.id]);
-            insurer_recoup(d.claimsReceived[a.id]);
-            d.claimsReceived[a.id] = 0;
-            if (std::find(alive_defenders_indices.begin(), alive_defenders_indices.end(), d.id) == alive_defenders_indices.end()) {
-                alive_defenders_indices.push_back(d.id);
-            }
-        } else {
-            insurer_recoup(recoup_amount);
-            d.claimsReceived[a.id] -= recoup_amount;
-        }
-    } else {
-        d_gain(d, recoup_amount);
+//             d_gain(d, recoup_amount - d.claimsReceived[a.id]);
+//             insurer_recoup(d.claimsReceived[a.id]);
+//             d.claimsReceived[a.id] = 0;
+//             if (std::find(alive_defenders_indices.begin(), alive_defenders_indices.end(), d.id) == alive_defenders_indices.end()) {
+//                 alive_defenders_indices.push_back(d.id);
+//             }
+//         } else {
+//             insurer_recoup(recoup_amount);
+//             d.claimsReceived[a.id] -= recoup_amount;
+//         }
+//     } else {
+//         d_gain(d, recoup_amount);
 
-        if (std::find(alive_defenders_indices.begin(), alive_defenders_indices.end(), d.id) == alive_defenders_indices.end()) {
-            alive_defenders_indices.push_back(d.id);
-        }
-    }
-}
+//         if (std::find(alive_defenders_indices.begin(), alive_defenders_indices.end(), d.id) == alive_defenders_indices.end()) {
+//             alive_defenders_indices.push_back(d.id);
+//         }
+//     }
+// }
 
-void Game::insurer_lose(double loss) {
-    insurer.lose(loss);
-    paidClaims += loss;
-}
+// void Game::insurer_lose(double loss) {
+//     insurer.lose(loss);
+//     paidClaims += loss;
+// }
 
-void Game::insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double claim) {
+// void Game::insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double claim) {
     // double claims_amount = claim * p.CLAIMS;
     // if (claims_amount > insurer.assets) {
     //     claims_amount = insurer.assets;
@@ -287,47 +291,47 @@ void Game::insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double c
     //     d.claimsReceived[a.id] = claims_amount;
     // }
     // insurer_lose(claims_amount);
-}
+// }
 
-void Game::insurer_recoup(double recoup) {
-    insurer.gain(recoup);
-    paidClaims -= recoup;
-}
+// void Game::insurer_recoup(double recoup) {
+//     insurer.gain(recoup);
+//     paidClaims -= recoup;
+// }
 
-void Game::government_gain(double gain) {
-    government.gain(gain);
-}
+// void Game::government_gain(double gain) {
+//     government.gain(gain);
+// }
 
-void Game::government_lose(double loss) {
-    government.lose(loss);
-}
+// void Game::government_lose(double loss) {
+//     government.lose(loss);
+// }
 
-void Game::a_distributes_loot(Attacker &a) {
-    caught += 1;
+// void Game::a_distributes_loot(Attacker &a) {
+//     caught += 1;
 
-    for (const auto& pair : a.victims) {
-        int k = pair.first;
-        double v = pair.second;
+//     for (const auto& pair : a.victims) {
+//         int k = pair.first;
+//         double v = pair.second;
 
-        if (a.assets > 0) {
-            if (a.assets > v) {
-                d_recoup(a, defenders[k], v);
-                a_lose(a, v);
-            } else {
-                d_recoup(a, defenders[k], a.assets);
-                a_lose(a, a.assets);
-                break;
-            }
-        } else {
-            break;
-        }
-    }
+//         if (a.assets > 0) {
+//             if (a.assets > v) {
+//                 d_recoup(a, defenders[k], v);
+//                 a_lose(a, v);
+//             } else {
+//                 d_recoup(a, defenders[k], a.assets);
+//                 a_lose(a, a.assets);
+//                 break;
+//             }
+//         } else {
+//             break;
+//         }
+//     }
 
-    if (a.assets > 0) {
-        government_gain(a.assets);
-        a_lose(a, a.assets);
-    }
-}
+//     if (a.assets > 0) {
+//         government_gain(a.assets);
+//         a_lose(a, a.assets);
+//     }
+// }
 
 
 
@@ -354,10 +358,10 @@ void Game::fight(Attacker &a, Defender &d) {
         if (attacker_wins) {
             attacksSucceeded += 1;
 
-            a_steals_from_d(a, d, effective_loot);
-            if (insurer.assets > 0) {
-                insurer_covers_d_for_losses_from_a(a, d, effective_loot);
-            }
+            // a_steals_from_d(a, d, effective_loot);
+            // if (insurer.assets > 0) {
+            //     insurer_covers_d_for_losses_from_a(a, d, effective_loot);
+            // }
         }
     } 
 }
@@ -402,7 +406,7 @@ void Game::run_iterations() {
         }
 
         for (auto d : defenders) {
-            d.choose_security_strategy(&insurer);
+            d.choose_security_strategy(insurers[0]); // TODO give all insurers 
         }
 
         
@@ -456,8 +460,8 @@ void Game::run_iterations() {
         if (p.verbose) {
             defenders_cumulative_assets.push_back(current_defender_sum_assets);
             attackers_cumulative_assets.push_back(current_attacker_sum_assets);
-            insurer_cumulative_assets.push_back(insurer.assets);
-            government_cumulative_assets.push_back(government.assets);
+            // insurer_cumulative_assets.push_back(insurer.assets); // TODO add later
+            // government_cumulative_assets.push_back(government.assets);
         }
 
         if (alive_attackers_indices.size() == 0) {

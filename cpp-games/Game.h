@@ -7,13 +7,10 @@
 #include "params.h"
 
 
-
-
-
 class Game {
 
     public:
-        Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insurer &i, Government &g);
+        Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::vector<Insurer> i);
         void run_iterations();
         std::string to_string();
 
@@ -22,8 +19,8 @@ class Game {
         Params p;
         std::vector<Defender> defenders;
         std::vector<Attacker> attackers;
-        Insurer insurer;
-        Government government;
+        std::vector<Insurer> insurers;
+        // Government government;
 
         double d_init, a_init, i_init, g_init;
         int iter_num;
@@ -37,7 +34,7 @@ class Game {
         std::vector<double> defenders_cumulative_assets;
         std::vector<double> attackers_cumulative_assets;
         std::vector<double> insurer_cumulative_assets;
-        std::vector<double> government_cumulative_assets;
+        // std::vector<double> government_cumulative_assets;
 
         std::vector<double> last_delta_defenders_changes;
         std::vector<double> last_delta_attackers_changes;

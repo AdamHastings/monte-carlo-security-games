@@ -24,24 +24,29 @@ std::vector<double> EFFICIENCY_range;
 std::vector<double> PAYOFF_range;
 
 
-void RunGame(Params &p) {
+void RunGame(Params p) {
     
-    Insurer insurer = Insurer();
-    Government government = Government();
+    // Insurer insurer = Insurer(p);
+    std::vector<Insurer> insurers;
+    for (int j=0; j < p.I; j++) {
+        Insurer i = Insurer(j, p);
+        insurers.push_back(i);
+    }
+    // Government government = Government(p);
 
     std::vector<Defender> defenders;
     for (int i=0; i < p.B; i++) {
-        Defender d = Defender(i, &p);
-        defenders.push_back(Defender(d));
+        Defender d = Defender(i, p);
+        defenders.push_back(d);
     }
 
     std::vector<Attacker> attackers;
     for (int i=0; i < (p.B * p.ATTACKERS); i++) {
-        Attacker a = Attacker(i, &p);
+        Attacker a = Attacker(i, p);
         attackers.push_back(a);
     }
 
-    Game g = Game(p, defenders, attackers, insurer, government);
+    Game g = Game(p, defenders, attackers, insurers);
     g.run_iterations();
 
     // Write response to log file;
@@ -148,13 +153,13 @@ std::vector<Params> load_cfg(std::string basename) {
         p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
         p.PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
         p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
-        p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);
-        
+        p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);        
 
         p.B          = jsonData["B"].asInt();
         p.NUM_GAMES  = jsonData["NUM_GAMES"].asInt();
         p.E          = jsonData["E"].asInt();
         p.D          = jsonData["D"].asInt();
+        p.I          = jsonData["I"].asInt();
 
         p.verbose       = jsonData["verbose"].asBool();
         p.assertions_on = jsonData["assertions_on"].asBool();
