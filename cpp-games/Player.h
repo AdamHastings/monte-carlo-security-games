@@ -25,11 +25,12 @@ class Defender : public Player {
         double posture;
         double costToAttack;
         std::map<int, double> claimsReceived;
+        bool insured;
 
         Defender(int id_in);
 
     private:
-        void make_investment();
+        void choose_security_strategy();
 };
 
 class Attacker : public Player {

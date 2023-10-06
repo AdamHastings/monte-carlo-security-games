@@ -47,11 +47,12 @@ Defender::Defender(int id_in) : Player() {
     costToAttack = assets * posture;
 }
 
-void Defender::make_investment() {
+void Defender::choose_security_strategy() {
 
     double p_L_hat = 0; // TODO Defender's best guess estimate of the probability of being attacked
-    double u_E = 0; // TODO fill in later
-    double u_P = 0; // TODO fill in later
+    double p_A_hat = 0;
+    double mean_EFFICIENCY = 0; // TODO fill in later
+    double mean_PAYOFF = 0; // TODO fill in later
 
 
     // 1. Get insurance policy from insurer
@@ -59,20 +60,28 @@ void Defender::make_investment() {
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
 
     // 2. Find optimum security investment
-    double optimal_investment = 0; // TODO
-    double expected_loss_with_optimal_investment = p_L_hat*(assets - optimal_investment) * u_P - optimal_investment;
+    double optimal_investment = std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF)));
+    double expected_loss_with_optimal_investment = std::max(0.0, (assets - optimal_investment) * mean_PAYOFF * (p_A_hat * (1 - (posture * (mean_EFFICIENCY * (optimal_investment/assets))))) + optimal_investment);
 
     // 3. Find cost to achieve perfect security
-    double expected_loss_with_perfect_security = (assets * (1 - posture))/ (u_E * posture);
+    double expected_loss_with_perfect_security = (assets * (1 - posture))/ (mean_EFFICIENCY * posture);
 
     // Choose the optimal strategy.
     double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
     if (minimum == expected_loss_with_insurance) {
-        // buy insurnace
-        return;
+        // TODO buy insurance
+        // bool insured = true;
+        
+    } else if (minimum == expected_loss_with_optimal_investment) {
+        // TODO make investment
+        // bool insured = false;
+    } else if (minimum == expected_loss_with_perfect_security) {
+        // TODO make investment
+        // bool insured = false;
+    } else {
+        assert(1==0);
     }
-
-    return;
+    // std::cout << insured << std::endl;
 
     // decided which strategy is optimal.
 }
