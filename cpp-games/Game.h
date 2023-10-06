@@ -13,6 +13,8 @@ struct Params {
     double INEQUALITY;
     Distribution* EFFICIENCY_distribution;
     Distribution* PAYOFF_distribution;
+    Distribution* WEALTH_distribution;
+    Distribution* POSTURE_distribution;
 
     int B;
     int NUM_GAMES;
@@ -22,18 +24,6 @@ struct Params {
     bool verbose;
     bool assertions_on;
     std::string logname;
-
-    // bool uniform;
-
-    // std::string to_string() {
-    //     std::string str = "";
-    //     str += "ATTACKERS="  + std::to_string(ATTACKERS)  + ",";
-    //     str += "INEQUALITY=" + std::to_string(INEQUALITY) + ",";
-    //     str += "EFFICIENCY=" + std::to_string(EFFICIENCY) + ",";
-    //     str += "PAYOFF="     + std::to_string(PAYOFF)     + ",";
-    //     str += "\n";
-    //     return str;
-    // }
 };
 
 class Game {
@@ -41,16 +31,7 @@ class Game {
     public:
         Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insurer &i, Government &g);
         void run_iterations();
-
         std::string to_string();
-
-        //  // Overload the "<<" operator for outputting MyClass objects
-        // friend std::ostream& operator<<(std::ostream& os, const Game& obj)
-        // {
-        //     // Print the x and y values of the object
-        //     os << "TODO implement << overload" << std::endl;
-        //     return os;
-        // }
 
     private:
 

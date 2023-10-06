@@ -47,29 +47,28 @@ Defender::Defender(int id_in) : Player() {
     costToAttack = assets * posture;
 }
 
-// TODO
 void Defender::purchase_insurance_policy(Insurer *i, PolicyType p) {
     insured = true;
     lose(p.premium);
     i->gain(p.premium);
 }
 
-// TODO
 void Defender::make_security_investment(double x) {
     double sec_investment_efficiency_draw = 0.0; // TODO do a draw
     posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / assets)));
+    lose(x);
 }
 
 void Defender::choose_security_strategy(Insurer *i) {
 
     double p_A_hat = 0; // TODO get somehow
-    double p_L_hat = p_A_hat * (1 - posture); // TODO Defender's best guess estimate of the probability of being attacked
+    double p_L_hat = p_A_hat * (1 - posture);
     double mean_EFFICIENCY = 0; // TODO fill in later
     double mean_PAYOFF = 0; // TODO fill in later
 
 
     // 1. Get insurance policy from insurer
-    PolicyType policy = Insurer::provide_a_quote(assets, posture); // 
+    PolicyType policy = Insurer::provide_a_quote(assets, posture); // TODO add noise to posture?
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
 
     // 2. Find optimum security investment

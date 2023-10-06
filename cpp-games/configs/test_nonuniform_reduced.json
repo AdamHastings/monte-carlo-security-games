@@ -26,6 +26,18 @@
         "min" : 0.0,
         "max" : 1.0
     },
+    "WEALTH" :
+    {
+        "distribution" : "lognormal",
+        "mean" : 9.875392795,
+        "stddev" : 1.682545179
+    },
+    "POSTURE" :
+    {
+        "distribution" : "normal",
+        "mean" : 0.388,
+        "stddev" : 0.062
+    },
     "B":1000,
     "NUM_GAMES":1000,
     "E":100,

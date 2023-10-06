@@ -129,24 +129,26 @@ void init_logs(std::string basename) {
 }
 
 
-
-// TODO merge with load_cfg
-std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
-    std::vector<Params> ret;
-
-    Distribution* ATTACKERS_distribution  = Distribution::createDistribution(jsonData["ATTACKERS"]);
-    Distribution* EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
-    Distribution* PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
-    Distribution* INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
+std::vector<Params> load_cfg(std::string basename) {
+    std::string fpath = "configs/" + basename + ".json";
     
+    ifstream file(fpath);
+
+    Json::Reader reader;
+    Json::Value jsonData;
+    reader.parse(file, jsonData);
+
+    std::vector<Params> ret;
     for (int i=0; i<jsonData["NUM_GAMES"].asInt(); i++) {
         Params p;
     
-        p.ATTACKERS  = ATTACKERS_distribution->draw();
-        p.INEQUALITY = INEQUALITY_distribution->draw();
+        p.ATTACKERS               =  Distribution::createDistribution(jsonData["ATTACKERS"])->draw();
+        p.INEQUALITY              =  Distribution::createDistribution(jsonData["INEQUALITY"])->draw();
         
-        p.EFFICIENCY_distribution = EFFICIENCY_distribution;
-        p.PAYOFF_distribution     = PAYOFF_distribution;
+        p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
+        p.PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
+        p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
+        p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);
         
 
         p.B          = jsonData["B"].asInt();
@@ -160,28 +162,7 @@ std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
 
         ret.push_back(p);
     }
-
-    std::cout << ret[0].NUM_GAMES << endl;
-
-
     return ret;
-}
-
-std::vector<Params> load_cfg(std::string basename) {
-    std::string fpath = "configs/" + basename + ".json";
-    
-    ifstream file(fpath);
-
-    Json::Reader reader;
-    Json::Value jsonData;
-    reader.parse(file, jsonData);
-
-    return load_nonuniform_cfg(jsonData, basename);
-}
-
-
-void create_game_jobs(vector<Params> v) {
-    ParallelRunGames(v);
 }
 
 
@@ -208,7 +189,7 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
     std::cout << "started " << v[0].NUM_GAMES << " nonuniform games at " << std::ctime(&start_time);
-    create_game_jobs(v);
+    ParallelRunGames(v);
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

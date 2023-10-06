@@ -139,7 +139,6 @@ void Game::verify_init() {
     assert(government.assets >= 0);
 }
 
-
 void Game::verify_outcome() {
     assert(round(current_defender_sum_assets) >= 0);
     assert(round(current_attacker_sum_assets) >= 0);
@@ -362,23 +361,6 @@ void Game::fight(Attacker &a, Defender &d) {
         }
     } 
 }
-
-// double Game::find_p_attacker_has_enough_to_attack() {
-//     // probably need to do a binary search of the sorted attacker assets distribution
-//     return 0; // TODO
-// }
-
-
-
-// void Game::requeset_a_quote(Defender &d) {
-//     double a2d_ratio = attackers.size() / defenders.size();
-//     double p_attacker_has_enough_to_attack = find_p_attacker_has_enough_to_attack();
-//     double p_getting_attacked = std::min(1.0, a2d_ratio);
-//     double p_a = p_getting_attacked * p_attacker_has_enough_to_attack;
-
-//     double p_a_hat = prevRoundAttacks / 
-
-// }
 
 void Game::run_iterations() {
 
