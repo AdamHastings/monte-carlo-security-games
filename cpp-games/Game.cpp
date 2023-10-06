@@ -70,16 +70,8 @@ Game::Game(Params &prm, std::vector<Defender> &d, std::vector<Attacker> &a, Insu
 std::string Game::to_string() {
     std::string ret = "";
 
-    ret += std::to_string(p.MANDATE).substr(0,4) + ",";
     ret += std::to_string(p.ATTACKERS).substr(0,4) + ",";
     ret += std::to_string(p.INEQUALITY).substr(0,4) + ",";
-    ret += std::to_string(p.PREMIUM).substr(0,4) + ",";
-    ret += std::to_string(p.EFFICIENCY).substr(0,4) + ",";
-    ret += std::to_string(p.EFFORT).substr(0,4) + ",";
-    ret += std::to_string(p.PAYOFF).substr(0,4) + ",";
-    ret += std::to_string(p.CAUGHT).substr(0,4) + ",";
-    ret += std::to_string(p.CLAIMS).substr(0,4) + ",";
-    ret += std::to_string(p.TAX).substr(0,4) + ",";
     ret += std::to_string(int(round(d_init))) + ",";
     ret += std::to_string(int(round(current_defender_sum_assets))) + ",";
     ret += std::to_string(int(round(a_init))) + ",";
@@ -283,19 +275,19 @@ void Game::insurer_lose(double loss) {
 }
 
 void Game::insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double claim) {
-    double claims_amount = claim * p.CLAIMS;
-    if (claims_amount > insurer.assets) {
-        claims_amount = insurer.assets;
-        insurerTimesOfDeath.push_back(iter_num);
-    }
+    // double claims_amount = claim * p.CLAIMS;
+    // if (claims_amount > insurer.assets) {
+    //     claims_amount = insurer.assets;
+    //     insurerTimesOfDeath.push_back(iter_num);
+    // }
 
-    d_gain(d, claims_amount);
-    if (d.claimsReceived.find(a.id) != d.claimsReceived.end()) {
-        d.claimsReceived[a.id] += claims_amount;
-    } else {
-        d.claimsReceived[a.id] = claims_amount;
-    }
-    insurer_lose(claims_amount);
+    // d_gain(d, claims_amount);
+    // if (d.claimsReceived.find(a.id) != d.claimsReceived.end()) {
+    //     d.claimsReceived[a.id] += claims_amount;
+    // } else {
+    //     d.claimsReceived[a.id] = claims_amount;
+    // }
+    // insurer_lose(claims_amount);
 }
 
 void Game::insurer_recoup(double recoup) {
@@ -341,7 +333,7 @@ void Game::a_distributes_loot(Attacker &a) {
 
 
 void Game::fight(Attacker &a, Defender &d) {
-    double effective_loot = d.assets * p.PAYOFF;
+    double effective_loot = d.assets * p.PAYOFF_distribution->draw();
 
     // Mercy kill the Defenders if the loot is very low
     if (d.assets < p.E) {
@@ -358,26 +350,14 @@ void Game::fight(Attacker &a, Defender &d) {
         a_lose(a, cost_of_attack);
         attackerExpenditures += cost_of_attack;
 
-        double chance_of_getting_caught = (government.assets / (government.assets + a.assets)) * p.CAUGHT;
-        
-        double gov_cost = a.assets * p.EFFORT;
-        if (gov_cost > government.assets) {
-            gov_cost = government.assets;
-        }
-        government_lose(gov_cost);
-        governmentExpenditures += gov_cost;
 
-        if (uniform(gen) < chance_of_getting_caught) {
-            a_distributes_loot(a);
-        } else {
-            bool attacker_wins = (uniform(gen) < d.posture); // TODO wrong
-            if (attacker_wins) {
-                attacksSucceeded += 1;
+        bool attacker_wins = (uniform(gen) < d.posture); // TODO wrong
+        if (attacker_wins) {
+            attacksSucceeded += 1;
 
-                a_steals_from_d(a, d, effective_loot);
-                if (insurer.assets > 0) {
-                    insurer_covers_d_for_losses_from_a(a, d, effective_loot);
-                }
+            a_steals_from_d(a, d, effective_loot);
+            if (insurer.assets > 0) {
+                insurer_covers_d_for_losses_from_a(a, d, effective_loot);
             }
         }
     } 
@@ -404,7 +384,7 @@ void Game::run_iterations() {
 
     bool defenders_have_more_than_attackers = true;
 
-    for (iter_num = 1; iter_num < p.N + 1; iter_num++) {
+    for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
 
         defender_iter_sum = 0;

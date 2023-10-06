@@ -16,16 +16,14 @@
 using namespace oneapi::tbb;
 using namespace std;
 
-std::vector<double> MANDATE_range;
+// TODO put Distribution in its own class file
+static std::mt19937 generator(0);
+
 std::vector<double> ATTACKERS_range;
 std::vector<double> INEQUALITY_range;
-std::vector<double> PREMIUM_range;
 std::vector<double> EFFICIENCY_range;
-std::vector<double> EFFORT_range;
 std::vector<double> PAYOFF_range;
-std::vector<double> CAUGHT_range;
-std::vector<double> CLAIMS_range;
-std::vector<double> TAX_range;
+
 
 void RunGame(Params p) {
     
@@ -35,31 +33,7 @@ void RunGame(Params p) {
     std::vector<Defender> defenders;
     for (int i=0; i < p.B; i++) {
         Defender d = Defender(i);
-
-        double investment = d.assets * p.MANDATE;
-        double selfless_investment = investment * p.TAX;
-        double selfish_investment  = investment - selfless_investment;
-
-        double tax = selfless_investment;
-        d.lose(tax);
-        government.gain(tax);
-
-        double insurance = selfish_investment * p.PREMIUM;
-        d.lose(insurance);
-        insurer.gain(insurance);
-
-        double personal_security_investment = selfish_investment - insurance;
-        d.costToAttack = d.assets * p.EFFORT;
-        d.costToAttack += personal_security_investment * p.EFFORT;
-        d.lose(personal_security_investment);
-
         defenders.push_back(Defender(d));
-
-        if (p.assertions_on) {
-            assert(tax >= 0);
-            assert(personal_security_investment >= 0);
-            assert(insurance >= 0);
-        }
     }
 
     std::vector<Attacker> attackers;
@@ -95,29 +69,6 @@ void SerialRunGames(vector<Params> a) {
     }
 }
 
-void RunChunkOfGames(Params p) {
-
-    for (auto i : CLAIMS_range) {
-    for (auto j : TAX_range) {
-        p.CLAIMS     = i;
-        p.TAX        = j;
-
-        RunGame(p);
-    }}
-}
-
-void SerialParallelRunGames(vector<Params> a) {
-    
-    parallel_for( blocked_range<int>(0,a.size()),
-        [&](blocked_range<int> r) 
-    {
-            for(int i=r.begin(); i < r.end(); ++i)
-            {
-                RunChunkOfGames(a[i]);
-            }
-    });
-}
-
 void init_logs(std::string basename) {
 
     std::string fpath = "logs/" + basename + ".csv";
@@ -128,16 +79,10 @@ void init_logs(std::string basename) {
 
     std::string header = "";
 
-    header += "MANDATE,";
     header += "ATTACKERS,";
     header += "INEQUALITY,";
-    header += "PREMIUM,";
     header += "EFFICIENCY,";
-    header += "EFFORT,";
     header += "PAYOFF,";
-    header += "CAUGHT,";
-    header += "CLAIMS,";
-    header += "TAX,";
 
     // TODO double check that this is correct
     header += "d_init,";
@@ -184,70 +129,6 @@ void init_logs(std::string basename) {
     }  
 }
 
-std::vector<Params> load_uniform_cfg(Json::Value jsonData, string basename) {
-    std::vector<Params> ret;
-
-    for (auto a : jsonData["MANDATE_range"]) {MANDATE_range.push_back(a.asDouble());}
-    for (auto a : jsonData["ATTACKERS_range"]) {ATTACKERS_range.push_back(a.asDouble());}
-    for (auto a : jsonData["INEQUALITY_range"]) {INEQUALITY_range.push_back(a.asDouble());}
-    for (auto a : jsonData["PREMIUM_range"]) {PREMIUM_range.push_back(a.asDouble());}
-    for (auto a : jsonData["EFFICIENCY_range"]) {EFFICIENCY_range.push_back(a.asDouble());}
-    for (auto a : jsonData["EFFORT_range"]) {EFFORT_range.push_back(a.asDouble());}
-    for (auto a : jsonData["PAYOFF_range"]) {PAYOFF_range.push_back(a.asDouble());}
-    for (auto a : jsonData["CAUGHT_range"]) {CAUGHT_range.push_back(a.asDouble());}
-    for (auto a : jsonData["CLAIMS_range"]) {CLAIMS_range.push_back(a.asDouble());}
-    for (auto a : jsonData["TAX_range"]) {TAX_range.push_back(a.asDouble());}
-
-    for (auto a : MANDATE_range) {
-    for (auto b : ATTACKERS_range) {
-    for (auto c : INEQUALITY_range) {
-    for (auto d : PREMIUM_range) {
-    for (auto e : EFFICIENCY_range) {
-    for (auto f : EFFORT_range) {
-    for (auto g : PAYOFF_range) {
-    for (auto h : CAUGHT_range) {
-
-        // Important: Some parameter values are filled in later
-        // Otherwise, a completed ret vector would be over a TB big!
-
-        Params p;
-        p.MANDATE    = a;
-        p.ATTACKERS  = b;
-        p.INEQUALITY = c;
-        p.PREMIUM    = d;
-        p.EFFICIENCY = e;
-        p.EFFORT     = f;
-        p.PAYOFF     = g;
-        p.CAUGHT     = h;
-
-        p.B          = jsonData["B"].asInt();
-        p.N          = jsonData["N"].asInt();
-        p.E          = jsonData["E"].asInt();
-        p.D          = jsonData["D"].asInt();
-
-        p.uniform    = true;
-
-        p.verbose       = jsonData["verbose"].asBool();
-        p.assertions_on = jsonData["assertions_on"].asBool();
-        p.logname       = "logs/" + basename + ".csv";
-
-        ret.push_back(p);
-    }}}}}}}}
-
-    cout << ret.size() << endl;
-
-
-    return ret;
-}
-
-
-// TODO put Distribution in its own class file
-static std::mt19937 generator(0);
-
-class Distribution {
-    public:
-        virtual double draw() =0;
-};
 
 class UniformRealDistribution : public Distribution {
     public: 
@@ -349,40 +230,30 @@ Distribution* createDistribution(Json::Value d) {
     return dist;
 }
 
+
+// TODO merge with load_cfg
 std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
     std::vector<Params> ret;
 
-    auto MANDATE_distribution    = createDistribution(jsonData["MANDATE"]);
     auto ATTACKERS_distribution  = createDistribution(jsonData["ATTACKERS"]);
-    auto PREMIUM_distribution    = createDistribution(jsonData["PREMIUM"]);
     auto EFFICIENCY_distribution = createDistribution(jsonData["EFFICIENCY"]);
-    auto EFFORT_distribution     = createDistribution(jsonData["EFFORT"]);
     auto PAYOFF_distribution     = createDistribution(jsonData["PAYOFF"]);
-    auto CAUGHT_distribution     = createDistribution(jsonData["CAUGHT"]);
-    auto CLAIMS_distribution     = createDistribution(jsonData["CLAIMS"]);
-    auto TAX_distribution        = createDistribution(jsonData["TAX"]);
-    auto DELAY_distribution      = createDistribution(jsonData["DELAY"]);
+    auto INEQUALITY_distribution = createDistribution(jsonData["INEQUALITY"]);
     
-    for (int i=0; i<jsonData["num_games"].asInt(); i++) {
+    for (int i=0; i<jsonData["NUM_GAMES"].asInt(); i++) {
         Params p;
     
-        p.MANDATE    = MANDATE_distribution->draw();
         p.ATTACKERS  = ATTACKERS_distribution->draw();
-        p.PREMIUM    = PREMIUM_distribution->draw();
-        p.EFFICIENCY = EFFICIENCY_distribution->draw();
-        p.EFFORT     = EFFORT_distribution->draw();
-        p.PAYOFF     = PAYOFF_distribution->draw();
-        p.CAUGHT     = CAUGHT_distribution->draw();
-        p.CLAIMS     = CLAIMS_distribution->draw(); // truncated_normal is broken?
-        p.TAX        = TAX_distribution->draw();
-        p.DELAY      = DELAY_distribution->draw();
+        p.INEQUALITY = INEQUALITY_distribution->draw();
+        
+        p.EFFICIENCY_distribution = EFFICIENCY_distribution;
+        p.PAYOFF_distribution     = PAYOFF_distribution;
+        
 
         p.B          = jsonData["B"].asInt();
-        p.N          = jsonData["N"].asInt();
+        p.NUM_GAMES  = jsonData["N"].asInt();
         p.E          = jsonData["E"].asInt();
         p.D          = jsonData["D"].asInt();
-
-        p.uniform    = false;
 
         p.verbose       = jsonData["verbose"].asBool();
         p.assertions_on = jsonData["assertions_on"].asBool();
@@ -403,20 +274,11 @@ std::vector<Params> load_cfg(std::string basename) {
     Json::Value jsonData;
     reader.parse(file, jsonData);
 
-    if (jsonData["distribution_type"]) {
-        return load_nonuniform_cfg(jsonData, basename);
-    } else {
-        return load_uniform_cfg(jsonData, basename);
-    }   
+    return load_nonuniform_cfg(jsonData, basename);
 }
 
-void run_uniform_games(vector<Params> v) {
-    // ParallelRunGames(v);
-    // SerialRunGames(v);
-    SerialParallelRunGames(v);
-}
 
-void run_nonuniform_games(vector<Params> v) {
+void create_game_jobs(vector<Params> v) {
     ParallelRunGames(v);
 }
 
@@ -443,16 +305,8 @@ int main(int argc, char** argv) {
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
-    assert (v.size() > 0);
-    if (v[0].uniform) {
-        int num_games = v.size() * CLAIMS_range.size() * TAX_range.size();
-        std::cout << "started " << std::to_string(num_games) << " uniform games at " << std::ctime(&start_time);
-        run_uniform_games(v);
-    } else {
-        int num_games = v.size(); 
-        std::cout << "started " << std::to_string(num_games) << " nonuniform games at " << std::ctime(&start_time);
-        run_nonuniform_games(v);
-    }
+    std::cout << "started " << v[0].NUM_GAMES << " nonuniform games at " << std::ctime(&start_time);
+    create_game_jobs(v);
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

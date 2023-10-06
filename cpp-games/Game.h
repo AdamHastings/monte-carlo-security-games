@@ -5,21 +5,19 @@
 #include <set>
 #include "Player.h"
 
+class Distribution {
+    public:
+        virtual double draw() =0;
+};
+
 struct Params {
-    // double MANDATE;
     double ATTACKERS;
     double INEQUALITY;
-    double PREMIUM;
-    double EFFICIENCY;
-    double EFFORT;
-    double PAYOFF;
-    double CAUGHT;
-    double CLAIMS;
-    double TAX;
-    double DELAY;
+    Distribution* EFFICIENCY_distribution;
+    Distribution* PAYOFF_distribution;
 
     int B;
-    int N;
+    int NUM_GAMES;
     int E;
     int D;
 
@@ -27,23 +25,17 @@ struct Params {
     bool assertions_on;
     std::string logname;
 
-    bool uniform;
+    // bool uniform;
 
-    std::string to_string() {
-        std::string str = "";
-        str += "MANDATE="    + std::to_string(MANDATE)    + ",";
-        str += "ATTACKERS="  + std::to_string(ATTACKERS)  + ",";
-        str += "INEQUALITY=" + std::to_string(INEQUALITY) + ",";
-        str += "PREMIUM="    + std::to_string(PREMIUM)    + ",";
-        str += "EFFICIENCY=" + std::to_string(EFFICIENCY) + ",";
-        str += "EFFORT="     + std::to_string(EFFORT)     + ",";
-        str += "PAYOFF="     + std::to_string(PAYOFF)     + ",";
-        str += "CAUGHT="     + std::to_string(CAUGHT)     + ",";
-        str += "CLAIMS="     + std::to_string(CLAIMS)     + ",";
-        str += "TAX="        + std::to_string(TAX)        + ",";
-        str += "\n";
-        return str;
-    }
+    // std::string to_string() {
+    //     std::string str = "";
+    //     str += "ATTACKERS="  + std::to_string(ATTACKERS)  + ",";
+    //     str += "INEQUALITY=" + std::to_string(INEQUALITY) + ",";
+    //     str += "EFFICIENCY=" + std::to_string(EFFICIENCY) + ",";
+    //     str += "PAYOFF="     + std::to_string(PAYOFF)     + ",";
+    //     str += "\n";
+    //     return str;
+    // }
 };
 
 class Game {
