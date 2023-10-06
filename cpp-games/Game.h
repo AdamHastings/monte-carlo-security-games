@@ -4,11 +4,9 @@
 #include <vector>
 #include <set>
 #include "Player.h"
+#include "Distributions.h"
 
-class Distribution {
-    public:
-        virtual double draw() =0;
-};
+
 
 struct Params {
     double ATTACKERS;

@@ -1,0 +1,115 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <chrono>
+#include <fstream>
+#include <ctime>  
+#include <cstring>
+#include <cstdlib>
+#include <random>
+#include "Distributions.h"
+
+using namespace std;
+
+// TODO put Distribution in its own class file
+static std::mt19937 generator(0);
+
+class UniformRealDistribution : public Distribution {
+    public: 
+        std::uniform_real_distribution<double> dist;
+        UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
+        double draw() {
+            static std::uniform_real_distribution<double> dist(0,1);
+            return dist(generator);
+        }
+};
+
+class NormalDistribution : public Distribution {
+    public: 
+        std::normal_distribution<double> dist;
+        NormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
+        double draw() {
+            return dist(generator);
+        }
+};
+
+class TruncatedNormalDistribution : public Distribution {
+    public: 
+        std::normal_distribution<double> dist;
+        double min;
+        double max;
+
+        TruncatedNormalDistribution(double _mean, double _stddev, double _min, double _max) : dist(_mean, _stddev) {
+            min = _min;
+            max = _max;
+        }
+        double draw() {
+            double draw;
+            while (true) {
+                draw = dist(generator);
+                if (draw >= min && draw <= max) {
+                    break;
+                // } else {
+                //     std::cout << " -- truncated normal draw out of range! Re-drawing..." << std::endl;
+                // } // Could be a source of hanging programs...uncomment to find out
+            }
+            return draw;
+        }
+};
+
+class PoissonDistribution : public Distribution {
+    public: 
+        std::poisson_distribution<int> dist;
+        PoissonDistribution(double _lambda) : dist(_lambda) {}
+        double draw() {
+            return dist(generator);
+        }
+};
+
+Distribution* Distribution::createDistribution(Json::Value d) {
+    Distribution* dist;
+
+    if (d["distribution"] == "uniform") {
+        if (!d["min"] || !d["max"]) {
+            std::cerr << "Must provide \"min\" and \"max\" with uniform distribution in config file" << std::endl;
+            std::cerr << "Offending parameter: " << d << endl;
+            exit(2);
+        }
+        double min = d["min"].asDouble();
+        double max = d["max"].asDouble();
+        dist = new UniformRealDistribution(min, max);
+    } else if (d["distribution"] == "normal") {
+        if (!d["mean"] || !d["stddev"]) {
+            std::cerr << "Must provide \"mean\" and \"stddev\" with normal distribution in config file" << std::endl;
+            std::cerr << "Offending parameter: " << d << endl;
+            exit(2);
+        }
+        double mean = d["mean"].asDouble();
+        double stddev = d["stddev"].asDouble();
+        dist = new NormalDistribution(mean, stddev);
+    } else if (d["distribution"] == "truncated_normal") {
+        if (!d["mean"] || !d["stddev"] || !d["min"] || !d["max"]) {
+            std::cerr << "Must provide \"mean\", \"stddev\", \"min\", and \"max\" with truncated_normal distribution in config file" << std::endl;
+            std::cerr << "Offending parameter: " << d << endl;
+            exit(2);
+        }
+        double mean   = d["mean"].asDouble();
+        double stddev = d["stddev"].asDouble();
+        double min    = d["min"].asDouble();
+        double max    = d["max"].asDouble();
+        dist = new TruncatedNormalDistribution(mean, stddev, min, max);
+    } else if (d["distribution"] == "poisson") {
+        if (!d["lambda"]) {
+            std::cerr << "Must provide \"lambda\" with poisson distribution in config file" << std::endl;
+            std::cerr << "Offending parameter: " << d << endl;
+            exit(2);
+        }
+        double lambda   = d["lambda"].asDouble();
+        dist = new PoissonDistribution(lambda);
+    } else {
+        std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
+        std::cerr << "Offending parameter: " << d << endl;
+        exit(1);
+    }
+    return dist;
+}

@@ -11,13 +11,12 @@
 #include "oneapi/tbb.h"
 #include "Player.h"
 #include "Game.h"
-
+#include "Distributions.h"
 
 using namespace oneapi::tbb;
 using namespace std;
 
-// TODO put Distribution in its own class file
-static std::mt19937 generator(0);
+
 
 std::vector<double> ATTACKERS_range;
 std::vector<double> INEQUALITY_range;
@@ -130,115 +129,15 @@ void init_logs(std::string basename) {
 }
 
 
-class UniformRealDistribution : public Distribution {
-    public: 
-        std::uniform_real_distribution<double> dist;
-        UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
-        double draw() {
-            static std::uniform_real_distribution<double> dist(0,1);
-            return dist(generator);
-        }
-};
-
-class NormalDistribution : public Distribution {
-    public: 
-        std::normal_distribution<double> dist;
-        NormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
-        double draw() {
-            return dist(generator);
-        }
-};
-
-class TruncatedNormalDistribution : public Distribution {
-    public: 
-        std::normal_distribution<double> dist;
-        double min;
-        double max;
-
-        TruncatedNormalDistribution(double _mean, double _stddev, double _min, double _max) : dist(_mean, _stddev) {
-            min = _min;
-            max = _max;
-        }
-        double draw() {
-            double draw;
-            while (true) {
-                draw = dist(generator);
-                if (draw >= min && draw <= max) {
-                    break;
-                } else {
-                    std::cout << " -- truncated normal draw out of range! Re-drawing..." << std::endl;
-                }
-            }
-            return draw;
-        }
-};
-
-class PoissonDistribution : public Distribution {
-    public: 
-        std::poisson_distribution<int> dist;
-        PoissonDistribution(double _lambda) : dist(_lambda) {}
-        double draw() {
-            return dist(generator);
-        }
-};
-
-Distribution* createDistribution(Json::Value d) {
-    Distribution* dist;
-
-    if (d["distribution"] == "uniform") {
-        if (!d["min"] || !d["max"]) {
-            std::cerr << "Must provide \"min\" and \"max\" with uniform distribution in config file" << std::endl;
-            std::cerr << "Offending parameter: " << d << endl;
-            exit(2);
-        }
-        double min = d["min"].asDouble();
-        double max = d["max"].asDouble();
-        dist = new UniformRealDistribution(min, max);
-    } else if (d["distribution"] == "normal") {
-        if (!d["mean"] || !d["stddev"]) {
-            std::cerr << "Must provide \"mean\" and \"stddev\" with normal distribution in config file" << std::endl;
-            std::cerr << "Offending parameter: " << d << endl;
-            exit(2);
-        }
-        double mean = d["mean"].asDouble();
-        double stddev = d["stddev"].asDouble();
-        dist = new NormalDistribution(mean, stddev);
-    } else if (d["distribution"] == "truncated_normal") {
-        if (!d["mean"] || !d["stddev"] || !d["min"] || !d["max"]) {
-            std::cerr << "Must provide \"mean\", \"stddev\", \"min\", and \"max\" with truncated_normal distribution in config file" << std::endl;
-            std::cerr << "Offending parameter: " << d << endl;
-            exit(2);
-        }
-        double mean   = d["mean"].asDouble();
-        double stddev = d["stddev"].asDouble();
-        double min    = d["min"].asDouble();
-        double max    = d["max"].asDouble();
-        dist = new TruncatedNormalDistribution(mean, stddev, min, max);
-    } else if (d["distribution"] == "poisson") {
-        if (!d["lambda"]) {
-            std::cerr << "Must provide \"lambda\" with poisson distribution in config file" << std::endl;
-            std::cerr << "Offending parameter: " << d << endl;
-            exit(2);
-        }
-        double lambda   = d["lambda"].asDouble();
-        dist = new PoissonDistribution(lambda);
-    } else {
-        std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
-        std::cerr << "Offending parameter: " << d << endl;
-        exit(1);
-    }
-    return dist;
-}
-
 
 // TODO merge with load_cfg
 std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
     std::vector<Params> ret;
 
-    auto ATTACKERS_distribution  = createDistribution(jsonData["ATTACKERS"]);
-    auto EFFICIENCY_distribution = createDistribution(jsonData["EFFICIENCY"]);
-    auto PAYOFF_distribution     = createDistribution(jsonData["PAYOFF"]);
-    auto INEQUALITY_distribution = createDistribution(jsonData["INEQUALITY"]);
+    Distribution* ATTACKERS_distribution  = Distribution::createDistribution(jsonData["ATTACKERS"]);
+    Distribution* EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
+    Distribution* PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
+    Distribution* INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
     
     for (int i=0; i<jsonData["NUM_GAMES"].asInt(); i++) {
         Params p;
@@ -251,7 +150,7 @@ std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
         
 
         p.B          = jsonData["B"].asInt();
-        p.NUM_GAMES  = jsonData["N"].asInt();
+        p.NUM_GAMES  = jsonData["NUM_GAMES"].asInt();
         p.E          = jsonData["E"].asInt();
         p.D          = jsonData["D"].asInt();
 
@@ -261,6 +160,9 @@ std::vector<Params> load_nonuniform_cfg(Json::Value jsonData, string basename) {
 
         ret.push_back(p);
     }
+
+    std::cout << ret[0].NUM_GAMES << endl;
+
 
     return ret;
 }
