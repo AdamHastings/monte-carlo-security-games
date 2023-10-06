@@ -24,20 +24,20 @@ std::vector<double> EFFICIENCY_range;
 std::vector<double> PAYOFF_range;
 
 
-void RunGame(Params p) {
+void RunGame(Params &p) {
     
     Insurer insurer = Insurer();
     Government government = Government();
 
     std::vector<Defender> defenders;
     for (int i=0; i < p.B; i++) {
-        Defender d = Defender(i);
+        Defender d = Defender(i, &p);
         defenders.push_back(Defender(d));
     }
 
     std::vector<Attacker> attackers;
     for (int i=0; i < (p.B * p.ATTACKERS); i++) {
-        Attacker a = Attacker(i, p.INEQUALITY);
+        Attacker a = Attacker(i, &p);
         attackers.push_back(a);
     }
 

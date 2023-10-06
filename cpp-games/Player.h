@@ -2,6 +2,7 @@
 
 #include <map>
 #include <cassert>
+#include "params.h"
 
 struct PolicyType {
     double premium;
@@ -42,7 +43,7 @@ class Defender : public Player {
         std::map<int, double> claimsReceived;
         bool insured;
 
-        Defender(int id_in);
+        Defender(int id_in, Params *p);
         void choose_security_strategy(Insurer *i);
 
 
@@ -56,6 +57,6 @@ class Attacker : public Player {
         uint id;
         std::map<int, double> victims;
 
-        Attacker(int id_in, double INEQUALITY);
+        Attacker(int id_in,  Params *p);
 };
 
