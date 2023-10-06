@@ -439,6 +439,10 @@ void Game::run_iterations() {
 
         }
 
+        for (auto d : defenders) {
+            d.choose_security_strategy();
+        }
+
         
         for (uint i=0; i<shorter_length; i++) {
             uint a_idx, d_idx;

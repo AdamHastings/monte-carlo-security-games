@@ -28,9 +28,12 @@ class Defender : public Player {
         bool insured;
 
         Defender(int id_in);
+        void choose_security_strategy();
+
 
     private:
-        void choose_security_strategy();
+        void purchase_insurance_policy(PolicyType p);
+        void make_security_investment(double x);
 };
 
 class Attacker : public Player {
