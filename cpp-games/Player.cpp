@@ -48,16 +48,19 @@ Defender::Defender(int id_in) : Player() {
 }
 
 // TODO
-void Defender::purchase_insurance_policy(PolicyType p) {
+void Defender::purchase_insurance_policy(Insurer *i, PolicyType p) {
     insured = true;
+    lose(p.premium);
+    i->gain(p.premium);
 }
 
 // TODO
 void Defender::make_security_investment(double x) {
-
+    double sec_investment_efficiency_draw = 0.0; // TODO do a draw
+    posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / assets)));
 }
 
-void Defender::choose_security_strategy() {
+void Defender::choose_security_strategy(Insurer *i) {
 
     double p_A_hat = 0; // TODO get somehow
     double p_L_hat = p_A_hat * (1 - posture); // TODO Defender's best guess estimate of the probability of being attacked
@@ -80,7 +83,7 @@ void Defender::choose_security_strategy() {
     // Choose the optimal strategy.
     double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
     if (minimum == expected_loss_with_insurance) {
-        purchase_insurance_policy(policy);
+        purchase_insurance_policy(i, policy);
     } else if (minimum == expected_loss_with_optimal_investment) {
         make_security_investment(optimal_investment);
     } else if (minimum == expected_loss_with_perfect_security) {

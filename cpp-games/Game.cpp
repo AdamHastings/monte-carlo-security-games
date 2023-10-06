@@ -440,7 +440,7 @@ void Game::run_iterations() {
         }
 
         for (auto d : defenders) {
-            d.choose_security_strategy();
+            d.choose_security_strategy(&insurer);
         }
 
         

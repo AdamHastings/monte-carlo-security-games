@@ -6,7 +6,7 @@
 #include "Player.h"
 
 struct Params {
-    double MANDATE;
+    // double MANDATE;
     double ATTACKERS;
     double INEQUALITY;
     double PREMIUM;

@@ -19,31 +19,6 @@ class Player {
         double get_assets();
 };
 
-class Defender : public Player {
-    public:
-        uint id;
-        double posture;
-        double costToAttack;
-        std::map<int, double> claimsReceived;
-        bool insured;
-
-        Defender(int id_in);
-        void choose_security_strategy();
-
-
-    private:
-        void purchase_insurance_policy(PolicyType p);
-        void make_security_investment(double x);
-};
-
-class Attacker : public Player {
-    public:
-        uint id;
-        std::map<int, double> victims;
-
-        Attacker(int id_in, double INEQUALITY);
-};
-
 class Insurer : public Player {
     public:
         Insurer(){};
@@ -58,3 +33,29 @@ class Government : public Player {
     public:
         Government(){};
 };
+
+class Defender : public Player {
+    public:
+        uint id;
+        double posture;
+        double costToAttack;
+        std::map<int, double> claimsReceived;
+        bool insured;
+
+        Defender(int id_in);
+        void choose_security_strategy(Insurer *i);
+
+
+    private:
+        void purchase_insurance_policy(Insurer *i, PolicyType p);
+        void make_security_investment(double x);
+};
+
+class Attacker : public Player {
+    public:
+        uint id;
+        std::map<int, double> victims;
+
+        Attacker(int id_in, double INEQUALITY);
+};
+
