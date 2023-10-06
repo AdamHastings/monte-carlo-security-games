@@ -49,6 +49,7 @@ class TruncatedNormalDistribution : public Distribution {
                 draw = dist(generator);
                 if (draw >= min && draw <= max) {
                     break;
+                }
                 // } else {
                 //     std::cout << " -- truncated normal draw out of range! Re-drawing..." << std::endl;
                 // } // Could be a source of hanging programs...uncomment to find out
