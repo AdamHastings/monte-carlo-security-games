@@ -33,9 +33,7 @@ int Insurer::num_defenders = 0;
 int Insurer::num_attackers = 0;
 std::vector<double> Insurer::attacker_assets;
 
-PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {
-    std::cout << "providing quote\n";
-    
+PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
     PolicyType policy;
 
     double OVerhead = 0.20; // 20% overhead
@@ -94,15 +92,10 @@ void Defender::make_security_investment(double x) {
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy(Insurer &i) {
 
-    std::cout << "choosing a strategy\n";
-
     double p_A_hat = estimated_probability_of_attack;
     double p_L_hat = p_A_hat * (1 - posture);
     double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
-    std::cout << mean_EFFICIENCY << std::endl;
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
-    std::cout << mean_PAYOFF << std::endl;
-
 
     // 1. Get insurance policy from insurer
     PolicyType policy = i.provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
