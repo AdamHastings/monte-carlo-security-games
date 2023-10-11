@@ -123,6 +123,9 @@ Distribution* Distribution::createDistribution(Json::Value d) {
 }
 
 double Distribution::mean() {
+    // Some child classes do not have means so this cannot be a pure virtual function
+    // But only the child function should ever be called, if it has a mean function
+    // So we crash here if the parent function is ever called
     assert(false);
     return 0;
 }

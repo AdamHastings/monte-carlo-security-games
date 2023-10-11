@@ -52,7 +52,7 @@ void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
 }
 
 void Defender::make_security_investment(double x) {
-    double sec_investment_efficiency_draw = 0.0; // TODO do a draw
+    double sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
     posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / assets)));
     lose(x);
 }
@@ -61,10 +61,8 @@ void Defender::choose_security_strategy(Insurer i) {
 
     double p_A_hat = 0; // TODO get somehow
     double p_L_hat = p_A_hat * (1 - posture);
-    double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean(); // p->EFFICIENCY_distribution->dist::mean;
-    // double uE = p.EFFICIENCY_distribution->dist->mean();
-
-    double mean_PAYOFF = 0; // TODO fill in later
+    double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
+    double mean_PAYOFF = p.PAYOFF_distribution->mean();
 
 
     // 1. Get insurance policy from insurer
