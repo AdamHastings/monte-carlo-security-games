@@ -147,8 +147,8 @@ std::vector<Params> load_cfg(std::string basename) {
     for (int i=0; i<jsonData["NUM_GAMES"].asInt(); i++) {
         Params p;
     
-        p.ATTACKERS               =  Distribution::createDistribution(jsonData["ATTACKERS"])->draw();
-        p.INEQUALITY              =  Distribution::createDistribution(jsonData["INEQUALITY"])->draw();
+        p.ATTACKERS               = Distribution::createDistribution(jsonData["ATTACKERS"])->draw();
+        p.INEQUALITY              = Distribution::createDistribution(jsonData["INEQUALITY"])->draw();
         
         p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
         p.PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);

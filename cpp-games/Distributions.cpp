@@ -6,6 +6,7 @@
 #include <ctime>  
 #include <cstring>
 #include <cstdlib>
+#include <cassert>
 #include <random>
 #include "Distributions.h"
 
@@ -31,6 +32,9 @@ class NormalDistribution : public Distribution {
         double draw() {
             return dist(generator);
         }
+        double mean(){
+            return dist.mean();
+        }
 };
 
 class TruncatedNormalDistribution : public Distribution {
@@ -55,6 +59,9 @@ class TruncatedNormalDistribution : public Distribution {
                 // } // Could be a source of hanging programs...uncomment to find out
             }
             return draw;
+        }
+        double mean(){
+            return dist.mean();
         }
 };
 
@@ -113,4 +120,9 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         exit(1);
     }
     return dist;
+}
+
+double Distribution::mean() {
+    assert(false);
+    return 0;
 }

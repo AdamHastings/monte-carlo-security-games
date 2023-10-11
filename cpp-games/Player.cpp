@@ -61,8 +61,9 @@ void Defender::choose_security_strategy(Insurer i) {
 
     double p_A_hat = 0; // TODO get somehow
     double p_L_hat = p_A_hat * (1 - posture);
-    double mean_EFFICIENCY = 0; // p->EFFICIENCY_distribution->dist::mean;
-    // double uE = p->EFFICIENCY_distribution->dist::mean;
+    double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean(); // p->EFFICIENCY_distribution->dist::mean;
+    // double uE = p.EFFICIENCY_distribution->dist->mean();
+
     double mean_PAYOFF = 0; // TODO fill in later
 
 
@@ -79,9 +80,9 @@ void Defender::choose_security_strategy(Insurer i) {
 
 
     // 3. Find cost to achieve perfect security
-    double perfect_security_invesetment = (assets * (assets * posture)) / (posture * mean_EFFICIENCY);
-    double expected_loss_with_perfect_security = perfect_security_invesetment;
-    assert(perfect_security_invesetment >= 0);
+    double perfect_security_investment = (assets * (assets * posture)) / (posture * mean_EFFICIENCY);
+    double expected_loss_with_perfect_security = perfect_security_investment;
+    assert(perfect_security_investment >= 0);
     assert(expected_loss_with_perfect_security >= 0);
 
     // Choose the optimal strategy.
@@ -91,7 +92,7 @@ void Defender::choose_security_strategy(Insurer i) {
     } else if (minimum == expected_loss_with_optimal_investment) {
         make_security_investment(optimal_investment);
     } else if (minimum == expected_loss_with_perfect_security) {
-        make_security_investment(perfect_security_invesetment);
+        make_security_investment(perfect_security_investment);
     } else {
         assert(false); // should never reach this
     }
