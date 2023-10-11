@@ -37,6 +37,15 @@ class NormalDistribution : public Distribution {
         }
 };
 
+class LogNormalDistribution : public Distribution {
+    public:
+        std::lognormal_distribution<double> dist;
+        LogNormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
+        double draw() {
+            return dist(generator);
+        }
+};
+
 class TruncatedNormalDistribution : public Distribution {
     public: 
         std::normal_distribution<double> dist;
