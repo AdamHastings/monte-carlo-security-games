@@ -3,6 +3,7 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 
 
@@ -27,6 +28,32 @@ Insurer::Insurer(int id_in, Params &p) : Player(p) {
     id = id_in;
 }
 
+// Should be set each iteration by the game. 
+int Insurer::num_defenders = 0;
+int Insurer::num_attackers = 0;
+std::vector<double> Insurer::attacker_assets;
+
+PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {
+    PolicyType policy;
+
+    double OVerhead = 0.20; // 20% overhead
+    double r = 20.0; // TODO double check retention regression factor
+
+
+
+    double probability_of_getting_paried_with_attacker = std::min(1.0, ((num_attackers * 1.0) / (num_defenders * 1.0)));
+    double probability_random_attacker_has_enough_to_attack = (1 - estimated_costToAttackPercentile);
+    double p_A = probability_of_getting_paried_with_attacker * probability_random_attacker_has_enough_to_attack;
+    double p_L = p_A * (1 - estimated_posture); 
+    double mean_PAYOFF = p.PAYOFF_distribution->mean();
+    
+    policy.premium = (p_L * mean_PAYOFF * assets) / (r * p_L + OVerhead);
+    policy.retention = r * policy.premium;
+
+
+    return policy;
+}
+
 Defender::Defender(int id_in, Params &p) : Player(p) {
     id = id_in;
 
@@ -45,6 +72,8 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
     costToAttack = assets * posture;
 }
 
+double Defender::estimated_probability_of_attack = 0;
+
 void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     insured = true;
     lose(p.premium);
@@ -53,20 +82,21 @@ void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
 
 void Defender::make_security_investment(double x) {
     double sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
-    posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / assets)));
+    posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
     lose(x);
 }
 
+// TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy(Insurer i) {
 
-    double p_A_hat = 0; // TODO get somehow
+    double p_A_hat = estimated_probability_of_attack;
     double p_L_hat = p_A_hat * (1 - posture);
     double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
 
 
     // 1. Get insurance policy from insurer
-    PolicyType policy = Insurer::provide_a_quote(assets, posture); // TODO add noise to posture?
+    PolicyType policy = i.provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
     assert(expected_loss_with_insurance >= 0);
 
@@ -104,21 +134,4 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
     if (assets < 0) {
         assets = 0;
     }
-}
-
-PolicyType Insurer::provide_a_quote(double assets, double estimated_posture) {
-    PolicyType policy;
-
-    double OVerhead = 0.20; // 20% overhead
-    double r = 20; // TODO double check retention regression factor
-
-    double p_A = 0; // TODO calculate
-    double p_L = p_A * (1 - estimated_posture); 
-    double u_P = 0; // TODO calculate
-    
-    policy.premium = (p_L * u_P * assets) / (r * p_L + OVerhead);
-    policy.retention = r * policy.premium;
-
-
-    return policy;
 }

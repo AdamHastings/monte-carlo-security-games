@@ -8,15 +8,12 @@
 #include <iostream>
 #include <cassert>
 #include <string.h>
+#include <vector>
 #include "Game.h"
-
-#define ASSERT(condition, input) { if(!(condition)){ std::cerr << "ASSERT FAILED: " << #condition << " with input " << std::to_string(input) << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl; } }
-
-
 
 static std::random_device rd;  // Will be used to obtain a seed for the random number engine
 // static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-static std::mt19937 gen(0);
+static std::mt19937 gen(0); // TODO undo static seed?
 std::uniform_real_distribution<> uniform(0.0, 1.0);
 
 Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::vector<Insurer> i) {
@@ -217,6 +214,7 @@ void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
     attackerLoots += loot;
 
     // Check if this d has previously been attacked by a
+    // TODO are we going to remove this anyway?
     if (a.victims.find(d.id) != a.victims.end()) {
         a.victims[d.id] += loot;
     } else {    
@@ -366,6 +364,41 @@ void Game::fight(Attacker &a, Defender &d) {
     } 
 }
 
+double findPercentile(const std::vector<double>& sortedVector, double newValue) {
+    // Find the rank of the new value within the sorted vector
+    auto rankIterator = std::lower_bound(sortedVector.begin(), sortedVector.end(), newValue);
+    int rank = std::distance(sortedVector.begin(), rankIterator);
+    
+    // Calculate the percentile
+    double percentile = (static_cast<double>(rank) / (sortedVector.size() - 1)) * 100.0;
+    
+    return percentile;
+}
+
+
+// Insurers use their overhead to conduct operations and perform risk analysis
+// As part of this, the insurers find the median assets of the attackers (TODO maybe estimate it even?)
+// which informs current defender risks before writing policies.
+void Game::perform_market_analysis(){
+    // Reset attacker_assets each round 
+    Insurer::attacker_assets.clear();
+
+    for (auto a : attackers) {
+        Insurer::attacker_assets.push_back(a.assets);
+    }
+
+    std::sort(Insurer::attacker_assets.begin(), Insurer::attacker_assets.end());
+    Insurer::num_attackers = attackers.size();
+    Insurer::num_defenders = defenders.size();
+
+    for (auto d : defenders) {
+        d.costToAttackPercentile = findPercentile(Insurer::attacker_assets, d.costToAttack);
+    }
+
+    // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
+    Defender::estimated_probability_of_attack = std::min(1.0, (roundAttacks * 1.0)/(defenders.size() * 1.0));
+}
+
 void Game::run_iterations() {
 
     bool defenders_have_more_than_attackers = true;
@@ -380,6 +413,8 @@ void Game::run_iterations() {
         std::vector<int> new_alive_defenders_indices;
         std::vector<int> new_alive_attackers_indices;
 
+
+        // TODO just do simple shuffle?
         uint shorter_length, offset;
         bool more_defenders_than_attackers = (alive_defenders_indices.size() > alive_attackers_indices.size());
         if (more_defenders_than_attackers) {
@@ -404,6 +439,8 @@ void Game::run_iterations() {
             new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin() + offset + alive_defenders_indices.size(), alive_attackers_indices.end() );
 
         }
+
+        perform_market_analysis();
 
         for (auto d : defenders) {
             d.choose_security_strategy(insurers[0]); // TODO give all insurers 

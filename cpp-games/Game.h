@@ -84,4 +84,7 @@ class Game {
 
         // double find_p_attacker_has_enough_to_attack();
 
+        void perform_market_analysis();
+
+
 };

@@ -26,19 +26,26 @@ class Insurer : public Player {
         uint id;
         Insurer(int id_in, Params &p);
 
-        static PolicyType provide_a_quote(double assets, double posture);
+        PolicyType provide_a_quote(double assets, double posture, double estimated_costToAttackPercentile);
 
-    private:
-        double median_attacker_assets; // need to init somehow
+        static std::vector<double> attacker_assets;
+        static int num_attackers;
+        static int num_defenders;
 };
 
 class Defender : public Player {
     public:
+        static double estimated_probability_of_attack;
+
         uint id;
         double posture;
         double costToAttack;
         std::map<int, double> claimsReceived;
         bool insured;
+
+        // This variable is "hidden" to the defender and only known to insurers
+        // We store it here so that each insurer doesn't need to recompute. 
+        double costToAttackPercentile;
 
         Defender(int id_in, Params &p);
         void choose_security_strategy(Insurer i);

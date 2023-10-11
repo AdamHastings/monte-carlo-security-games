@@ -52,7 +52,7 @@ void RunGame(Params p) {
     // Write response to log file;
     ofstream log;
     log.open(p.logname, ios::app);
-    log << g.to_string();
+    log << g.to_string(); // TODO might need to check since the distribution format changed.
     log.close();
 }
 
