@@ -34,6 +34,8 @@ int Insurer::num_attackers = 0;
 std::vector<double> Insurer::attacker_assets;
 
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {
+    std::cout << "providing quote\n";
+    
     PolicyType policy;
 
     double OVerhead = 0.20; // 20% overhead
@@ -83,16 +85,23 @@ void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
 void Defender::make_security_investment(double x) {
     double sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
     posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
+    assert(posture >= 0);
+    assert(posture <= 1);
+
     lose(x);
 }
 
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
-void Defender::choose_security_strategy(Insurer i) {
+void Defender::choose_security_strategy(Insurer &i) {
+
+    std::cout << "choosing a strategy\n";
 
     double p_A_hat = estimated_probability_of_attack;
     double p_L_hat = p_A_hat * (1 - posture);
     double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
+    std::cout << mean_EFFICIENCY << std::endl;
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
+    std::cout << mean_PAYOFF << std::endl;
 
 
     // 1. Get insurance policy from insurer

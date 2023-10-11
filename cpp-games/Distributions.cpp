@@ -32,7 +32,7 @@ class NormalDistribution : public Distribution {
         double draw() {
             return dist(generator);
         }
-        double mean(){
+        double mean() override {
             return dist.mean();
         }
 };
@@ -69,7 +69,7 @@ class TruncatedNormalDistribution : public Distribution {
             }
             return draw;
         }
-        double mean(){
+        double mean() override {
             return dist.mean();
         }
 };
@@ -80,6 +80,9 @@ class PoissonDistribution : public Distribution {
         PoissonDistribution(double _lambda) : dist(_lambda) {}
         double draw() {
             return dist(generator);
+        }
+        double mean() override {
+            return dist.mean();
         }
 };
 

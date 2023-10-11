@@ -48,7 +48,7 @@ class Defender : public Player {
         double costToAttackPercentile;
 
         Defender(int id_in, Params &p);
-        void choose_security_strategy(Insurer i);
+        void choose_security_strategy(Insurer &i);
 
 
     private:

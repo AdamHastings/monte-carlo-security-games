@@ -193,6 +193,9 @@ void Game::verify_outcome() {
 
 void Game::conclude_game(std::string outcome) {
     final_outcome = outcome;
+
+    // TODO cleanup allocated pointers?
+
     verify_outcome();
 }
 
@@ -215,11 +218,11 @@ void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
 
     // Check if this d has previously been attacked by a
     // TODO are we going to remove this anyway?
-    if (a.victims.find(d.id) != a.victims.end()) {
-        a.victims[d.id] += loot;
-    } else {    
-        a.victims.insert({d.id, loot});
-    }
+    //if (a.victims.find(d.id) != a.victims.end()) {
+    //    a.victims[d.id] += loot;
+    //} else {    
+    //    a.victims.insert({d.id, loot});
+    //}
 }
 
 void Game::d_gain(Defender &d, double gain) {
@@ -404,7 +407,7 @@ void Game::run_iterations() {
     bool defenders_have_more_than_attackers = true;
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
-
+        std::cout << "iter num " << iter_num << std::endl;
 
         defender_iter_sum = 0;
         attacker_iter_sum = 0;

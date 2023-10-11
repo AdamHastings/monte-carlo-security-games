@@ -29,8 +29,8 @@
     "WEALTH" :
     {
         "distribution" : "lognormal",
-        "mean" : 9.875392795,
-        "stddev" : 1.682545179
+        "mean" : 10.0,
+        "stddev" : 1
     },
     "POSTURE" :
     {

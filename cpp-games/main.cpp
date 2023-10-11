@@ -46,6 +46,7 @@ void RunGame(Params p) {
         attackers.push_back(a);
     }
 
+    std::cout << "game initialized" << std::endl;
     Game g = Game(p, defenders, attackers, insurers);
     g.run_iterations();
 
@@ -194,7 +195,8 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
     std::cout << "started " << v[0].NUM_GAMES << " nonuniform games at " << std::ctime(&start_time);
-    ParallelRunGames(v);
+    // ParallelRunGames(v); // TODO undo after debugging
+    SerialRunGames(v);
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

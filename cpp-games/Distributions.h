@@ -7,5 +7,5 @@ class Distribution {
         virtual double draw() =0;
         
         static Distribution* createDistribution(Json::Value d);
-        double mean();
+        virtual double mean();
 };
