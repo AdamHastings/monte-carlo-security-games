@@ -104,6 +104,15 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         double mean = d["mean"].asDouble();
         double stddev = d["stddev"].asDouble();
         dist = new NormalDistribution(mean, stddev);
+    } else if (d["distribution"] == "lognormal") {
+        if (!d["mean"] || !d["stddev"]) {
+            std::cerr << "Must provide \"mean\" and \"stddev\" with lognormal distribution in config file" << std::endl;
+            std::cerr << "Offending parameter: " << d << endl;
+            exit(2);
+        }
+        double mean = d["mean"].asDouble();
+        double stddev = d["stddev"].asDouble();
+        dist = new LogNormalDistribution(mean, stddev);
     } else if (d["distribution"] == "truncated_normal") {
         if (!d["mean"] || !d["stddev"] || !d["min"] || !d["max"]) {
             std::cerr << "Must provide \"mean\", \"stddev\", \"min\", and \"max\" with truncated_normal distribution in config file" << std::endl;
