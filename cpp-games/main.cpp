@@ -28,25 +28,24 @@ void RunGame(Params p) {
     
     // Insurer insurer = Insurer(p);
     std::vector<Insurer> insurers;
-    for (int j=0; j < p.I; j++) {
+    for (int j=0; j < p.NUM_INSURERS; j++) {
         Insurer i = Insurer(j, p);
         insurers.push_back(i);
     }
     // Government government = Government(p);
 
     std::vector<Defender> defenders;
-    for (int i=0; i < p.B; i++) {
+    for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
         Defender d = Defender(i, p);
         defenders.push_back(d);
     }
 
     std::vector<Attacker> attackers;
-    for (int i=0; i < (p.B * p.ATTACKERS); i++) {
+    for (int i=0; i < (p.NUM_BLUE_PLAYERS * p.ATTACKERS); i++) {
         Attacker a = Attacker(i, p);
         attackers.push_back(a);
     }
 
-    std::cout << "game initialized" << std::endl;
     Game g = Game(p, defenders, attackers, insurers);
     g.run_iterations();
 
@@ -156,11 +155,12 @@ std::vector<Params> load_cfg(std::string basename) {
         p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
         p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);        
 
-        p.B          = jsonData["B"].asInt();
-        p.NUM_GAMES  = jsonData["NUM_GAMES"].asInt();
-        p.E          = jsonData["E"].asInt();
-        p.D          = jsonData["D"].asInt();
-        p.I          = jsonData["I"].asInt();
+        p.NUM_BLUE_PLAYERS        = jsonData["NUM_BLUE_PLAYERS"].asInt();
+        p.NUM_INSURERS            = jsonData["NUM_INSURERS"].asInt();
+        p.NUM_GAMES               = jsonData["NUM_GAMES"].asInt();
+        p.EPSILON                 = jsonData["EPSILON"].asInt();
+        p.DELTA                   = jsonData["DELTA"].asInt();
+       
 
         p.verbose       = jsonData["verbose"].asBool();
         p.assertions_on = jsonData["assertions_on"].asBool();

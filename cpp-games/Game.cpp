@@ -407,7 +407,6 @@ void Game::run_iterations() {
     bool defenders_have_more_than_attackers = true;
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
-        std::cout << "iter num " << iter_num << std::endl;
 
         defender_iter_sum = 0;
         attacker_iter_sum = 0;

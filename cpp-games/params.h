@@ -11,11 +11,11 @@ struct Params {
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
 
-    int B;
+    int NUM_BLUE_PLAYERS;
+    int NUM_INSURERS;
     int NUM_GAMES;
-    int E;
-    int D;
-    int I;
+    int EPSILON;
+    int DELTA;
 
     bool verbose;
     bool assertions_on;
