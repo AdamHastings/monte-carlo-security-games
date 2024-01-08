@@ -15,48 +15,28 @@ using namespace std;
 // TODO put Distribution in its own class file
 static std::mt19937 generator(0);
 
-class UniformRealDistribution : public Distribution {
-    public: 
-        std::uniform_real_distribution<double> dist;
-        UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
-        double draw() {
-            static std::uniform_real_distribution<double> dist(0,1);
-            return dist(generator);
-        }
-};
 
-class NormalDistribution : public Distribution {
-    public: 
-        std::normal_distribution<double> dist;
-        NormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
-        double draw() {
+UniformRealDistribution::UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
+ double UniformRealDistribution::draw() {
+     static std::uniform_real_distribution<double> dist(0,1);
+     return dist(generator);
+ }
+ NormalDistribution::NormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
+ NormalDistribution::double draw() {
             return dist(generator);
-        }
-        double mean() override {
+ }
+ double NormalDistribution::mean() {
             return dist.mean();
-        }
-};
-
-class LogNormalDistribution : public Distribution {
-    public:
-        std::lognormal_distribution<double> dist;
-        LogNormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
-        double draw() {
+ }
+ LogNormalDistribution::LogNormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
+ double LogNormalDistribution::draw() {
             return dist(generator);
-        }
-};
-
-class TruncatedNormalDistribution : public Distribution {
-    public: 
-        std::normal_distribution<double> dist;
-        double min;
-        double max;
-
-        TruncatedNormalDistribution(double _mean, double _stddev, double _min, double _max) : dist(_mean, _stddev) {
+ }
+ TruncatedNormalDistribution::TruncatedNormalDistribution(double _mean, double _stddev, double _min, double _max) : dist(_mean, _stddev) {
             min = _min;
             max = _max;
-        }
-        double draw() {
+ }
+ double TruncatedNormalDistribution::draw() {
             double draw;
             while (true) {
                 draw = dist(generator);
@@ -68,23 +48,18 @@ class TruncatedNormalDistribution : public Distribution {
                 // } // Could be a source of hanging programs...uncomment to find out
             }
             return draw;
-        }
-        double mean() override {
+ }
+ double TruncatedNormalDistribution::TruncatedNormalDistribution::mean() override {
             return dist.mean();
-        }
-};
-
-class PoissonDistribution : public Distribution {
-    public: 
-        std::poisson_distribution<int> dist;
-        PoissonDistribution(double _lambda) : dist(_lambda) {}
-        double draw() {
+ }
+ PoissonDistribution::PoissonDistribution(double _lambda) : dist(_lambda) {}
+ double PoissonDistribution::draw() {
             return dist(generator);
-        }
-        double mean() override {
+ }
+ double PoissonDistribution::mean() {
             return dist.mean();
-        }
-};
+ }
+
 
 Distribution* Distribution::createDistribution(Json::Value d) {
     Distribution* dist;
