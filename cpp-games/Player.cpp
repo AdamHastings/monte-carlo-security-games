@@ -36,7 +36,7 @@ std::vector<double> Insurer::attacker_assets;
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
     PolicyType policy;
 
-    double OVerhead = 0.20; // 20% overhead
+    double OVerhead = 0.20; // 20% overhead // Better to call this a "loss ratio" actually (standard terminology for insurance)
     double r = 20.0; // TODO double check retention regression factor
 
 
