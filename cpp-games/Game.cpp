@@ -476,6 +476,11 @@ void Game::run_iterations() {
             }
         }
 
+        // Insurance policy expires
+        for (auto d : defenders) {
+            d.insured = false; 
+        }
+
         prevRoundAttacks = roundAttacks;
 
         alive_attackers_indices = new_alive_attackers_indices;
