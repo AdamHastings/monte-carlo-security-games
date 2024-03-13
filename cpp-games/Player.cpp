@@ -85,8 +85,8 @@ void Defender::make_security_investment(double x) {
     posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
     assert(posture >= 0);
     assert(posture <= 1);
-
     lose(x);
+    costToAttack = assets * posture; // Why wasn't this included until now?
 }
 
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?

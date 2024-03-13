@@ -48,8 +48,8 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::ve
     }
     
 
-    outside_epsilon_count_defenders = p.D;
-    outside_epsilon_count_attackers = p.D;
+    outside_epsilon_count_defenders = p.DELTA;
+    outside_epsilon_count_attackers = p.DELTA;
 
     current_defender_sum_assets = d_init;
     current_attacker_sum_assets = a_init;
@@ -172,7 +172,7 @@ void Game::verify_outcome() {
     if (final_outcome == "E") {
         assert(alive_attackers_indices.size() > 0);
         assert(alive_defenders_indices.size() > 0);
-        assert(iter_num >= p.D); 
+        assert(iter_num >= p.DELTA); 
     } else if (final_outcome == "D") {
         assert(alive_defenders_indices.size() == 0);
     } else if (final_outcome == "A") {
@@ -208,7 +208,7 @@ bool Game::is_equilibrium_reached() {
         consecutiveNoAttacks = 0;
     }
 
-    return (consecutiveNoAttacks >= p.D);
+    return (consecutiveNoAttacks >= p.DELTA);
 }
 
 void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
@@ -230,6 +230,7 @@ void Game::d_gain(Defender &d, double gain) {
     defender_iter_sum += gain;
 }
 
+// TODO can we make this a class function of player?
 void Game::d_lose(Defender &d, double loss) {
     d.lose(loss);
     defender_iter_sum -= loss;
@@ -340,19 +341,23 @@ void Game::fight(Attacker &a, Defender &d) {
     double effective_loot = d.assets * p.PAYOFF_distribution->draw();
 
     // Mercy kill the Defenders if the loot is very low
-    if (d.assets < p.E) {
+    if (d.assets < p.EPSILON) {
         effective_loot = d.assets;
     }
 
-    double cost_of_attack = d.costToAttack;
+    // double cost_of_attack = d.costToAttack;
 
-    double expected_earnings = effective_loot * d.posture; // TODO wrong
+    // double expected_earnings = effective_loot * d.posture; // TODO wrong
 
-    if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
+
+    // if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
+    if (effective_loot > d.costToAttack && d.costToAttack <= a.assets) {
+        
+        // bookkeeping
         attacksAttempted += 1;
         roundAttacks += 1;
-        a_lose(a, cost_of_attack);
-        attackerExpenditures += cost_of_attack;
+        a_lose(a, d.costToAttack);
+        attackerExpenditures += d.costToAttack;
 
 
         bool attacker_wins = (uniform(gen) < d.posture); // TODO wrong
@@ -363,6 +368,8 @@ void Game::fight(Attacker &a, Defender &d) {
             // if (insurer.assets > 0) {
             //     insurer_covers_d_for_losses_from_a(a, d, effective_loot);
             // }
+
+            // TODO figure out how to do insurance
         }
     } 
 }
