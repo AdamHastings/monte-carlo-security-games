@@ -21,8 +21,8 @@ class Player {
         bool alive = true;
 
         Player(Params &p_in);
-        void gain(double gain);
-        void lose(double loss);
+        virtual void gain(double gain);
+        virtual void lose(double loss);
         double get_assets();
 };
 
@@ -33,15 +33,25 @@ class Defender : public Player {
         uint id;
         double posture;
         double costToAttack;
-        std::map<int, double> claimsReceived;
+        // std::map<int, double> claimsReceived;
         bool insured;
+
+        double* defender_iter_sum;
+        std::vector<Insurer>* insurers;
+        Insurer* insurer = NULL; 
 
         // This variable is "hidden" to the defender and only known to insurers
         // We store it here so that each insurer doesn't need to recompute. 
         double costToAttackPercentile;
 
+        
+
         Defender(int id_in, Params &p);
-        void choose_security_strategy(Insurer &i);
+        void gain(double gain) override;
+        void lose(double loss) override;
+
+        void choose_security_strategy();
+
 
 
     private:
@@ -54,16 +64,24 @@ class Attacker : public Player {
         uint id;
         std::map<int, double> victims;
 
+        double* attacker_iter_sum;
+
         Attacker(int id_in,  Params &p);
+        void gain(double gain) override;
+        void lose(double loss) override;
 };
 
 class Insurer : public Player {
     public:
         uint id;
         Insurer(int id_in, Params &p);
+        void gain(double gain) override;
+        void lose(double loss) override;
 
         PolicyType provide_a_quote(double assets, double posture, double estimated_costToAttackPercentile);
         void cover_loss(Defender &d, double claim);
+
+        double* insurer_iter_sum;
 
 
         static std::vector<double> attacker_assets;

@@ -21,7 +21,6 @@ class Game {
         std::vector<Defender> defenders;
         std::vector<Attacker> attackers;
         std::vector<Insurer> insurers;
-        // Government government;
 
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
@@ -32,12 +31,13 @@ class Game {
 
         double current_defender_sum_assets = 0;
         double current_attacker_sum_assets = 0;
-        double defender_iter_sum = 0, attacker_iter_sum = 0;
+        double current_insurer_sum_assets = 0;
+
+        double defender_iter_sum = 0, attacker_iter_sum = 0, insurer_iter_sum = 0;
 
         std::vector<double> defenders_cumulative_assets;
         std::vector<double> attackers_cumulative_assets;
         std::vector<double> insurer_cumulative_assets;
-        // std::vector<double> government_cumulative_assets;
 
         std::vector<double> last_delta_defenders_changes;
         std::vector<double> last_delta_attackers_changes;

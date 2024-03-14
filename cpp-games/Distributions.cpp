@@ -13,6 +13,7 @@
 using namespace std;
 
 // TODO put Distribution in its own class file
+// TODO results don't seem random? Probably because of fixed seed? Look into this TODO TODO TODO
 static std::mt19937 generator(0);
 
 

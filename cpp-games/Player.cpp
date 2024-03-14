@@ -29,8 +29,15 @@ double Player::get_assets() {
 
 Insurer::Insurer(int id_in, Params &p) : Player(p) {
     id = id_in;
+
+    assets = p.WEALTH_distribution->draw();
+    if (assets < 0) {
+        assets = 0;
+    }
 }
 
+
+// TODO this is why the checksums are failing...transactions not known to Game class
 void Insurer::cover_loss(Defender &d, double claim) {
     double amount_covered = claim;
     if (amount_covered > assets) {
@@ -46,6 +53,7 @@ void Insurer::cover_loss(Defender &d, double claim) {
         lose(amount_covered);
     }
 }
+
 
 // Should be set each iteration by the game. 
 int Insurer::num_defenders = 0;
@@ -93,12 +101,14 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
 
 double Defender::estimated_probability_of_attack = 0;
 
+// TODO this is why the checksums are failing...transactions not known to Game class
 void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     insured = true;
     lose(p.premium);
     i.gain(p.premium);
 }
 
+// TODO this is why the checksums are failing...transactions not known to Game class
 void Defender::make_security_investment(double x) {
     double sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
     posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
@@ -109,7 +119,9 @@ void Defender::make_security_investment(double x) {
 }
 
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
-void Defender::choose_security_strategy(Insurer &i) {
+void Defender::choose_security_strategy() {
+
+    Insurer i = insurers->at(0); // TODO iterate through all insurers!!!
 
     double p_A_hat = estimated_probability_of_attack;
     double p_L_hat = p_A_hat * (1 - posture);
@@ -155,4 +167,36 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
     if (assets < 0) {
         assets = 0;
     }
+}
+
+void Insurer::lose(double loss) {
+    Player::lose(loss);
+    *insurer_iter_sum += loss;
+}
+
+void Insurer::gain(double gain) {
+    Player::gain(gain);
+    *insurer_iter_sum += gain;
+}
+
+
+void Defender::lose(double loss) {
+    Player::lose(loss);
+    *defender_iter_sum += loss;
+}
+
+void Defender::gain(double gain) {
+    Player::gain(gain);
+    *defender_iter_sum += gain;
+}
+
+
+void Attacker::lose(double loss) {
+    Player::lose(loss);
+    *attacker_iter_sum += loss;
+}
+
+void Attacker::gain(double gain) {
+    Player::gain(gain);
+    *attacker_iter_sum += gain;
 }

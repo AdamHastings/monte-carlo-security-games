@@ -18,10 +18,10 @@ std::uniform_real_distribution<> uniform(0.0, 1.0);
 
 Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::vector<Insurer> i) {
     p = prm;
+
     defenders = d;
     attackers = a;
     insurers = i;
-    // government = g;
 
     d_init = 0;
     for (auto di : defenders) {
@@ -33,11 +33,10 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::ve
         a_init += ai.get_assets();
     }
 
-    i_init = 0;  // TODO should insurers get a start assets?
+    i_init = 0;
     for (auto ii : insurers) {
         i_init += ii.get_assets();
     }
-    // g_init = government.get_assets();
 
     for (uint i=0; i<attackers.size(); i++) {
         alive_attackers_indices.push_back(i);
@@ -46,19 +45,35 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::ve
     for (uint i=0; i<defenders.size(); i++) {
         alive_defenders_indices.push_back(i);
     }
-    
 
     outside_epsilon_count_defenders = p.DELTA;
     outside_epsilon_count_attackers = p.DELTA;
 
     current_defender_sum_assets = d_init;
     current_attacker_sum_assets = a_init;
+    current_insurer_sum_assets = i_init;
+
+
+    for (auto di : defenders) {
+        di.insurers = &insurers;
+        di.defender_iter_sum = &defender_iter_sum;
+    }
+
+    for (auto ai : attackers) {
+        ai.attacker_iter_sum = &attacker_iter_sum;
+    }
+
+    for (auto ii : insurers) {
+        ii.insurer_iter_sum = &insurer_iter_sum;
+    }
+    
+
+    std::cout << "i_init: " << i_init << std::endl;
 
     if (p.verbose) {
         defenders_cumulative_assets.push_back(d_init);
         attackers_cumulative_assets.push_back(a_init);
         insurer_cumulative_assets.push_back(i_init);
-        // government_cumulative_assets.push_back(g_init);
     }
 
     // Let's make sure everything got set up correctly
@@ -77,9 +92,7 @@ std::string Game::to_string() {
     ret += std::to_string(int(round(a_init))) + ",";
     ret += std::to_string(int(round(current_attacker_sum_assets))) + ",";
     ret += std::to_string(int(round(i_init))) + ",";
-    // ret += std::to_string(int(round(insurer.assets))) + ","; // TODO add back in
-    ret += std::to_string(int(round(g_init))) + ",";
-    // ret += std::to_string(int(round(government.assets))) + ",";
+    ret += std::to_string(int(round(current_insurer_sum_assets))) + ",";
     ret += std::to_string(int(round(attacksAttempted))) + ",";
     ret += std::to_string(int(round(attacksSucceeded))) + ",";
     ret += std::to_string(int(round(attackerLoots))) + ",";
@@ -135,15 +148,20 @@ void Game::verify_init() {
         i++;
     }
 
-    // assert(insurer.assets >= 0);  // TODO add back in
-    // assert(government.assets >= 0);
+    i = 0;
+    for (auto ins : insurers) {
+        assert(ins.id >= 0);
+        assert(ins.id < insurers.size());
+        assert(ins.assets >= 0);
+        assert(ins.id == i);
+        i++;
+    }
 }
 
 void Game::verify_outcome() {
     assert(round(current_defender_sum_assets) >= 0);
     assert(round(current_attacker_sum_assets) >= 0);
-    // assert(round(insurer.assets) >= 0); // TODO add back in
-    // assert(round(government.assets) >= 0);
+    assert(round(current_insurer_sum_assets) >= 0); 
 
     double checksum_attacker_sum_assets = 0;
     for (auto a : attackers) {
@@ -161,7 +179,16 @@ void Game::verify_outcome() {
 
     assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
 
-    // assert(round(i_init - insurer.assets) >= 0); // TODO add back in
+    double checksum_insurer_sum_assets = 0;
+    for (auto i : insurers) {
+        assert(round(i.assets) >= 0);
+        checksum_insurer_sum_assets += i.assets;
+    }
+
+
+    assert(round(current_insurer_sum_assets - checksum_insurer_sum_assets) >= 0);
+
+
     // assert(round(d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
     assert(round(i_init - paidClaims) >= 0);
     assert(round(paidClaims) >= 0);
@@ -180,13 +207,13 @@ void Game::verify_outcome() {
     }
 
     // Master checksum
-    // double init_ = d_init + a_init + g_init + i_init; // TODO add back in after fixing insurer
-    // double end_  = current_defender_sum_assets + current_attacker_sum_assets + insurer.assets + government.assets + attackerExpenditures + governmentExpenditures; // TODO add insurer
+    double init_ = d_init + a_init + i_init; 
+    double end_  = current_defender_sum_assets + current_attacker_sum_assets + current_insurer_sum_assets + attackerExpenditures; 
 
     // TODO add back in after fixing insurer
-    // if (round(init_ - end_) != 0) {
-    //     std::cout << init_ << " " << end_ << std::endl;
-    // }
+    if (round(init_ - end_) != 0) {
+        std::cout << init_ << " " << end_ << std::endl;
+    }
     // assert(round(init_ - end_) == 0); // TODO add back in after fixing insurer
   
 }
@@ -211,41 +238,46 @@ bool Game::is_equilibrium_reached() {
     return (consecutiveNoAttacks >= p.DELTA);
 }
 
-void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
-    d_lose(d, loot);
-    a_gain(a, loot);
-    attackerLoots += loot;
+// void Game::a_steals_from_d(Attacker &a, Defender &d, double loot) {
+//     d_lose(d, loot);
+//     a_gain(a, loot);
+//     attackerLoots += loot;
 
-    // Check if this d has previously been attacked by a
-    // TODO are we going to remove this anyway?
-    //if (a.victims.find(d.id) != a.victims.end()) {
-    //    a.victims[d.id] += loot;
-    //} else {    
-    //    a.victims.insert({d.id, loot});
-    //}
-}
+//     // Check if this d has previously been attacked by a
+//     // TODO are we going to remove this anyway?
+//     //if (a.victims.find(d.id) != a.victims.end()) {
+//     //    a.victims[d.id] += loot;
+//     //} else {    
+//     //    a.victims.insert({d.id, loot});
+//     //}
+// }
 
-void Game::d_gain(Defender &d, double gain) {
-    d.gain(gain);
-    defender_iter_sum += gain;
-}
+// void Game::d_gain(Defender &d, double gain) {
+//     d.gain(gain);
+//     defender_iter_sum += gain;
+// }
 
-// TODO can we make this a class function of player?
-void Game::d_lose(Defender &d, double loss) {
-    d.lose(loss);
-    defender_iter_sum -= loss;
+// // TODO can we make this a class function of player?
+// void Game::d_lose(Defender &d, double loss) {
+//     d.lose(loss);
+//     defender_iter_sum -= loss;
 
-}
+// }
 
-void Game::a_gain(Attacker &a, double gain) {
-    a.gain(gain);
-    attacker_iter_sum += gain;
-}
+// void Game::a_gain(Attacker &a, double gain) {
+//     a.gain(gain);
+//     attacker_iter_sum += gain;
+// }
 
-void Game::a_lose(Attacker &a, double loss) {
-    a.lose(loss);
-    attacker_iter_sum -= loss;
-}
+// void Game::a_lose(Attacker &a, double loss) {
+//     a.lose(loss);
+//     attacker_iter_sum -= loss;
+// }
+
+// void Game::i_lose(Insurer &i, double loss) {
+//     i.lose(loss);
+//     insurer_iter_sum -= loss;
+// }
 
 
 // void Game::d_recoup(Attacker &a, Defender &d, double recoup_amount) {
@@ -348,11 +380,6 @@ void Game::fight(Attacker &a, Defender &d) {
         expected_loot = d.assets;
     }
 
-    // double cost_of_attack = d.costToAttack;
-
-    // double expected_earnings = effective_loot * d.posture; // TODO wrong
-
-
 
     // TODO is (expected_loot > d.costToAttack) part of the underwriting process at the moment? I don't think it is
     if (expected_loot > d.costToAttack && d.costToAttack <= a.assets) {
@@ -362,7 +389,7 @@ void Game::fight(Attacker &a, Defender &d) {
         // bookkeeping
         attacksAttempted += 1;
         roundAttacks += 1;
-        a_lose(a, d.costToAttack);
+        a.lose(d.costToAttack);
         attackerExpenditures += d.costToAttack;
 
 
@@ -370,7 +397,8 @@ void Game::fight(Attacker &a, Defender &d) {
             attacksSucceeded += 1;
 
             double loot = d.assets * p.PAYOFF_distribution->draw();
-            a_gain(a, loot);
+            a.gain(loot);
+            attackerLoots += loot;
 
             // a_steals_from_d(a, d, effective_loot);
             // if (insurer.assets > 0) {
@@ -378,9 +406,10 @@ void Game::fight(Attacker &a, Defender &d) {
             // }
 
             if (d.insured) {
-                insurers[0].cover_loss(d, loot); // TODO change to allow all insurers to be included 
+                // insurers[0].cover_loss(d, loot); // TODO change to allow all insurers to be included 
+                d.insurer->cover_loss(d, loot);
             } else {
-                d_lose(d, loot);
+                d.lose(loot);
             }
         }
     } 
@@ -429,6 +458,7 @@ void Game::run_iterations() {
 
         defender_iter_sum = 0;
         attacker_iter_sum = 0;
+        insurer_iter_sum = 0;
         roundAttacks = 0;
 
         std::vector<int> new_alive_defenders_indices;
@@ -464,7 +494,7 @@ void Game::run_iterations() {
         perform_market_analysis();
 
         for (auto d : defenders) {
-            d.choose_security_strategy(insurers[0]); // TODO give all insurers 
+            d.choose_security_strategy();
         }
 
         
@@ -481,10 +511,6 @@ void Game::run_iterations() {
             Attacker *a = &attackers[a_idx];
             Defender *d = &defenders[d_idx];
 
-            // buy_insurance(*d); 
-            // d needs to pick its optimal strategy here
-            // or maybe beforehand? Before the round so the insurer can collect
-
             fight(*a, *d);
 
             if (std::round(a->assets) > 0) {
@@ -497,6 +523,7 @@ void Game::run_iterations() {
 
         // Insurance policy expires
         for (auto d : defenders) {
+            d.insurer = NULL;
             d.insured = false; 
         }
 
@@ -507,6 +534,9 @@ void Game::run_iterations() {
 
         current_defender_sum_assets += defender_iter_sum;
         current_attacker_sum_assets += attacker_iter_sum;
+        current_insurer_sum_assets  += insurer_iter_sum;
+
+        std::cout << "current_insurer_sum_assets: " << current_insurer_sum_assets << std::endl;
 
         if (defenders_have_more_than_attackers) {
             if (current_attacker_sum_assets > current_defender_sum_assets) {
