@@ -122,12 +122,21 @@ void Defender::make_security_investment(double x) {
     assert(posture <= 1);
     lose(x);
     costToAttack = assets * posture; // Why wasn't this included until now?
+    assert(costToAttack >= 0);
 }
 
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy() {
 
+
+    std::cout << "insurers size: " << std::endl;
+    std::cout << insurers->size() << std::endl;
+
+    std::cout << "getting insurer i..." << std::endl;
     Insurer i = insurers->at(0); // TODO iterate through all insurers!!!
+    
+
+    std::cout << "done!" << std::endl;
 
     double p_A_hat = estimated_probability_of_attack;
     double p_L_hat = p_A_hat * (1 - posture);

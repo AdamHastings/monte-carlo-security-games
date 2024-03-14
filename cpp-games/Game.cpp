@@ -54,10 +54,20 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::ve
     current_insurer_sum_assets = i_init;
 
 
+    std::cout << " init : insurers.size() = " << insurers.size() << std::endl;
     for (auto di : defenders) {
         di.insurers = &insurers;
         di.defender_iter_sum = &defender_iter_sum;
+        std::cout << " here : : insurers.size() = " << std::endl;
+        std::cout << di.insurers->size() << std::endl;
     }
+
+    for (auto di : defenders) {
+
+        std::cout << " immediately after: : : insurers.size() = " << std::endl;
+        std::cout << di.insurers->size() << std::endl;
+    }
+
 
     for (auto ai : attackers) {
         ai.attacker_iter_sum = &attacker_iter_sum;
@@ -76,10 +86,31 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::ve
         insurer_cumulative_assets.push_back(i_init);
     }
 
+    // TODO this is where the problem is....why does this segfault?
+    for (auto di : defenders) {
+        std::cout << "  pre verify : : insurers.size() = " << std::endl;
+        
+        std::cout << di.insurers->size() << std::endl;
+    }    
+
     // Let's make sure everything got set up correctly
     if (p.assertions_on) {
         verify_init();  
     }
+
+    // TODO this is where the problem is....why does this segfault?
+    for (auto di : defenders) {
+        std::cout << "  post verify : : insurers.size() = " << std::endl;
+        
+        std::cout << di.insurers->size() << std::endl;
+    }    
+
+    // TODO this is where the problem is....why does this segfault?
+    for (auto di : defenders) {
+        std::cout << "  end of init : : insurers.size() = " << std::endl;
+        
+        std::cout << di.insurers->size() << std::endl;
+    }    
 }
 
 std::string Game::to_string() {
@@ -214,7 +245,7 @@ void Game::verify_outcome() {
     if (round(init_ - end_) != 0) {
         std::cout << init_ << " " << end_ << std::endl;
     }
-    // assert(round(init_ - end_) == 0); // TODO add back in after fixing insurer
+    assert(round(init_ - end_) == 0); // TODO add back in after fixing insurer
   
 }
 
@@ -252,32 +283,6 @@ bool Game::is_equilibrium_reached() {
 //     //}
 // }
 
-// void Game::d_gain(Defender &d, double gain) {
-//     d.gain(gain);
-//     defender_iter_sum += gain;
-// }
-
-// // TODO can we make this a class function of player?
-// void Game::d_lose(Defender &d, double loss) {
-//     d.lose(loss);
-//     defender_iter_sum -= loss;
-
-// }
-
-// void Game::a_gain(Attacker &a, double gain) {
-//     a.gain(gain);
-//     attacker_iter_sum += gain;
-// }
-
-// void Game::a_lose(Attacker &a, double loss) {
-//     a.lose(loss);
-//     attacker_iter_sum -= loss;
-// }
-
-// void Game::i_lose(Insurer &i, double loss) {
-//     i.lose(loss);
-//     insurer_iter_sum -= loss;
-// }
 
 
 // void Game::d_recoup(Attacker &a, Defender &d, double recoup_amount) {
@@ -457,6 +462,11 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
+
+        for (auto di : defenders) {
+            std::cout << "    pre iter : insurers.size() = " << di.insurers->size() << std::endl;
+        }
+
         defender_iter_sum = 0;
         attacker_iter_sum = 0;
         insurer_iter_sum = 0;
@@ -526,6 +536,10 @@ void Game::run_iterations() {
         for (auto d : defenders) {
             d.insurer = NULL;
             d.insured = false; 
+        }
+
+        for (auto di : defenders) {
+            std::cout << "    post iter : insurers.size() = " << di.insurers->size() << std::endl;
         }
 
         prevRoundAttacks = roundAttacks;

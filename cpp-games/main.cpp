@@ -46,8 +46,19 @@ void RunGame(Params p) {
         attackers.push_back(a);
     }
 
+    std::cout << "constructing game" << std::endl;
     Game g = Game(p, defenders, attackers, insurers);
+    std::cout << "game constructed" << std::endl;
+
+    // TODO this is where the problem is....why does this segfault?
+    for (auto di : defenders) {
+        std::cout << "  after construction: : insurers.size() = " << std::endl;
+        
+        std::cout << di.insurers->size() << std::endl;
+    }       
+
     g.run_iterations();
+    std::cout << "game finished" << std::endl;
 
     // Write response to log file;
     ofstream log;
