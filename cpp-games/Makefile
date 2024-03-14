@@ -1,5 +1,5 @@
 CXX=g++
-CPPFLAGS=-Wall -Werror -std=c++11 -fno-builtin-memset
+CPPFLAGS=-Wall -Werror -std=c++17 -fno-builtin-memset
 INCLUDES=-Itbb/latest/include -Ijson
 LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ 
 LDFLAGS=-ltbb
