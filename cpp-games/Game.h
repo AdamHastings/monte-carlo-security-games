@@ -5,6 +5,7 @@
 #include <set>
 #include "Player.h"
 #include "params.h"
+#include "Distributions.h"
 
 
 class Game {
@@ -21,6 +22,8 @@ class Game {
         std::vector<Attacker> attackers;
         std::vector<Insurer> insurers;
         // Government government;
+
+        UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
         double d_init, a_init, i_init, g_init;
         int iter_num;
@@ -73,12 +76,12 @@ class Game {
         void a_gain(Attacker &a, double gain);
         void a_lose(Attacker &a, double loss);
         void d_recoup(Attacker &a, Defender &d, double recoup_amount);
-        void insurer_lose(double loss);
-        void insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double claim);
-        void insurer_recoup(double recoup);
-        void government_gain(double gain);
-        void government_lose(double loss);
-        void a_distributes_loot(Attacker &a);
+        void i_lose(Insurer &i, double loss);
+        // void insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double claim);
+        // void insurer_recoup(double recoup);
+        // void government_gain(double gain);
+        // void government_lose(double loss);
+        // void a_distributes_loot(Attacker &a);
 
         // void requeset_a_quote(Defender &d);
 

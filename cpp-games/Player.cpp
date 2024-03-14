@@ -18,6 +18,9 @@ void Player::gain(double gain) {
 
 void Player::lose(double loss) {
     assets -= loss;
+    if (assets == 0){
+        alive = false;
+    }
 }
 
 double Player::get_assets() {
@@ -26,6 +29,22 @@ double Player::get_assets() {
 
 Insurer::Insurer(int id_in, Params &p) : Player(p) {
     id = id_in;
+}
+
+void Insurer::cover_loss(Defender &d, double claim) {
+    double amount_covered = claim;
+    if (amount_covered > assets) {
+        // insurer cannot cover full amount
+        amount_covered = assets;
+        lose(amount_covered);
+        double amount_not_covered = claim - amount_covered;
+        d.lose(amount_not_covered);
+
+        // insurerTimesOfDeath.push_back(iter_num); // TODO put back in later
+
+    } else {
+        lose(amount_covered);
+    }
 }
 
 // Should be set each iteration by the game. 

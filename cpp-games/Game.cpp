@@ -274,11 +274,13 @@ void Game::a_lose(Attacker &a, double loss) {
 //     }
 // }
 
-// void Game::insurer_lose(double loss) {
-//     insurer.lose(loss);
+// // TODO what about multiple insurers?
+// void Game::i_lose(Insurer &i, double loss) {
+//     i.lose(loss);
 //     paidClaims += loss;
 // }
 
+// TODO what about multiple insurers?
 // void Game::insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double claim) {
     // double claims_amount = claim * p.CLAIMS;
     // if (claims_amount > insurer.assets) {
@@ -338,11 +340,12 @@ void Game::a_lose(Attacker &a, double loss) {
 
 
 void Game::fight(Attacker &a, Defender &d) {
-    double effective_loot = d.assets * p.PAYOFF_distribution->draw();
+
+    double expected_loot = d.assets * p.PAYOFF_distribution->mean();
 
     // Mercy kill the Defenders if the loot is very low
     if (d.assets < p.EPSILON) {
-        effective_loot = d.assets;
+        expected_loot = d.assets;
     }
 
     // double cost_of_attack = d.costToAttack;
@@ -350,8 +353,11 @@ void Game::fight(Attacker &a, Defender &d) {
     // double expected_earnings = effective_loot * d.posture; // TODO wrong
 
 
-    // if (expected_earnings > cost_of_attack && cost_of_attack <= a.assets) {
-    if (effective_loot > d.costToAttack && d.costToAttack <= a.assets) {
+
+    // TODO is (expected_loot > d.costToAttack) part of the underwriting process at the moment? I don't think it is
+    if (expected_loot > d.costToAttack && d.costToAttack <= a.assets) {
+        // Attacking is financially worth it
+
         
         // bookkeeping
         attacksAttempted += 1;
@@ -360,16 +366,22 @@ void Game::fight(Attacker &a, Defender &d) {
         attackerExpenditures += d.costToAttack;
 
 
-        bool attacker_wins = (uniform(gen) < d.posture); // TODO wrong
-        if (attacker_wins) {
+        if (RandUniformDist.draw() > d.posture) {
             attacksSucceeded += 1;
+
+            double loot = d.assets * p.PAYOFF_distribution->draw();
+            a_gain(a, loot);
 
             // a_steals_from_d(a, d, effective_loot);
             // if (insurer.assets > 0) {
             //     insurer_covers_d_for_losses_from_a(a, d, effective_loot);
             // }
 
-            // TODO figure out how to do insurance
+            if (d.insured) {
+                insurers[0].cover_loss(d, loot); // TODO change to allow all insurers to be included 
+            } else {
+                d_lose(d, loot);
+            }
         }
     } 
 }

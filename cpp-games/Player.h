@@ -4,6 +4,10 @@
 #include <cassert>
 #include "params.h"
 
+class Insurer;
+class Defender;
+class Attacker;
+
 struct PolicyType {
     double premium;
     double retention;
@@ -14,23 +18,12 @@ class Player {
     public:
         double assets;
         Params p;
+        bool alive = true;
 
         Player(Params &p_in);
         void gain(double gain);
         void lose(double loss);
         double get_assets();
-};
-
-class Insurer : public Player {
-    public:
-        uint id;
-        Insurer(int id_in, Params &p);
-
-        PolicyType provide_a_quote(double assets, double posture, double estimated_costToAttackPercentile);
-
-        static std::vector<double> attacker_assets;
-        static int num_attackers;
-        static int num_defenders;
 };
 
 class Defender : public Player {
@@ -64,3 +57,16 @@ class Attacker : public Player {
         Attacker(int id_in,  Params &p);
 };
 
+class Insurer : public Player {
+    public:
+        uint id;
+        Insurer(int id_in, Params &p);
+
+        PolicyType provide_a_quote(double assets, double posture, double estimated_costToAttackPercentile);
+        void cover_loss(Defender &d, double claim);
+
+
+        static std::vector<double> attacker_assets;
+        static int num_attackers;
+        static int num_defenders;
+};
