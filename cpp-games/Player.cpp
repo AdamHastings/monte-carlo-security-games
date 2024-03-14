@@ -37,21 +37,20 @@ Insurer::Insurer(int id_in, Params &p) : Player(p) {
 }
 
 
-// TODO this is why the checksums are failing...transactions not known to Game class
-void Insurer::cover_loss(Defender &d, double claim) {
-    double amount_covered = claim;
+
+double Insurer::issue_payment(double claim) {
+    
+    double amount_covered = 0;
     if (amount_covered > assets) {
         // insurer cannot cover full amount
         amount_covered = assets;
-        lose(amount_covered);
-        double amount_not_covered = claim - amount_covered;
-        d.lose(amount_not_covered);
-
         // insurerTimesOfDeath.push_back(iter_num); // TODO put back in later
 
     } else {
-        lose(amount_covered);
+        amount_covered = claim;
     }
+    lose(amount_covered);
+    return amount_covered;
 }
 
 
@@ -106,6 +105,13 @@ void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     insured = true;
     lose(p.premium);
     i.gain(p.premium);
+}
+
+void Defender::submit_claim(double loss) {
+    assert(insured); // you should only call this function if you have an active insurance policy
+    double amount_recovered = insurer->issue_payment(loss);
+    assert(loss >= amount_recovered);
+    lose(loss - amount_recovered);
 }
 
 // TODO this is why the checksums are failing...transactions not known to Game class

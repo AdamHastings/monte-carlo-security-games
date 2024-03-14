@@ -407,7 +407,8 @@ void Game::fight(Attacker &a, Defender &d) {
 
             if (d.insured) {
                 // insurers[0].cover_loss(d, loot); // TODO change to allow all insurers to be included 
-                d.insurer->cover_loss(d, loot);
+                // d.insurer->cover_loss(d, loot);
+                d.submit_claim(loot);
             } else {
                 d.lose(loot);
             }
