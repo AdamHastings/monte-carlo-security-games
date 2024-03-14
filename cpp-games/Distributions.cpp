@@ -17,47 +17,59 @@ static std::mt19937 generator(0);
 
 
 UniformRealDistribution::UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
- double UniformRealDistribution::draw() {
-     static std::uniform_real_distribution<double> dist(0,1);
-     return dist(generator);
+
+double UniformRealDistribution::draw() {
+    static std::uniform_real_distribution<double> dist(0,1);
+    return dist(generator);
+}
+
+NormalDistribution::NormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
+
+double NormalDistribution::draw() {
+    return dist(generator);
+}
+
+double NormalDistribution::mean() {
+    return dist.mean();
+}
+
+LogNormalDistribution::LogNormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
+
+double LogNormalDistribution::draw() {
+    return dist(generator);
+}
+
+TruncatedNormalDistribution::TruncatedNormalDistribution(double _mean, double _stddev, double _min, double _max) : dist(_mean, _stddev) {
+    min = _min;
+    max = _max;
  }
- NormalDistribution::NormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
- NormalDistribution::double draw() {
-            return dist(generator);
+
+double TruncatedNormalDistribution::draw() {
+    double draw;
+    while (true) {
+        draw = dist(generator);
+        if (draw >= min && draw <= max) {
+            break;
+        }
+        // } else {
+        //     std::cout << " -- truncated normal draw out of range! Re-drawing..." << std::endl;
+        // } // Could be a source of hanging programs...uncomment to find out
+    }
+    return draw;
  }
- double NormalDistribution::mean() {
-            return dist.mean();
+
+ double TruncatedNormalDistribution::mean() {
+    return dist.mean();
  }
- LogNormalDistribution::LogNormalDistribution(double _mean, double _stddev) : dist(_mean, _stddev) {}
- double LogNormalDistribution::draw() {
-            return dist(generator);
- }
- TruncatedNormalDistribution::TruncatedNormalDistribution(double _mean, double _stddev, double _min, double _max) : dist(_mean, _stddev) {
-            min = _min;
-            max = _max;
- }
- double TruncatedNormalDistribution::draw() {
-            double draw;
-            while (true) {
-                draw = dist(generator);
-                if (draw >= min && draw <= max) {
-                    break;
-                }
-                // } else {
-                //     std::cout << " -- truncated normal draw out of range! Re-drawing..." << std::endl;
-                // } // Could be a source of hanging programs...uncomment to find out
-            }
-            return draw;
- }
- double TruncatedNormalDistribution::TruncatedNormalDistribution::mean() override {
-            return dist.mean();
- }
+
  PoissonDistribution::PoissonDistribution(double _lambda) : dist(_lambda) {}
+
  double PoissonDistribution::draw() {
-            return dist(generator);
+    return dist(generator);
  }
+
  double PoissonDistribution::mean() {
-            return dist.mean();
+    return dist.mean();
  }
 
 
