@@ -80,8 +80,10 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     return policy;
 }
 
-Defender::Defender(int id_in, Params &p) : Player(p) {
+Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Player(p) {
     id = id_in;
+
+    insurers = &_insurers;
 
     assets = p.WEALTH_distribution->draw();
     if (assets < 0) {

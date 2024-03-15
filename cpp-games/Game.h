@@ -11,7 +11,7 @@
 class Game {
 
     public:
-        Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::vector<Insurer> i);
+        Game(Params prm);
         void run_iterations();
         std::string to_string();
 
@@ -24,7 +24,7 @@ class Game {
 
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
-        double d_init, a_init, i_init, g_init;
+        double d_init, a_init, i_init;
         int iter_num;
         std::vector<int> crossovers;
         std::vector<int> insurerTimesOfDeath;
@@ -61,7 +61,6 @@ class Game {
         std::string final_outcome = "X";
         int caught = 0;
         double attackerExpenditures = 0, attackerLoots = 0;
-        double governmentExpenditures = 0;
 
         void fight(Attacker &a, Defender &d);
         void conclude_game(std::string outcome);

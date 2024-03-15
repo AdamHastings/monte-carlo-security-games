@@ -16,36 +16,49 @@ static std::random_device rd;  // Will be used to obtain a seed for the random n
 static std::mt19937 gen(0); // TODO undo static seed?
 std::uniform_real_distribution<> uniform(0.0, 1.0);
 
-Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::vector<Insurer> i) {
+Game::Game(Params prm) {
     p = prm;
 
-    defenders = d;
-    attackers = a;
-    insurers = i;
+    i_init = 0; // TODO make this a static class variable?
 
-    d_init = 0;
-    for (auto di : defenders) {
-        d_init += di.get_assets();
+    std::cout << "num insurers:" << p.NUM_INSURERS << std::endl;
+    for (int j=0; j < p.NUM_INSURERS; j++) {
+        Insurer i = Insurer(j, p);
+        insurers.push_back(i);
+        i_init += i.get_assets();
     }
 
-    a_init = 0;
-    for (auto ai : attackers) {
-        a_init += ai.get_assets();
+    d_init = 0; // TODO make this a static class variable?
+    for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
+        Defender d = Defender(i, p, insurers);
+        defenders.push_back(d);
+        d_init += d.get_assets();
+        alive_defenders_indices.push_back(i);
+        d.defender_iter_sum = &defender_iter_sum;
+        // std::cout << d.insurers->size() << std::endl;
     }
 
-    i_init = 0;
-    for (auto ii : insurers) {
-        i_init += ii.get_assets();
+    // for (auto di : defenders) {
+
+    //     std::cout << " immediately after: : : insurers.size() = " << std::endl;
+    //     std::cout << di.insurers->size() << std::endl;
+    // }
+    for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
+        std::cout << " immediately after: : : insurers.size() = " << std::endl;
+        std::cout << defenders[i].insurers->size() << std::endl;
     }
 
-    for (uint i=0; i<attackers.size(); i++) {
+
+    a_init = 0; // TODO make this a static class variable?
+    std::cout << p.ATTACKERS << std::endl;
+    for (int i=0; i < (p.NUM_BLUE_PLAYERS * p.ATTACKERS); i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
+        std::cout << "making attacker " << i << std::endl;
+        Attacker a = Attacker(i, p);
+        attackers.push_back(a);
+        a_init += a.get_assets(); // TODO should this be a static class variable?
         alive_attackers_indices.push_back(i);
     }
-
-    for (uint i=0; i<defenders.size(); i++) {
-        alive_defenders_indices.push_back(i);
-    }
-
+    
     outside_epsilon_count_defenders = p.DELTA;
     outside_epsilon_count_attackers = p.DELTA;
 
@@ -55,18 +68,18 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::ve
 
 
     std::cout << " init : insurers.size() = " << insurers.size() << std::endl;
-    for (auto di : defenders) {
-        di.insurers = &insurers;
-        di.defender_iter_sum = &defender_iter_sum;
-        std::cout << " here : : insurers.size() = " << std::endl;
-        std::cout << di.insurers->size() << std::endl;
-    }
+    // for (auto di : defenders) {
+    //     di.insurers = &insurers;
+    //     di.defender_iter_sum = &defender_iter_sum;
+    //     std::cout << "d.id=" << di.id << " : : insurers.size() = " << std::endl;
+    //     std::cout << di.insurers->size() << std::endl;
+    // }
 
-    for (auto di : defenders) {
+    // for (auto di : defenders) {
 
-        std::cout << " immediately after: : : insurers.size() = " << std::endl;
-        std::cout << di.insurers->size() << std::endl;
-    }
+    //     std::cout << " immediately after: : : insurers.size() = " << std::endl;
+    //     std::cout << di.insurers->size() << std::endl;
+    // }
 
 
     for (auto ai : attackers) {
@@ -86,31 +99,11 @@ Game::Game(Params prm, std::vector<Defender> d, std::vector<Attacker> a, std::ve
         insurer_cumulative_assets.push_back(i_init);
     }
 
-    // TODO this is where the problem is....why does this segfault?
-    for (auto di : defenders) {
-        std::cout << "  pre verify : : insurers.size() = " << std::endl;
-        
-        std::cout << di.insurers->size() << std::endl;
-    }    
 
     // Let's make sure everything got set up correctly
     if (p.assertions_on) {
         verify_init();  
-    }
-
-    // TODO this is where the problem is....why does this segfault?
-    for (auto di : defenders) {
-        std::cout << "  post verify : : insurers.size() = " << std::endl;
-        
-        std::cout << di.insurers->size() << std::endl;
-    }    
-
-    // TODO this is where the problem is....why does this segfault?
-    for (auto di : defenders) {
-        std::cout << "  end of init : : insurers.size() = " << std::endl;
-        
-        std::cout << di.insurers->size() << std::endl;
-    }    
+    }   
 }
 
 std::string Game::to_string() {
@@ -128,7 +121,6 @@ std::string Game::to_string() {
     ret += std::to_string(int(round(attacksSucceeded))) + ",";
     ret += std::to_string(int(round(attackerLoots))) + ",";
     ret += std::to_string(int(round(attackerExpenditures))) + ",";
-    ret += std::to_string(int(round(governmentExpenditures))) + ",";
     ret += "\"[";
     for (auto i : crossovers) {
         ret += std::to_string(i) + ",";
@@ -225,7 +217,6 @@ void Game::verify_outcome() {
     assert(round(paidClaims) >= 0);
     assert(round(attackerLoots - paidClaims) >= 0);
     assert(attackerExpenditures >= 0);
-    assert(governmentExpenditures >= 0);
 
     if (final_outcome == "E") {
         assert(alive_attackers_indices.size() > 0);

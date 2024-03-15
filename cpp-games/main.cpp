@@ -26,39 +26,13 @@ std::vector<double> PAYOFF_range;
 
 void RunGame(Params p) {
     
-    // Insurer insurer = Insurer(p);
-    std::vector<Insurer> insurers;
-    for (int j=0; j < p.NUM_INSURERS; j++) {
-        Insurer i = Insurer(j, p);
-        insurers.push_back(i);
-    }
-    // Government government = Government(p);
 
-    std::vector<Defender> defenders;
-    for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
-        Defender d = Defender(i, p);
-        defenders.push_back(d);
-    }
-
-    std::vector<Attacker> attackers;
-    for (int i=0; i < (p.NUM_BLUE_PLAYERS * p.ATTACKERS); i++) {
-        Attacker a = Attacker(i, p);
-        attackers.push_back(a);
-    }
 
     std::cout << "constructing game" << std::endl;
-    Game g = Game(p, defenders, attackers, insurers);
-    std::cout << "game constructed" << std::endl;
-
-    // TODO this is where the problem is....why does this segfault?
-    for (auto di : defenders) {
-        std::cout << "  after construction: : insurers.size() = " << std::endl;
-        
-        std::cout << di.insurers->size() << std::endl;
-    }       
+    Game g = Game(p);
+    std::cout << "game constructed" << std::endl;    
 
     g.run_iterations();
-    std::cout << "game finished" << std::endl;
 
     // Write response to log file;
     ofstream log;

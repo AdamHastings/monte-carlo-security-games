@@ -69,7 +69,7 @@ class Defender : public Player {
         bool insured;
 
         double* defender_iter_sum;
-        std::vector<Insurer>* insurers = NULL;
+        std::vector<Insurer>* insurers;
         Insurer* insurer = NULL; 
 
         // This variable is "hidden" to the defender and only known to insurers
@@ -78,7 +78,7 @@ class Defender : public Player {
 
         
 
-        Defender(int id_in, Params &p);
+        Defender(int id_in, Params &p, std::vector<Insurer> &insurers);
         void gain(double gain) override;
         void lose(double loss) override;
 
