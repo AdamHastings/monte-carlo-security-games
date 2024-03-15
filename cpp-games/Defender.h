@@ -19,10 +19,11 @@ class Defender : public Player {
         double posture;
         double costToAttack;
         // std::map<int, double> claimsReceived;
-        bool insured;
-
+       
         std::vector<Insurer>* insurers;
+        bool insured;
         int ins_idx = -1;
+        PolicyType policy;
         
         // This variable is "hidden" to the defender and only known to insurers
         // We store it here so that each insurer doesn't need to recompute. 

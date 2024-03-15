@@ -37,6 +37,7 @@ std::vector<double> Defender::cumulative_assets;
 void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     insured = true;
     ins_idx = i.id;
+    policy = p;
     lose(p.premium);
     i.gain(p.premium);
 }
@@ -110,8 +111,8 @@ void Defender::choose_security_strategy() {
 
 void Defender::lose(double loss) {
     Player::lose(loss);
-    defender_iter_sum += loss;
-    current_sum_assets += loss;
+    defender_iter_sum -= loss;
+    current_sum_assets -= loss;
 }
 
 void Defender::gain(double gain) {

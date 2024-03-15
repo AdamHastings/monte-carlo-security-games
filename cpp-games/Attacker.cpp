@@ -6,6 +6,11 @@ double Attacker::attacker_iter_sum = 0;
 double Attacker::current_sum_assets = 0;
 std::vector<double> Attacker::cumulative_assets; 
 
+int Attacker::attacksAttempted = 0;
+int Attacker::attacksSucceeded = 0;
+int Attacker::attackerExpenditures = 0;
+int Attacker::attackerLoots = 0; 
+
 
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -21,8 +26,8 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
 
 void Attacker::lose(double loss) {
     Player::lose(loss);
-    attacker_iter_sum += loss;
-    current_sum_assets += loss;
+    attacker_iter_sum -= loss;
+    current_sum_assets -= loss;
 }
 
 void Attacker::gain(double gain) {

@@ -6,6 +6,8 @@ double Insurer::current_sum_assets = 0;
 double Insurer::insurer_iter_sum = 0;
 std::vector<double> Insurer::cumulative_assets; 
 
+double Insurer::paid_claims = 0;
+
 // Should be set each iteration by the game. 
 int Insurer::num_defenders = 0;
 int Insurer::num_attackers = 0;
@@ -25,8 +27,8 @@ Insurer::Insurer(int id_in, Params &p) : Player(p) {
 
 void Insurer::lose(double loss) {
     Player::lose(loss);
-    insurer_iter_sum += loss;
-    current_sum_assets += loss;
+    insurer_iter_sum -= loss;
+    current_sum_assets -= loss;
 }
 
 void Insurer::gain(double gain) {

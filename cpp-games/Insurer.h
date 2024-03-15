@@ -13,6 +13,8 @@ class Insurer : public Player {
         static std::vector<double> cumulative_assets; // running total of all insurers' assets
         static double current_sum_assets; // sum total of all class instances
 
+        static double paid_claims;
+
         Insurer(int id_in, Params &p);
         void gain(double gain) override;
         void lose(double loss) override;

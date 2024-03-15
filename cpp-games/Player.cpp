@@ -14,10 +14,13 @@ Player::Player(Params &p_in) {
 }
 
 void Player::gain(double gain) {
+    assert(gain >= 0);
     assets += gain;
 }
 
 void Player::lose(double loss) {
+    assert(loss >= 0);
+    assert(loss <= assets);
     assets -= loss;
     if (assets == 0){
         alive = false;

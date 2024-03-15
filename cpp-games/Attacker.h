@@ -12,7 +12,13 @@ class Attacker : public Player {
         static std::vector<double> cumulative_assets; // running total of all attackers' assets
         static double current_sum_assets; // sum total of all class instances
 
-        std::map<int, double> victims;
+        static int attacksAttempted;
+        static int attacksSucceeded;
+        static int attackerExpenditures;
+        static int attackerLoots;
+
+
+        // std::map<int, double> victims;
 
 
         Attacker(int id_in,  Params &p);

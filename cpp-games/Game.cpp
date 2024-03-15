@@ -68,10 +68,10 @@ std::string Game::to_string() {
     ret += std::to_string(int(round(Attacker::current_sum_assets))) + ",";
     ret += std::to_string(int(round(Insurer::i_init))) + ",";
     ret += std::to_string(int(round(Insurer::current_sum_assets))) + ",";
-    ret += std::to_string(int(round(attacksAttempted))) + ",";
-    ret += std::to_string(int(round(attacksSucceeded))) + ",";
-    ret += std::to_string(int(round(attackerLoots))) + ",";
-    ret += std::to_string(int(round(attackerExpenditures))) + ",";
+    ret += std::to_string(int(round(Attacker::attacksAttempted))) + ",";
+    ret += std::to_string(int(round(Attacker::attacksSucceeded))) + ",";
+    ret += std::to_string(int(round(Attacker::attackerLoots))) + ",";
+    ret += std::to_string(int(round(Attacker::attackerExpenditures))) + ",";
     ret += "\"[";
     for (auto i : crossovers) {
         ret += std::to_string(i) + ",";
@@ -82,7 +82,7 @@ std::string Game::to_string() {
         ret += std::to_string(i) + ",";
     }
     ret += "]\",";
-    ret += std::to_string(int(round(paidClaims))) + ",";
+    ret += std::to_string(int(round(Insurer::paid_claims))) + ",";
     ret += std::to_string(iter_num) + ",";
     ret += final_outcome;
 
@@ -164,10 +164,10 @@ void Game::verify_outcome() {
 
 
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
-    assert(round(Insurer::i_init - paidClaims) >= 0);
-    assert(round(paidClaims) >= 0);
-    assert(round(attackerLoots - paidClaims) >= 0);
-    assert(attackerExpenditures >= 0);
+    assert(round(Insurer::i_init - Insurer::paid_claims) >= 0);
+    assert(round(Insurer::paid_claims) >= 0);
+    assert(round(Attacker::attackerLoots - Insurer::paid_claims) >= 0);
+    assert(Attacker::attackerExpenditures >= 0);
 
     if (final_outcome == "E") {
         assert(alive_attackers_indices.size() > 0);
@@ -181,7 +181,7 @@ void Game::verify_outcome() {
 
     // Master checksum
     double init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
-    double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + attackerExpenditures; 
+    double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures; 
 
     // TODO add back in after fixing insurer
     if (round(init_ - end_) != 0) {
@@ -332,14 +332,14 @@ void Game::fight(Attacker &a, Defender &d) {
 
         
         // bookkeeping
-        attacksAttempted += 1;
+        Attacker::attacksAttempted += 1;
         roundAttacks += 1;
         a.lose(d.costToAttack);
-        attackerExpenditures += d.costToAttack;
+        Attacker::attackerExpenditures += d.costToAttack;
 
 
         if (RandUniformDist.draw() > d.posture) {
-            attacksSucceeded += 1;
+            Attacker::attacksSucceeded += 1;
 
             double loot = d.assets * p.PAYOFF_distribution->draw();
             if (d.assets < p.EPSILON) {
@@ -347,7 +347,7 @@ void Game::fight(Attacker &a, Defender &d) {
             }
 
             a.gain(loot);
-            attackerLoots += loot;
+            Attacker::attackerLoots += loot;
 
             // a_steals_from_d(a, d, effective_loot);
             // if (insurer.assets > 0) {
@@ -397,11 +397,19 @@ void Game::perform_market_analysis(){
     Insurer::num_defenders = defenders.size();
 
     for (auto d : defenders) {
-        d.costToAttackPercentile = findPercentile(Insurer::attacker_assets, d.costToAttack);
+        d.costToAttackPercentile = findPercentile(Insurer::attacker_assets, d.costToAttack); // TODO this is returning crazy values and likely the source of the crashes.
     }
 
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
     Defender::estimated_probability_of_attack = std::min(1.0, (roundAttacks * 1.0)/(defenders.size() * 1.0));
+}
+
+void Game::init_round() {
+    // TODO maybe put all of this into a "reset_round()" function
+    Defender::defender_iter_sum = 0;
+    Attacker::attacker_iter_sum = 0;
+    Insurer::insurer_iter_sum = 0;
+    roundAttacks = 0;
 }
 
 void Game::run_iterations() {
@@ -410,17 +418,14 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
-        // TODO maybe put all of this into a "reset_round()" function
-        Defender::defender_iter_sum = 0;
-        Attacker::attacker_iter_sum = 0;
-        Insurer::insurer_iter_sum = 0;
-        roundAttacks = 0;
+        init_round();
 
         std::vector<int> new_alive_defenders_indices;
         std::vector<int> new_alive_attackers_indices;
 
 
         // TODO just do simple shuffle?
+        // or put into its own function?
         uint shorter_length, offset;
         bool more_defenders_than_attackers = (alive_defenders_indices.size() > alive_attackers_indices.size());
         if (more_defenders_than_attackers) {
