@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 #include "Player.h"
+#include "Insurer.h"
 #include "params.h"
 #include "Distributions.h"
 
