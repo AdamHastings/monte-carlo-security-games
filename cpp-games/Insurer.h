@@ -10,7 +10,7 @@
 class Insurer : public Player {
     public:
         uint id;
-        static uint i_init;
+        static double i_init;
         static double insurer_iter_sum;
         static std::vector<double> cumulative_assets; // running total of all insurers' assets
         static double current_sum_assets; // sum total of all class instances

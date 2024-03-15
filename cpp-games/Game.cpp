@@ -40,10 +40,6 @@ Game::Game(Params prm) {
     outside_epsilon_count_defenders = p.DELTA;
     outside_epsilon_count_attackers = p.DELTA;
 
-    Defender::current_sum_assets = Defender::d_init;
-    Attacker::current_sum_assets = Attacker::a_init;
-    Insurer::current_sum_assets = Insurer::i_init;
-    
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::d_init);
         Attacker::cumulative_assets.push_back(Attacker::Attacker::a_init);
@@ -130,6 +126,8 @@ void Game::verify_init() {
         assert(ins.id == i);
         i++;
     }
+
+    verify_outcome();
 }
 
 void Game::verify_outcome() {
@@ -143,6 +141,8 @@ void Game::verify_outcome() {
         checksum_attacker_sum_assets += a.assets;
     }
 
+    std::cout << "Attacker::current_sum_assets: " << Attacker::current_sum_assets << std::endl;
+    std::cout << "checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
     assert(round(Attacker::current_sum_assets - checksum_attacker_sum_assets) == 0);
 
     double checksum_defender_sum_assets = 0;
@@ -225,13 +225,12 @@ void Game::fight(Attacker &a, Defender &d) {
     if (expected_loot > d.costToAttack && d.costToAttack <= a.assets) {
         // Attacking is financially worth it
 
-        
+        std::cout << " -- attacker " << a.id << " committing to fight " << std::endl;
         // bookkeeping
         Attacker::attacksAttempted += 1;
         roundAttacks += 1;
         a.lose(d.costToAttack);
         Attacker::attackerExpenditures += d.costToAttack;
-
 
         if (RandUniformDist.draw() > d.posture) {
             Attacker::attacksSucceeded += 1;
@@ -241,7 +240,9 @@ void Game::fight(Attacker &a, Defender &d) {
             if (d.assets < p.EPSILON) {
                 loot = d.assets;
             }
+            
 
+            std::cout << "   -- attacker " << a.id << " gaining " << loot << std::endl;
             a.gain(loot);
 
             if (d.insured) {
@@ -254,6 +255,7 @@ void Game::fight(Attacker &a, Defender &d) {
 }
 
 void Game::init_round() {
+
     Defender::defender_iter_sum = 0;
     Attacker::attacker_iter_sum = 0;
     Insurer::insurer_iter_sum = 0;
@@ -272,6 +274,8 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
+        std::cout << "------ Round " << iter_num << "------" << std::endl;
+        verify_outcome(); // TODO remove later...for testing 
         init_round();
 
         std::vector<int> new_alive_defenders_indices;
@@ -332,6 +336,8 @@ void Game::run_iterations() {
             d.ins_idx = -1;
             d.insured = false; 
         }
+
+        verify_outcome(); // TODO remove later...for testing 
 
         prevRoundAttacks = roundAttacks;
 

@@ -18,16 +18,8 @@ using namespace std;
 
 
 
-std::vector<double> ATTACKERS_range;
-std::vector<double> INEQUALITY_range;
-std::vector<double> EFFICIENCY_range;
-std::vector<double> PAYOFF_range;
-
-
 void RunGame(Params p) {
     
-
-
     std::cout << "constructing game" << std::endl;
     Game g = Game(p);
     std::cout << "game constructed" << std::endl;    
@@ -132,7 +124,7 @@ std::vector<Params> load_cfg(std::string basename) {
     for (int i=0; i<jsonData["NUM_GAMES"].asInt(); i++) {
         Params p;
     
-        p.ATTACKERS               = Distribution::createDistribution(jsonData["ATTACKERS"])->draw();
+        p.ATTACKERS               = Distribution::createDistribution(jsonData["ATTACKERS"])->draw(); // TODO this isn't working like I think it should...need to double check it
         p.INEQUALITY              = Distribution::createDistribution(jsonData["INEQUALITY"])->draw();
         
         p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);

@@ -9,19 +9,17 @@ class Defender : public Player {
     public:
         static double estimated_probability_of_attack;
 
-        static uint d_init;
+        static double d_init;
         static double defender_iter_sum;
         static std::vector<double> cumulative_assets; // running total of all defenders' assets
         static double current_sum_assets; // sum total of all class instances
 
-
         uint id;
         double posture;
         double costToAttack;
-        // std::map<int, double> claimsReceived;
        
         std::vector<Insurer>* insurers;
-        bool insured;
+        bool insured = false;
         int ins_idx = -1;
         PolicyType policy;
         
@@ -35,7 +33,6 @@ class Defender : public Player {
 
         void choose_security_strategy();
         void submit_claim(double loss);
-
 
 
     private:

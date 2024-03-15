@@ -21,11 +21,13 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     costToAttack = assets * posture;
 
     d_init += assets;
+    current_sum_assets += assets;
+
 }
 
 double Defender::estimated_probability_of_attack = 0;
 
-uint Defender::d_init = 0; 
+double Defender::d_init = 0; 
 double Defender::defender_iter_sum = 0;
 double Defender::current_sum_assets = 0;
 
@@ -80,11 +82,8 @@ void Defender::choose_security_strategy() {
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
 
     // 1. Get insurance policy from insurer
-    std::cout << "costToAttackPercentile: " << costToAttackPercentile << std::endl; // TODO why is this nan?
     PolicyType policy = i.provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
-    std::cout << policy.premium << " " << policy.retention << " " << p_L_hat << std::endl;
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
-    std::cout << "expected_loss_with_insurance: " << expected_loss_with_insurance << std::endl;
     assert(expected_loss_with_insurance >= 0);
 
     // 2. Find optimum security investment

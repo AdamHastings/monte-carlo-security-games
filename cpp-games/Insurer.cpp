@@ -2,7 +2,7 @@
 #include "Insurer.h"
 #include "Defender.h"
 
-uint Insurer::i_init = 0; // Initialization outside the class definition
+double Insurer::i_init = 0; // Initialization outside the class definition
 double Insurer::current_sum_assets = 0;
 double Insurer::insurer_iter_sum = 0;
 std::vector<double> Insurer::cumulative_assets; 
@@ -23,6 +23,7 @@ Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::v
     }
 
     i_init += assets; 
+    current_sum_assets += assets;
 }
 
 void Insurer::lose(double loss) {
@@ -66,8 +67,6 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     double p_A = probability_of_getting_paried_with_attacker * probability_random_attacker_has_enough_to_attack;
     double p_L = p_A * (1 - estimated_posture); 
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
-
-    std::cout << probability_of_getting_paried_with_attacker << " " << probability_random_attacker_has_enough_to_attack << " " << p_A << " " << p_L << " " << mean_PAYOFF << std::endl;
     
     policy.premium = (p_L * mean_PAYOFF * assets) / (r * p_L + OVerhead);
     policy.retention = r * policy.premium;

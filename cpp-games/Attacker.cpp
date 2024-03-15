@@ -1,16 +1,15 @@
 #include "Attacker.h"
 
 
-uint Attacker::a_init = 0; 
+double Attacker::a_init = 0; 
 double Attacker::attacker_iter_sum = 0;
 double Attacker::current_sum_assets = 0;
 std::vector<double> Attacker::cumulative_assets; 
 
 int Attacker::attacksAttempted = 0;
 int Attacker::attacksSucceeded = 0;
-int Attacker::attackerExpenditures = 0;
-int Attacker::attackerLoots = 0; 
-
+double Attacker::attackerExpenditures = 0;
+double Attacker::attackerLoots = 0; 
 
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -20,17 +19,20 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
         assets = 0;
     }
 
-    a_init += assets; // TODO should this be a static class variable?
+    a_init += assets; 
+    current_sum_assets += assets;
+    std::cout << " *** current_sum_assets=" << current_sum_assets << std::endl;
 }
 
-
 void Attacker::lose(double loss) {
+    std::cout << " =============Attacker losing " << loss << std::endl;
     Player::lose(loss);
     attacker_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
 void Attacker::gain(double gain) {
+    std::cout << " =============Attacker gaining " << gain << std::endl;
     Player::gain(gain);
     attacker_iter_sum += gain;
     current_sum_assets += gain;
