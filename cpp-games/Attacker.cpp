@@ -34,4 +34,5 @@ void Attacker::gain(double gain) {
     Player::gain(gain);
     attacker_iter_sum += gain;
     current_sum_assets += gain;
+    attackerLoots += gain; // assumes that attackers ONLY gain by looting
 }

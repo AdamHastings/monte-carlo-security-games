@@ -33,7 +33,6 @@ std::vector<double> Defender::cumulative_assets;
 
 
 
-// TODO this is why the checksums are failing...transactions not known to Game class
 void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     insured = true;
     ins_idx = i.id;
@@ -42,13 +41,19 @@ void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     i.gain(p.premium);
 }
 
-// TODO NEEDS TO INCLUDE RETENTION!!!!!!!
 void Defender::submit_claim(double loss) {
+    
     assert(insured); // you should only call this function if you have an active insurance policy
     assert(ins_idx >= 0); 
-    double amount_recovered = insurers->at(ins_idx).issue_payment(loss);
-    assert(loss >= amount_recovered);
-    lose(loss - amount_recovered);
+
+    double claim_after_retention = (loss - policy.retention);
+    if (claim_after_retention > 0) {
+        double amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
+        assert(loss >= amount_recovered);
+        assert(claim_after_retention >= amount_recovered);
+        assert(amount_recovered > 0);
+        lose(claim_after_retention - amount_recovered);
+    }
 }
 
 // TODO this is why the checksums are failing...transactions not known to Game class

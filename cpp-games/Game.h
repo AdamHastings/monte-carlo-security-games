@@ -40,8 +40,6 @@ class Game {
         std::vector<int> alive_attackers_indices; //(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
         std::vector<int> alive_defenders_indices; //(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later. Try just using a list instead of having to copy to a list each time..?
         
-
-        // double paidClaims = 0;
         int roundAttacks = 0;
         int prevRoundAttacks = 0;
         int consecutiveNoAttacks=0;
@@ -54,25 +52,6 @@ class Game {
 
         void verify_init();
         void verify_outcome();
-
-        // void a_steals_from_d(Attacker &a, Defender &d, double loot);
-        // void d_gain(Defender &d, double gain);
-        // void d_lose(Defender &d, double loss);
-        // void a_gain(Attacker &a, double gain);
-        // void a_lose(Attacker &a, double loss);
-        // void d_recoup(Attacker &a, Defender &d, double recoup_amount);
-        // void i_lose(Insurer &i, double loss);
-        // void insurer_covers_d_for_losses_from_a(Attacker &a, Defender &d, double claim);
-        // void insurer_recoup(double recoup);
-        // void government_gain(double gain);
-        // void government_lose(double loss);
-        // void a_distributes_loot(Attacker &a);
-
-        // void requeset_a_quote(Defender &d);
-
-        // double find_p_attacker_has_enough_to_attack();
-
-        void perform_market_analysis();
 
         void init_round();
 
