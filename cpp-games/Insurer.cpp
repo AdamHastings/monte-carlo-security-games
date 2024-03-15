@@ -42,10 +42,10 @@ double Insurer::issue_payment(double claim) {
     
     double amount_covered = 0;
     if (amount_covered > assets) {
-        // insurer cannot cover full amount
+        // insurer cannot cover full amount and goes bust
         amount_covered = assets;
         // insurerTimesOfDeath.push_back(iter_num); // TODO put back in later
-
+        alive = false;
     } else {
         amount_covered = claim;
     }

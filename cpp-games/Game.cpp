@@ -247,6 +247,7 @@ void Game::fight(Attacker &a, Defender &d) {
             }
             
             a.gain(loot);
+            d.lose(loot);
 
 
             if (d.insured) {
@@ -254,12 +255,7 @@ void Game::fight(Attacker &a, Defender &d) {
                 std::cout << "  -- submitting claim  " << std::endl;
                 d.submit_claim(loot);
                 verify_outcome();
-            } else {
-                // std::cout << "not insured!" << std::endl;
-                std::cout << "  -- not insured! " << std::endl;
-                verify_outcome();
-                d.lose(loot);
-                verify_outcome();
+                std::cout << "OK\n";
             }
         }
     } 

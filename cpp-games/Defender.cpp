@@ -63,13 +63,14 @@ void Defender::submit_claim(double loss) {
     assert(ins_idx >= 0); 
 
     double claim_after_retention = std::max(0.0, (loss - policy.retention));
-    assert(claim_after_retention > 0);
+    // std::cout << loss << ", retention=" << policy.retention << ", claim_after_retention=" << claim_after_retention << std::endl;
+    assert(claim_after_retention >= 0);
     if (claim_after_retention > 0) {
         double amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
         assert(loss >= amount_recovered);
         assert(claim_after_retention >= amount_recovered);
         assert(amount_recovered > 0);
-        lose(claim_after_retention - amount_recovered);
+        gain(amount_recovered);
     }
 }
 
