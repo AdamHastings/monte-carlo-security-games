@@ -342,6 +342,10 @@ void Game::fight(Attacker &a, Defender &d) {
             attacksSucceeded += 1;
 
             double loot = d.assets * p.PAYOFF_distribution->draw();
+            if (d.assets < p.EPSILON) {
+                loot = d.assets;
+            }
+
             a.gain(loot);
             attackerLoots += loot;
 
