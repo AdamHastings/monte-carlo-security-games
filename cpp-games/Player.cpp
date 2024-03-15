@@ -105,13 +105,15 @@ double Defender::estimated_probability_of_attack = 0;
 // TODO this is why the checksums are failing...transactions not known to Game class
 void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     insured = true;
+    ins_idx = i.id;
     lose(p.premium);
     i.gain(p.premium);
 }
 
 void Defender::submit_claim(double loss) {
     assert(insured); // you should only call this function if you have an active insurance policy
-    double amount_recovered = insurer->issue_payment(loss);
+    assert(ins_idx >= 0); 
+    double amount_recovered = insurers->at(ins_idx).issue_payment(loss);
     assert(loss >= amount_recovered);
     lose(loss - amount_recovered);
 }
@@ -130,16 +132,10 @@ void Defender::make_security_investment(double x) {
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy() {
 
+    assert(insurers->size() >= 0);
 
-    std::cout << "insurers size: " << std::endl;
-    std::cout << insurers->size() << std::endl;
-
-    std::cout << "getting insurer i..." << std::endl;
     Insurer i = insurers->at(0); // TODO iterate through all insurers!!!
     
-
-    std::cout << "done!" << std::endl;
-
     double p_A_hat = estimated_probability_of_attack;
     double p_L_hat = p_A_hat * (1 - posture);
     double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();

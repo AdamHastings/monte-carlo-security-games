@@ -21,7 +21,6 @@ Game::Game(Params prm) {
 
     i_init = 0; // TODO make this a static class variable?
 
-    std::cout << "num insurers:" << p.NUM_INSURERS << std::endl;
     for (int j=0; j < p.NUM_INSURERS; j++) {
         Insurer i = Insurer(j, p);
         insurers.push_back(i);
@@ -38,21 +37,11 @@ Game::Game(Params prm) {
         // std::cout << d.insurers->size() << std::endl;
     }
 
-    // for (auto di : defenders) {
-
-    //     std::cout << " immediately after: : : insurers.size() = " << std::endl;
-    //     std::cout << di.insurers->size() << std::endl;
-    // }
-    for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
-        std::cout << " immediately after: : : insurers.size() = " << std::endl;
-        std::cout << defenders[i].insurers->size() << std::endl;
-    }
 
 
     a_init = 0; // TODO make this a static class variable?
     std::cout << p.ATTACKERS << std::endl;
     for (int i=0; i < (p.NUM_BLUE_PLAYERS * p.ATTACKERS); i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
-        std::cout << "making attacker " << i << std::endl;
         Attacker a = Attacker(i, p);
         attackers.push_back(a);
         a_init += a.get_assets(); // TODO should this be a static class variable?
@@ -453,11 +442,6 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
-
-        for (auto di : defenders) {
-            std::cout << "    pre iter : insurers.size() = " << di.insurers->size() << std::endl;
-        }
-
         defender_iter_sum = 0;
         attacker_iter_sum = 0;
         insurer_iter_sum = 0;
@@ -525,7 +509,7 @@ void Game::run_iterations() {
 
         // Insurance policy expires
         for (auto d : defenders) {
-            d.insurer = NULL;
+            d.ins_idx = -1;
             d.insured = false; 
         }
 
