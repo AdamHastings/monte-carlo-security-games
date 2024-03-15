@@ -21,18 +21,15 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
 
     a_init += assets; 
     current_sum_assets += assets;
-    std::cout << " *** current_sum_assets=" << current_sum_assets << std::endl;
 }
 
 void Attacker::lose(double loss) {
-    std::cout << " =============Attacker losing " << loss << std::endl;
     Player::lose(loss);
     attacker_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
 void Attacker::gain(double gain) {
-    std::cout << " =============Attacker gaining " << gain << std::endl;
     Player::gain(gain);
     attacker_iter_sum += gain;
     current_sum_assets += gain;

@@ -34,13 +34,22 @@ double Defender::current_sum_assets = 0;
 std::vector<double> Defender::cumulative_assets; 
 
 
-
+// TODO what if retention > assets????
 void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
+    assert(assets > p.premium);
+    
     insured = true;
     ins_idx = i.id;
     policy = p;
-    lose(p.premium);
-    i.gain(p.premium);
+    lose(policy.premium);
+    i.gain(policy.premium);
+
+    assert(assets > p.retention); // TODO not sure about this...based on odds, some defenders may YOLO 
+    // TODO maybe we should only sell policies if Defenders are able to pay the retention
+    // Or maybe if retention > assets, there's no point in buying insurance so they automatically buy security? TODO TODO TODO
+
+    std::cout << "     Defender " << id << " now has " << assets << std::endl;
+
 }
 
 void Defender::submit_claim(double loss) {
@@ -84,6 +93,8 @@ void Defender::choose_security_strategy() {
     // 1. Get insurance policy from insurer
     PolicyType policy = i.provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
+    assert(policy.premium > 0);
+    assert(policy.retention > 0);
     assert(expected_loss_with_insurance >= 0);
 
     // 2. Find optimum security investment
@@ -100,12 +111,17 @@ void Defender::choose_security_strategy() {
     assert(expected_loss_with_perfect_security >= 0);
 
     // Choose the optimal strategy.
+    // TODO premiums are a bit high!! look into this. maybe set the #attackers to be such that intial premiums match existing payments
     double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
     if (minimum == expected_loss_with_insurance) {
+        // std::cout << "     Defender " << id << " with assets=" << assets << " is purchasing insurance with premium=" << policy.premium << " and retention=" << policy.retention << std::endl;
         purchase_insurance_policy(i, policy);
+        // std::cout << "     Defender " << id << " now has " << assets << std::endl;
     } else if (minimum == expected_loss_with_optimal_investment) {
+        // std::cout << "     Defender " << id << " is investing in security" << std::endl;
         make_security_investment(optimal_investment);
     } else if (minimum == expected_loss_with_perfect_security) {
+        // std::cout << "     Defender " << id << " is achieving perfect security!" << std::endl;
         make_security_investment(perfect_security_investment);
     } else {
         assert(false); // should never reach this
@@ -114,6 +130,8 @@ void Defender::choose_security_strategy() {
 
 
 void Defender::lose(double loss) {
+    // std::cout << "       Defender " << id << " losing " << loss << std::endl;
+
     Player::lose(loss);
     defender_iter_sum -= loss;
     current_sum_assets -= loss;

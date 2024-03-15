@@ -97,8 +97,8 @@ std::string Game::to_string() {
 void Game::verify_init() {
 
     // TODO store each D's init conditions? To compare against later...?
-    uint i = 0;
-    for (auto d : defenders) {
+    for (uint i=0; i<defenders.size(); i++) {
+        Defender d = defenders[i];
         assert(d.id >= 0);
         assert(d.id < defenders.size());
         assert(d.assets >= 0);
@@ -106,62 +106,60 @@ void Game::verify_init() {
         assert(d.posture >= 0);
         assert(d.posture <= 1);
         assert(d.id == i);
-        i++;
     }
 
-    i = 0;
-    for (auto a : attackers) {
+    for (uint i=0; i<attackers.size(); i++) {
+        Attacker a = attackers[i];
         assert(a.id >= 0);
         assert(a.id < attackers.size());
         assert(a.assets >= 0);
         assert(a.id == i);
-        i++;
     }
 
-    i = 0;
-    for (auto ins : insurers) {
+    for (uint i=0; i<insurers.size(); i++) {
+        Insurer ins = insurers[i];
         assert(ins.id >= 0);
         assert(ins.id < insurers.size());
         assert(ins.assets >= 0);
         assert(ins.id == i);
-        i++;
     }
 
     verify_outcome();
 }
 
 void Game::verify_outcome() {
+
+    // std::cout << " ** Defender[0] has " << defenders[0].assets << std::endl;
+
     assert(round(Defender::current_sum_assets) >= 0);
     assert(round(Attacker::current_sum_assets) >= 0);
     assert(round(Insurer::current_sum_assets)  >= 0); 
 
     double checksum_attacker_sum_assets = 0;
-    for (auto a : attackers) {
+    for (uint i=0; i<attackers.size(); i++) {
+        Attacker a = attackers[i]; // TODO does this do a copy or is this a pointer?
         assert(round(a.assets) >= 0);
         checksum_attacker_sum_assets += a.assets;
     }
-
-    std::cout << "Attacker::current_sum_assets: " << Attacker::current_sum_assets << std::endl;
-    std::cout << "checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
     assert(round(Attacker::current_sum_assets - checksum_attacker_sum_assets) == 0);
 
     double checksum_defender_sum_assets = 0;
-    for (auto d : defenders) {
+    for (uint i=0; i<defenders.size(); i++) {
+        Defender d = defenders[i];
         assert(round(d.assets) >= 0);
         checksum_defender_sum_assets += d.assets;
+        // std::cout << " -- Defender[" << d.id << "] has " << d.assets << std::endl;
     }
-
+    // std::cout << "Defender::current_sum_assets: " << Defender::current_sum_assets << ", checksum_defender_sum_assets: " << checksum_defender_sum_assets << std::endl;
     assert(round(Defender::current_sum_assets - checksum_defender_sum_assets) == 0);
 
     double checksum_insurer_sum_assets = 0;
-    for (auto i : insurers) {
-        assert(round(i.assets) >= 0);
-        checksum_insurer_sum_assets += i.assets;
+    for (uint i=0; i<insurers.size(); i++) {
+        Insurer ins = insurers[i];
+        assert(round(ins.assets) >= 0);
+        checksum_insurer_sum_assets += ins.assets;
     }
-
-
-    assert(round(Insurer::current_sum_assets - checksum_insurer_sum_assets) >= 0);
-
+    assert(round(Insurer::current_sum_assets - checksum_insurer_sum_assets) == 0);
 
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
     assert(round(Insurer::i_init - Insurer::paid_claims) >= 0);
@@ -217,6 +215,8 @@ void Game::fight(Attacker &a, Defender &d) {
     if (d.assets < p.EPSILON) {
         expected_loot = d.assets;
     }
+    
+    verify_outcome();
 
     // TODO should attackers YOLO their savings if their assets get very low?
     // So that we don't end the game with a bunch of attackers with $0.01
@@ -225,7 +225,6 @@ void Game::fight(Attacker &a, Defender &d) {
     if (expected_loot > d.costToAttack && d.costToAttack <= a.assets) {
         // Attacking is financially worth it
 
-        std::cout << " -- attacker " << a.id << " committing to fight " << std::endl;
         // bookkeeping
         Attacker::attacksAttempted += 1;
         roundAttacks += 1;
@@ -241,14 +240,18 @@ void Game::fight(Attacker &a, Defender &d) {
                 loot = d.assets;
             }
             
-
-            std::cout << "   -- attacker " << a.id << " gaining " << loot << std::endl;
             a.gain(loot);
 
+
             if (d.insured) {
+                // std::cout << "submitting claim" << std::endl;
                 d.submit_claim(loot);
+                verify_outcome();
             } else {
+                // std::cout << "not insured!" << std::endl;
+                verify_outcome();
                 d.lose(loot);
+                verify_outcome();
             }
         }
     } 
@@ -263,9 +266,19 @@ void Game::init_round() {
 
     Insurer::perform_market_analysis(prevRoundAttacks);
 
-    for (auto d : defenders) {
-        d.choose_security_strategy();
+    // std::cout << "before strategy: " << std::endl;
+    verify_outcome();
+    // std::cout << " OK\n";
+    for (uint i=0; i<defenders.size(); i++) {
+        assert(i == defenders[i].id);
+        defenders[i].choose_security_strategy();
+        // std::cout << "     Defender " << i<< " now has " << defenders[i].assets << std::endl;
+        // std::cout << " == Defender[0] has " << defenders[0].assets << std::endl;
+        verify_outcome();
     }
+    // std::cout << "after strategy: " << std::endl;
+    verify_outcome();
+    // std::cout << " OK\n";
 }
 
 void Game::run_iterations() {
@@ -332,7 +345,8 @@ void Game::run_iterations() {
         }
 
         // Insurance policy expires
-        for (auto d : defenders) {
+        for (uint i=0; i<defenders.size(); i++) {
+            Defender d = defenders[i];
             d.ins_idx = -1;
             d.insured = false; 
         }

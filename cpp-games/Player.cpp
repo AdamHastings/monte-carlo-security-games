@@ -19,6 +19,7 @@ void Player::gain(double gain) {
 }
 
 void Player::lose(double loss) {
+    // std::cout << "            in Player base clas lose function" << std::endl;
     assert(loss >= 0);
     assert(loss <= assets);
     assets -= loss;
