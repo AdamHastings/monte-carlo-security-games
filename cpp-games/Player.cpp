@@ -29,6 +29,9 @@ double Player::get_assets() {
 
 
 uint Insurer::i_init = 0; // Initialization outside the class definition
+double Insurer::current_sum_assets = 0;
+double Insurer::insurer_iter_sum = 0;
+std::vector<double> Insurer::cumulative_assets; 
 
 
 Insurer::Insurer(int id_in, Params &p) : Player(p) {
@@ -65,7 +68,6 @@ int Insurer::num_defenders = 0;
 int Insurer::num_attackers = 0;
 std::vector<double> Insurer::attacker_assets;
 
-double Insurer::insurer_iter_sum = 0;
 
 
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
@@ -116,8 +118,10 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
 double Defender::estimated_probability_of_attack = 0;
 
 uint Defender::d_init = 0; 
-
 double Defender::defender_iter_sum = 0;
+double Defender::current_sum_assets = 0;
+
+std::vector<double> Defender::cumulative_assets; 
 
 
 
@@ -129,6 +133,7 @@ void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
     i.gain(p.premium);
 }
 
+// TODO NEEDS TO INCLUDE RETENTION!!!!!!!
 void Defender::submit_claim(double loss) {
     assert(insured); // you should only call this function if you have an active insurance policy
     assert(ins_idx >= 0); 
@@ -196,6 +201,9 @@ void Defender::choose_security_strategy() {
 
 uint Attacker::a_init = 0; 
 double Attacker::attacker_iter_sum = 0;
+double Attacker::current_sum_assets = 0;
+std::vector<double> Attacker::cumulative_assets; 
+
 
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -211,31 +219,37 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
 void Insurer::lose(double loss) {
     Player::lose(loss);
     insurer_iter_sum += loss;
+    current_sum_assets += loss;
 }
 
 void Insurer::gain(double gain) {
     Player::gain(gain);
     insurer_iter_sum += gain;
+    current_sum_assets += gain;
 }
 
 
 void Defender::lose(double loss) {
     Player::lose(loss);
     defender_iter_sum += loss;
+    current_sum_assets += loss;
 }
 
 void Defender::gain(double gain) {
     Player::gain(gain);
     defender_iter_sum += gain;
+    current_sum_assets += gain;
 }
 
 
 void Attacker::lose(double loss) {
     Player::lose(loss);
     attacker_iter_sum += loss;
+    current_sum_assets += loss;
 }
 
 void Attacker::gain(double gain) {
     Player::gain(gain);
     attacker_iter_sum += gain;
+    current_sum_assets += gain;
 }

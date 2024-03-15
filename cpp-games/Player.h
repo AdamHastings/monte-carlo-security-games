@@ -34,6 +34,8 @@ class Attacker : public Player {
         
         static uint a_init;
         static double attacker_iter_sum; // how much the attackers have cumulatively gained or lost this round
+        static std::vector<double> cumulative_assets; // running total of all attackers' assets
+        static double current_sum_assets; // sum total of all class instances
 
         std::map<int, double> victims;
 
@@ -48,7 +50,8 @@ class Insurer : public Player {
         uint id;
         static uint i_init;
         static double insurer_iter_sum;
-
+        static std::vector<double> cumulative_assets; // running total of all insurers' assets
+        static double current_sum_assets; // sum total of all class instances
 
         Insurer(int id_in, Params &p);
         void gain(double gain) override;
@@ -68,7 +71,8 @@ class Defender : public Player {
 
         static uint d_init;
         static double defender_iter_sum;
-
+        static std::vector<double> cumulative_assets; // running total of all defenders' assets
+        static double current_sum_assets; // sum total of all class instances
 
 
         uint id;
@@ -78,7 +82,6 @@ class Defender : public Player {
         bool insured;
 
         std::vector<Insurer>* insurers;
-        // Insurer* insurer = NULL; 
         int ins_idx = -1;
         
         // This variable is "hidden" to the defender and only known to insurers

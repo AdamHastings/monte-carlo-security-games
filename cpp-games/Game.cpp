@@ -40,14 +40,14 @@ Game::Game(Params prm) {
     outside_epsilon_count_defenders = p.DELTA;
     outside_epsilon_count_attackers = p.DELTA;
 
-    current_defender_sum_assets = Defender::d_init;
-    current_attacker_sum_assets = Attacker::a_init;
-    current_insurer_sum_assets = Insurer::i_init;
+    Defender::current_sum_assets = Defender::d_init;
+    Attacker::current_sum_assets = Attacker::a_init;
+    Insurer::current_sum_assets = Insurer::i_init;
     
     if (p.verbose) {
-        defenders_cumulative_assets.push_back(Defender::d_init);
-        attackers_cumulative_assets.push_back(Attacker::Attacker::a_init);
-        insurer_cumulative_assets.push_back(Insurer::i_init);
+        Defender::cumulative_assets.push_back(Defender::d_init);
+        Attacker::cumulative_assets.push_back(Attacker::Attacker::a_init);
+        Insurer::cumulative_assets.push_back(Insurer::i_init);
     }
 
 
@@ -63,11 +63,11 @@ std::string Game::to_string() {
     ret += std::to_string(p.ATTACKERS).substr(0,4) + ",";
     ret += std::to_string(p.INEQUALITY).substr(0,4) + ",";
     ret += std::to_string(int(round(Defender::d_init))) + ",";
-    ret += std::to_string(int(round(current_defender_sum_assets))) + ",";
+    ret += std::to_string(int(round(Defender::current_sum_assets))) + ",";
     ret += std::to_string(int(round(Attacker::Attacker::a_init))) + ",";
-    ret += std::to_string(int(round(current_attacker_sum_assets))) + ",";
+    ret += std::to_string(int(round(Attacker::current_sum_assets))) + ",";
     ret += std::to_string(int(round(Insurer::i_init))) + ",";
-    ret += std::to_string(int(round(current_insurer_sum_assets))) + ",";
+    ret += std::to_string(int(round(Insurer::current_sum_assets))) + ",";
     ret += std::to_string(int(round(attacksAttempted))) + ",";
     ret += std::to_string(int(round(attacksSucceeded))) + ",";
     ret += std::to_string(int(round(attackerLoots))) + ",";
@@ -133,9 +133,9 @@ void Game::verify_init() {
 }
 
 void Game::verify_outcome() {
-    assert(round(current_defender_sum_assets) >= 0);
-    assert(round(current_attacker_sum_assets) >= 0);
-    assert(round(current_insurer_sum_assets) >= 0); 
+    assert(round(Defender::current_sum_assets) >= 0);
+    assert(round(Attacker::current_sum_assets) >= 0);
+    assert(round(Insurer::current_sum_assets)  >= 0); 
 
     double checksum_attacker_sum_assets = 0;
     for (auto a : attackers) {
@@ -143,7 +143,7 @@ void Game::verify_outcome() {
         checksum_attacker_sum_assets += a.assets;
     }
 
-    assert(round(current_attacker_sum_assets - checksum_attacker_sum_assets) == 0);
+    assert(round(Attacker::current_sum_assets - checksum_attacker_sum_assets) == 0);
 
     double checksum_defender_sum_assets = 0;
     for (auto d : defenders) {
@@ -151,7 +151,7 @@ void Game::verify_outcome() {
         checksum_defender_sum_assets += d.assets;
     }
 
-    assert(round(current_defender_sum_assets - checksum_defender_sum_assets) == 0);
+    assert(round(Defender::current_sum_assets - checksum_defender_sum_assets) == 0);
 
     double checksum_insurer_sum_assets = 0;
     for (auto i : insurers) {
@@ -160,7 +160,7 @@ void Game::verify_outcome() {
     }
 
 
-    assert(round(current_insurer_sum_assets - checksum_insurer_sum_assets) >= 0);
+    assert(round(Insurer::current_sum_assets - checksum_insurer_sum_assets) >= 0);
 
 
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
@@ -181,7 +181,7 @@ void Game::verify_outcome() {
 
     // Master checksum
     double init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
-    double end_  = current_defender_sum_assets + current_attacker_sum_assets + current_insurer_sum_assets + attackerExpenditures; 
+    double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + attackerExpenditures; 
 
     // TODO add back in after fixing insurer
     if (round(init_ - end_) != 0) {
@@ -489,31 +489,30 @@ void Game::run_iterations() {
 
         // TODO maybe put this into an "end_of_round_bookkeeping()" function
         // TODO maybe the current_*_sum_assets should be a static class variable as well?
-        current_defender_sum_assets += Defender::defender_iter_sum;
-        current_attacker_sum_assets += Attacker::attacker_iter_sum;
-        current_insurer_sum_assets  += Insurer::insurer_iter_sum;
-
-        std::cout << "current_insurer_sum_assets: " << current_insurer_sum_assets << std::endl;
+        // This is obviated by handling current asset bookkeeping in the class gain/lose functions themselves
+        // Defender::current_sum_assets += Defender::defender_iter_sum;
+        // Attacker::current_sum_assets += Attacker::attacker_iter_sum;
+        // Insurer::current_sum_assets  += Insurer::insurer_iter_sum;
 
         if (defenders_have_more_than_attackers) {
-            if (current_attacker_sum_assets > current_defender_sum_assets) {
+            if (Attacker::current_sum_assets > Defender::current_sum_assets) {
                 crossovers.push_back(iter_num);
                 defenders_have_more_than_attackers = false;
             }
         } else {
-            if (current_attacker_sum_assets < current_defender_sum_assets) {
+            if (Attacker::current_sum_assets < Defender::current_sum_assets) {
                 crossovers.push_back(iter_num);
                 defenders_have_more_than_attackers = true;
             }
         }
 
         if (p.verbose) {
-            defenders_cumulative_assets.push_back(current_defender_sum_assets);
-            attackers_cumulative_assets.push_back(current_attacker_sum_assets);
-            // insurer_cumulative_assets.push_back(insurer.assets); // TODO add later
-            // government_cumulative_assets.push_back(government.assets);
+            Defender::cumulative_assets.push_back(Defender::current_sum_assets);
+            Attacker::cumulative_assets.push_back(Attacker::current_sum_assets);
+            Insurer::cumulative_assets.push_back(Insurer::current_sum_assets); // TODO add later
         }
 
+        // TODO put in its own function
         if (alive_attackers_indices.size() == 0) {
             conclude_game("A");
             return;
