@@ -35,20 +35,25 @@ std::vector<double> Defender::cumulative_assets;
 
 
 // TODO what if retention > assets????
-void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
+void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     assert(assets > p.premium);
     
     insured = true;
-    ins_idx = i.id;
+    ins_idx = i->id;
     policy = p;
     lose(policy.premium);
-    i.gain(policy.premium);
+    std::cout << "      Insurer 0 has (before selling policy) " << i->assets << std::endl;
+
+
+    i->gain(policy.premium);
+    std::cout << "      Insurer 0 has (after selling policy) " << i->assets << std::endl;
+
 
     assert(assets > p.retention); // TODO not sure about this...based on odds, some defenders may YOLO 
     // TODO maybe we should only sell policies if Defenders are able to pay the retention
     // Or maybe if retention > assets, there's no point in buying insurance so they automatically buy security? TODO TODO TODO
 
-    std::cout << "     Defender " << id << " now has " << assets << std::endl;
+    // std::cout << "     Defender " << id << " now has " << assets << std::endl;
 
 }
 
@@ -83,7 +88,7 @@ void Defender::choose_security_strategy() {
 
     assert(insurers->size() >= 0);
 
-    Insurer i = insurers->at(0); // TODO iterate through all insurers!!!
+    Insurer* i = &insurers->at(0); // TODO iterate through all insurers!!!
     
     double p_A_hat = estimated_probability_of_attack;
     double p_L_hat = p_A_hat * (1 - posture);
@@ -91,7 +96,7 @@ void Defender::choose_security_strategy() {
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
 
     // 1. Get insurance policy from insurer
-    PolicyType policy = i.provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
+    PolicyType policy = i->provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
     assert(policy.premium > 0);
     assert(policy.retention > 0);
@@ -114,7 +119,7 @@ void Defender::choose_security_strategy() {
     // TODO premiums are a bit high!! look into this. maybe set the #attackers to be such that intial premiums match existing payments
     double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
     if (minimum == expected_loss_with_insurance) {
-        // std::cout << "     Defender " << id << " with assets=" << assets << " is purchasing insurance with premium=" << policy.premium << " and retention=" << policy.retention << std::endl;
+        std::cout << "     Defender " << id << " with assets=" << assets << " is purchasing insurance with premium=" << policy.premium << " and retention=" << policy.retention << std::endl;
         purchase_insurance_policy(i, policy);
         // std::cout << "     Defender " << id << " now has " << assets << std::endl;
     } else if (minimum == expected_loss_with_optimal_investment) {

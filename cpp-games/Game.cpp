@@ -158,7 +158,9 @@ void Game::verify_outcome() {
         Insurer ins = insurers[i];
         assert(round(ins.assets) >= 0);
         checksum_insurer_sum_assets += ins.assets;
+        std::cout << " -- Insurer[" << ins.id << "] has " << ins.assets << std::endl;
     }
+    std::cout << "Insurer::current_sum_assets: " << Insurer::current_sum_assets << ", checksum_insurer_sum_assets: " << checksum_insurer_sum_assets << std::endl;
     assert(round(Insurer::current_sum_assets - checksum_insurer_sum_assets) == 0);
 
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
@@ -266,9 +268,9 @@ void Game::init_round() {
 
     Insurer::perform_market_analysis(prevRoundAttacks);
 
-    // std::cout << "before strategy: " << std::endl;
+    std::cout << "before strategy: " << std::endl;
     verify_outcome();
-    // std::cout << " OK\n";
+    std::cout << " OK\n";
     for (uint i=0; i<defenders.size(); i++) {
         assert(i == defenders[i].id);
         defenders[i].choose_security_strategy();
@@ -276,9 +278,9 @@ void Game::init_round() {
         // std::cout << " == Defender[0] has " << defenders[0].assets << std::endl;
         verify_outcome();
     }
-    // std::cout << "after strategy: " << std::endl;
+    std::cout << "after strategy: " << std::endl;
     verify_outcome();
-    // std::cout << " OK\n";
+    std::cout << " OK\n";
 }
 
 void Game::run_iterations() {

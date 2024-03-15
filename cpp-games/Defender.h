@@ -36,7 +36,7 @@ class Defender : public Player {
 
 
     private:
-        void purchase_insurance_policy(Insurer &i, PolicyType p);
+        void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(double x);
 };
 
