@@ -24,7 +24,6 @@ class Game {
 
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
-        double d_init, a_init; //, i_init;
         int iter_num;
         std::vector<int> crossovers;
         std::vector<int> insurerTimesOfDeath;
@@ -33,7 +32,7 @@ class Game {
         double current_attacker_sum_assets = 0;
         double current_insurer_sum_assets = 0;
 
-        double defender_iter_sum = 0, attacker_iter_sum = 0, insurer_iter_sum = 0;
+        // double defender_iter_sum = 0,  insurer_iter_sum = 0;// attacker_iter_sum = 0,
 
         std::vector<double> defenders_cumulative_assets;
         std::vector<double> attackers_cumulative_assets;

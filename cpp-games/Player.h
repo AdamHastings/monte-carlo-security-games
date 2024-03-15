@@ -31,9 +31,12 @@ class Player {
 class Attacker : public Player {
     public:
         uint id;
+        
+        static uint a_init;
+        static double attacker_iter_sum; // how much the attackers have cumulatively gained or lost this round
+
         std::map<int, double> victims;
 
-        double* attacker_iter_sum;
 
         Attacker(int id_in,  Params &p);
         void gain(double gain) override;
@@ -44,6 +47,8 @@ class Insurer : public Player {
     public:
         uint id;
         static uint i_init;
+        static double insurer_iter_sum;
+
 
         Insurer(int id_in, Params &p);
         void gain(double gain) override;
@@ -51,9 +56,6 @@ class Insurer : public Player {
 
         PolicyType provide_a_quote(double assets, double posture, double estimated_costToAttackPercentile);
         double issue_payment(double claim);
-
-        double* insurer_iter_sum;
-
 
         static std::vector<double> attacker_assets;
         static int num_attackers;
@@ -64,13 +66,17 @@ class Defender : public Player {
     public:
         static double estimated_probability_of_attack;
 
+        static uint d_init;
+        static double defender_iter_sum;
+
+
+
         uint id;
         double posture;
         double costToAttack;
         // std::map<int, double> claimsReceived;
         bool insured;
 
-        double* defender_iter_sum;
         std::vector<Insurer>* insurers;
         // Insurer* insurer = NULL; 
         int ins_idx = -1;

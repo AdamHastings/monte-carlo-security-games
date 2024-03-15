@@ -65,6 +65,9 @@ int Insurer::num_defenders = 0;
 int Insurer::num_attackers = 0;
 std::vector<double> Insurer::attacker_assets;
 
+double Insurer::insurer_iter_sum = 0;
+
+
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
     PolicyType policy;
 
@@ -106,9 +109,17 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     }
 
     costToAttack = assets * posture;
+
+    d_init += assets;
 }
 
 double Defender::estimated_probability_of_attack = 0;
+
+uint Defender::d_init = 0; 
+
+double Defender::defender_iter_sum = 0;
+
+
 
 // TODO this is why the checksums are failing...transactions not known to Game class
 void Defender::purchase_insurance_policy(Insurer &i, PolicyType p) {
@@ -183,6 +194,8 @@ void Defender::choose_security_strategy() {
     }
 }
 
+uint Attacker::a_init = 0; 
+double Attacker::attacker_iter_sum = 0;
 
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -191,36 +204,38 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
     if (assets < 0) {
         assets = 0;
     }
+
+    a_init += assets; // TODO should this be a static class variable?
 }
 
 void Insurer::lose(double loss) {
     Player::lose(loss);
-    *insurer_iter_sum += loss;
+    insurer_iter_sum += loss;
 }
 
 void Insurer::gain(double gain) {
     Player::gain(gain);
-    *insurer_iter_sum += gain;
+    insurer_iter_sum += gain;
 }
 
 
 void Defender::lose(double loss) {
     Player::lose(loss);
-    *defender_iter_sum += loss;
+    defender_iter_sum += loss;
 }
 
 void Defender::gain(double gain) {
     Player::gain(gain);
-    *defender_iter_sum += gain;
+    defender_iter_sum += gain;
 }
 
 
 void Attacker::lose(double loss) {
     Player::lose(loss);
-    *attacker_iter_sum += loss;
+    attacker_iter_sum += loss;
 }
 
 void Attacker::gain(double gain) {
     Player::gain(gain);
-    *attacker_iter_sum += gain;
+    attacker_iter_sum += gain;
 }

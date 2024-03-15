@@ -19,72 +19,34 @@ std::uniform_real_distribution<> uniform(0.0, 1.0);
 Game::Game(Params prm) {
     p = prm;
 
-    // i_init = 0; // TODO make this a static class variable?
-
     for (int j=0; j < p.NUM_INSURERS; j++) {
         Insurer i = Insurer(j, p);
         insurers.push_back(i);
-        // i_init += i.get_assets(); // moved as static class
     }
 
-    d_init = 0; // TODO make this a static class variable?
     for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
         Defender d = Defender(i, p, insurers);
         defenders.push_back(d);
-        d_init += d.get_assets();
         alive_defenders_indices.push_back(i);
-        d.defender_iter_sum = &defender_iter_sum;
-        // std::cout << d.insurers->size() << std::endl;
     }
 
-
-
-    a_init = 0; // TODO make this a static class variable?
     std::cout << p.ATTACKERS << std::endl;
     for (int i=0; i < (p.NUM_BLUE_PLAYERS * p.ATTACKERS); i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
         Attacker a = Attacker(i, p);
         attackers.push_back(a);
-        a_init += a.get_assets(); // TODO should this be a static class variable?
         alive_attackers_indices.push_back(i);
     }
     
     outside_epsilon_count_defenders = p.DELTA;
     outside_epsilon_count_attackers = p.DELTA;
 
-    current_defender_sum_assets = d_init;
-    current_attacker_sum_assets = a_init;
+    current_defender_sum_assets = Defender::d_init;
+    current_attacker_sum_assets = Attacker::a_init;
     current_insurer_sum_assets = Insurer::i_init;
-
-
-    std::cout << " init : insurers.size() = " << insurers.size() << std::endl;
-    // for (auto di : defenders) {
-    //     di.insurers = &insurers;
-    //     di.defender_iter_sum = &defender_iter_sum;
-    //     std::cout << "d.id=" << di.id << " : : insurers.size() = " << std::endl;
-    //     std::cout << di.insurers->size() << std::endl;
-    // }
-
-    // for (auto di : defenders) {
-
-    //     std::cout << " immediately after: : : insurers.size() = " << std::endl;
-    //     std::cout << di.insurers->size() << std::endl;
-    // }
-
-
-    for (auto ai : attackers) {
-        ai.attacker_iter_sum = &attacker_iter_sum;
-    }
-
-    for (auto ii : insurers) {
-        ii.insurer_iter_sum = &insurer_iter_sum;
-    }
     
-
-    std::cout << "i_init: " << Insurer::i_init << std::endl;
-
     if (p.verbose) {
-        defenders_cumulative_assets.push_back(d_init);
-        attackers_cumulative_assets.push_back(a_init);
+        defenders_cumulative_assets.push_back(Defender::d_init);
+        attackers_cumulative_assets.push_back(Attacker::Attacker::a_init);
         insurer_cumulative_assets.push_back(Insurer::i_init);
     }
 
@@ -100,9 +62,9 @@ std::string Game::to_string() {
 
     ret += std::to_string(p.ATTACKERS).substr(0,4) + ",";
     ret += std::to_string(p.INEQUALITY).substr(0,4) + ",";
-    ret += std::to_string(int(round(d_init))) + ",";
+    ret += std::to_string(int(round(Defender::d_init))) + ",";
     ret += std::to_string(int(round(current_defender_sum_assets))) + ",";
-    ret += std::to_string(int(round(a_init))) + ",";
+    ret += std::to_string(int(round(Attacker::Attacker::a_init))) + ",";
     ret += std::to_string(int(round(current_attacker_sum_assets))) + ",";
     ret += std::to_string(int(round(Insurer::i_init))) + ",";
     ret += std::to_string(int(round(current_insurer_sum_assets))) + ",";
@@ -201,7 +163,7 @@ void Game::verify_outcome() {
     assert(round(current_insurer_sum_assets - checksum_insurer_sum_assets) >= 0);
 
 
-    // assert(round(d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
+    // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
     assert(round(Insurer::i_init - paidClaims) >= 0);
     assert(round(paidClaims) >= 0);
     assert(round(attackerLoots - paidClaims) >= 0);
@@ -218,7 +180,7 @@ void Game::verify_outcome() {
     }
 
     // Master checksum
-    double init_ = d_init + a_init + Insurer::i_init; 
+    double init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
     double end_  = current_defender_sum_assets + current_attacker_sum_assets + current_insurer_sum_assets + attackerExpenditures; 
 
     // TODO add back in after fixing insurer
@@ -238,8 +200,6 @@ void Game::conclude_game(std::string outcome) {
 }
 
 bool Game::is_equilibrium_reached() {
-
-
     if (roundAttacks == 0) {
         consecutiveNoAttacks++;
     } else {
@@ -446,9 +406,10 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
-        defender_iter_sum = 0;
-        attacker_iter_sum = 0;
-        insurer_iter_sum = 0;
+        // TODO maybe put all of this into a "reset_round()" function
+        Defender::defender_iter_sum = 0;
+        Attacker::attacker_iter_sum = 0;
+        Insurer::insurer_iter_sum = 0;
         roundAttacks = 0;
 
         std::vector<int> new_alive_defenders_indices;
@@ -526,9 +487,11 @@ void Game::run_iterations() {
         alive_attackers_indices = new_alive_attackers_indices;
         alive_defenders_indices = new_alive_defenders_indices;
 
-        current_defender_sum_assets += defender_iter_sum;
-        current_attacker_sum_assets += attacker_iter_sum;
-        current_insurer_sum_assets  += insurer_iter_sum;
+        // TODO maybe put this into an "end_of_round_bookkeeping()" function
+        // TODO maybe the current_*_sum_assets should be a static class variable as well?
+        current_defender_sum_assets += Defender::defender_iter_sum;
+        current_attacker_sum_assets += Attacker::attacker_iter_sum;
+        current_insurer_sum_assets  += Insurer::insurer_iter_sum;
 
         std::cout << "current_insurer_sum_assets: " << current_insurer_sum_assets << std::endl;
 
