@@ -6,6 +6,11 @@ double Insurer::current_sum_assets = 0;
 double Insurer::insurer_iter_sum = 0;
 std::vector<double> Insurer::cumulative_assets; 
 
+// Should be set each iteration by the game. 
+int Insurer::num_defenders = 0;
+int Insurer::num_attackers = 0;
+std::vector<double> Insurer::attacker_assets; // TODO is this redundant with cumulative_Assets?
+
 
 Insurer::Insurer(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -18,7 +23,17 @@ Insurer::Insurer(int id_in, Params &p) : Player(p) {
     i_init += assets; 
 }
 
+void Insurer::lose(double loss) {
+    Player::lose(loss);
+    insurer_iter_sum += loss;
+    current_sum_assets += loss;
+}
 
+void Insurer::gain(double gain) {
+    Player::gain(gain);
+    insurer_iter_sum += gain;
+    current_sum_assets += gain;
+}
 
 double Insurer::issue_payment(double claim) {
     
@@ -35,17 +50,10 @@ double Insurer::issue_payment(double claim) {
     return amount_covered;
 }
 
-
-// Should be set each iteration by the game. 
-int Insurer::num_defenders = 0;
-int Insurer::num_attackers = 0;
-std::vector<double> Insurer::attacker_assets;
-
-
-
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
     PolicyType policy;
 
+    // TODO make these const static class vars
     double OVerhead = 0.20; // 20% overhead // Better to call this a "loss ratio" actually (standard terminology for insurance)
     double r = 20.0; // TODO double check retention regression factor
 
