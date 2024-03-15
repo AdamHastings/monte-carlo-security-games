@@ -42,11 +42,11 @@ void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     ins_idx = i->id;
     policy = p;
     lose(policy.premium);
-    std::cout << "      Insurer 0 has (before selling policy) " << i->assets << std::endl;
+    // std::cout << "      Insurer 0 has (before selling policy) " << i->assets << std::endl;
 
 
     i->gain(policy.premium);
-    std::cout << "      Insurer 0 has (after selling policy) " << i->assets << std::endl;
+    // std::cout << "      Insurer 0 has (after selling policy) " << i->assets << std::endl;
 
 
     assert(assets > p.retention); // TODO not sure about this...based on odds, some defenders may YOLO 
@@ -62,7 +62,8 @@ void Defender::submit_claim(double loss) {
     assert(insured); // you should only call this function if you have an active insurance policy
     assert(ins_idx >= 0); 
 
-    double claim_after_retention = (loss - policy.retention);
+    double claim_after_retention = std::max(0.0, (loss - policy.retention));
+    assert(claim_after_retention > 0);
     if (claim_after_retention > 0) {
         double amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
         assert(loss >= amount_recovered);
@@ -119,7 +120,7 @@ void Defender::choose_security_strategy() {
     // TODO premiums are a bit high!! look into this. maybe set the #attackers to be such that intial premiums match existing payments
     double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
     if (minimum == expected_loss_with_insurance) {
-        std::cout << "     Defender " << id << " with assets=" << assets << " is purchasing insurance with premium=" << policy.premium << " and retention=" << policy.retention << std::endl;
+        // std::cout << "     Defender " << id << " with assets=" << assets << " is purchasing insurance with premium=" << policy.premium << " and retention=" << policy.retention << std::endl;
         purchase_insurance_policy(i, policy);
         // std::cout << "     Defender " << id << " now has " << assets << std::endl;
     } else if (minimum == expected_loss_with_optimal_investment) {

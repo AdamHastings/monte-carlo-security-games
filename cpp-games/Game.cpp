@@ -158,9 +158,9 @@ void Game::verify_outcome() {
         Insurer ins = insurers[i];
         assert(round(ins.assets) >= 0);
         checksum_insurer_sum_assets += ins.assets;
-        std::cout << " -- Insurer[" << ins.id << "] has " << ins.assets << std::endl;
+        // std::cout << " -- Insurer[" << ins.id << "] has " << ins.assets << std::endl;
     }
-    std::cout << "Insurer::current_sum_assets: " << Insurer::current_sum_assets << ", checksum_insurer_sum_assets: " << checksum_insurer_sum_assets << std::endl;
+    // std::cout << "Insurer::current_sum_assets: " << Insurer::current_sum_assets << ", checksum_insurer_sum_assets: " << checksum_insurer_sum_assets << std::endl;
     assert(round(Insurer::current_sum_assets - checksum_insurer_sum_assets) == 0);
 
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
@@ -227,6 +227,8 @@ void Game::fight(Attacker &a, Defender &d) {
     if (expected_loot > d.costToAttack && d.costToAttack <= a.assets) {
         // Attacking is financially worth it
 
+
+        std::cout << "  -- attempted fight " << std::endl;
         // bookkeeping
         Attacker::attacksAttempted += 1;
         roundAttacks += 1;
@@ -234,6 +236,8 @@ void Game::fight(Attacker &a, Defender &d) {
         Attacker::attackerExpenditures += d.costToAttack;
 
         if (RandUniformDist.draw() > d.posture) {
+
+            std::cout << "  -- successful fight " << std::endl;
             Attacker::attacksSucceeded += 1;
 
             double loot = d.assets * p.PAYOFF_distribution->draw();
@@ -247,10 +251,12 @@ void Game::fight(Attacker &a, Defender &d) {
 
             if (d.insured) {
                 // std::cout << "submitting claim" << std::endl;
+                std::cout << "  -- submitting claim  " << std::endl;
                 d.submit_claim(loot);
                 verify_outcome();
             } else {
                 // std::cout << "not insured!" << std::endl;
+                std::cout << "  -- not insured! " << std::endl;
                 verify_outcome();
                 d.lose(loot);
                 verify_outcome();
