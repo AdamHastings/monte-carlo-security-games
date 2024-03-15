@@ -150,4 +150,14 @@ void Defender::gain(double gain) {
     current_sum_assets += gain;
 }
 
+void Defender::reset() {
+    estimated_probability_of_attack = 0;
+    d_init = 0;
+    defender_iter_sum = 0;
+    current_sum_assets = 0; 
+
+    cumulative_assets.clear();
+
+}
+
 

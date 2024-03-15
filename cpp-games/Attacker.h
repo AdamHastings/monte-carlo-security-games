@@ -18,6 +18,8 @@ class Attacker : public Player {
         static double attackerExpenditures;
         static double attackerLoots;
 
+        static void reset();
+
         Attacker(int id_in,  Params &p);
         void gain(double gain) override;
         void lose(double loss) override;

@@ -35,3 +35,14 @@ void Attacker::gain(double gain) {
     current_sum_assets += gain;
     attackerLoots += gain; // assumes that attackers ONLY gain by looting
 }
+
+void Attacker::reset() {
+    a_init = 0;
+    attacker_iter_sum = 0; // how much the attackers have cumulatively gained or lost this round
+    current_sum_assets = 0; // sum total of all class instances
+    attacksAttempted = 0;
+    attacksSucceeded = 0;
+    attackerExpenditures = 0;
+    attackerLoots = 0;
+    cumulative_assets.clear(); // running total of all attackers' assets
+}

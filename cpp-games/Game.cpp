@@ -17,6 +17,12 @@ static std::mt19937 gen(0); // TODO undo static seed?
 std::uniform_real_distribution<> uniform(0.0, 1.0);
 
 Game::Game(Params prm) {
+
+     
+    Attacker::reset();
+    Defender::reset();
+    Insurer::reset();
+    
     p = prm;
 
     for (int j=0; j < p.NUM_INSURERS; j++) {
@@ -30,12 +36,16 @@ Game::Game(Params prm) {
         alive_defenders_indices.push_back(i);
     }
 
-    std::cout << p.ATTACKERS << std::endl;
-    for (int i=0; i < (p.NUM_BLUE_PLAYERS * p.ATTACKERS); i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
+    int num_attackers = (int)(p.NUM_BLUE_PLAYERS * p.ATTACKERS);
+    assert(num_attackers > 0);
+    std::cout << "num_attackers: " << num_attackers << std::endl;
+    for (int i=0; i < num_attackers; i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
         Attacker a = Attacker(i, p);
         attackers.push_back(a);
         alive_attackers_indices.push_back(i);
+        std::cout << "*****Attacker[" << i << "] assets: " << a.assets << ", Attacker::current_sum_assets: " << Attacker::current_sum_assets << std::endl;
     }
+    std::cout << "--------\n";
     
     outside_epsilon_count_defenders = p.DELTA;
     outside_epsilon_count_attackers = p.DELTA;
@@ -140,7 +150,10 @@ void Game::verify_outcome() {
         Attacker a = attackers[i]; // TODO does this do a copy or is this a pointer?
         assert(round(a.assets) >= 0);
         checksum_attacker_sum_assets += a.assets;
+        std::cout << "     Attacker[" << i << "] assets: " << a.assets << ", Attacker::current_sum_assets: " << Attacker::current_sum_assets << ", checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
+
     }
+    std::cout<<"________\n";
     assert(round(Attacker::current_sum_assets - checksum_attacker_sum_assets) == 0);
 
     double checksum_defender_sum_assets = 0;
@@ -270,9 +283,9 @@ void Game::init_round() {
 
     Insurer::perform_market_analysis(prevRoundAttacks);
 
-    std::cout << "before strategy: " << std::endl;
+    // std::cout << "before strategy: " << std::endl;
     verify_outcome();
-    std::cout << " OK\n";
+    // std::cout << " OK\n";
     for (uint i=0; i<defenders.size(); i++) {
         assert(i == defenders[i].id);
         defenders[i].choose_security_strategy();
@@ -280,14 +293,19 @@ void Game::init_round() {
         // std::cout << " == Defender[0] has " << defenders[0].assets << std::endl;
         verify_outcome();
     }
-    std::cout << "after strategy: " << std::endl;
+    // std::cout << "after strategy: " << std::endl;
     verify_outcome();
-    std::cout << " OK\n";
+    // std::cout << " OK\n";
+}
+
+void Game::init_game(){
+    defenders_have_more_than_attackers = true;
 }
 
 void Game::run_iterations() {
 
-    bool defenders_have_more_than_attackers = true;
+    init_game();
+
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 

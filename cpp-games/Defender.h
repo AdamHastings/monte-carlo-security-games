@@ -34,6 +34,8 @@ class Defender : public Player {
         void choose_security_strategy();
         void submit_claim(double loss);
 
+        static void reset();
+
 
     private:
         void purchase_insurance_policy(Insurer* i, PolicyType p);

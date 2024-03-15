@@ -109,3 +109,13 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
     Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(defenders->size() * 1.0));
 }
+
+void Insurer::reset(){
+    i_init = 0;
+    insurer_iter_sum = 0;
+    current_sum_assets = 0;
+    paid_claims = 0;
+    defenders = nullptr;
+    attackers = nullptr;
+    cumulative_assets.clear();
+}

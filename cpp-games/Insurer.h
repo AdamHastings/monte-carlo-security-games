@@ -21,6 +21,8 @@ class Insurer : public Player {
         static std::vector<Defender>* defenders;
         static std::vector<Attacker>* attackers;
 
+        static void reset();
+
         Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers);
         void gain(double gain) override;
         void lose(double loss) override;

@@ -54,6 +54,9 @@ class Game {
         void verify_outcome();
 
         void init_round();
+        void init_game();
+
+        bool defenders_have_more_than_attackers;
 
 
 };
