@@ -27,6 +27,10 @@ double Player::get_assets() {
     return assets;
 }
 
+
+uint Insurer::i_init = 0; // Initialization outside the class definition
+
+
 Insurer::Insurer(int id_in, Params &p) : Player(p) {
     id = id_in;
 
@@ -34,6 +38,8 @@ Insurer::Insurer(int id_in, Params &p) : Player(p) {
     if (assets < 0) {
         assets = 0;
     }
+
+    i_init += assets; 
 }
 
 
@@ -72,6 +78,8 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     double p_A = probability_of_getting_paried_with_attacker * probability_random_attacker_has_enough_to_attack;
     double p_L = p_A * (1 - estimated_posture); 
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
+
+    std::cout << probability_of_getting_paried_with_attacker << " " << probability_random_attacker_has_enough_to_attack << " " << p_A << " " << p_L << " " << mean_PAYOFF << std::endl;
     
     policy.premium = (p_L * mean_PAYOFF * assets) / (r * p_L + OVerhead);
     policy.retention = r * policy.premium;
@@ -142,8 +150,11 @@ void Defender::choose_security_strategy() {
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
 
     // 1. Get insurance policy from insurer
+    std::cout << "costToAttackPercentile: " << costToAttackPercentile << std::endl; // TODO why is this nan?
     PolicyType policy = i.provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
+    std::cout << policy.premium << " " << policy.retention << " " << p_L_hat << std::endl;
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
+    std::cout << "expected_loss_with_insurance: " << expected_loss_with_insurance << std::endl;
     assert(expected_loss_with_insurance >= 0);
 
     // 2. Find optimum security investment
@@ -176,7 +187,7 @@ void Defender::choose_security_strategy() {
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
 
-    assets = p.WEALTH_distribution->draw() * p.INEQUALITY;
+    assets = p.WEALTH_distribution->draw() * p.INEQUALITY; // TODO check this...this doesn't need to a distribution, right?
     if (assets < 0) {
         assets = 0;
     }

@@ -19,12 +19,12 @@ std::uniform_real_distribution<> uniform(0.0, 1.0);
 Game::Game(Params prm) {
     p = prm;
 
-    i_init = 0; // TODO make this a static class variable?
+    // i_init = 0; // TODO make this a static class variable?
 
     for (int j=0; j < p.NUM_INSURERS; j++) {
         Insurer i = Insurer(j, p);
         insurers.push_back(i);
-        i_init += i.get_assets();
+        // i_init += i.get_assets(); // moved as static class
     }
 
     d_init = 0; // TODO make this a static class variable?
@@ -53,7 +53,7 @@ Game::Game(Params prm) {
 
     current_defender_sum_assets = d_init;
     current_attacker_sum_assets = a_init;
-    current_insurer_sum_assets = i_init;
+    current_insurer_sum_assets = Insurer::i_init;
 
 
     std::cout << " init : insurers.size() = " << insurers.size() << std::endl;
@@ -80,12 +80,12 @@ Game::Game(Params prm) {
     }
     
 
-    std::cout << "i_init: " << i_init << std::endl;
+    std::cout << "i_init: " << Insurer::i_init << std::endl;
 
     if (p.verbose) {
         defenders_cumulative_assets.push_back(d_init);
         attackers_cumulative_assets.push_back(a_init);
-        insurer_cumulative_assets.push_back(i_init);
+        insurer_cumulative_assets.push_back(Insurer::i_init);
     }
 
 
@@ -104,7 +104,7 @@ std::string Game::to_string() {
     ret += std::to_string(int(round(current_defender_sum_assets))) + ",";
     ret += std::to_string(int(round(a_init))) + ",";
     ret += std::to_string(int(round(current_attacker_sum_assets))) + ",";
-    ret += std::to_string(int(round(i_init))) + ",";
+    ret += std::to_string(int(round(Insurer::i_init))) + ",";
     ret += std::to_string(int(round(current_insurer_sum_assets))) + ",";
     ret += std::to_string(int(round(attacksAttempted))) + ",";
     ret += std::to_string(int(round(attacksSucceeded))) + ",";
@@ -202,7 +202,7 @@ void Game::verify_outcome() {
 
 
     // assert(round(d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
-    assert(round(i_init - paidClaims) >= 0);
+    assert(round(Insurer::i_init - paidClaims) >= 0);
     assert(round(paidClaims) >= 0);
     assert(round(attackerLoots - paidClaims) >= 0);
     assert(attackerExpenditures >= 0);
@@ -218,7 +218,7 @@ void Game::verify_outcome() {
     }
 
     // Master checksum
-    double init_ = d_init + a_init + i_init; 
+    double init_ = d_init + a_init + Insurer::i_init; 
     double end_  = current_defender_sum_assets + current_attacker_sum_assets + current_insurer_sum_assets + attackerExpenditures; 
 
     // TODO add back in after fixing insurer
@@ -416,12 +416,16 @@ double findPercentile(const std::vector<double>& sortedVector, double newValue) 
 // Insurers use their overhead to conduct operations and perform risk analysis
 // As part of this, the insurers find the median assets of the attackers (TODO maybe estimate it even?)
 // which informs current defender risks before writing policies.
+// TODO shouldn't this be a class function of Insurer? 
 void Game::perform_market_analysis(){
     // Reset attacker_assets each round 
     Insurer::attacker_assets.clear();
 
-    for (auto a : attackers) {
-        Insurer::attacker_assets.push_back(a.assets);
+    // for (auto a : attackers) { // TODO shouldn't this be *alive* attacker????
+    //     Insurer::attacker_assets.push_back(a.assets);
+    // }
+    for (auto i : alive_attackers_indices) {
+        Insurer::attacker_assets.push_back(attackers[i].assets);
     }
 
     std::sort(Insurer::attacker_assets.begin(), Insurer::attacker_assets.end());

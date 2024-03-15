@@ -43,6 +43,8 @@ class Attacker : public Player {
 class Insurer : public Player {
     public:
         uint id;
+        static uint i_init;
+
         Insurer(int id_in, Params &p);
         void gain(double gain) override;
         void lose(double loss) override;
@@ -72,12 +74,10 @@ class Defender : public Player {
         std::vector<Insurer>* insurers;
         // Insurer* insurer = NULL; 
         int ins_idx = -1;
-
+        
         // This variable is "hidden" to the defender and only known to insurers
         // We store it here so that each insurer doesn't need to recompute. 
         double costToAttackPercentile;
-
-        
 
         Defender(int id_in, Params &p, std::vector<Insurer> &insurers);
         void gain(double gain) override;

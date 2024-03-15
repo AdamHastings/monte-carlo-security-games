@@ -21,7 +21,7 @@ $(TARGET): $(OBJS) Makefile
 
 %.o: %.c %.h Makefile
 	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $(input) -o $(output) $(LDLIBS) $(LDFLAGS)
-	
+
 clean:
 	rm $(OBJS) $(TARGET)
 
