@@ -63,10 +63,24 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
 
 
     double probability_of_getting_paried_with_attacker = std::min(1.0, ((attackers->size() * 1.0) / (defenders->size() * 1.0)));
+    assert(probability_of_getting_paried_with_attacker >= 0);
+    assert(probability_of_getting_paried_with_attacker <= 1);
+
     double probability_random_attacker_has_enough_to_attack = (1 - estimated_costToAttackPercentile);
+    assert(probability_random_attacker_has_enough_to_attack >= 0);
+    assert(probability_random_attacker_has_enough_to_attack <= 1);
+
     double p_A = probability_of_getting_paried_with_attacker * probability_random_attacker_has_enough_to_attack;
-    double p_L = p_A * (1 - estimated_posture); 
+    assert(p_A >= 0);
+    assert(p_A <= 1);
+
+    double p_L = p_A * (1 - estimated_posture);
+    assert(p_L >= 0);
+    assert(p_L <= 1);
+
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
+    assert(mean_PAYOFF >= 0);
+    assert(mean_PAYOFF <= 1);
     
     policy.premium = (p_L * mean_PAYOFF * assets) / (r * p_L + OVerhead);
     policy.retention = r * policy.premium;

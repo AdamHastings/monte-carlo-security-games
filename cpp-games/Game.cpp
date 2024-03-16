@@ -22,7 +22,7 @@ Game::Game(Params prm) {
     Attacker::reset();
     Defender::reset();
     Insurer::reset();
-    
+
     p = prm;
 
     for (int j=0; j < p.NUM_INSURERS; j++) {
@@ -38,14 +38,14 @@ Game::Game(Params prm) {
 
     int num_attackers = (int)(p.NUM_BLUE_PLAYERS * p.ATTACKERS);
     assert(num_attackers > 0);
-    std::cout << "num_attackers: " << num_attackers << std::endl;
+    // std::cout << "num_attackers: " << num_attackers << std::endl;
     for (int i=0; i < num_attackers; i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
         Attacker a = Attacker(i, p);
         attackers.push_back(a);
         alive_attackers_indices.push_back(i);
-        std::cout << "*****Attacker[" << i << "] assets: " << a.assets << ", Attacker::current_sum_assets: " << Attacker::current_sum_assets << std::endl;
+        // std::cout << "*****Attacker[" << i << "] assets: " << a.assets << ", Attacker::current_sum_assets: " << Attacker::current_sum_assets << std::endl;
     }
-    std::cout << "--------\n";
+    // std::cout << "--------\n";
     
     outside_epsilon_count_defenders = p.DELTA;
     outside_epsilon_count_attackers = p.DELTA;
@@ -150,10 +150,10 @@ void Game::verify_outcome() {
         Attacker a = attackers[i]; // TODO does this do a copy or is this a pointer?
         assert(round(a.assets) >= 0);
         checksum_attacker_sum_assets += a.assets;
-        std::cout << "     Attacker[" << i << "] assets: " << a.assets << ", Attacker::current_sum_assets: " << Attacker::current_sum_assets << ", checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
+        // std::cout << "     Attacker[" << i << "] assets: " << a.assets << ", Attacker::current_sum_assets: " << Attacker::current_sum_assets << ", checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
 
     }
-    std::cout<<"________\n";
+    // std::cout<<"________\n";
     assert(round(Attacker::current_sum_assets - checksum_attacker_sum_assets) == 0);
 
     double checksum_defender_sum_assets = 0;
