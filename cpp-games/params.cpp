@@ -24,6 +24,7 @@ std::vector<Params> params_loader::load_cfg(std::string basename) {
             draw = ATTACKERS_distribution->draw();
         }
         p.ATTACKERS = draw;
+        delete ATTACKERS_distribution;
 
         draw = 0;
         Distribution* INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
@@ -31,6 +32,8 @@ std::vector<Params> params_loader::load_cfg(std::string basename) {
             draw = INEQUALITY_distribution->draw();
         }
         p.INEQUALITY = draw;
+        delete INEQUALITY_distribution;
+
 
         // p.ATTACKERS  = Distribution::createDistribution(jsonData["ATTACKERS"]); // TODO this isn't working like I think it should...need to double check it
         // p.INEQUALITY = Distribution::createDistribution(jsonData["INEQUALITY"]);
