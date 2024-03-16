@@ -88,9 +88,10 @@ void init_logs(std::string basename) {
     header += "\n";
 
     // Check if log file already exists so that we don't accidentally write over it
+    // TODO or should we timestamp each run?
     ifstream f(fpath.c_str());
     if (f.good()) {
-        std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it? Or append to it? Y/A/n\n >> ";
+        std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it (Y)? Or append to it (A)? Y/A/n\n >> ";
         std::string response;
         std::cin >> response;
         if (response == "a" || response == "A") {
@@ -112,60 +113,6 @@ void init_logs(std::string basename) {
 }
 
 
-std::vector<Params> load_cfg(std::string basename) {
-    std::string fpath = "configs/" + basename + ".json";
-    
-    ifstream file(fpath);
-
-    Json::Reader reader;
-    Json::Value jsonData;
-    reader.parse(file, jsonData);
-
-    std::vector<Params> ret;
-    for (int i=0; i<jsonData["NUM_GAMES"].asInt(); i++) {
-        Params p;
-    
-
-        double draw = 0;
-        Distribution* ATTACKERS_distribution = Distribution::createDistribution(jsonData["ATTACKERS"]);
-        while (draw <= 0 || draw > 1 ) {
-            draw = ATTACKERS_distribution->draw();
-        }
-        p.ATTACKERS = draw;
-
-        draw = 0;
-        Distribution* INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
-        while (draw <= 0 || draw > 1 ) {
-            draw = INEQUALITY_distribution->draw();
-        }
-        p.INEQUALITY = draw;
-
-
-
-        // p.ATTACKERS  = Distribution::createDistribution(jsonData["ATTACKERS"]); // TODO this isn't working like I think it should...need to double check it
-        // p.INEQUALITY = Distribution::createDistribution(jsonData["INEQUALITY"]);
-        
-        p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
-        p.PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
-        p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
-        p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);        
-
-        p.NUM_BLUE_PLAYERS        = jsonData["NUM_BLUE_PLAYERS"].asInt();
-        p.NUM_INSURERS            = jsonData["NUM_INSURERS"].asInt();
-        p.NUM_GAMES               = jsonData["NUM_GAMES"].asInt();
-        p.EPSILON                 = jsonData["EPSILON"].asInt();
-        p.DELTA                   = jsonData["DELTA"].asInt();
-       
-
-        p.verbose       = jsonData["verbose"].asBool();
-        p.assertions_on = jsonData["assertions_on"].asBool();
-        p.logname       = "logs/" + basename + ".csv";
-
-        ret.push_back(p);
-    }
-    return ret;
-}
-
 
 int main(int argc, char** argv) {
 
@@ -184,12 +131,12 @@ int main(int argc, char** argv) {
 
     // vector of *incomplete* params, due to constraints on memory. IF UNIFORM PARAMETERS.
     // params need to be completed in ParallelRunGames
-    vector<Params> v = load_cfg(basename);
+    vector<Params> v = params_loader::load_cfg(basename);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
-    std::cout << "started " << v[0].NUM_GAMES << " nonuniform games at " << std::ctime(&start_time);
+    std::cout << "started " << v[0].NUM_GAMES << " games at " << std::ctime(&start_time);
     // ParallelRunGames(v); // TODO undo after debugging
     SerialRunGames(v);
 

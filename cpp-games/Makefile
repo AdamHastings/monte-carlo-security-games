@@ -5,7 +5,7 @@ LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/
 LDFLAGS=-ltbb
 TARGET=run_games
 
-SRCS=main.cpp Player.cpp Insurer.cpp Attacker.cpp Defender.cpp Game.cpp Distributions.cpp 
+SRCS=main.cpp params.cpp Player.cpp Insurer.cpp Attacker.cpp Defender.cpp Game.cpp Distributions.cpp 
 OBJS=$(subst .cpp,.o,$(SRCS)) jsoncpp.o
 
 $(all): $(TARGET)

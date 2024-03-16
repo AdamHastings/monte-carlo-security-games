@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "Distributions.h"
 
 struct Params {
@@ -20,4 +21,9 @@ struct Params {
     bool verbose;
     bool assertions_on;
     std::string logname;
+};
+
+class params_loader {
+    public:
+        static std::vector<Params> load_cfg(std::string basename);
 };
