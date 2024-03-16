@@ -37,7 +37,7 @@
         "mean" : 0.388,
         "stddev" : 0.062
     },
-    "NUM_BLUE_PLAYERS":10,
+    "NUM_BLUE_PLAYERS":100,
     "NUM_INSURERS":1,
     "NUM_GAMES":100,
     "EPSILON":100,
