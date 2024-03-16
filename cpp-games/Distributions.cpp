@@ -63,11 +63,7 @@ double TruncatedNormalDistribution::draw() {
     return dist.mean();
  }
 
- PoissonDistribution::PoissonDistribution(double _lambda) : dist(_lambda) {}
- PoissonDistribution::~PoissonDistribution() {
-     std::cout << "     in PoissonDistribution destructor" << endl;
-    //  delete dist;
- }
+PoissonDistribution::PoissonDistribution(double _lambda) : dist(_lambda) {}
 
  double PoissonDistribution::draw() {
     return dist(generator);
@@ -143,6 +139,4 @@ double Distribution::mean() {
     return 0;
 }
 
-Distribution::~Distribution() {
-    std::cout << "  in Distribution destructor" << std::endl;
-}
+Distribution::~Distribution(){}

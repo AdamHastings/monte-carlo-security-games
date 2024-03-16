@@ -419,12 +419,6 @@ void Game::run_iterations() {
 
 
 Game::~Game() {
-    // delete p.EFFICIENCY_distribution; 
-    // delete p.PAYOFF_distribution;     
-    // delete p.WEALTH_distribution;     
-    // delete p.POSTURE_distribution;    
-    std::cout << "calling Game destructor "<< std::endl;
-    // p.EFFICIENCY_distribution->~Distribution();
     delete p.EFFICIENCY_distribution; 
     delete p.PAYOFF_distribution;     
     delete p.WEALTH_distribution;     

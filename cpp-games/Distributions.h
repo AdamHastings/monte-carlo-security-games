@@ -56,7 +56,6 @@ class PoissonDistribution : public Distribution {
     public: 
         std::poisson_distribution<int> dist;
         PoissonDistribution(double _lambda);
-        ~PoissonDistribution() override;
         double draw();
         double mean() override;
 };
