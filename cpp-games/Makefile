@@ -14,6 +14,7 @@ release: CPPFLAGS+=-O3 -march=native -Ofast
 release: $(TARGET)
 
 debug: CPPFLAGS+=-DDEBUG -g3
+debug: TARGET := $(TARGET)_debug
 debug: $(TARGET)
 
 $(TARGET): $(OBJS) Makefile

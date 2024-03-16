@@ -64,6 +64,10 @@ double TruncatedNormalDistribution::draw() {
  }
 
  PoissonDistribution::PoissonDistribution(double _lambda) : dist(_lambda) {}
+ PoissonDistribution::~PoissonDistribution() {
+     std::cout << "     in PoissonDistribution destructor" << endl;
+    //  delete dist;
+ }
 
  double PoissonDistribution::draw() {
     return dist(generator);
@@ -137,4 +141,8 @@ double Distribution::mean() {
     // So we crash here if the parent function is ever called
     assert(false);
     return 0;
+}
+
+Distribution::~Distribution() {
+    std::cout << "  in Distribution destructor" << std::endl;
 }

@@ -15,6 +15,7 @@ class Game {
 
     public:
         Game(Params prm);
+        ~Game();
         void run_iterations();
         std::string to_string();
 

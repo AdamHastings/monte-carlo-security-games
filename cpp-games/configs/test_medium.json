@@ -1,6 +1,5 @@
 {
     "distribution_type" : "nonuniform",
-    "num_games" : 100000,
     "ATTACKERS" :
     {
         "distribution" : "uniform",

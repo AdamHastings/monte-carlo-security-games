@@ -17,6 +17,7 @@ class Distribution {
         virtual double draw() =0;
         static Distribution* createDistribution(Json::Value d);
         virtual double mean();
+        virtual ~Distribution();
 };
 
 class UniformRealDistribution : public Distribution {
@@ -55,6 +56,7 @@ class PoissonDistribution : public Distribution {
     public: 
         std::poisson_distribution<int> dist;
         PoissonDistribution(double _lambda);
+        ~PoissonDistribution() override;
         double draw();
         double mean() override;
 };
