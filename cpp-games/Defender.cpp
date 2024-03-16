@@ -93,15 +93,26 @@ void Defender::choose_security_strategy() {
     Insurer* i = &insurers->at(0); // TODO iterate through all insurers!!!
     
     double p_A_hat = estimated_probability_of_attack;
+    assert(p_A_hat >= 0);
+    assert(p_A_hat <= 1);
+
     double p_L_hat = p_A_hat * (1 - posture);
+    assert(p_L_hat >= 0);
+    assert(p_L_hat <= 1);
+
     double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
+    assert(mean_EFFICIENCY >= 0);
+    assert(mean_EFFICIENCY <= 1);
+
     double mean_PAYOFF = p.PAYOFF_distribution->mean();
+    assert(mean_PAYOFF >= 0);
+    assert(mean_PAYOFF <= 1);
 
     // 1. Get insurance policy from insurer
     PolicyType policy = i->provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
-    assert(policy.premium > 0);
-    assert(policy.retention > 0);
+    assert(policy.premium >= 0); // TODO what happens when the premium is 0?
+    assert(policy.retention >= 0);
     assert(expected_loss_with_insurance >= 0);
 
     // 2. Find optimum security investment
@@ -119,6 +130,7 @@ void Defender::choose_security_strategy() {
 
     // Choose the optimal strategy.
     // TODO premiums are a bit high!! look into this. maybe set the #attackers to be such that intial premiums match existing payments
+    // TODO think about what happens when premiums are 0. Does this count as a valid policy? Does this mean expected loss is 0? What happens then?
     double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
     if (minimum == expected_loss_with_insurance) {
         // std::cout << "     Defender " << id << " with assets=" << assets << " is purchasing insurance with premium=" << policy.premium << " and retention=" << policy.retention << std::endl;

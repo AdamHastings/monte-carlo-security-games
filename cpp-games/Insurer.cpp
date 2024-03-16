@@ -60,8 +60,6 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     double OVerhead = 0.20; // 20% overhead // Better to call this a "loss ratio" actually (standard terminology for insurance)
     double r = 20.0; // TODO double check retention regression factor
 
-
-
     double probability_of_getting_paried_with_attacker = std::min(1.0, ((attackers->size() * 1.0) / (defenders->size() * 1.0)));
     assert(probability_of_getting_paried_with_attacker >= 0);
     assert(probability_of_getting_paried_with_attacker <= 1);
@@ -85,6 +83,9 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     policy.premium = (p_L * mean_PAYOFF * assets) / (r * p_L + OVerhead);
     policy.retention = r * policy.premium;
 
+    assert(policy.premium >= 0);
+    assert(policy.retention >= 0);
+
 
     return policy;
 }
@@ -95,7 +96,9 @@ double Insurer::findPercentile(const std::vector<double>& sortedVector, double n
     int rank = std::distance(sortedVector.begin(), rankIterator);
     
     // Calculate the percentile
-    double percentile = (static_cast<double>(rank) / (sortedVector.size() - 1)) * 100.0;
+    double percentile = (static_cast<double>(rank) / (sortedVector.size())) * 1.0;
+    assert(percentile >= 0);
+    assert(percentile <= 1);
     
     return percentile;
 }
@@ -106,8 +109,8 @@ double Insurer::findPercentile(const std::vector<double>& sortedVector, double n
 void Insurer::perform_market_analysis(int prevRoundAttacks){
     
     std::vector<double> attacker_assets;
-    for (auto a = attackers->begin(); a != attackers->end(); ++a) {
 
+    for (auto a = attackers->begin(); a != attackers->end(); ++a) {
         if (a->alive) {
             attacker_assets.push_back(a->assets);
         }
@@ -115,13 +118,22 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
 
     std::sort(attacker_assets.begin(), attacker_assets.end());
 
+    // std::cout << "attacker assets:" << std::endl;
+    // for (auto aa : attacker_assets) { 
+    //     std::cout << "  " << aa;
+    // }
+    // std::cout << std::endl;
+
 
     for (auto d = defenders->begin(); d != defenders->end(); ++d) {
         d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack); // TODO this is returning crazy values and likely the source of the crashes.
+        // std::cout << "defenders[" << d->id << "] with costToAttack=" << d->costToAttack << " has costToAttackPercentile " <<  d->costToAttackPercentile << std::endl;
     }
 
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
     Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(defenders->size() * 1.0));
+    assert(Defender::estimated_probability_of_attack >= 0);
+    assert(Defender::estimated_probability_of_attack <= 1);
 }
 
 void Insurer::reset(){
