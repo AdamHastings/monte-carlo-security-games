@@ -37,6 +37,7 @@ Game::Game(Params prm) {
     }
 
     int num_attackers = (int)(p.NUM_BLUE_PLAYERS * p.ATTACKERS);
+    // std::cout << "num_attackers" << num_attackers << std::endl;
     assert(num_attackers > 0);
     // std::cout << "num_attackers: " << num_attackers << std::endl;
     for (int i=0; i < num_attackers; i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
@@ -241,7 +242,7 @@ void Game::fight(Attacker &a, Defender &d) {
         // Attacking is financially worth it
 
 
-        std::cout << "  -- attempted fight " << std::endl;
+        // std::cout << "  -- attempted fight " << std::endl;
         // bookkeeping
         Attacker::attacksAttempted += 1;
         roundAttacks += 1;
@@ -250,7 +251,7 @@ void Game::fight(Attacker &a, Defender &d) {
 
         if (RandUniformDist.draw() > d.posture) {
 
-            std::cout << "  -- successful fight " << std::endl;
+            // std::cout << "  -- successful fight " << std::endl;
             Attacker::attacksSucceeded += 1;
 
             double loot = d.assets * p.PAYOFF_distribution->draw();
@@ -265,10 +266,10 @@ void Game::fight(Attacker &a, Defender &d) {
 
             if (d.insured) {
                 // std::cout << "submitting claim" << std::endl;
-                std::cout << "  -- submitting claim  " << std::endl;
+                // std::cout << "  -- submitting claim  " << std::endl;
                 d.submit_claim(loot);
                 verify_outcome();
-                std::cout << "OK\n";
+                // std::cout << "OK\n";
             }
         }
     } 
@@ -309,7 +310,7 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
-        std::cout << "------ Round " << iter_num << "------" << std::endl;
+        // std::cout << "------ Round " << iter_num << "------" << std::endl;
         verify_outcome(); // TODO remove later...for testing 
         init_round();
 

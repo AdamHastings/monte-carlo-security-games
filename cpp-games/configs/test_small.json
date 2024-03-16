@@ -3,9 +3,9 @@
     "num_games" : 100000,
     "ATTACKERS" :
     {
-        "distribution" : "uniform",
-        "min" : 0.2,
-        "max" : 0.3
+        "distribution" : "normal",
+        "mean" : 0.2,
+        "stddev" : 0.05
     },
     "INEQUALITY" :
     {

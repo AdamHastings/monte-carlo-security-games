@@ -20,13 +20,14 @@ using namespace std;
 
 void RunGame(Params p) {
     
-    std::cout << "constructing game" << std::endl;
+    // std::cout << "constructing game" << std::endl;
     Game g = Game(p);
-    std::cout << "game constructed" << std::endl;    
+    // std::cout << "game constructed" << std::endl;    
 
     g.run_iterations();
 
     // Write response to log file;
+    // TODO maybe handle all logging in its own file(s)
     ofstream log;
     log.open(p.logname, ios::app);
     log << g.to_string(); // TODO might need to check since the distribution format changed.
@@ -124,8 +125,25 @@ std::vector<Params> load_cfg(std::string basename) {
     for (int i=0; i<jsonData["NUM_GAMES"].asInt(); i++) {
         Params p;
     
-        p.ATTACKERS               = Distribution::createDistribution(jsonData["ATTACKERS"])->draw(); // TODO this isn't working like I think it should...need to double check it
-        p.INEQUALITY              = Distribution::createDistribution(jsonData["INEQUALITY"])->draw();
+
+        double draw = 0;
+        Distribution* ATTACKERS_distribution = Distribution::createDistribution(jsonData["ATTACKERS"]);
+        while (draw <= 0 || draw > 1 ) {
+            draw = ATTACKERS_distribution->draw();
+        }
+        p.ATTACKERS = draw;
+
+        draw = 0;
+        Distribution* INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
+        while (draw <= 0 || draw > 1 ) {
+            draw = INEQUALITY_distribution->draw();
+        }
+        p.INEQUALITY = draw;
+
+
+
+        // p.ATTACKERS  = Distribution::createDistribution(jsonData["ATTACKERS"]); // TODO this isn't working like I think it should...need to double check it
+        // p.INEQUALITY = Distribution::createDistribution(jsonData["INEQUALITY"]);
         
         p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
         p.PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
