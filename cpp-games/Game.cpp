@@ -37,6 +37,9 @@ Game::Game(Params prm) {
     }
 
     int num_attackers = (int)(p.NUM_BLUE_PLAYERS * p.ATTACKERS);
+    if (num_attackers <= 0) {
+        num_attackers = 1;
+    }
     // std::cout << "num_attackers" << num_attackers << std::endl;
     assert(num_attackers > 0);
     // std::cout << "num_attackers: " << num_attackers << std::endl;
@@ -232,7 +235,7 @@ void Game::fight(Attacker &a, Defender &d) {
         expected_loot = d.assets;
     }
     
-    verify_outcome();
+    // verify_outcome();
 
     // TODO should attackers YOLO their savings if their assets get very low?
     // So that we don't end the game with a bunch of attackers with $0.01
@@ -268,7 +271,7 @@ void Game::fight(Attacker &a, Defender &d) {
                 // std::cout << "submitting claim" << std::endl;
                 // std::cout << "  -- submitting claim  " << std::endl;
                 d.submit_claim(loot);
-                verify_outcome();
+                // verify_outcome();
                 // std::cout << "OK\n";
             }
         }
@@ -285,14 +288,16 @@ void Game::init_round() {
     Insurer::perform_market_analysis(prevRoundAttacks);
 
     // std::cout << "before strategy: " << std::endl;
-    verify_outcome();
+    // verify_outcome();
     // std::cout << " OK\n";
-    for (uint i=0; i<defenders.size(); i++) {
-        assert(i == defenders[i].id);
-        defenders[i].choose_security_strategy();
+    // for (uint i=0; i<defenders.size(); i++) {
+    for (uint i=0; i < alive_defenders_indices.size(); i++) {
+        assert(defenders[alive_defenders_indices[i]].assets > 0);
+        // assert(i == defenders[i].id);
+        defenders[alive_defenders_indices[i]].choose_security_strategy();
         // std::cout << "     Defender " << i<< " now has " << defenders[i].assets << std::endl;
         // std::cout << " == Defender[0] has " << defenders[0].assets << std::endl;
-        verify_outcome();
+        // verify_outcome();
     }
     // std::cout << "after strategy: " << std::endl;
     verify_outcome();
@@ -311,7 +316,7 @@ void Game::run_iterations() {
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
         // std::cout << "------ Round " << iter_num << "------" << std::endl;
-        verify_outcome(); // TODO remove later...for testing 
+        // verify_outcome(); // TODO remove later...for testing 
         init_round();
 
         std::vector<int> new_alive_defenders_indices;

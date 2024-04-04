@@ -14,7 +14,7 @@ double Attacker::attackerLoots = 0;
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
 
-    assets = p.WEALTH_distribution->draw() * p.INEQUALITY; // TODO check this...this doesn't need to a distribution, right?
+    assets = p.WEALTH_distribution->draw() * p.INEQUALITY;
     if (assets < 0) {
         assets = 0;
     }
