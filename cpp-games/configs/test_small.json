@@ -39,7 +39,7 @@
     },
     "NUM_BLUE_PLAYERS":100,
     "NUM_INSURERS":1,
-    "NUM_GAMES":100,
+    "NUM_GAMES":500,
     "EPSILON":100,
     "DELTA":50,
     "verbose":false,
