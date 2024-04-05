@@ -5,6 +5,10 @@
 double Insurer::i_init = 0; // Initialization outside the class definition
 double Insurer::current_sum_assets = 0;
 double Insurer::insurer_iter_sum = 0;
+
+double Insurer::loss_ratio = 0;
+double Insurer::retention_regression_factor = 0;
+
 std::vector<double> Insurer::cumulative_assets; 
 std::vector<Defender>* Insurer::defenders;
 std::vector<Attacker>* Insurer::attackers;
@@ -55,11 +59,8 @@ double Insurer::issue_payment(double claim) {
 }
 
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
+    
     PolicyType policy;
-
-    // TODO make these const static class vars or put them in config
-    double OVerhead = 0.20; // 20% overhead // Better to call this a "loss ratio" actually (standard terminology for insurance)
-    double r = 20.0; // TODO double check retention regression factor
 
     double probability_of_getting_paried_with_attacker = std::min(1.0, ((attackers->size() * 1.0) / (defenders->size() * 1.0)));
     assert(probability_of_getting_paried_with_attacker >= 0);
@@ -81,8 +82,8 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     assert(mean_PAYOFF >= 0);
     assert(mean_PAYOFF <= 1);
     
-    policy.premium = (p_L * mean_PAYOFF * assets) / (r * p_L + OVerhead);
-    policy.retention = r * policy.premium;
+    policy.premium = (p_L * mean_PAYOFF * assets) / (retention_regression_factor * p_L + loss_ratio);
+    policy.retention = retention_regression_factor * policy.premium;
 
     assert(policy.premium >= 0);
     assert(policy.retention >= 0);
@@ -120,7 +121,7 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     std::sort(attacker_assets.begin(), attacker_assets.end());
 
     for (auto d = defenders->begin(); d != defenders->end(); ++d) {
-        d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack); // TODO this is returning crazy values and likely the source of the crashes.
+        d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
     }
 
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.

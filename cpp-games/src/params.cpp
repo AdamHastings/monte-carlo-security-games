@@ -22,6 +22,9 @@ Params params_loader::load_cfg(std::string basename) {
     p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
     p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);        
 
+    p.LOSS_RATIO              = jsonData["LOSS_RATIO"].asDouble();
+    p.RETENTION_REGRESSION_FACTOR = jsonData["RETENTION_REGRESSION_FACTOR"].asDouble();
+
     p.NUM_BLUE_PLAYERS        = jsonData["NUM_BLUE_PLAYERS"].asInt();
     p.NUM_INSURERS            = jsonData["NUM_INSURERS"].asInt();
     p.NUM_GAMES               = jsonData["NUM_GAMES"].asInt();

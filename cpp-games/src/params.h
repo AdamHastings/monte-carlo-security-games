@@ -12,6 +12,9 @@ struct Params {
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
 
+    double LOSS_RATIO;
+    double RETENTION_REGRESSION_FACTOR;
+
     int NUM_BLUE_PLAYERS;
     int NUM_INSURERS;
     int NUM_GAMES;

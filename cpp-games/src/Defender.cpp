@@ -111,8 +111,8 @@ void Defender::choose_security_strategy() {
     // 1. Get insurance policy from insurer
     PolicyType policy = i->provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
-    assert(policy.premium >= 0); // TODO what happens when the premium is 0?
-    assert(policy.retention >= 0);
+    assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
+    assert(policy.retention > 0);
     assert(expected_loss_with_insurance >= 0);
 
     // 2. Find optimum security investment

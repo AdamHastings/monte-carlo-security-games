@@ -31,6 +31,8 @@ Game::Game(Params prm, unsigned int game_number) {
         Insurer i = Insurer(j, p, defenders, attackers);
         insurers.push_back(i);
     }
+    Insurer::loss_ratio = p.LOSS_RATIO;
+    Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR;
 
     for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
         Defender d = Defender(i, p, insurers);

@@ -37,6 +37,8 @@
         "mean" : 0.388,
         "stddev" : 0.062
     },
+    "LOSS_RATIO" : 0.80,
+    "RETENTION_REGRESSION_FACTOR" : 25.0,
     "NUM_BLUE_PLAYERS":1000,
     "NUM_INSURERS":1,
     "NUM_GAMES":1000,
