@@ -17,7 +17,6 @@ class Insurer : public Player {
 
         static double paid_claims;
 
-        // TODO shouldn't this be static?
         static std::vector<Defender>* defenders;
         static std::vector<Attacker>* attackers;
 

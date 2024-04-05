@@ -56,7 +56,7 @@ double Insurer::issue_payment(double claim) {
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
     PolicyType policy;
 
-    // TODO make these const static class vars
+    // TODO make these const static class vars or put them in config
     double OVerhead = 0.20; // 20% overhead // Better to call this a "loss ratio" actually (standard terminology for insurance)
     double r = 20.0; // TODO double check retention regression factor
 
@@ -118,16 +118,8 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
 
     std::sort(attacker_assets.begin(), attacker_assets.end());
 
-    // std::cout << "attacker assets:" << std::endl;
-    // for (auto aa : attacker_assets) { 
-    //     std::cout << "  " << aa;
-    // }
-    // std::cout << std::endl;
-
-
     for (auto d = defenders->begin(); d != defenders->end(); ++d) {
         d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack); // TODO this is returning crazy values and likely the source of the crashes.
-        // std::cout << "defenders[" << d->id << "] with costToAttack=" << d->costToAttack << " has costToAttackPercentile " <<  d->costToAttackPercentile << std::endl;
     }
 
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
