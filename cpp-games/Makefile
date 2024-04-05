@@ -1,8 +1,8 @@
 CXX=g++
 CPPFLAGS=-Wall -Werror -std=c++17 -fno-builtin-memset
-INCLUDES=-Itbb/latest/include -Ijson
-LDLIBS=-Ltbb/latest/lib/intel64/gcc4.8/ 
-LDFLAGS=-ltbb
+INCLUDES=
+LDLIBS=
+LDFLAGS= 
 TARGET=run_games
 
 SRCS=main.cpp params.cpp Player.cpp Insurer.cpp Attacker.cpp Defender.cpp Game.cpp Distributions.cpp 

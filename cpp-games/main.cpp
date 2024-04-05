@@ -11,12 +11,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "json/json.h"
-// #include "oneapi/tbb.h"
 #include "Player.h"
 #include "Game.h"
 #include "Distributions.h"
-
-// using namespace oneapi::tbb;
 using namespace std;
 
 
@@ -36,7 +33,7 @@ void RunGame(Params p) {
 
 void ParallelRunGames(vector<Params> a) {
     unsigned int num_cores = std::thread::hardware_concurrency(); // Get the number of cores on this system
-    unsigned int maxProcesses = num_cores;
+    unsigned int maxProcesses = num_cores*4;
 
     unsigned int processesRunning = 0;
 
@@ -47,6 +44,7 @@ void ParallelRunGames(vector<Params> a) {
         if (pid < 0) {
             // Fork failed
             std::cerr << "Fork failed!" << std::endl;
+            exit(1);
         } else if (pid == 0) {
             // Child process
             RunGame(a[i]);
@@ -68,6 +66,8 @@ void ParallelRunGames(vector<Params> a) {
     while (wait(NULL) > 0) {
         processesRunning--;
     }
+
+    assert(processesRunning == 0);
 }
 
 void SerialRunGames(vector<Params> a) {
@@ -149,15 +149,14 @@ int main(int argc, char** argv) {
     basename.erase(basename.find_last_of("."));
     init_logs(basename);
 
-    // vector of *incomplete* params, due to constraints on memory. IF UNIFORM PARAMETERS.
-    // params need to be completed in ParallelRunGames
+    // vector of params
     vector<Params> v = params_loader::load_cfg(basename);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
     std::cout << "started " << v[0].NUM_GAMES << " games at " << std::ctime(&start_time);
-    ParallelRunGames(v); // TODO undo after debugging
+    ParallelRunGames(v);
     // SerialRunGames(v);
 
     auto end = std::chrono::system_clock::now();
