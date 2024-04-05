@@ -22,6 +22,11 @@ class Game {
     private:
 
         Params p;
+
+        double INEQUALITY;
+        double ATTACKERS;
+
+
         std::vector<Defender> defenders;
         std::vector<Attacker> attackers;
         std::vector<Insurer> insurers;

@@ -5,8 +5,10 @@
 #include "Distributions.h"
 
 struct Params {
-    double ATTACKERS;   // Only need to sample once per game
-    double INEQUALITY;  // Only need to sample once per game 
+    // double ATTACKERS;   // Only need to sample once per game
+    // double INEQUALITY;  // Only need to sample once per game 
+    Distribution* ATTACKERS_distribution;
+    Distribution* INEQUALITY_distribution;
     Distribution* EFFICIENCY_distribution;
     Distribution* PAYOFF_distribution;
     Distribution* WEALTH_distribution;
@@ -25,5 +27,5 @@ struct Params {
 
 class params_loader {
     public:
-        static std::vector<Params> load_cfg(std::string basename);
+        static Params load_cfg(std::string basename);
 };

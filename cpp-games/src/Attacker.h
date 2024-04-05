@@ -12,6 +12,10 @@ class Attacker : public Player {
         static std::vector<double> cumulative_assets; // running total of all attackers' assets
         static double current_sum_assets; // sum total of all class instances
 
+        // // Game params specific to Attackers
+        // static double INEQUALITY;
+        // static double ATTACKERS;
+
         // bookkeeping vars for all attackers combined
         static int attacksAttempted;
         static int attacksSucceeded;
@@ -20,7 +24,7 @@ class Attacker : public Player {
 
         static void reset();
 
-        Attacker(int id_in,  Params &p);
+        Attacker(int id_in,  Params &p, double INEQUALITY);
         void gain(double gain) override;
         void lose(double loss) override;
 };

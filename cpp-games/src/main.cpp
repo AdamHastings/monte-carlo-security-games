@@ -19,6 +19,7 @@ using namespace std;
 
 void RunGame(Params p) {
     
+    // TODO need to do two more draws when creating game!!
     Game g = Game(p);
 
     g.run_iterations();
@@ -31,13 +32,13 @@ void RunGame(Params p) {
     log.close();
 }
 
-void ParallelRunGames(vector<Params> a) {
+void ParallelRunGames(Params p) {
     unsigned int num_cores = std::thread::hardware_concurrency(); // Get the number of cores on this system
     unsigned int maxProcesses = num_cores*4;
 
     unsigned int processesRunning = 0;
 
-    for (uint i=0; i < a.size(); i++) {
+    for (uint i=0; i < p.NUM_GAMES; i++) {
         // Fork a child process for each job
         pid_t pid = fork();
 
@@ -47,7 +48,7 @@ void ParallelRunGames(vector<Params> a) {
             exit(1);
         } else if (pid == 0) {
             // Child process
-            RunGame(a[i]);
+            RunGame(p);
             exit(0); // Terminate the child process
         } else {
             // Parent process
@@ -70,11 +71,12 @@ void ParallelRunGames(vector<Params> a) {
     assert(processesRunning == 0);
 }
 
-void SerialRunGames(vector<Params> a) {
-    for (uint i=0; i < a.size(); i++) {
-        RunGame(a[i]);
-    }
-}
+// TODO fix for Params p and maybe uncomment later
+// void SerialRunGames(vector<Params> a) {
+//     for (uint i=0; i < a.size(); i++) {
+//         RunGame(a[i]);
+//     }
+// }
 
 void init_logs(std::string basename) {
 
@@ -150,13 +152,13 @@ int main(int argc, char** argv) {
     init_logs(basename);
 
     // vector of params
-    vector<Params> v = params_loader::load_cfg(basename);
+    Params p = params_loader::load_cfg(basename);
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
-    std::cout << "started " << v[0].NUM_GAMES << " games at " << std::ctime(&start_time);
-    ParallelRunGames(v);
+    std::cout << "started " << p.NUM_GAMES << " games at " << std::ctime(&start_time);
+    ParallelRunGames(p);
     // SerialRunGames(v);
 
     auto end = std::chrono::system_clock::now();

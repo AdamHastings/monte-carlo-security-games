@@ -12,11 +12,14 @@
 #include "Game.h"
 
 static std::random_device rd;  // Will be used to obtain a seed for the random number engine
-// static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-static std::mt19937 gen(0); // TODO undo static seed?
-std::uniform_real_distribution<> uniform(0.0, 1.0);
+static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+// static std::mt19937 gen(0); // Uncomment + toggle with above line to re-introduce repeatable randomness.
+// std::uniform_real_distribution<> uniform(0.0, 1.0);
 
 Game::Game(Params prm) {
+    
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    Distribution::seed(rd);
 
      
     Attacker::reset();
@@ -36,13 +39,16 @@ Game::Game(Params prm) {
         alive_defenders_indices.push_back(i);
     }
 
-    int num_attackers = (int)(p.NUM_BLUE_PLAYERS * p.ATTACKERS);
+    ATTACKERS = p.ATTACKERS_distribution->draw();
+    INEQUALITY = p.INEQUALITY_distribution->draw();
+
+    int num_attackers = (int)(p.NUM_BLUE_PLAYERS * ATTACKERS);
     if (num_attackers <= 0) {
         num_attackers = 1;
     }
     assert(num_attackers > 0);
     for (int i=0; i < num_attackers; i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
-        Attacker a = Attacker(i, p);
+        Attacker a = Attacker(i, p, INEQUALITY);
         attackers.push_back(a);
         alive_attackers_indices.push_back(i);
     }
@@ -66,8 +72,8 @@ Game::Game(Params prm) {
 std::string Game::to_string() {
     std::string ret = "";
 
-    ret += std::to_string(p.ATTACKERS).substr(0,4) + ",";
-    ret += std::to_string(p.INEQUALITY).substr(0,4) + ",";
+    ret += std::to_string(ATTACKERS).substr(0,4) + ",";
+    ret += std::to_string(INEQUALITY).substr(0,4) + ",";
     ret += std::to_string(int(round(Defender::d_init))) + ",";
     ret += std::to_string(int(round(Defender::current_sum_assets))) + ",";
     ret += std::to_string(int(round(Attacker::Attacker::a_init))) + ",";

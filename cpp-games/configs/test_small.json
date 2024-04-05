@@ -2,9 +2,11 @@
     "distribution_type" : "nonuniform",
     "ATTACKERS" :
     {
-        "distribution" : "normal",
+        "distribution" : "truncated_normal",
         "mean" : 0.2,
-        "stddev" : 0.05
+        "stddev" : 0.05,
+        "min" : 0.0,
+        "max" : 1.0
     },
     "INEQUALITY" :
     {

@@ -11,10 +11,10 @@ int Attacker::attacksSucceeded = 0;
 double Attacker::attackerExpenditures = 0;
 double Attacker::attackerLoots = 0; 
 
-Attacker::Attacker(int id_in, Params &p) : Player(p) {
+Attacker::Attacker(int id_in, Params &p, double INEQUALITY) : Player(p) {
     id = id_in;
 
-    assets = p.WEALTH_distribution->draw() * p.INEQUALITY;
+    assets = p.WEALTH_distribution->draw() * INEQUALITY;
     if (assets < 0) {
         assets = 0;
     }
@@ -37,6 +37,7 @@ void Attacker::gain(double gain) {
 }
 
 void Attacker::reset() {
+
     a_init = 0;
     attacker_iter_sum = 0; // how much the attackers have cumulatively gained or lost this round
     current_sum_assets = 0; // sum total of all class instances

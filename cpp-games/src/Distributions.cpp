@@ -12,10 +12,11 @@
 
 using namespace std;
 
-// TODO put Distribution in its own class file
-// TODO results don't seem random? Probably because of fixed seed? Look into this TODO TODO TODO
-static std::mt19937 generator(0);
+std::mt19937 Distribution::generator; // Standard mersenne_twister_engine seeded with rd()
 
+void Distribution::seed(std::random_device &rd){
+    generator.seed(rd());
+}
 
 UniformRealDistribution::UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
 
