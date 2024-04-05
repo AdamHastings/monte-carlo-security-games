@@ -19,11 +19,9 @@ class Distribution {
         virtual double mean();
         virtual ~Distribution();
 
-        static void seed(std::random_device &rd);
+        static void seed(unsigned int seed);
 
-        // static std::random_device rd;  // Will be used to obtain a seed for the random number engine
         static std::mt19937 generator; // Standard mersenne_twister_engine seeded with rd()
-        // static std::mt19937 gen(0); // Uncomment + toggle with above line to re-introduce repeatable randomness.
 };
 
 class UniformRealDistribution : public Distribution {

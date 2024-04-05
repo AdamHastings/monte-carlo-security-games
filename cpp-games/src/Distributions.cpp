@@ -14,8 +14,8 @@ using namespace std;
 
 std::mt19937 Distribution::generator; // Standard mersenne_twister_engine seeded with rd()
 
-void Distribution::seed(std::random_device &rd){
-    generator.seed(rd());
+void Distribution::seed(unsigned int seed){
+    generator.seed(seed);
 }
 
 UniformRealDistribution::UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}

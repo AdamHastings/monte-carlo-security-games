@@ -5,8 +5,6 @@
 #include "Distributions.h"
 
 struct Params {
-    // double ATTACKERS;   // Only need to sample once per game
-    // double INEQUALITY;  // Only need to sample once per game 
     Distribution* ATTACKERS_distribution;
     Distribution* INEQUALITY_distribution;
     Distribution* EFFICIENCY_distribution;

@@ -11,15 +11,12 @@
 #include <vector>
 #include "Game.h"
 
-static std::random_device rd;  // Will be used to obtain a seed for the random number engine
-static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-// static std::mt19937 gen(0); // Uncomment + toggle with above line to re-introduce repeatable randomness.
-// std::uniform_real_distribution<> uniform(0.0, 1.0);
 
 Game::Game(Params prm) {
     
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    Distribution::seed(rd);
+    Distribution::seed(rd());
+    gen.seed(rd());
 
      
     Attacker::reset();

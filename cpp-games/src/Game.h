@@ -23,6 +23,7 @@ class Game {
 
         Params p;
 
+        std::mt19937 gen;
         double INEQUALITY;
         double ATTACKERS;
 
