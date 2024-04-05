@@ -69,19 +69,11 @@ void ParallelRunGames(Params p) {
     }
 
     assert(processesRunning == 0);
-
-    delete p.ATTACKERS_distribution;
-    delete p.INEQUALITY_distribution;
-    delete p.EFFICIENCY_distribution; 
-    delete p.PAYOFF_distribution;     
-    delete p.WEALTH_distribution;     
-    delete p.POSTURE_distribution; 
 }
 
-// TODO fix for Params p and maybe uncomment later
-// void SerialRunGames(vector<Params> a) {
-//     for (uint i=0; i < a.size(); i++) {
-//         RunGame(a[i]);
+// void SerialRunGames(Params p) {
+//     for (uint i=0; i < p.NUM_GAMES; i++) {
+//         RunGame(p, i);
 //     }
 // }
 
@@ -166,7 +158,14 @@ int main(int argc, char** argv) {
 
     std::cout << "started " << p.NUM_GAMES << " games at " << std::ctime(&start_time);
     ParallelRunGames(p);
-    // SerialRunGames(v);
+    // SerialRunGames(p);
+
+    delete p.ATTACKERS_distribution;
+    delete p.INEQUALITY_distribution;
+    delete p.EFFICIENCY_distribution; 
+    delete p.PAYOFF_distribution;     
+    delete p.WEALTH_distribution;     
+    delete p.POSTURE_distribution; 
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

@@ -28,6 +28,7 @@ Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::v
 
 void Insurer::lose(double loss) {
     Player::lose(loss);
+    paid_claims += loss; //assumes that Insures *only* lose money when paying claims!
     insurer_iter_sum -= loss;
     current_sum_assets -= loss;
 }

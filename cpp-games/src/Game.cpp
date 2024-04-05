@@ -140,8 +140,6 @@ void Game::verify_init() {
         assert(ins.assets >= 0);
         assert(ins.id == i);
     }
-
-    verify_outcome();
 }
 
 void Game::verify_outcome() {
@@ -174,7 +172,7 @@ void Game::verify_outcome() {
     assert(round(Insurer::current_sum_assets - checksum_insurer_sum_assets) == 0);
 
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
-    assert(round(Insurer::i_init - Insurer::paid_claims) >= 0);
+    // assert(round(Insurer::i_init  + Insurer- Insurer::paid_claims) >= 0); // This can be violated if insurers collect money from insurance.
     assert(round(Insurer::paid_claims) >= 0);
     assert(round(Attacker::attackerLoots - Insurer::paid_claims) >= 0);
     assert(Attacker::attackerExpenditures >= 0);
@@ -194,14 +192,10 @@ void Game::verify_outcome() {
     double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures; 
 
     assert(round(init_ - end_) == 0); 
-  
 }
 
 void Game::conclude_game(std::string outcome) {
     final_outcome = outcome;
-
-    // TODO cleanup allocated pointers?
-
     verify_outcome();
 }
 
@@ -224,8 +218,6 @@ void Game::fight(Attacker &a, Defender &d) {
         expected_loot = d.assets;
     }
     
-    verify_outcome();
-
     // TODO should attackers YOLO their savings if their assets get very low?
     // So that we don't end the game with a bunch of attackers with $0.01
 
@@ -269,15 +261,10 @@ void Game::init_round() {
     roundAttacks = 0;
 
     Insurer::perform_market_analysis(prevRoundAttacks);
-    // verify_outcome();
-    // for (uint i=0; i<defenders.size(); i++) {
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
-        // assert(i == defenders[i].id);
         defenders[alive_defenders_indices[i]].choose_security_strategy();
-        // verify_outcome();
     }
-    verify_outcome();
 }
 
 void Game::init_game(){
@@ -291,7 +278,6 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
 
-        // verify_outcome(); // TODO remove later...for testing 
         init_round();
 
         std::vector<int> new_alive_defenders_indices;
@@ -353,8 +339,6 @@ void Game::run_iterations() {
             d.ins_idx = -1;
             d.insured = false; 
         }
-
-        verify_outcome(); // TODO remove later...for testing 
 
         prevRoundAttacks = roundAttacks;
 
