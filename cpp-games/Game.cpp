@@ -121,6 +121,7 @@ void Game::verify_init() {
         assert(d.posture <= 1);
         assert(d.id == i);
     }
+    assert(Defender::d_init == Defender::current_sum_assets);
 
     for (uint i=0; i<attackers.size(); i++) {
         Attacker a = attackers[i];
@@ -129,6 +130,7 @@ void Game::verify_init() {
         assert(a.assets >= 0);
         assert(a.id == i);
     }
+    assert(Attacker::a_init == Attacker::current_sum_assets);
 
     for (uint i=0; i<insurers.size(); i++) {
         Insurer ins = insurers[i];
@@ -151,11 +153,10 @@ void Game::verify_outcome() {
 
     double checksum_attacker_sum_assets = 0;
     for (uint i=0; i<attackers.size(); i++) {
-        Attacker a = attackers[i]; // TODO does this do a copy or is this a pointer?
-        assert(round(a.assets) >= 0);
-        checksum_attacker_sum_assets += a.assets;
+        // Attacker a = attackers[i]; // TODO does this do a copy or is this a pointer?
+        assert(round(attackers[i].assets) >= 0);
+        checksum_attacker_sum_assets += attackers[i].assets;
         // std::cout << "     Attacker[" << i << "] assets: " << a.assets << ", Attacker::current_sum_assets: " << Attacker::current_sum_assets << ", checksum_attacker_sum_assets: " << checksum_attacker_sum_assets << std::endl;
-
     }
     // std::cout<<"________\n";
     assert(round(Attacker::current_sum_assets - checksum_attacker_sum_assets) == 0);
@@ -235,7 +236,7 @@ void Game::fight(Attacker &a, Defender &d) {
         expected_loot = d.assets;
     }
     
-    // verify_outcome();
+    verify_outcome();
 
     // TODO should attackers YOLO their savings if their assets get very low?
     // So that we don't end the game with a bunch of attackers with $0.01

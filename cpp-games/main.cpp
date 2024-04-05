@@ -6,22 +6,23 @@
 #include <ctime>  
 #include <cstring>
 #include <cstdlib>
+#include <thread>
 #include <random>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "json/json.h"
-#include "oneapi/tbb.h"
+// #include "oneapi/tbb.h"
 #include "Player.h"
 #include "Game.h"
 #include "Distributions.h"
 
-using namespace oneapi::tbb;
+// using namespace oneapi::tbb;
 using namespace std;
 
 
 void RunGame(Params p) {
     
-    // std::cout << "constructing game" << std::endl;
     Game g = Game(p);
-    // std::cout << "game constructed" << std::endl;    
 
     g.run_iterations();
 
@@ -34,14 +35,39 @@ void RunGame(Params p) {
 }
 
 void ParallelRunGames(vector<Params> a) {
-    parallel_for( blocked_range<int>(0,a.size()),
-        [&](blocked_range<int> r) 
-    {
-            for(int i=r.begin(); i < r.end(); ++i)
-            {
-                RunGame(a[i]);
+    unsigned int num_cores = std::thread::hardware_concurrency(); // Get the number of cores on this system
+    unsigned int maxProcesses = num_cores;
+
+    unsigned int processesRunning = 0;
+
+    for (uint i=0; i < a.size(); i++) {
+        // Fork a child process for each job
+        pid_t pid = fork();
+
+        if (pid < 0) {
+            // Fork failed
+            std::cerr << "Fork failed!" << std::endl;
+        } else if (pid == 0) {
+            // Child process
+            RunGame(a[i]);
+            exit(0); // Terminate the child process
+        } else {
+            // Parent process
+            processesRunning++;
+
+            // Check if we've reached the maximum number of processes
+            if (processesRunning >= maxProcesses) {
+                // Wait for any child process to finish
+                wait(NULL);
+                processesRunning--;
             }
-    });
+        }
+    }
+
+    // Wait for all remaining child processes to finish
+    while (wait(NULL) > 0) {
+        processesRunning--;
+    }
 }
 
 void SerialRunGames(vector<Params> a) {
@@ -131,8 +157,8 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
     std::cout << "started " << v[0].NUM_GAMES << " games at " << std::ctime(&start_time);
-    // ParallelRunGames(v); // TODO undo after debugging
-    SerialRunGames(v);
+    ParallelRunGames(v); // TODO undo after debugging
+    // SerialRunGames(v);
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

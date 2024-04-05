@@ -23,6 +23,8 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     d_init += assets;
     current_sum_assets += assets;
 
+    assert(Defender::d_init == Defender::current_sum_assets);
+
 }
 
 double Defender::estimated_probability_of_attack = 0;
