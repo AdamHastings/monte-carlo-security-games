@@ -12,17 +12,13 @@
 #include "Game.h"
 
 
-Game::Game(Params prm) {
+Game::Game(Params prm, unsigned int game_number) {
     
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    
-    // Fixed seed for debugging // TODO remove later?
-    // Distribution::seed(0);
-    // gen.seed(0);
+    game_num = game_number;
 
-    // Uncomment later to re-introduce real randomness
-    Distribution::seed(rd());
-    gen.seed(rd());
+    // std::random_device rd;  // Uncomment if you need true randomness
+    Distribution::seed(game_num);
+    gen.seed(game_num);
 
      
     Attacker::reset();

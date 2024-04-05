@@ -14,12 +14,14 @@
 class Game {
 
     public:
-        Game(Params prm);
+        Game(Params prm, unsigned int game_number);
         ~Game();
         void run_iterations();
         std::string to_string();
 
     private:
+
+        unsigned int game_num;
 
         Params p;
 

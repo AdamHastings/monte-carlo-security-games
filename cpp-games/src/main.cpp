@@ -17,10 +17,10 @@
 using namespace std;
 
 
-void RunGame(Params p) {
+void RunGame(Params p, unsigned int game_number) {
     
     // TODO need to do two more draws when creating game!!
-    Game g = Game(p);
+    Game g = Game(p, game_number);
 
     g.run_iterations();
 
@@ -48,7 +48,7 @@ void ParallelRunGames(Params p) {
             exit(1);
         } else if (pid == 0) {
             // Child process
-            RunGame(p);
+            RunGame(p, i);
             exit(0); // Terminate the child process
         } else {
             // Parent process
