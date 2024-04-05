@@ -77,7 +77,7 @@ void ParallelRunGames(Params p) {
 //     }
 // }
 
-void init_logs(std::string basename) {
+void init_logs(std::string basename, Params p) {
 
     std::string fpath = "logs/" + basename + ".csv";
 
@@ -101,11 +101,20 @@ void init_logs(std::string basename) {
     header += "attacksSucceeded,";
     header += "attackerLoots,";
     header += "attackerExpenditures,";
+    header += "policiesPurchased,";
+    header += "defensesPurchased,";
     header += "crossovers,";
     header += "insurer_tod,";
     header += "paid_claims,";
     header += "final_iter,";
     header += "outcome";
+
+    if (p.verbose) {
+        header += "d_cumulative_assets,";
+        header += "a_cumulative_assets,";
+        header += "i_cumulative_assets,";
+    }
+
     header += "\n";
 
     // Check if log file already exists so that we don't accidentally write over it
@@ -148,10 +157,10 @@ int main(int argc, char** argv) {
     std::string basename(argv[1]);
     basename.erase(0, strlen("configs/"));
     basename.erase(basename.find_last_of("."));
-    init_logs(basename);
-
-    // vector of params
+    
     Params p = params_loader::load_cfg(basename);
+    init_logs(basename, p);
+
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);

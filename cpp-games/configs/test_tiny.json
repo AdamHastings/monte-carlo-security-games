@@ -42,6 +42,6 @@
     "NUM_GAMES":100,
     "EPSILON":100,
     "DELTA":50,
-    "verbose":false,
+    "verbose":true,
     "assertions_on":true
 }

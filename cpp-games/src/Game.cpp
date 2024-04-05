@@ -83,6 +83,8 @@ std::string Game::to_string() {
     ret += std::to_string(int(round(Attacker::attacksSucceeded))) + ",";
     ret += std::to_string(int(round(Attacker::attackerLoots))) + ",";
     ret += std::to_string(int(round(Attacker::attackerExpenditures))) + ",";
+    ret += std::to_string(Defender::policiesPurchased) + ",";   
+    ret += std::to_string(Defender::defensesPurchased) + ",";
     ret += "\"[";
     for (auto i : crossovers) {
         ret += std::to_string(i) + ",";
@@ -95,14 +97,25 @@ std::string Game::to_string() {
     ret += "]\",";
     ret += std::to_string(int(round(Insurer::paid_claims))) + ",";
     ret += std::to_string(iter_num) + ",";
-    ret += final_outcome;
+    ret += final_outcome + ",";
 
-    // TODO
-    // if (verbose):
-    //     ret += "\"" + str(self.defenders_cumulative_assets)  + "\","
-    //     ret += "\"" + str(self.attackers_cumulative_assets)  + "\","
-    //     ret += "\"" + str(self.insurer_cumulative_assets)    + "\","
-    //     ret += "\"" + str(self.government_cumulative_assets) + "\","
+    if (p.verbose) {
+        ret += "\"[";
+        for (auto a : Defender::cumulative_assets) {
+            ret += std::to_string(int(round(a))) + ",";
+        }
+        ret += "]\",";
+        ret += "\"[";
+        for (auto a : Attacker::cumulative_assets) {
+            ret += std::to_string(int(round(a))) + ",";
+        }
+        ret += "]\",";
+        ret += "\"[";
+        for (auto a : Insurer::cumulative_assets) {
+            ret += std::to_string(int(round(a))) + ",";
+        }
+        ret += "]\",";
+    }
     
     ret += "\n";
     return ret;

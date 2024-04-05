@@ -5,8 +5,8 @@
       "name": "C++ Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/run_games_debug", // Path to your compiled executable
-      "args": ["configs/test_medium.json"],
+      "program": "${workspaceFolder}/run/debug/run_games_debug", // Path to your compiled executable
+      "args": ["configs/test_small.json"],
       "cwd": "${workspaceFolder}",
       "environment": [{ "name": "config", "value": "Debug" }],
       "MIMode": "gdb",

@@ -14,6 +14,9 @@ class Defender : public Player {
         static std::vector<double> cumulative_assets; // running total of all defenders' assets
         static double current_sum_assets; // sum total of all class instances
 
+        static unsigned int policiesPurchased;
+        static unsigned int defensesPurchased;
+
         uint id;
         double posture;
         double costToAttack;

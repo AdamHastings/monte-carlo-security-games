@@ -33,11 +33,16 @@ double Defender::d_init = 0;
 double Defender::defender_iter_sum = 0;
 double Defender::current_sum_assets = 0;
 
+unsigned int Defender::policiesPurchased = 0;
+unsigned int Defender::defensesPurchased = 0;
+
 std::vector<double> Defender::cumulative_assets; 
 
 
 // TODO what if retention > assets????
 void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
+    policiesPurchased += 1;
+    
     assert(assets > p.premium);
     
     insured = true;
@@ -70,6 +75,7 @@ void Defender::submit_claim(double loss) {
 
 // TODO this is why the checksums are failing...transactions not known to Game class
 void Defender::make_security_investment(double x) {
+    defensesPurchased += 1;
     double sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
     posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
     assert(posture >= 0);
@@ -118,21 +124,23 @@ void Defender::choose_security_strategy() {
 
     // 3. Find cost to achieve perfect security
     // TODO shouldn't this never happen?
-    double perfect_security_investment = (assets * (assets * posture)) / (posture * mean_EFFICIENCY);
-    double expected_loss_with_perfect_security = perfect_security_investment;
-    assert(perfect_security_investment >= 0);
-    assert(expected_loss_with_perfect_security >= 0);
+    // double perfect_security_investment = (assets * (assets * posture)) / (posture * mean_EFFICIENCY);
+    // double expected_loss_with_perfect_security = perfect_security_investment;
+    // assert(perfect_security_investment >= 0);
+    // assert(expected_loss_with_perfect_security >= 0);
 
     // Choose the optimal strategy.
     // TODO premiums are a bit high!! look into this. maybe set the #attackers to be such that intial premiums match existing payments
     // TODO think about what happens when premiums are 0. Does this count as a valid policy? Does this mean expected loss is 0? What happens then?
-    double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
+    // double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
+    double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment});
+
     if (minimum == expected_loss_with_insurance) {
         purchase_insurance_policy(i, policy);
     } else if (minimum == expected_loss_with_optimal_investment) {
         make_security_investment(optimal_investment);
-    } else if (minimum == expected_loss_with_perfect_security) {
-        make_security_investment(perfect_security_investment);
+    // } else if (minimum == expected_loss_with_perfect_security) {
+    //     make_security_investment(perfect_security_investment);
     } else {
         assert(false); // should never reach this
     }
@@ -156,9 +164,9 @@ void Defender::reset() {
     d_init = 0;
     defender_iter_sum = 0;
     current_sum_assets = 0; 
-
+    policiesPurchased = 0;
+    defensesPurchased = 0;
     cumulative_assets.clear();
-
 }
 
 
