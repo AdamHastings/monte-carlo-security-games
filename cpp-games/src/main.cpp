@@ -69,6 +69,13 @@ void ParallelRunGames(Params p) {
     }
 
     assert(processesRunning == 0);
+
+    delete p.ATTACKERS_distribution;
+    delete p.INEQUALITY_distribution;
+    delete p.EFFICIENCY_distribution; 
+    delete p.PAYOFF_distribution;     
+    delete p.WEALTH_distribution;     
+    delete p.POSTURE_distribution; 
 }
 
 // TODO fix for Params p and maybe uncomment later

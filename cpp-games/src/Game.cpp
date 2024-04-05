@@ -15,6 +15,12 @@
 Game::Game(Params prm) {
     
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    
+    // Fixed seed for debugging // TODO remove later?
+    // Distribution::seed(0);
+    // gen.seed(0);
+
+    // Uncomment later to re-introduce real randomness
     Distribution::seed(rd());
     gen.seed(rd());
 
@@ -397,6 +403,8 @@ void Game::run_iterations() {
 
 
 Game::~Game() {
+    delete p.ATTACKERS_distribution;
+    delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
     delete p.PAYOFF_distribution;     
     delete p.WEALTH_distribution;     

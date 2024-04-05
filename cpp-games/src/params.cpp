@@ -15,25 +15,8 @@ Params params_loader::load_cfg(std::string basename) {
 
     Params p;
     
-    // TODO maybe do the draws when you create the other game objects?
-    // double draw = 0;
-    // Distribution* ATTACKERS_distribution = Distribution::createDistribution(jsonData["ATTACKERS"]);
     p.ATTACKERS_distribution = Distribution::createDistribution(jsonData["ATTACKERS"]);
-    // while (draw <= 0 || draw > 1 ) {
-    //     draw = ATTACKERS_distribution->draw();
-    // }
-    // p.ATTACKERS = draw;
-    // delete ATTACKERS_distribution;
-
-    // draw = 0;
-    // Distribution* INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
     p.INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
-    // while (draw <= 0 || draw > 1 ) {
-    //     draw = INEQUALITY_distribution->draw();
-    // }
-    // p.INEQUALITY = draw;
-    // delete INEQUALITY_distribution;
-
     p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
     p.PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
     p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
@@ -43,8 +26,7 @@ Params params_loader::load_cfg(std::string basename) {
     p.NUM_INSURERS            = jsonData["NUM_INSURERS"].asInt();
     p.NUM_GAMES               = jsonData["NUM_GAMES"].asInt();
     p.EPSILON                 = jsonData["EPSILON"].asInt();
-    p.DELTA                   = jsonData["DELTA"].asInt();
-    
+    p.DELTA                   = jsonData["DELTA"].asInt();  
 
     p.verbose       = jsonData["verbose"].asBool();
     p.assertions_on = jsonData["assertions_on"].asBool();
