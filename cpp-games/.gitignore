@@ -1,10 +1,3 @@
-*.o
-game
-output/
-plausible/
-split/
-sorted/
-trimmed/
-bin/
-trimmed_with_coMANDATEs/
+run/
+obj/
 oldlogs/

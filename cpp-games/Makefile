@@ -5,24 +5,51 @@ LDLIBS=
 LDFLAGS= 
 TARGET=run_games
 
-SRCS=main.cpp params.cpp Player.cpp Insurer.cpp Attacker.cpp Defender.cpp Game.cpp Distributions.cpp 
-OBJS=$(subst .cpp,.o,$(SRCS)) jsoncpp.o
+# Debug compiler flags
+DEBUG_FLAGS = -O0 -DDEBUG -g3 
 
-$(all): $(TARGET)
+# Release compiler flags
+RELEASE_FLAGS = -O3 -march=native -Ofast
 
-release: CPPFLAGS+=-O3 -march=native -Ofast
-release: $(TARGET)
+# Source files
+SOURCES = $(wildcard src/*.cpp)
 
-debug: CPPFLAGS+=-DDEBUG -g3
-debug: TARGET := $(TARGET)_debug
-debug: $(TARGET)
+# Object files directories
+OBJDIR_DEBUG = obj/debug
+OBJDIR_RELEASE = obj/release
 
-$(TARGET): $(OBJS) Makefile
-	$(CXX) $(CPPFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) $(LDLIBS) $(LDFLAGS)
+# Object files
+OBJECTS_DEBUG = $(SOURCES:src/%.cpp=$(OBJDIR_DEBUG)/%.o)
+OBJECTS_RELEASE = $(SOURCES:src/%.cpp=$(OBJDIR_RELEASE)/%.o)
 
-%.o: %.c %.h Makefile
-	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $(input) -o $(output) $(LDLIBS) $(LDFLAGS)
+# Executable names
+BINDIR_DEBUG = run/debug
+BINDIR_RELEASE = run/release
+EXECUTABLE_DEBUG = $(BINDIR_DEBUG)/$(TARGET)_debug
+EXECUTABLE_RELEASE = $(BINDIR_RELEASE)/$(TARGET)_release
+
+# Build rules for debug and release versions
+debug: $(EXECUTABLE_DEBUG)
+release: $(EXECUTABLE_RELEASE)
+
+all: debug release
+
+$(EXECUTABLE_DEBUG): $(OBJECTS_DEBUG) | $(BINDIR_DEBUG)
+	$(CXX) $(DEBUG_FLAGS) $^ -o $@
+
+$(EXECUTABLE_RELEASE): $(OBJECTS_RELEASE) | $(BINDIR_RELEASE)
+	$(CXX) $(RELEASE_FLAGS) $^ -o $@
+
+$(OBJDIR_DEBUG)/%.o: src/%.cpp | $(OBJDIR_DEBUG)
+	$(CXX) $(DEBUG_FLAGS) -c $< -o $@
+
+$(OBJDIR_RELEASE)/%.o: src/%.cpp | $(OBJDIR_RELEASE)
+	$(CXX) $(RELEASE_FLAGS) -c $< -o $@
+
+$(OBJDIR_DEBUG) $(BINDIR_DEBUG) $(OBJDIR_RELEASE) $(BINDIR_RELEASE):
+	mkdir -p $@
 
 clean:
-	rm $(OBJS) $(TARGET)
+	rm -rf obj run
 
+.PHONY: debug release clean
