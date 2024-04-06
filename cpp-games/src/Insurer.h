@@ -9,7 +9,6 @@
 
 class Insurer : public Player {
     public:
-        uint id;
         static double i_init;
         static double insurer_iter_sum;
         static std::vector<double> cumulative_assets; // running total of all insurers' assets
@@ -25,6 +24,10 @@ class Insurer : public Player {
 
         static void reset();
 
+    public:
+        uint id;
+        double last_round_loss_ratio;
+
         Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers);
         void gain(double gain) override;
         void lose(double loss) override;
@@ -33,7 +36,7 @@ class Insurer : public Player {
         double issue_payment(double claim);
         static void perform_market_analysis(int prevRoundAttacks);
 
-    private:
-        static double findPercentile(const std::vector<double>& sortedVector, double newValue);
+    // private:
+        // static double findPercentile(const std::vector<double>& sortedVector, double newValue);
 
 };

@@ -16,6 +16,7 @@ class Defender : public Player {
 
         static unsigned int policiesPurchased;
         static unsigned int defensesPurchased;
+        // static unsigned int doNothing; // TODO implement
 
         uint id;
         double posture;

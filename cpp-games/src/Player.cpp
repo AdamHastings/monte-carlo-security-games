@@ -18,6 +18,7 @@ void Player::gain(double gain) {
     assets += gain;
 }
 
+// TODO Assertion failure in submit_claim
 void Player::lose(double loss) {
     assert(loss >= 0);
     assert(loss <= assets);

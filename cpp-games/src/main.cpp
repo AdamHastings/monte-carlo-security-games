@@ -71,11 +71,13 @@ void ParallelRunGames(Params p) {
     assert(processesRunning == 0);
 }
 
-// void SerialRunGames(Params p) {
-//     for (uint i=0; i < p.NUM_GAMES; i++) {
-//         RunGame(p, i);
-//     }
-// }
+void SerialRunGames(std::string basename) {
+    Params p = params_loader::load_cfg(basename);
+    for (uint i=0; i < p.NUM_GAMES; i++) {
+        p = params_loader::load_cfg(basename);
+        RunGame(p, i);
+    }
+}
 
 void init_logs(std::string basename, Params p) {
 
@@ -166,8 +168,8 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
     std::cout << "started " << p.NUM_GAMES << " games at " << std::ctime(&start_time);
-    ParallelRunGames(p);
-    // SerialRunGames(p);
+    // ParallelRunGames(p);
+    SerialRunGames(basename);
 
     delete p.ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;

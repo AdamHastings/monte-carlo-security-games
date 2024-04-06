@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <numeric>
+#include <cmath>
 #include "Insurer.h"
 #include "Defender.h"
 
@@ -17,6 +19,7 @@ double Insurer::paid_claims = 0;
 
 Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers) : Player(p) {
     id = id_in;
+    last_round_loss_ratio = p.LOSS_RATIO;
 
     defenders = &_defenders;
     attackers = &_attackers;
@@ -54,7 +57,7 @@ double Insurer::issue_payment(double claim) {
     } else {
         amount_covered = claim;
     }
-    lose(amount_covered);
+    lose(amount_covered); // TODO causing assertion failure
     return amount_covered;
 }
 
@@ -85,24 +88,43 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     policy.premium = (p_L * mean_PAYOFF * assets) / (retention_regression_factor * p_L + loss_ratio);
     policy.retention = retention_regression_factor * policy.premium;
 
-    assert(policy.premium >= 0);
-    assert(policy.retention >= 0);
+    assert(policy.premium > 0);
+    assert(policy.retention > 0);
 
 
     return policy;
 }
 
-double Insurer::findPercentile(const std::vector<double>& sortedVector, double newValue) {
-    // Find the rank of the new value within the sorted vector
-    auto rankIterator = std::lower_bound(sortedVector.begin(), sortedVector.end(), newValue);
-    int rank = std::distance(sortedVector.begin(), rankIterator);
+// double Insurer::findPercentile(const std::vector<double>& sortedVector, double newValue) {
+//     // Find the rank of the new value within the sorted vector
+//     auto rankIterator = std::lower_bound(sortedVector.begin(), sortedVector.end(), newValue);
+//     int rank = std::distance(sortedVector.begin(), rankIterator);
     
-    // Calculate the percentile
-    double percentile = (static_cast<double>(rank) / (sortedVector.size())) * 1.0;
-    assert(percentile >= 0);
-    assert(percentile <= 1);
+//     // Calculate the percentile
+//     double percentile = (static_cast<double>(rank) / ((sortedVector.size() + 1) * 1.0));
+//     assert(percentile >= 0);
+//     assert(percentile <= 1);
     
-    return percentile;
+//     return percentile;
+// }
+
+
+// Function to compute the mean of a vector
+double computeMean(const std::vector<double>& data) {
+    double sum = 0.0;
+    for (const auto& value : data) {
+        sum += value;
+    }
+    return sum / data.size();
+}
+
+// Function to compute the variance of a vector
+double computeVariance(const std::vector<double>& data, double mean) {
+    double sumSquaredDiff = 0.0;
+    for (const auto& value : data) {
+        sumSquaredDiff += (value - mean) * (value - mean);
+    }
+    return sumSquaredDiff / data.size();
 }
 
 // Insurers use their overhead to conduct operations and perform risk analysis
@@ -118,10 +140,39 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
         }
     }
 
-    std::sort(attacker_assets.begin(), attacker_assets.end());
+    // std::sort(attacker_assets.begin(), attacker_assets.end());
 
+    // TODO TODO this doesn't work. Need to so something like MLE to fit a lognormal...
+    // double sum = std::accumulate(attacker_assets.begin(), attacker_assets.end(), 0.0);
+    // double attackers_assets_mean = sum / attacker_assets.size();
+
+    // std::vector<double> diff(attacker_assets.size());
+    // std::transform(attacker_assets.begin(), attacker_assets.end(), diff.begin(), [attackers_assets_mean](double x) { return x - attackers_assets_mean; });
+    // double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+    // double attackers_assets_stdev = std::sqrt(sq_sum / attacker_assets.size());
+    
+    // Compute sample mean and variance
+    double sampleMean = computeMean(attacker_assets);
+    double sampleVariance = computeVariance(attacker_assets, sampleMean);
+
+    // Compute parameters using method of moments
+    double mu_mom = log(sampleMean) - 0.5 * log(1 + sampleVariance / (sampleMean * sampleMean));
+    double sigma_mom = sqrt(log(1 + sampleVariance / (sampleMean * sampleMean)));
+
+
+    // TODO this means the insurer is lying about their estimate
+    // And is maybe too strong of an assumption that the insurer can know the attackers' assets
+    // Maybe this should be replaced by some other statistical method.
     for (auto d = defenders->begin(); d != defenders->end(); ++d) {
-        d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
+        // d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
+        double cta = d->costToAttack;
+        // TODO this is phi for normal dist
+        // needs to be for lognormal
+        // BUT adding log is wrong.
+        double cdf_d =  0.5 * (1 + erf((log(cta) - mu_mom) / (sigma_mom * sqrt(2))));;
+        assert(cdf_d < 1);
+        assert(cdf_d > 0);
+        d->costToAttackPercentile = cdf_d;
     }
 
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.

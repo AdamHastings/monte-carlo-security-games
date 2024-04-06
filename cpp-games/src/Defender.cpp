@@ -65,6 +65,7 @@ void Defender::submit_claim(double loss) {
     double claim_after_retention = std::max(0.0, (loss - policy.retention));
     assert(claim_after_retention >= 0);
     if (claim_after_retention > 0) {
+        // assertion failure happening here! TODO 
         double amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
         assert(loss >= amount_recovered);
         assert(claim_after_retention >= amount_recovered);
