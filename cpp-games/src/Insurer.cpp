@@ -48,8 +48,8 @@ void Insurer::gain(double gain) {
 
 double Insurer::issue_payment(double claim) {
     
-    double amount_covered = 0;
-    if (amount_covered > assets) {
+    double amount_covered; // TODO obviously wrong...
+    if (claim > assets) {
         // insurer cannot cover full amount and goes bust
         amount_covered = assets;
         // insurerTimesOfDeath.push_back(iter_num); // TODO put back in later
@@ -160,15 +160,9 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     double sigma_mom = sqrt(log(1 + sampleVariance / (sampleMean * sampleMean)));
 
 
-    // TODO this means the insurer is lying about their estimate
-    // And is maybe too strong of an assumption that the insurer can know the attackers' assets
-    // Maybe this should be replaced by some other statistical method.
     for (auto d = defenders->begin(); d != defenders->end(); ++d) {
         // d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
         double cta = d->costToAttack;
-        // TODO this is phi for normal dist
-        // needs to be for lognormal
-        // BUT adding log is wrong.
         double cdf_d =  0.5 * (1 + erf((log(cta) - mu_mom) / (sigma_mom * sqrt(2))));;
         assert(cdf_d < 1);
         assert(cdf_d > 0);
