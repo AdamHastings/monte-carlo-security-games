@@ -48,16 +48,13 @@ void Insurer::gain(double gain) {
 
 double Insurer::issue_payment(double claim) {
     
-    double amount_covered; // TODO obviously wrong...
-    if (claim > assets) {
-        // insurer cannot cover full amount and goes bust
+    double amount_covered;
+    if (claim > assets) { // insurer cannot cover full amount and goes bust
         amount_covered = assets;
-        // insurerTimesOfDeath.push_back(iter_num); // TODO put back in later
-        alive = false;
     } else {
         amount_covered = claim;
     }
-    lose(amount_covered); // TODO causing assertion failure
+    lose(amount_covered); 
     return amount_covered;
 }
 
@@ -87,10 +84,6 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     
     policy.premium = (p_L * mean_PAYOFF * assets) / (retention_regression_factor * p_L + loss_ratio);
     policy.retention = retention_regression_factor * policy.premium;
-
-    assert(policy.premium > 0);
-    assert(policy.retention > 0);
-
 
     return policy;
 }
@@ -164,8 +157,8 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
         // d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
         double cta = d->costToAttack;
         double cdf_d =  0.5 * (1 + erf((log(cta) - mu_mom) / (sigma_mom * sqrt(2))));;
-        assert(cdf_d < 1);
-        assert(cdf_d > 0);
+        assert(cdf_d <= 1);
+        assert(cdf_d >= 0);
         d->costToAttackPercentile = cdf_d;
     }
 

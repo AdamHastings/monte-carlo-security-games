@@ -65,12 +65,13 @@ void Defender::submit_claim(double loss) {
     double claim_after_retention = std::max(0.0, (loss - policy.retention));
     assert(claim_after_retention >= 0);
     if (claim_after_retention > 0) {
-        // assertion failure happening here! TODO 
-        double amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
-        assert(loss >= amount_recovered);
-        assert(claim_after_retention >= amount_recovered);
-        assert(amount_recovered > 0);
-        gain(amount_recovered);
+        if (insurers->at(ins_idx).alive) {
+            double amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
+            assert(loss >= amount_recovered);
+            assert(claim_after_retention >= amount_recovered);
+            assert(amount_recovered > 0);
+            gain(amount_recovered);
+        }
     }
 }
 
@@ -115,6 +116,14 @@ void Defender::choose_security_strategy() {
     assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
     assert(policy.retention > 0);
     assert(expected_loss_with_insurance >= 0);
+    // TODO maybe insurers *should* be able to write policies to defenders who have impenetrable...
+    // it'd be like taking candy from a baby
+    // but insurers need to still compute same loss ratio 
+    // maybe insurers should keep a running total of their gains and losses
+    // and only sell to super strong defenders if their loss ratios are too low.
+    // this will change some things about the model though...will change underwriting quite a bit. 
+    // but then what do they charge if they know they're ripping off the defender?
+    // can they assume p_a_hat? 
 
     // 2. Find optimum security investment
     double optimal_investment = std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF)));

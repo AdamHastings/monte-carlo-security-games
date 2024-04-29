@@ -66,6 +66,4 @@ class Game {
         void init_game();
 
         bool defenders_have_more_than_attackers;
-
-
 };
