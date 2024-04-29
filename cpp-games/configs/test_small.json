@@ -30,8 +30,8 @@
     "WEALTH" :
     {
         "distribution" : "lognormal",
-        "mean" : 10.0,
-        "stddev" : 1
+        "mean" : 9.87,
+        "stddev" : 1.68
     },
     "POSTURE" :
     {
