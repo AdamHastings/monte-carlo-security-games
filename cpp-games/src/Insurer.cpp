@@ -85,6 +85,9 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     policy.premium = (p_L * mean_PAYOFF * assets) / (retention_regression_factor * p_L + loss_ratio);
     policy.retention = retention_regression_factor * policy.premium;
 
+    assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
+    assert(policy.retention > 0);
+
     return policy;
 }
 
@@ -157,6 +160,9 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
         // d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
         double cta = d->costToAttack;
         double cdf_d =  0.5 * (1 + erf((log(cta) - mu_mom) / (sigma_mom * sqrt(2))));;
+        if (cdf_d >= 0.99) {
+            cdf_d = 0.99;
+        }
         assert(cdf_d <= 1);
         assert(cdf_d >= 0);
         d->costToAttackPercentile = cdf_d;

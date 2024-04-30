@@ -75,7 +75,6 @@ void Defender::submit_claim(double loss) {
     }
 }
 
-// TODO this is why the checksums are failing...transactions not known to Game class
 void Defender::make_security_investment(double x) {
     defensesPurchased += 1;
     double sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();

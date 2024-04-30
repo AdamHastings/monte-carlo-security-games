@@ -16,7 +16,7 @@ class Defender : public Player {
 
         static unsigned int policiesPurchased;
         static unsigned int defensesPurchased;
-        // static unsigned int doNothing; // TODO implement
+        // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
 
         uint id;
         double posture;
