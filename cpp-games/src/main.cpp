@@ -168,8 +168,8 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
     std::cout << "started " << p.NUM_GAMES << " games at " << std::ctime(&start_time);
-    // ParallelRunGames(p);
-    SerialRunGames(basename);
+    ParallelRunGames(p);
+    // SerialRunGames(basename);
 
     delete p.ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;

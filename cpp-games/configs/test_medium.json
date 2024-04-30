@@ -41,7 +41,7 @@
     "RETENTION_REGRESSION_FACTOR" : 25.0,
     "NUM_BLUE_PLAYERS":1000,
     "NUM_INSURERS":1,
-    "NUM_GAMES":1000,
+    "NUM_GAMES":5000,
     "EPSILON":100,
     "DELTA":50,
     "verbose":false,
