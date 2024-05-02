@@ -14,7 +14,9 @@ double Attacker::attackerLoots = 0;
 Attacker::Attacker(int id_in, Params &p, double INEQUALITY) : Player(p) {
     id = id_in;
 
-    assets = p.WEALTH_distribution->draw() * INEQUALITY;
+    // parameters scaled down by 1B during curve fitting to avoid numerical overflow
+    // so I re-scale back up by 1B here to compensate
+    assets = p.WEALTH_distribution->draw() * pow(10, 9) * INEQUALITY;
     if (assets < 0) {
         assets = 0;
     }

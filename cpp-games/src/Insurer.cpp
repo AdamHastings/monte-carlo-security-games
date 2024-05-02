@@ -24,7 +24,7 @@ Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::v
     defenders = &_defenders;
     attackers = &_attackers;
 
-    assets = p.WEALTH_distribution->draw();
+    assets = p.WEALTH_distribution->draw() * pow(10, 9);
     if (assets < 0) {
         assets = 0;
     }
