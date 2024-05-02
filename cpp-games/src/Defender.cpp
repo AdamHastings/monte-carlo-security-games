@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <math.h>
 #include "Defender.h"
 
 Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Player(p) {
@@ -6,7 +7,9 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
 
     insurers = &_insurers;
 
-    assets = p.WEALTH_distribution->draw();
+    // parameters scaled down by 1B during curve fitting to avoid numerical overflow
+    // so I re-scale back up by 1B here to compensate
+    assets = p.WEALTH_distribution->draw() * pow(10, 9); 
     if (assets < 0) {
         assets = 0;
     }
