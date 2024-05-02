@@ -58,7 +58,11 @@ plt.plot(data)
 # Extract the parameters
 mu, sigma = params[0], params[1]
 
-print("mu=", mu, ", sigma=", sigma)
+printstr = "mu=" + str(mu) + ", sigma=" + str(sigma)
+print(printstr)
+f = open("WEALTH_params.txt", 'w')
+f.write(printstr)
+f.close()
 
 # Plot the histogram of the data
 plt.hist(data, bins=50, density=True, alpha=0.6, color='g')
