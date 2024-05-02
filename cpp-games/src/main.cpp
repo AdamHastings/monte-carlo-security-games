@@ -122,7 +122,7 @@ void init_logs(std::string basename, Params p) {
     // Check if log file already exists so that we don't accidentally write over it
     // TODO or should we timestamp each run?
     ifstream f(fpath.c_str());
-    if (f.good()) {
+    if (f.good() && !basename.compare(0, 4, "test") == 0) {
         std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it (Y)? Or append to it (A)? Y/A/n\n >> ";
         std::string response;
         std::cin >> response;
@@ -152,7 +152,7 @@ int main(int argc, char** argv) {
     if (argc != 2) {
         std::cerr << "\nERROR: Incorrect number of args!";
         std::cerr << "\nExample of how to run config test_medium (located in configs/):";
-        std::cerr << "\n     $ ./run_games configs/test_medium.json\n\n";
+        std::cerr << "\n     $ ./run/debug/run_games configs/test_medium.json\n\n";
         std::exit(1);
     }
 
@@ -168,8 +168,8 @@ int main(int argc, char** argv) {
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
 
     std::cout << "started " << p.NUM_GAMES << " games at " << std::ctime(&start_time);
-    ParallelRunGames(p);
-    // SerialRunGames(basename);
+    // ParallelRunGames(p);
+    SerialRunGames(basename);
 
     delete p.ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
