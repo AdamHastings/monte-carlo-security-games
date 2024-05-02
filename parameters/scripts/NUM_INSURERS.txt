@@ -1,0 +1,7 @@
+https://www.50pros.com/fortune500
+
+Of the Fortune 500, ~20 offer cyber insurance (Insurance: Property and Casualty)
+
+Can assume that 4% of companies are insurers
+
+0.04 * NUM_DEFENDERS

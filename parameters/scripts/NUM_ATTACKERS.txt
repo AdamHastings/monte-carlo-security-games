@@ -1,0 +1,8 @@
+https://www.trendmicro.com/vinfo/us/security/news/ransomware-by-the-numbers/rise-in-active-raas-groups-parallel-growing-victim-counts-ransomware-in-2h-2023
+
+
+There are roughly 50 active ransomware groups in a given year (Table 1)
+
+NUM_ATTACKERS = 50
+
+Each group may attack ~500 victims in a given year
