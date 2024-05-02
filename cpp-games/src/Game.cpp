@@ -27,14 +27,14 @@ Game::Game(Params prm, unsigned int game_number) {
 
     p = prm;
 
-    for (int j=0; j < p.NUM_INSURERS; j++) {
+    for (uint j=0; j < p.NUM_INSURERS; j++) {
         Insurer i = Insurer(j, p, defenders, attackers);
         insurers.push_back(i);
     }
     Insurer::loss_ratio = p.LOSS_RATIO;
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR;
 
-    for (int i=0; i < p.NUM_BLUE_PLAYERS; i++) {
+    for (uint i=0; i < p.NUM_BLUE_PLAYERS; i++) {
         Defender d = Defender(i, p, insurers);
         defenders.push_back(d);
         alive_defenders_indices.push_back(i);

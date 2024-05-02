@@ -15,11 +15,11 @@ struct Params {
     double LOSS_RATIO;
     double RETENTION_REGRESSION_FACTOR;
 
-    int NUM_BLUE_PLAYERS;
-    int NUM_INSURERS;
-    int NUM_GAMES;
-    int EPSILON;
-    int DELTA;
+    uint NUM_BLUE_PLAYERS;
+    uint NUM_INSURERS;
+    uint NUM_GAMES;
+    uint EPSILON;
+    uint DELTA;
 
     bool verbose;
     bool assertions_on;
