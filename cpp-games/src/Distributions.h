@@ -63,3 +63,11 @@ class PoissonDistribution : public Distribution {
         double draw();
         double mean() override;
 };
+
+class FixedDistribution : public Distribution {
+    public:
+        double val;
+        FixedDistribution(double _val);
+        double draw();
+        double mean() override;
+};

@@ -21,7 +21,7 @@ void Distribution::seed(unsigned int seed){
 UniformRealDistribution::UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
 
 double UniformRealDistribution::draw() {
-    static std::uniform_real_distribution<double> dist(0,1);
+    // static std::uniform_real_distribution<double> dist(0,1); // TODO what was this doing here?? TODO confirm that uniform dists are actually generating values in range
     return dist(generator);
 }
 
@@ -66,13 +66,25 @@ double TruncatedNormalDistribution::draw() {
 
 PoissonDistribution::PoissonDistribution(double _lambda) : dist(_lambda) {}
 
- double PoissonDistribution::draw() {
+double PoissonDistribution::draw() {
     return dist(generator);
- }
+}
 
- double PoissonDistribution::mean() {
+double PoissonDistribution::mean() {
     return dist.mean();
- }
+}
+
+FixedDistribution::FixedDistribution(double _val) {
+    val = _val;
+}
+
+double FixedDistribution::draw() {
+    return val;
+}
+
+double FixedDistribution::mean() {
+    return val;
+}
 
 
 Distribution* Distribution::createDistribution(Json::Value d) {
@@ -124,6 +136,9 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         }
         double lambda   = d["lambda"].asDouble();
         dist = new PoissonDistribution(lambda);
+    } else if (d["distribution"] == "fixed") {
+        double val = d["val"].asDouble();
+        dist = new FixedDistribution(val);
     } else {
         std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
         std::cerr << "Offending parameter: " << d << endl;
