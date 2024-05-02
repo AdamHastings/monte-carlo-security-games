@@ -1,0 +1,13 @@
+https://damonmccoy.com/papers/Ransomware_eCrime22.pdf
+
+Reports $100M in revenue and $31.2 in expenses
+
+Roughly estimate that ransomware actors spend 33% of the ransom on expenses
+
+
+This is in line with other sources that estimate an ROI of +163% (https://www.riskinsight-wavestone.com/en/2022/07/ransomware-inside-the-former-conti-group/)
+
+
+e.g. $3M investment yields 3 * (1 + 1.62) = 7.86
+
+3 / 7.86 = 38%

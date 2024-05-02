@@ -1,0 +1,2 @@
+If there is going to be a "fudge factor" it should be a coefficient for cost_to_attack
+so that the rate of attack can be in line with the Sophos report.
