@@ -1,0 +1,10 @@
+Largest ransomware gangs have ~$100M in earnings
+
+https://www.bleepingcomputer.com/news/security/revil-ransomware-gang-claims-over-100-million-profit-in-a-year/#:~:text=REvil%20ransomware%20developers%20say%20that,in%20their%20pursuit%20of%20wealth.
+
+https://www.csoonline.com/article/570101/revil-ransomware-explained-a-widespread-extortion-operation.html
+
+Of the largest companies, top 10 have median earnings of ~$100B
+
+
+From this I'm concluding that we can consider INEQUALITY to be 0.001
