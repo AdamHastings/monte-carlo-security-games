@@ -2,6 +2,8 @@
 # import numpy as np
 # from scipy.optimize import curve_fit
 import numpy as np
+import random
+from scipy import stats
 from scipy.stats import poisson
 from scipy.optimize import minimize
 import pandas as pd
@@ -22,7 +24,7 @@ data = df['revenue'].to_numpy()
 
 
 # in terms of millions, for the sake of not overflowing computationally when generating 
-data = data / 1000000000
+data = data / 10**9
 
 # # Define the negative log likelihood function for Poisson distribution
 # def neg_log_likelihood(params, data):
@@ -63,6 +65,16 @@ print(printstr)
 f = open("WEALTH_params.txt", 'w')
 f.write(printstr)
 f.close()
+
+
+# create some example values with the found mu and sigma
+rands = np.random.rand(100)
+samples = [stats.lognorm(mu, scale=np.exp(sigma)).ppf(x) for x in rands]
+print("\nsamples = \n")
+samples.sort()
+print(samples)
+print("")
+
 
 # Plot the histogram of the data
 plt.hist(data, bins=50, density=True, alpha=0.6, color='g')
