@@ -2,9 +2,8 @@
     "distribution_type" : "nonuniform",
     "ATTACKERS" :
     {
-        "distribution" : "uniform",
-        "min" : 0.1,
-        "max" : 1.0
+        "distribution" : "fixed",
+        "val" : 0.01
     },
     "INEQUALITY" :
     {
@@ -27,8 +26,8 @@
     "WEALTH" :
     {
         "distribution" : "lognormal",
-        "mean" : 1.5217000557974059,
-        "stddev" : 18393.167356046153
+        "mean" : 1.1356082157016467,
+        "stddev" : 1.1184432636889245
     },
     "POSTURE" :
     {
@@ -36,13 +35,41 @@
         "mean" : 0.388,
         "stddev" : 0.062
     },
-    "LOSS_RATIO" : 0.80,
-    "RETENTION_REGRESSION_FACTOR" : 25.0,
-    "NUM_BLUE_PLAYERS":1000,
-    "NUM_INSURERS":1,
-    "NUM_GAMES":5000,
-    "EPSILON":100,
-    "DELTA":50,
+    "LOSS_RATIO" : 
+    {
+        "distribution" : "fixed",
+        "val" : 0.80
+    },
+    "RETENTION_REGRESSION_FACTOR" : 
+    {
+        "distribution" : "fixed",
+        "val" : 25.0
+    },
+    "NUM_BLUE_PLAYERS":
+    {
+        "distribution" : "fixed",
+        "val" : 1000
+    },
+    "NUM_INSURERS":
+    {
+        "distribution" : "fixed",
+        "val" : 1
+    },
+    "NUM_GAMES":
+    {
+        "distribution" : "fixed",
+        "val" : 1000
+    },
+    "EPSILON":
+    {
+        "distribution" : "fixed",
+        "val" : 100
+    },
+    "DELTA":
+    {
+        "distribution" : "fixed",
+        "val" : 50
+    },
     "verbose":false,
     "assertions_on":true
 }
