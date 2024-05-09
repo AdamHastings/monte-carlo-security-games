@@ -4,6 +4,6 @@ https://www.securitymagazine.com/articles/99943-report-shows-cybersecurity-budge
 
 Companies spend 8-10% of budget on IT:
 
-https://resources.flexera.com/web/pdf/Flexera-State-of-the-Tech-Spend-Pulse-2022.pdf
+https://resources.flexera.com/web/pdf/Flexera-State-of-the-Tech-Spend-Pulse-2022.pdf (Percentage of revenune spent on IT by company size) (What percentage of your revenue is spent on IT?)
 
 Round to 1% spent on security

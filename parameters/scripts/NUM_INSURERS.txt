@@ -5,3 +5,12 @@ Of the Fortune 500, ~20 offer cyber insurance (Insurance: Property and Casualty)
 Can assume that 4% of companies are insurers
 
 0.04 * NUM_DEFENDERS
+
+
+A validation datapoint:
+
+In NUM_ATTACKERS.txt I'm arguing that there should be 10,000 NUM_DEFENDERS.
+
+This gives us 0.04 * NUM_DEFENDERS = 400 insurers
+
+NAIC reports 572 individual insurance companies reporting in 2022 report (https://content.naic.org/sites/default/files/cmte-c-cyber-supplement-report-2022-for-data-year-2021.pdf) (p. 2)

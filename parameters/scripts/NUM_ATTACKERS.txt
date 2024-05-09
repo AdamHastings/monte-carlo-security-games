@@ -5,4 +5,23 @@ There are roughly 50 active ransomware groups in a given year (Table 1)
 
 NUM_ATTACKERS = 50
 
-Each group may attack ~500 victims in a given year
+about 50 groups pulling off ~5000 attacks per year
+
+ATTACKS_PER_EPOCH = 100
+
+https://www.trendmicro.com/vinfo/us/security/news/ransomware-by-the-numbers/rise-in-active-raas-groups-parallel-growing-victim-counts-ransomware-in-2h-2023 (Table 1)
+
+Each group is pulling off say 100 attacks per year (epoch)
+
+Chance of getting targeted by a single ransomware actor: ATTACKS_PER_EPOCH / NUM_DEFENDERS
+Chance of not getting targeted by a single ransomware actor: 1 - (ATTACKS_PER_EPOCH / NUM_DEFENDERS)
+
+Chance of getting targeted at all in a given epoch = 1 - (ATTACKS_PER_EPOCH/ NUM_DEFENDERS) ^ (NUM_ATTACKERS)
+
+If ATTACKS_PER_EPOCH = 100
+NUM_DEFENDERS = 10,000
+NUM_ATTACKERS = 50
+
+then Chance of getting targeted at all in a given epoch = (1-100/10,000) ^ 50 = 0.605 which is very close to Sophos's reported 59% for 2024 (p.3)
+
+https://assets.sophos.com/X24WTUEQ/at/9brgj5n44hqvgsp5f5bqcps/sophos-state-of-ransomware-2024-wp.pdf
