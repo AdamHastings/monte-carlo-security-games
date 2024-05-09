@@ -48,7 +48,7 @@
     "NUM_BLUE_PLAYERS":
     {
         "distribution" : "fixed",
-        "val" : 10000
+        "val" : 1000
     },
     "NUM_INSURERS":
     {
