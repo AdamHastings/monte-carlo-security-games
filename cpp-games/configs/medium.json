@@ -60,16 +60,6 @@
         "distribution" : "fixed",
         "val" : 1000
     },
-    "EPSILON":
-    {
-        "distribution" : "fixed",
-        "val" : 100
-    },
-    "DELTA":
-    {
-        "distribution" : "fixed",
-        "val" : 50
-    },
     "verbose":false,
     "assertions_on":true
 }

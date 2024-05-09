@@ -21,6 +21,7 @@ class Game {
 
     private:
 
+        unsigned int num_games;
         unsigned int game_num;
 
         Params p;
@@ -28,6 +29,11 @@ class Game {
         std::mt19937 gen;
         double INEQUALITY;
         double ATTACKERS;
+
+        uint num_insurers;
+
+        uint DELTA;
+        uint EPSILON;
 
 
         std::vector<Defender> defenders;

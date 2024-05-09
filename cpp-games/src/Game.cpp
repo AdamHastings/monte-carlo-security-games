@@ -27,14 +27,16 @@ Game::Game(Params prm, unsigned int game_number) {
 
     p = prm;
 
-    for (uint j=0; j < p.NUM_INSURERS; j++) {
+    uint num_insurers = p.NUM_INSURERS_distribution->draw();
+    for (uint j=0; j < num_insurers; j++) {
         Insurer i = Insurer(j, p, defenders, attackers);
         insurers.push_back(i);
     }
-    Insurer::loss_ratio = p.LOSS_RATIO;
-    Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR;
+    Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
+    Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
 
-    for (uint i=0; i < p.NUM_BLUE_PLAYERS; i++) {
+    uint num_blue_players = p.NUM_BLUE_PLAYERS_distribution->draw();
+    for (uint i=0; i < num_blue_players; i++) {
         Defender d = Defender(i, p, insurers);
         defenders.push_back(d);
         alive_defenders_indices.push_back(i);
@@ -43,7 +45,7 @@ Game::Game(Params prm, unsigned int game_number) {
     ATTACKERS = p.ATTACKERS_distribution->draw();
     INEQUALITY = p.INEQUALITY_distribution->draw();
 
-    int num_attackers = (int)(p.NUM_BLUE_PLAYERS * ATTACKERS);
+    int num_attackers = (int)(num_blue_players * ATTACKERS);
     if (num_attackers <= 0) {
         num_attackers = 1;
     }
@@ -54,8 +56,11 @@ Game::Game(Params prm, unsigned int game_number) {
         alive_attackers_indices.push_back(i);
     }
     
-    outside_epsilon_count_defenders = p.DELTA;
-    outside_epsilon_count_attackers = p.DELTA;
+    DELTA = p.DELTA_distribution->draw();
+    EPSILON = p.EPSILON_distribution->draw();
+
+    outside_epsilon_count_defenders = DELTA;
+    outside_epsilon_count_attackers = DELTA;
 
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::d_init);
@@ -195,7 +200,7 @@ void Game::verify_outcome() {
     if (final_outcome == "E") {
         assert(alive_attackers_indices.size() > 0);
         assert(alive_defenders_indices.size() > 0);
-        assert(iter_num >= p.DELTA); 
+        assert(iter_num >= DELTA); 
     } else if (final_outcome == "D") {
         assert(alive_defenders_indices.size() == 0);
     } else if (final_outcome == "A") {
@@ -221,7 +226,7 @@ bool Game::is_equilibrium_reached() {
         consecutiveNoAttacks = 0;
     }
 
-    return (consecutiveNoAttacks >= p.DELTA);
+    return (consecutiveNoAttacks >= DELTA);
 }
 
 void Game::fight(Attacker &a, Defender &d) {
@@ -229,7 +234,7 @@ void Game::fight(Attacker &a, Defender &d) {
     double expected_loot = d.assets * p.PAYOFF_distribution->mean();
 
     // Mercy kill the Defenders if the loot is very low
-    if (d.assets < p.EPSILON) {
+    if (d.assets < EPSILON) {
         expected_loot = d.assets;
     }
     
@@ -253,7 +258,7 @@ void Game::fight(Attacker &a, Defender &d) {
 
             double loot = d.assets * p.PAYOFF_distribution->draw();
             // mercy kill
-            if (d.assets < p.EPSILON) {
+            if (d.assets < EPSILON) {
                 loot = d.assets;
             }
             
@@ -291,7 +296,7 @@ void Game::run_iterations() {
     init_game();
 
 
-    for (iter_num = 1; iter_num < p.NUM_GAMES + 1; iter_num++) {
+    for (iter_num = 1; iter_num < num_games + 1; iter_num++) {
 
         init_round();
 

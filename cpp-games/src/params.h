@@ -12,14 +12,15 @@ struct Params {
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
 
-    double LOSS_RATIO;
-    double RETENTION_REGRESSION_FACTOR;
+    Distribution* LOSS_RATIO_distribution;
+    Distribution* RETENTION_REGRESSION_FACTOR_distribution;
+    Distribution* NUM_BLUE_PLAYERS_distribution;
+    Distribution* NUM_INSURERS_distribution;
+    
+    Distribution* EPSILON_distribution;
+    Distribution* DELTA_distribution;
 
-    uint NUM_BLUE_PLAYERS;
-    uint NUM_INSURERS;
-    uint NUM_GAMES;
-    uint EPSILON;
-    uint DELTA;
+    unsigned int NUM_GAMES;
 
     bool verbose;
     bool assertions_on;

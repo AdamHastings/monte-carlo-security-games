@@ -19,7 +19,7 @@ double Insurer::paid_claims = 0;
 
 Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers) : Player(p) {
     id = id_in;
-    last_round_loss_ratio = p.LOSS_RATIO;
+    last_round_loss_ratio = p.LOSS_RATIO_distribution->draw();
 
     defenders = &_defenders;
     attackers = &_attackers;

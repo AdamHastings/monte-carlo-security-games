@@ -20,16 +20,18 @@ Params params_loader::load_cfg(std::string basename) {
     p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
     p.PAYOFF_distribution     = Distribution::createDistribution(jsonData["PAYOFF"]);
     p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
-    p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);        
+    p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);    
 
-    p.LOSS_RATIO              = jsonData["LOSS_RATIO"].asDouble();
-    p.RETENTION_REGRESSION_FACTOR = jsonData["RETENTION_REGRESSION_FACTOR"].asDouble();
+    p.LOSS_RATIO_distribution                  = Distribution::createDistribution(jsonData["LOSS_RATIO"]);
+    p.RETENTION_REGRESSION_FACTOR_distribution = Distribution::createDistribution(jsonData["RETENTION_REGRESSION_FACTOR"]);
+    p.NUM_BLUE_PLAYERS_distribution            = Distribution::createDistribution(jsonData["NUM_BLUE_PLAYERS"]);
+    p.NUM_INSURERS_distribution                = Distribution::createDistribution(jsonData["NUM_INSURERS"]);
 
-    p.NUM_BLUE_PLAYERS        = jsonData["NUM_BLUE_PLAYERS"].asInt();
-    p.NUM_INSURERS            = jsonData["NUM_INSURERS"].asInt();
-    p.NUM_GAMES               = jsonData["NUM_GAMES"].asInt();
-    p.EPSILON                 = jsonData["EPSILON"].asInt();
-    p.DELTA                   = jsonData["DELTA"].asInt();  
+    p.EPSILON_distribution = Distribution::createDistribution(jsonData["EPSILON"]);
+    p.DELTA_distribution   = Distribution::createDistribution(jsonData["DELTA"]);
+
+    p.NUM_GAMES = jsonData["NUM_GAMES"].asInt();    
+
 
     p.verbose       = jsonData["verbose"].asBool();
     p.assertions_on = jsonData["assertions_on"].asBool();
