@@ -21,8 +21,8 @@ class Game {
 
     private:
 
-        unsigned int num_games;
-        unsigned int game_num;
+        unsigned int num_games = 0;
+        unsigned int game_num = 0;
 
         Params p;
 
@@ -42,7 +42,7 @@ class Game {
 
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
-        unsigned int iter_num;
+        unsigned int iter_num = 0;
         std::vector<int> crossovers;
         std::vector<int> insurerTimesOfDeath; // TODO should probably be a class variable
 
