@@ -92,15 +92,15 @@ std::string Game::to_string() {
     ret += std::to_string((long long)(round(Attacker::attackerExpenditures))) + ",";
     ret += std::to_string(Defender::policiesPurchased) + ",";   
     ret += std::to_string(Defender::defensesPurchased) + ",";
-    ret += "\"[";
-    for (auto i : crossovers) {
-        ret += std::to_string(i) + ",";
-    }
-    ret += "]\",";
-    ret += "\"[";
-    for (auto i : insurerTimesOfDeath) {
-        ret += std::to_string(i) + ",";
-    }
+    // ret += "\"[";
+    // for (auto i : crossovers) {
+    //     ret += std::to_string(i) + ",";
+    // }
+    // ret += "]\",";
+    // ret += "\"[";
+    // for (auto i : insurerTimesOfDeath) {
+    //     ret += std::to_string(i) + ",";
+    // }
     ret += "]\",";
     ret += std::to_string(int(round(Insurer::paid_claims))) + ",";
     ret += std::to_string(iter_num) + ",";
@@ -367,12 +367,12 @@ void Game::run_iterations() {
 
         if (defenders_have_more_than_attackers) {
             if (Attacker::current_sum_assets > Defender::current_sum_assets) {
-                crossovers.push_back(iter_num);
+                // crossovers.push_back(iter_num);
                 defenders_have_more_than_attackers = false;
             }
         } else {
             if (Attacker::current_sum_assets < Defender::current_sum_assets) {
-                crossovers.push_back(iter_num);
+                // crossovers.push_back(iter_num);
                 defenders_have_more_than_attackers = true;
             }
         }

@@ -43,8 +43,8 @@ class Game {
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
         unsigned int iter_num = 0;
-        std::vector<int> crossovers;
-        std::vector<int> insurerTimesOfDeath; // TODO should probably be a class variable
+        // std::vector<int> crossovers; // TODO kind of want to get rid of these two 
+        // std::vector<int> insurerTimesOfDeath; // TODO should probably be a class variable
 
         std::vector<double> last_delta_defenders_changes;
         std::vector<double> last_delta_attackers_changes;
