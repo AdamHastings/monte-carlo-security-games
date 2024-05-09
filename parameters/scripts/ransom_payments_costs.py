@@ -2,8 +2,10 @@ from sklearn.linear_model import LinearRegression
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 from sklearn.metrics import mean_squared_error, r2_score
 
+print('matplotlib: {}'.format(matplotlib.__version__))
 
 df = pd.read_csv("../data/ransom_payments.csv")
 
@@ -37,7 +39,8 @@ samples = np.linspace(0,5*10**9, 1000)
 # plt.show()
 
 plt.plot(revenue, median_ransom)
-plt.plot(samples, samples * reg.coef_ + 792145.1111738826)
+plt.plot(samples, samples * reg.coef_ + reg.intercept_)
 plt.xlabel("revenue ($)")
 plt.ylabel("ransom ($)")
-plt.savefig('../figures/ransom_lr.png')
+plt.title("ransom = {0} * revenue + {1}, \n r2 = {2} ".format(reg.coef_[0], reg.intercept_, r2))
+plt.savefig('../figures/ransom_fitting/ransom_lr.png')
