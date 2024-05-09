@@ -1,16 +1,16 @@
 Industry,N,Data was encrypted,The attack was stopped before data was encrypted,Data was not encypted but we were still held to ransom (extortion),Something bad happened
-Business and pro Services,128,73,27,0,73
-Central/federal government,175,80,19,1,81
-Construction and property,154,69,31,0,69
-Distribution and transport,149,68,15,17,85
-Energy oil/gas and utilities,183,80,19,1,81
-Financial services,387,49,46,5,54
-Healthcare,271,74,25,1,75
-Higher education,197,77,21,2,79
-IT technology and telecoms,143,57,41,2,59
-Lower education,190,85,14,1,86
-Manufacturing and production,378,74,24,2,76
-Media leisure and entertainment,157,78,22,0,78
-Retail,261,56,39,5,61
-State/local government,93,98,2,0,98
-Other,108,62,31,7,69
+Business and pro Services,128,0.73,0.27,0.0,0.73
+Central/federal government,175,0.80,0.19,0.1,0.81
+Construction and property,154,0.69,0.31,0.0,0.69
+Distribution and transport,149,0.68,0.15,0.17,0.85
+Energy oil/gas and utilities,183,0.80,0.19,0.1,0.81
+Financial services,387,0.49,0.46,0.5,0.54
+Healthcare,271,0.74,0.25,0.1,0.75
+Higher education,197,0.77,0.21,0.2,0.79
+IT technology and telecoms,143,0.57,0.41,0.2,0.59
+Lower education,190,0.85,0.14,0.1,0.86
+Manufacturing and production,378,0.74,0.24,0.2,0.76
+Media leisure and entertainment,157,0.78,0.22,0.0,0.78
+Retail,261,0.56,0.39,0.5,0.61
+State/local government,93,0.98,0.2,0.0,0.98
+Other,108,0.62,0.31,0.7,0.69
