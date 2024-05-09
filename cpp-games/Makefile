@@ -6,7 +6,7 @@ LDFLAGS=
 TARGET=run_games
 
 # Debug compiler flags
-DEBUG_FLAGS = -O0 -DDEBUG -g3 $(CPPFLAGS)
+DEBUG_FLAGS = -O0 -DDEBUG -g3 -ggdb3 $(CPPFLAGS)
 
 # Release compiler flags
 RELEASE_FLAGS = -O3 -march=native -Ofast  $(CPPFLAGS)

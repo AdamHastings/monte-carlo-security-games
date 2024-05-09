@@ -409,4 +409,11 @@ Game::~Game() {
     delete p.PAYOFF_distribution;     
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution;  
+
+    delete p.LOSS_RATIO_distribution;
+    delete p.RETENTION_REGRESSION_FACTOR_distribution;
+    delete p.NUM_BLUE_PLAYERS_distribution;
+    delete p.NUM_INSURERS_distribution;
+    delete p.EPSILON_distribution;
+    delete p.DELTA_distribution;
 }
