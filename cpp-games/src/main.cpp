@@ -178,6 +178,13 @@ int main(int argc, char** argv) {
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution; 
 
+    delete p.LOSS_RATIO_distribution;
+    delete p.RETENTION_REGRESSION_FACTOR_distribution;
+    delete p.NUM_BLUE_PLAYERS_distribution;
+    delete p.NUM_INSURERS_distribution;
+    delete p.EPSILON_distribution;
+    delete p.DELTA_distribution;
+
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
