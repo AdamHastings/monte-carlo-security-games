@@ -101,7 +101,7 @@ std::string Game::to_string() {
     // for (auto i : insurerTimesOfDeath) {
     //     ret += std::to_string(i) + ",";
     // }
-    ret += "]\",";
+    // ret += "]\",";
     ret += std::to_string(int(round(Insurer::paid_claims))) + ",";
     ret += std::to_string(iter_num) + ",";
     ret += final_outcome + ",";
