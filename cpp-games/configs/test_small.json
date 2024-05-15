@@ -10,13 +10,15 @@
         "distribution" : "poisson",
         "lambda" : 1
     },
-    "PAYOFF" :
+    "RANSOM_BASE" :
     {
-        "distribution" : "truncated_normal",
-        "mean" : 0.5,
-        "stddev" : 0.1,
-        "min" : 0.0,
-        "max" : 1.0
+        "distribution" : "fixed",
+        "val" : 25365
+    },
+    "RANSOM_EXP" :
+    {
+        "distribution" : "fixed",
+        "val" : 0.254
     },
     "WEALTH" :
     {

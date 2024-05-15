@@ -108,9 +108,9 @@ void Defender::choose_security_strategy() {
     assert(mean_EFFICIENCY >= 0);
     assert(mean_EFFICIENCY <= 1);
 
-    double mean_PAYOFF = p.PAYOFF_distribution->mean();
-    assert(mean_PAYOFF >= 0);
-    assert(mean_PAYOFF <= 1);
+    double ransom = 10000; // TODO FIX
+    double recovery_costs = 10000; // TODO FIX use new distributions 
+    double total_losses = ransom + recovery_costs;
 
     // 1. Get insurance policy from insurer
     PolicyType policy = i->provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
@@ -128,8 +128,8 @@ void Defender::choose_security_strategy() {
     // can they assume p_a_hat? 
 
     // 2. Find optimum security investment
-    double optimal_investment = std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF)));
-    double expected_loss_with_optimal_investment = std::max(0.0, (assets - optimal_investment) * mean_PAYOFF * (p_A_hat * (1 - (posture * (mean_EFFICIENCY * (optimal_investment/assets))))) + optimal_investment);
+    double optimal_investment = 0; // TODO don't use PAYOFF anymore!! std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF)));
+    double expected_loss_with_optimal_investment = total_losses; // TODO stand in for compilation DELETE !!!! TODO don't use PAYOFF anymore!! std::max(0.0, (assets - optimal_investment) * mean_PAYOFF * (p_A_hat * (1 - (posture * (mean_EFFICIENCY * (optimal_investment/assets))))) + optimal_investment);
     assert(optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment >= 0);
 

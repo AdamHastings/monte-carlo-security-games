@@ -203,7 +203,7 @@ void Game::verify_outcome() {
 
 bool Game::equilibrium_reached() {
     if (roundAttacks == 0) {
-        consecutiveNoAttacks++; // TODO TODO this is not being used
+        consecutiveNoAttacks++;
     } else {
         consecutiveNoAttacks = 0;
     }
@@ -233,18 +233,24 @@ bool Game::game_over() {
 
 void Game::fight(Attacker &a, Defender &d) {
 
-    double expected_loot = d.assets * p.PAYOFF_distribution->mean();
+    if (a.assets == 0 || d.assets == 0) {
+        // One player is dead already. Skip.
+        return;
+    }
+
+    double ransom = p.RANSOM_BASE_distribution->draw() * pow(d.assets,  p.RANSOM_EXP_distribution->draw());
+    double total_losses = ransom; // + recovery costs TODO TODO TODO 
 
     // Mercy kill the Defenders if the loot is very low
-    if (d.assets < EPSILON) {
-        expected_loot = d.assets;
+    if (ransom > d.assets) {
+        ransom = d.assets;
     }
     
     // TODO should attackers YOLO their savings if their assets get very low?
     // So that we don't end the game with a bunch of attackers with $0.01
 
     // TODO is (expected_loot > d.costToAttack) part of the underwriting process at the moment? I don't think it is
-    if (expected_loot > d.costToAttack && d.costToAttack <= a.assets) {
+    if (ransom > d.costToAttack && d.costToAttack <= a.assets) {
         // Attacking is financially worth it
 
 
@@ -257,19 +263,12 @@ void Game::fight(Attacker &a, Defender &d) {
         if (RandUniformDist.draw() > d.posture) {
 
             Attacker::attacksSucceeded += 1;
-
-            double loot = d.assets * p.PAYOFF_distribution->draw();
-            // mercy kill
-            if (d.assets < EPSILON) {
-                loot = d.assets;
-            }
             
-            a.gain(loot);
-            d.lose(loot);
-
+            a.gain(ransom);
+            d.lose(ransom);
 
             if (d.insured) {
-                d.submit_claim(loot);
+                d.submit_claim(total_losses);
             }
         }
     } 
@@ -381,7 +380,8 @@ Game::~Game() {
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
-    delete p.PAYOFF_distribution;     
+    delete p.RANSOM_BASE_distribution;
+    delete p.RANSOM_EXP_distribution;     
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution;  
     delete p.LOSS_RATIO_distribution;

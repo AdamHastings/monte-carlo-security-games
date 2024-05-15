@@ -77,7 +77,8 @@ void SerialRunGames(std::string basename) {
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
-    delete p.PAYOFF_distribution;     
+    delete p.RANSOM_BASE_distribution;
+    delete p.RANSOM_EXP_distribution;
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution; 
 
@@ -182,7 +183,8 @@ int main(int argc, char** argv) {
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
-    delete p.PAYOFF_distribution;     
+    delete p.RANSOM_BASE_distribution;
+    delete p.RANSOM_EXP_distribution;
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution; 
 

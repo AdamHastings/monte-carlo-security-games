@@ -58,6 +58,7 @@ double Insurer::issue_payment(double claim) {
     return amount_covered;
 }
 
+// TODO rework entirely 
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
     
     PolicyType policy;
@@ -78,11 +79,12 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     assert(p_L >= 0);
     assert(p_L <= 1);
 
-    double mean_PAYOFF = p.PAYOFF_distribution->mean();
-    assert(mean_PAYOFF >= 0);
-    assert(mean_PAYOFF <= 1);
+    double ransom = 10000; // TODO FIX
+    double recovery_costs = 10000; // TODO FIX use new distributions 
+    double total_losses = ransom + recovery_costs;
+
     
-    policy.premium = (p_L * mean_PAYOFF * assets) / (retention_regression_factor * p_L + loss_ratio);
+    policy.premium = (p_L * total_losses) / (retention_regression_factor * p_L + loss_ratio);
     policy.retention = retention_regression_factor * policy.premium;
 
     assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0

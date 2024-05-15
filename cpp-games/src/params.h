@@ -8,7 +8,8 @@ struct Params {
     Distribution* NUM_ATTACKERS_distribution;
     Distribution* INEQUALITY_distribution;
     Distribution* EFFICIENCY_distribution;
-    Distribution* PAYOFF_distribution;
+    Distribution* RANSOM_BASE_distribution;
+    Distribution* RANSOM_EXP_distribution;
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
 
