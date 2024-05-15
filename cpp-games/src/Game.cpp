@@ -35,17 +35,17 @@ Game::Game(Params prm, unsigned int game_number) {
     Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
 
-    uint num_blue_players = p.NUM_BLUE_PLAYERS_distribution->draw();
+    uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
     for (uint i=0; i < num_blue_players; i++) {
         Defender d = Defender(i, p, insurers);
         defenders.push_back(d);
         alive_defenders_indices.push_back(i);
     }
 
-    ATTACKERS = p.ATTACKERS_distribution->draw();
+    NUM_ATTACKERS = p.NUM_ATTACKERS_distribution->draw();
     INEQUALITY = p.INEQUALITY_distribution->draw();
 
-    int num_attackers = (int)(num_blue_players * ATTACKERS);
+    int num_attackers = (int)(NUM_ATTACKERS);
     if (num_attackers <= 0) {
         num_attackers = 1;
     }
@@ -78,7 +78,7 @@ Game::Game(Params prm, unsigned int game_number) {
 std::string Game::to_string() {
     std::string ret = "";
 
-    ret += std::to_string(ATTACKERS).substr(0,4) + ",";
+    ret += std::to_string(NUM_ATTACKERS).substr(0,4) + ",";
     ret += std::to_string(INEQUALITY).substr(0,5) + ",";
     ret += std::to_string((long long)(round(Defender::d_init))) + ",";
     ret += std::to_string((long long)(round(Defender::current_sum_assets))) + ",";
@@ -403,7 +403,7 @@ void Game::run_iterations() {
 
 
 Game::~Game() {
-    delete p.ATTACKERS_distribution;
+    delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
     delete p.PAYOFF_distribution;     
@@ -412,7 +412,7 @@ Game::~Game() {
 
     delete p.LOSS_RATIO_distribution;
     delete p.RETENTION_REGRESSION_FACTOR_distribution;
-    delete p.NUM_BLUE_PLAYERS_distribution;
+    delete p.NUM_DEFENDERS_distribution;
     delete p.NUM_INSURERS_distribution;
     delete p.EPSILON_distribution;
     delete p.DELTA_distribution;

@@ -74,7 +74,7 @@ void ParallelRunGames(Params p) {
 void SerialRunGames(std::string basename) {
     Params p = params_loader::load_cfg(basename);
         
-    delete p.ATTACKERS_distribution;
+    delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
     delete p.PAYOFF_distribution;     
@@ -84,7 +84,7 @@ void SerialRunGames(std::string basename) {
     // TODO run this through valgrind.
     delete p.LOSS_RATIO_distribution;
     delete p.RETENTION_REGRESSION_FACTOR_distribution;
-    delete p.NUM_BLUE_PLAYERS_distribution;
+    delete p.NUM_DEFENDERS_distribution;
     delete p.NUM_INSURERS_distribution;
     delete p.EPSILON_distribution;
     delete p.DELTA_distribution;
@@ -105,7 +105,7 @@ void init_logs(std::string basename, Params p) {
 
     std::string header = "";
 
-    header += "ATTACKERS,";
+    header += "NUM_ATTACKERS,";
     header += "INEQUALITY,";
 
     // TODO double check that this is correct
@@ -185,7 +185,7 @@ int main(int argc, char** argv) {
     // ParallelRunGames(p);
     SerialRunGames(basename);
 
-    delete p.ATTACKERS_distribution;
+    delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
     delete p.PAYOFF_distribution;     
@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
     // TODO run this through valgrind.
     delete p.LOSS_RATIO_distribution;
     delete p.RETENTION_REGRESSION_FACTOR_distribution;
-    delete p.NUM_BLUE_PLAYERS_distribution;
+    delete p.NUM_DEFENDERS_distribution;
     delete p.NUM_INSURERS_distribution;
     delete p.EPSILON_distribution;
     delete p.DELTA_distribution;

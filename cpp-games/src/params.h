@@ -5,7 +5,7 @@
 #include "Distributions.h"
 
 struct Params {
-    Distribution* ATTACKERS_distribution;
+    Distribution* NUM_ATTACKERS_distribution;
     Distribution* INEQUALITY_distribution;
     Distribution* EFFICIENCY_distribution;
     Distribution* PAYOFF_distribution;
@@ -14,7 +14,7 @@ struct Params {
 
     Distribution* LOSS_RATIO_distribution;
     Distribution* RETENTION_REGRESSION_FACTOR_distribution;
-    Distribution* NUM_BLUE_PLAYERS_distribution;
+    Distribution* NUM_DEFENDERS_distribution;
     Distribution* NUM_INSURERS_distribution;
     
     Distribution* EPSILON_distribution;

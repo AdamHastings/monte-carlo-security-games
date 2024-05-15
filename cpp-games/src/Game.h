@@ -28,7 +28,7 @@ class Game {
 
         std::mt19937 gen;
         double INEQUALITY;
-        double ATTACKERS;
+        int NUM_ATTACKERS;
 
         uint num_insurers;
 

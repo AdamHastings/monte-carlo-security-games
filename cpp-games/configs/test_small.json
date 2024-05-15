@@ -1,10 +1,5 @@
 {
     "distribution_type" : "nonuniform",
-    "ATTACKERS" :
-    {
-        "distribution" : "fixed",
-        "val" : 0.01
-    },
     "INEQUALITY" :
     {
         "distribution" : "fixed",
@@ -31,9 +26,11 @@
     },
     "POSTURE" :
     {
-        "distribution" : "normal",
-        "mean" : 0.388,
-        "stddev" : 0.062
+        "distribution" : "truncated_normal",
+        "mean" : 0.28,
+        "stddev" : 0.10,
+        "min" : 0.0,
+        "max" : 1.0
     },
     "LOSS_RATIO" : 
     {
@@ -45,15 +42,20 @@
         "distribution" : "fixed",
         "val" : 25.0
     },
-    "NUM_BLUE_PLAYERS":
+    "NUM_DEFENDERS":
     {
         "distribution" : "fixed",
-        "val" : 1000
+        "val" : 100
     },
     "NUM_INSURERS":
     {
         "distribution" : "fixed",
-        "val" : 1
+        "val" : 4
+    },
+    "NUM_ATTACKERS" :
+    {
+        "distribution" : "fixed",
+        "val" : 5
     },
     "EPSILON":
     {
