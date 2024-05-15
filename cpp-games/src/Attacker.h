@@ -6,6 +6,8 @@
 class Attacker : public Player {
     public:
         uint id;
+
+        static double inequality_ratio;
         
         static double a_init;
         static double attacker_iter_sum; // how much the attackers have cumulatively gained or lost this round
@@ -18,9 +20,10 @@ class Attacker : public Player {
         static double attackerExpenditures;
         static double attackerLoots;
 
+
         static void reset();
 
-        Attacker(int id_in,  Params &p, double INEQUALITY);
+        Attacker(int id_in,  Params &p);
         void gain(double gain) override;
         void lose(double loss) override;
 };

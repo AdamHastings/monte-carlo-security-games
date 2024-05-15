@@ -44,16 +44,17 @@ Game::Game(Params prm, unsigned int game_number) {
     }
 
     NUM_ATTACKERS = p.NUM_ATTACKERS_distribution->draw();
-    INEQUALITY = p.INEQUALITY_distribution->draw();
     ATTACKS_PER_EPOCH = p.ATTACKS_PER_EPOCH_distribution->draw();
 
-    int num_attackers = (int)(NUM_ATTACKERS);
-    if (num_attackers <= 0) {
-        num_attackers = 1;
-    }
-    assert(num_attackers > 0);
-    for (int i=0; i < num_attackers; i++) { // TODO isn't this wrong now because p.ATTACKERS is a distribution?
-        Attacker a = Attacker(i, p, INEQUALITY);
+    assert(NUM_ATTACKERS > 0);
+    assert(ATTACKS_PER_EPOCH > 0);
+
+    Attacker::inequality_ratio = p.INEQUALITY_distribution->draw();
+    assert(Attacker::inequality_ratio > 0);
+    assert(Attacker::inequality_ratio <= 1.0);
+
+    for (int i=0; i < NUM_ATTACKERS; i++) {
+        Attacker a = Attacker(i, p);
         attackers.push_back(a);
         alive_attackers_indices.push_back(i);
     }
@@ -67,8 +68,7 @@ Game::Game(Params prm, unsigned int game_number) {
         Insurer::cumulative_assets.push_back(Insurer::i_init);
     }
 
-
-    // Let's make sure everything got set up correctly
+    // Make sure everything got set up correctly
     if (p.assertions_on) {
         verify_init();  
     }   
@@ -201,7 +201,7 @@ void Game::verify_outcome() {
     assert(round(init_ - end_) == 0); 
 }
 
-bool Game::is_equilibrium_reached() {
+bool Game::equilibrium_reached() {
     if (roundAttacks == 0) {
         consecutiveNoAttacks++;
     } else {
@@ -215,12 +215,12 @@ bool Game::game_over() {
 
     bool game_over = false;
     if (alive_attackers_indices.size() == 0) {
-        final_outcome = "A";
+        final_outcome = "A"; // TODO make this an enum
         game_over = true;
     } else if (alive_defenders_indices.size() == 0) {
         final_outcome = "D";
         game_over = true;
-    } else if (is_equilibrium_reached()) {
+    } else if (equilibrium_reached()) {
         final_outcome = "E";
         game_over = true;
     } else if (iter_num == num_games) {
