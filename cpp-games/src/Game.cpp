@@ -60,9 +60,6 @@ Game::Game(Params prm, unsigned int game_number) {
     DELTA = p.DELTA_distribution->draw();
     EPSILON = p.EPSILON_distribution->draw();
 
-    outside_epsilon_count_defenders = DELTA;
-    outside_epsilon_count_attackers = DELTA;
-
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::d_init);
         Attacker::cumulative_assets.push_back(Attacker::Attacker::a_init);
@@ -289,7 +286,7 @@ void Game::init_round() {
 }
 
 void Game::init_game(){
-    defenders_have_more_than_attackers = true;
+    return;
 }
 
 void Game::run_iterations() {
@@ -300,58 +297,6 @@ void Game::run_iterations() {
     for (iter_num = 1; iter_num < num_games + 1; iter_num++) {
 
         init_round();
-
-        // std::vector<int> new_alive_defenders_indices;
-        // std::vector<int> new_alive_attackers_indices;
-
-        // TODO just do simple shuffle?
-        // or put into its own function?
-        // uint shorter_length, offset;
-        // bool more_defenders_than_attackers = (alive_defenders_indices.size() > alive_attackers_indices.size());
-        // if (more_defenders_than_attackers) {
-
-        //     std::shuffle(alive_attackers_indices.begin(), alive_attackers_indices.end(), gen);
-        //     std::uniform_int_distribution<> distr(0, alive_defenders_indices.size() - alive_attackers_indices.size());
-        //     offset = distr(gen);
-        //     shorter_length = alive_attackers_indices.size();
-
-        //     new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin(), alive_defenders_indices.begin() + offset );
-        //     new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin() + offset + alive_attackers_indices.size(), alive_defenders_indices.end() );
-
-        // } else {
-        //     // Shuffle smaller list
-        //     // Then pair it up at a random point in the opposing list
-        //     std::shuffle(alive_defenders_indices.begin(), alive_defenders_indices.end(), gen);
-        //     std::uniform_int_distribution<> distr(0, alive_attackers_indices.size() - alive_defenders_indices.size());
-        //     offset = distr(gen);
-        //     shorter_length = alive_defenders_indices.size();
-
-        //     new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin(), alive_attackers_indices.begin() + offset );
-        //     new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin() + offset + alive_defenders_indices.size(), alive_attackers_indices.end() );
-        // }
-        
-        // for (uint i=0; i<shorter_length; i++) {
-        //     uint a_idx, d_idx;
-        //     if (more_defenders_than_attackers) {
-        //         a_idx = alive_attackers_indices[i];
-        //         d_idx = alive_defenders_indices[i + offset];
-        //     } else {
-        //         a_idx = alive_attackers_indices[i + offset];
-        //         d_idx = alive_defenders_indices[i];
-        //     }
-
-        //     Attacker *a = &attackers[a_idx];
-        //     Defender *d = &defenders[d_idx];
-
-        //     fight(*a, *d);
-
-        //     if (std::round(a->assets) > 0) {
-        //         new_alive_attackers_indices.push_back(a_idx);
-        //     }
-        //     if (std::round(d->assets) > 0) {
-        //         new_alive_defenders_indices.push_back(d_idx);
-        //     }
-        // }
 
         std::uniform_int_distribution<> alive_defender_indices_dist(0, alive_defenders_indices.size());
 
@@ -382,9 +327,6 @@ void Game::run_iterations() {
             }
         }
 
-        // alive_attackers_indices = new_alive_attackers_indices;
-        // alive_defenders_indices = new_alive_defenders_indices;
-
         // Insurance policy expires
         for (uint i=0; i<defenders.size(); i++) {
             Defender d = defenders[i];
@@ -394,19 +336,6 @@ void Game::run_iterations() {
 
         prevRoundAttacks = roundAttacks;
 
-
-
-        if (defenders_have_more_than_attackers) {
-            if (Attacker::current_sum_assets > Defender::current_sum_assets) {
-                // crossovers.push_back(iter_num);
-                defenders_have_more_than_attackers = false;
-            }
-        } else {
-            if (Attacker::current_sum_assets < Defender::current_sum_assets) {
-                // crossovers.push_back(iter_num);
-                defenders_have_more_than_attackers = true;
-            }
-        }
 
         if (p.verbose) {
             Defender::cumulative_assets.push_back(Defender::current_sum_assets);

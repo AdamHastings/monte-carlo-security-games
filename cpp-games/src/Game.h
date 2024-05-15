@@ -36,7 +36,6 @@ class Game {
         uint DELTA;
         uint EPSILON;
 
-
         std::vector<Defender> defenders;
         std::vector<Attacker> attackers;
         std::vector<Insurer> insurers;
@@ -44,14 +43,6 @@ class Game {
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
         unsigned int iter_num = 0;
-        // std::vector<int> crossovers; // TODO kind of want to get rid of these two 
-        // std::vector<int> insurerTimesOfDeath; // TODO should probably be a class variable
-
-        std::vector<double> last_delta_defenders_changes;
-        std::vector<double> last_delta_attackers_changes;
-
-        unsigned int outside_epsilon_count_defenders;
-        unsigned int outside_epsilon_count_attackers;
 
         std::vector<int> alive_attackers_indices; //(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
         std::vector<int> alive_defenders_indices; //(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later. Try just using a list instead of having to copy to a list each time..?
@@ -71,6 +62,4 @@ class Game {
 
         void init_round();
         void init_game();
-
-        bool defenders_have_more_than_attackers;
 };
