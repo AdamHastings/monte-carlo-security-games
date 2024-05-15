@@ -29,9 +29,8 @@ class Game {
         std::mt19937 gen;
         double INEQUALITY;
         int NUM_ATTACKERS;
-        unsigned int ATTACKS_PER_EPOCH; // TODO define via config params
+        unsigned int ATTACKS_PER_EPOCH; 
 
-        uint num_insurers;
 
         uint DELTA;
         uint EPSILON;
@@ -44,8 +43,8 @@ class Game {
 
         unsigned int iter_num = 0;
 
-        std::vector<int> alive_attackers_indices; //(alive_attackers.begin(), alive_attackers.end()); // TODO maybe optimize this later
-        std::vector<int> alive_defenders_indices; //(alive_defenders.begin(), alive_defenders.end()); // TODO maybe optimize this later. Try just using a list instead of having to copy to a list each time..?
+        std::vector<int> alive_attackers_indices;
+        std::vector<int> alive_defenders_indices;
         
         uint roundAttacks = 0;
         uint prevRoundAttacks = 0;

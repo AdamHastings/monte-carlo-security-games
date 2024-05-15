@@ -77,8 +77,6 @@ Game::Game(Params prm, unsigned int game_number) {
 std::string Game::to_string() {
     std::string ret = "";
 
-    ret += std::to_string(NUM_ATTACKERS).substr(0,4) + ",";
-    ret += std::to_string(INEQUALITY).substr(0,5) + ",";
     ret += std::to_string((long long)(round(Defender::d_init))) + ",";
     ret += std::to_string((long long)(round(Defender::current_sum_assets))) + ",";
     ret += std::to_string((long long)(round(Attacker::Attacker::a_init))) + ",";
@@ -91,16 +89,6 @@ std::string Game::to_string() {
     ret += std::to_string((long long)(round(Attacker::attackerExpenditures))) + ",";
     ret += std::to_string(Defender::policiesPurchased) + ",";   
     ret += std::to_string(Defender::defensesPurchased) + ",";
-    // ret += "\"[";
-    // for (auto i : crossovers) {
-    //     ret += std::to_string(i) + ",";
-    // }
-    // ret += "]\",";
-    // ret += "\"[";
-    // for (auto i : insurerTimesOfDeath) {
-    //     ret += std::to_string(i) + ",";
-    // }
-    // ret += "]\",";
     ret += std::to_string(int(round(Insurer::paid_claims))) + ",";
     ret += std::to_string(iter_num) + ",";
     ret += final_outcome + ",";
@@ -370,7 +358,6 @@ Game::~Game() {
     delete p.PAYOFF_distribution;     
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution;  
-
     delete p.LOSS_RATIO_distribution;
     delete p.RETENTION_REGRESSION_FACTOR_distribution;
     delete p.NUM_DEFENDERS_distribution;

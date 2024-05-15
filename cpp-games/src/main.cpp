@@ -81,7 +81,6 @@ void SerialRunGames(std::string basename) {
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution; 
 
-    // TODO run this through valgrind.
     delete p.LOSS_RATIO_distribution;
     delete p.RETENTION_REGRESSION_FACTOR_distribution;
     delete p.NUM_DEFENDERS_distribution;
@@ -99,17 +98,9 @@ void SerialRunGames(std::string basename) {
 void init_logs(std::string basename, Params p) {
 
     std::string fpath = "logs/" + basename + ".csv";
-
     std::cout << "Creating " << fpath << std::endl;
 
-    ofstream log;
-
     std::string header = "";
-
-    header += "NUM_ATTACKERS,";
-    header += "INEQUALITY,";
-
-    // TODO double check that this is correct
     header += "d_init,";
     header += "d_end,";
     header += "a_init,";
@@ -134,8 +125,10 @@ void init_logs(std::string basename, Params p) {
 
     header += "\n";
 
+    ofstream log;
+
     // Check if log file already exists so that we don't accidentally write over it
-    // TODO or should we timestamp each run?
+    // TODO consider timestamping each run.
     ifstream f(fpath.c_str());
     if (f.good() && !basename.compare(0, 4, "test") == 0) {
         std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it (Y)? Or append to it (A)? Y/A/n\n >> ";
