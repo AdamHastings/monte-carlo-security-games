@@ -6,6 +6,8 @@
 #include <cmath>
 #include <ctime>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <cassert>
 #include <string.h>
 #include <vector>
@@ -75,45 +77,44 @@ Game::Game(Params prm, unsigned int game_number) {
 }
 
 std::string Game::to_string() {
-    std::string ret = "";
+    std::stringstream ss;
 
-    ret += std::to_string((long long)(round(Defender::d_init))) + ",";
-    ret += std::to_string((long long)(round(Defender::current_sum_assets))) + ",";
-    ret += std::to_string((long long)(round(Attacker::Attacker::a_init))) + ",";
-    ret += std::to_string((long long)(round(Attacker::current_sum_assets))) + ",";
-    ret += std::to_string((long long)(round(Insurer::i_init))) + ",";
-    ret += std::to_string((long long)(round(Insurer::current_sum_assets))) + ",";
-    ret += std::to_string((long long)(round(Attacker::attacksAttempted))) + ",";
-    ret += std::to_string((long long)(round(Attacker::attacksSucceeded))) + ",";
-    ret += std::to_string((long long)(round(Attacker::attackerLoots))) + ",";
-    ret += std::to_string((long long)(round(Attacker::attackerExpenditures))) + ",";
-    ret += std::to_string(Defender::policiesPurchased) + ",";   
-    ret += std::to_string(Defender::defensesPurchased) + ",";
-    ret += std::to_string(int(round(Insurer::paid_claims))) + ",";
-    ret += std::to_string(iter_num) + ",";
-    ret += final_outcome + ",";
+    ss << std::scientific << std::setprecision(2) << Defender::d_init <<  ",";
+    ss << std::scientific << std::setprecision(2) << Defender::current_sum_assets <<  ",";
+    ss << std::scientific << std::setprecision(2) << Attacker::a_init <<  ",";
+    ss << std::scientific << std::setprecision(2) << Attacker::current_sum_assets <<  ",";
+    ss << std::scientific << std::setprecision(2) << Insurer::i_init <<  ",";
+    ss << std::scientific << std::setprecision(2) << Insurer::current_sum_assets <<  ",";
+    ss << std::scientific << std::setprecision(2) << Attacker::attacksAttempted <<  ",";
+    ss << std::scientific << std::setprecision(2) << Attacker::attacksSucceeded <<  ",";
+    ss << std::scientific << std::setprecision(2) << Attacker::attackerLoots <<  ",";
+    ss << std::scientific << std::setprecision(2) << Attacker::attackerExpenditures <<  ",";
+    ss << std::scientific << std::setprecision(2) << Defender::policiesPurchased << ",";   
+    ss << std::scientific << std::setprecision(2) << Defender::defensesPurchased <<  ",";
+    ss << std::scientific << std::setprecision(2) << Insurer::paid_claims <<  ",";
+    ss << iter_num <<  ",";
+    ss << final_outcome << ",";
 
     if (p.verbose) {
-        ret += "\"[";
-        for (auto a : Defender::cumulative_assets) {
-            ret += std::to_string(int(round(a))) + ",";
+        ss << "\"[";
+        for (auto d : Defender::cumulative_assets) {
+            ss << std::scientific << std::setprecision(2) << d << ",";
         }
-        ret += "]\",";
-        ret += "\"[";
+        ss << "]\",";
+        ss << "\"[";
         for (auto a : Attacker::cumulative_assets) {
-            ret += std::to_string(int(round(a))) + ",";
+            ss << std::scientific << std::setprecision(2) << a << ",";
         }
-        ret += "]\",";
-        ret += "\"[";
-        for (auto a : Insurer::cumulative_assets) {
-            ret += std::to_string(int(round(a))) + ",";
+        ss << "]\",";
+        ss << "\"[";
+        for (auto i : Insurer::cumulative_assets) {
+            ss << std::scientific << std::setprecision(2) << i << ",";
         }
-        ret += "]\",";
+        ss << "]\",";
     }
     
-    ret += "\n";
-    return ret;
-
+    ss << "\n";
+    return ss.str();
 }
 
 void Game::verify_init() {
@@ -203,7 +204,7 @@ void Game::verify_outcome() {
 
 bool Game::equilibrium_reached() {
     if (roundAttacks == 0) {
-        consecutiveNoAttacks++;
+        consecutiveNoAttacks++; // TODO TODO this is not being used
     } else {
         consecutiveNoAttacks = 0;
     }
