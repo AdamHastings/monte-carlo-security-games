@@ -55,6 +55,7 @@ class Game {
         void fight(Attacker &a, Defender &d);
         void conclude_game(std::string outcome);
         bool is_equilibrium_reached();
+        bool game_over();
 
         void verify_init();
         void verify_outcome();

@@ -201,11 +201,6 @@ void Game::verify_outcome() {
     assert(round(init_ - end_) == 0); 
 }
 
-void Game::conclude_game(std::string outcome) {
-    final_outcome = outcome;
-    verify_outcome();
-}
-
 bool Game::is_equilibrium_reached() {
     if (roundAttacks == 0) {
         consecutiveNoAttacks++;
@@ -214,6 +209,30 @@ bool Game::is_equilibrium_reached() {
     }
 
     return (consecutiveNoAttacks >= DELTA);
+}
+
+bool Game::game_over() {
+
+    bool game_over = false;
+    if (alive_attackers_indices.size() == 0) {
+        final_outcome = "A";
+        game_over = true;
+    } else if (alive_defenders_indices.size() == 0) {
+        final_outcome = "D";
+        game_over = true;
+    } else if (is_equilibrium_reached()) {
+        final_outcome = "E";
+        game_over = true;
+    } else if (iter_num == num_games) {
+        final_outcome = "N";
+        game_over = true;
+    }
+
+    if (game_over) {
+        verify_outcome();
+    }
+
+    return game_over;
 }
 
 void Game::fight(Attacker &a, Defender &d) {
@@ -332,21 +351,12 @@ void Game::run_iterations() {
             Insurer::cumulative_assets.push_back(Insurer::current_sum_assets);
         }
 
-        // TODO put in its own function
-        if (alive_attackers_indices.size() == 0) {
-            conclude_game("A");
-            return;
-        } else if (alive_defenders_indices.size() == 0) {
-            conclude_game("D");
-            return;
-        } else if (is_equilibrium_reached()) {
-            conclude_game("E");
+        if (game_over()) {
             return;
         }
-
     }
 
-    conclude_game("N");
+    game_over();
     return;
 }
 
