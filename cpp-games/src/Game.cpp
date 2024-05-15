@@ -45,6 +45,7 @@ Game::Game(Params prm, unsigned int game_number) {
 
     NUM_ATTACKERS = p.NUM_ATTACKERS_distribution->draw();
     INEQUALITY = p.INEQUALITY_distribution->draw();
+    ATTACKS_PER_EPOCH = p.ATTACKS_PER_EPOCH_distribution->draw();
 
     int num_attackers = (int)(NUM_ATTACKERS);
     if (num_attackers <= 0) {
@@ -374,6 +375,7 @@ Game::~Game() {
     delete p.RETENTION_REGRESSION_FACTOR_distribution;
     delete p.NUM_DEFENDERS_distribution;
     delete p.NUM_INSURERS_distribution;
+    delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.EPSILON_distribution;
     delete p.DELTA_distribution;
 }

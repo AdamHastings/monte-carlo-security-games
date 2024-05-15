@@ -16,6 +16,7 @@ struct Params {
     Distribution* RETENTION_REGRESSION_FACTOR_distribution;
     Distribution* NUM_DEFENDERS_distribution;
     Distribution* NUM_INSURERS_distribution;
+    Distribution* ATTACKS_PER_EPOCH_distribution;
     
     Distribution* EPSILON_distribution;
     Distribution* DELTA_distribution;

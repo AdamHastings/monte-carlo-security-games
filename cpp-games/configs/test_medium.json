@@ -57,6 +57,11 @@
         "distribution" : "fixed",
         "val" : 50
     },
+    "ATTACKS_PER_EPOCH" :
+    {
+        "distribution" : "fixed",
+        "val" : 100
+    },
     "EPSILON":
     {
         "distribution" : "fixed",

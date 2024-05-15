@@ -24,8 +24,9 @@ Params params_loader::load_cfg(std::string basename) {
 
     p.LOSS_RATIO_distribution                  = Distribution::createDistribution(jsonData["LOSS_RATIO"]);
     p.RETENTION_REGRESSION_FACTOR_distribution = Distribution::createDistribution(jsonData["RETENTION_REGRESSION_FACTOR"]);
-    p.NUM_DEFENDERS_distribution            = Distribution::createDistribution(jsonData["NUM_DEFENDERS"]);
+    p.NUM_DEFENDERS_distribution               = Distribution::createDistribution(jsonData["NUM_DEFENDERS"]);
     p.NUM_INSURERS_distribution                = Distribution::createDistribution(jsonData["NUM_INSURERS"]);
+    p.ATTACKS_PER_EPOCH_distribution           = Distribution::createDistribution(jsonData["ATTACKS_PER_EPOCH"]);
 
     p.EPSILON_distribution = Distribution::createDistribution(jsonData["EPSILON"]);
     p.DELTA_distribution   = Distribution::createDistribution(jsonData["DELTA"]);

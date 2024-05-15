@@ -29,7 +29,7 @@ class Game {
         std::mt19937 gen;
         double INEQUALITY;
         int NUM_ATTACKERS;
-        unsigned int ATTACKS_PER_EPOCH = 100; // TODO define via config params
+        unsigned int ATTACKS_PER_EPOCH; // TODO define via config params
 
         uint num_insurers;
 
