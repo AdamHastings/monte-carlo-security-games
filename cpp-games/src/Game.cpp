@@ -22,7 +22,6 @@ Game::Game(Params prm, unsigned int game_number) {
     // std::random_device rd;  // Uncomment if you need true randomness
     Distribution::seed(game_num);
     gen.seed(game_num);
-
      
     Attacker::reset();
     Defender::reset();
@@ -224,7 +223,7 @@ bool Game::game_over() {
     } else if (equilibrium_reached()) {
         final_outcome = "E";
         game_over = true;
-    } else if (iter_num == num_games) {
+    } else if (iter_num == max_iterations) {
         final_outcome = "N";
         game_over = true;
     }
@@ -346,7 +345,7 @@ void Game::run_iterations() {
     init_game();
 
 
-    for (iter_num = 1; iter_num < num_games + 1; iter_num++) {
+    for (iter_num = 1; iter_num < max_iterations + 1; iter_num++) {
 
         init_round();
 

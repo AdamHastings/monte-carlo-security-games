@@ -21,15 +21,15 @@ class Game {
 
     private:
 
-        unsigned int num_games = 0;
         unsigned int game_num = 0;
 
         Params p;
 
         std::mt19937 gen;
-        double INEQUALITY;
-        int NUM_ATTACKERS;
+        int NUM_ATTACKERS; // TODO pick a capitalization convention
         unsigned int ATTACKS_PER_EPOCH; 
+        
+        unsigned int max_iterations = 1000; // TODO make this a game parameter
 
 
         uint DELTA;
