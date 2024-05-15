@@ -9,6 +9,7 @@
 #include <cassert>
 #include <string.h>
 #include <vector>
+#include <unordered_set>
 #include "Game.h"
 
 
@@ -300,58 +301,89 @@ void Game::run_iterations() {
 
         init_round();
 
-        std::vector<int> new_alive_defenders_indices;
-        std::vector<int> new_alive_attackers_indices;
-
+        // std::vector<int> new_alive_defenders_indices;
+        // std::vector<int> new_alive_attackers_indices;
 
         // TODO just do simple shuffle?
         // or put into its own function?
-        uint shorter_length, offset;
-        bool more_defenders_than_attackers = (alive_defenders_indices.size() > alive_attackers_indices.size());
-        if (more_defenders_than_attackers) {
+        // uint shorter_length, offset;
+        // bool more_defenders_than_attackers = (alive_defenders_indices.size() > alive_attackers_indices.size());
+        // if (more_defenders_than_attackers) {
 
-            std::shuffle(alive_attackers_indices.begin(), alive_attackers_indices.end(), gen);
-            std::uniform_int_distribution<> distr(0, alive_defenders_indices.size() - alive_attackers_indices.size());
-            offset = distr(gen);
-            shorter_length = alive_attackers_indices.size();
+        //     std::shuffle(alive_attackers_indices.begin(), alive_attackers_indices.end(), gen);
+        //     std::uniform_int_distribution<> distr(0, alive_defenders_indices.size() - alive_attackers_indices.size());
+        //     offset = distr(gen);
+        //     shorter_length = alive_attackers_indices.size();
 
-            new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin(), alive_defenders_indices.begin() + offset );
-            new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin() + offset + alive_attackers_indices.size(), alive_defenders_indices.end() );
+        //     new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin(), alive_defenders_indices.begin() + offset );
+        //     new_alive_defenders_indices.insert( new_alive_defenders_indices.end(), alive_defenders_indices.begin() + offset + alive_attackers_indices.size(), alive_defenders_indices.end() );
 
-        } else {
-            // Shuffle smaller list
-            // Then pair it up at a random point in the opposing list
-            std::shuffle(alive_defenders_indices.begin(), alive_defenders_indices.end(), gen);
-            std::uniform_int_distribution<> distr(0, alive_attackers_indices.size() - alive_defenders_indices.size());
-            offset = distr(gen);
-            shorter_length = alive_defenders_indices.size();
+        // } else {
+        //     // Shuffle smaller list
+        //     // Then pair it up at a random point in the opposing list
+        //     std::shuffle(alive_defenders_indices.begin(), alive_defenders_indices.end(), gen);
+        //     std::uniform_int_distribution<> distr(0, alive_attackers_indices.size() - alive_defenders_indices.size());
+        //     offset = distr(gen);
+        //     shorter_length = alive_defenders_indices.size();
 
-            new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin(), alive_attackers_indices.begin() + offset );
-            new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin() + offset + alive_defenders_indices.size(), alive_attackers_indices.end() );
-        }
+        //     new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin(), alive_attackers_indices.begin() + offset );
+        //     new_alive_attackers_indices.insert( new_alive_attackers_indices.end(), alive_attackers_indices.begin() + offset + alive_defenders_indices.size(), alive_attackers_indices.end() );
+        // }
         
-        for (uint i=0; i<shorter_length; i++) {
-            uint a_idx, d_idx;
-            if (more_defenders_than_attackers) {
-                a_idx = alive_attackers_indices[i];
-                d_idx = alive_defenders_indices[i + offset];
-            } else {
-                a_idx = alive_attackers_indices[i + offset];
-                d_idx = alive_defenders_indices[i];
+        // for (uint i=0; i<shorter_length; i++) {
+        //     uint a_idx, d_idx;
+        //     if (more_defenders_than_attackers) {
+        //         a_idx = alive_attackers_indices[i];
+        //         d_idx = alive_defenders_indices[i + offset];
+        //     } else {
+        //         a_idx = alive_attackers_indices[i + offset];
+        //         d_idx = alive_defenders_indices[i];
+        //     }
+
+        //     Attacker *a = &attackers[a_idx];
+        //     Defender *d = &defenders[d_idx];
+
+        //     fight(*a, *d);
+
+        //     if (std::round(a->assets) > 0) {
+        //         new_alive_attackers_indices.push_back(a_idx);
+        //     }
+        //     if (std::round(d->assets) > 0) {
+        //         new_alive_defenders_indices.push_back(d_idx);
+        //     }
+        // }
+
+        std::uniform_int_distribution<> alive_defender_indices_dist(0, alive_defenders_indices.size());
+
+        for (auto& a_i : alive_attackers_indices) {
+            std::unordered_set<unsigned int> victim_indices;
+            while (victim_indices.size() < ATTACKS_PER_EPOCH) {
+                victim_indices.insert(alive_defender_indices_dist(gen));
             }
 
-            Attacker *a = &attackers[a_idx];
-            Defender *d = &defenders[d_idx];
-
-            fight(*a, *d);
-
-            if (std::round(a->assets) > 0) {
-                new_alive_attackers_indices.push_back(a_idx);
-            }
-            if (std::round(d->assets) > 0) {
-                new_alive_defenders_indices.push_back(d_idx);
+            for (const auto& d_i : victim_indices) {
+                Attacker *a = &attackers[alive_attackers_indices[a_i]];
+                Defender *d = &defenders[alive_defenders_indices[d_i]];
+                fight(*a, *d);
             }
         }
+
+        alive_attackers_indices.clear();
+        for (auto& a : attackers) {
+            if (std::round(a.assets) > 0) {
+                alive_attackers_indices.push_back(a.id);
+            }
+        }
+
+        alive_defenders_indices.clear();
+        for (auto d : defenders) {
+            if (std::round(d.assets) > 0) {
+                alive_defenders_indices.push_back(d.id);
+            }
+        }
+
+        // alive_attackers_indices = new_alive_attackers_indices;
+        // alive_defenders_indices = new_alive_defenders_indices;
 
         // Insurance policy expires
         for (uint i=0; i<defenders.size(); i++) {
@@ -362,8 +394,7 @@ void Game::run_iterations() {
 
         prevRoundAttacks = roundAttacks;
 
-        alive_attackers_indices = new_alive_attackers_indices;
-        alive_defenders_indices = new_alive_defenders_indices;
+
 
         if (defenders_have_more_than_attackers) {
             if (Attacker::current_sum_assets > Defender::current_sum_assets) {
