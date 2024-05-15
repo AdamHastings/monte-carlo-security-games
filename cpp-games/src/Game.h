@@ -45,6 +45,7 @@ class Game {
 
         std::vector<int> alive_attackers_indices;
         std::vector<int> alive_defenders_indices;
+        std::vector<int> alive_insurers_indices;
         
         uint roundAttacks = 0;
         uint prevRoundAttacks = 0;
@@ -53,13 +54,18 @@ class Game {
         std::string final_outcome = "X"; // TODO turn this into an enum perhaps?
 
         void fight(Attacker &a, Defender &d);
-        void conclude_game(std::string outcome);
         bool equilibrium_reached();
         bool game_over();
 
         void verify_init();
         void verify_outcome();
 
-        void init_round();
         void init_game();
+        void conclude_game();
+
+        void init_round();
+        void conclude_round();
+    
+
+        void reset_alive_players();
 };

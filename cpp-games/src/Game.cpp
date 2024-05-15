@@ -228,10 +228,6 @@ bool Game::game_over() {
         game_over = true;
     }
 
-    if (game_over) {
-        verify_outcome();
-    }
-
     return game_over;
 }
 
@@ -293,8 +289,55 @@ void Game::init_round() {
     }
 }
 
+void Game::conclude_round() {
+    reset_alive_players();
+
+    // Insurance policy expires
+    for (uint i=0; i<defenders.size(); i++) {
+        Defender d = defenders[i];
+        d.ins_idx = -1;
+        d.insured = false; 
+    }
+
+    prevRoundAttacks = roundAttacks;
+
+    if (p.verbose) {
+        Defender::cumulative_assets.push_back(Defender::current_sum_assets);
+        Attacker::cumulative_assets.push_back(Attacker::current_sum_assets);
+        Insurer::cumulative_assets.push_back(Insurer::current_sum_assets);
+    }
+}
+
 void Game::init_game(){
     return;
+}
+
+void Game::conclude_game(){
+    game_over();
+    verify_outcome();
+}
+
+void Game::reset_alive_players() {
+    alive_attackers_indices.clear();
+    for (auto& a : attackers) {
+        if (std::round(a.assets) > 0) {
+            alive_attackers_indices.push_back(a.id);
+        }
+    }
+
+    alive_defenders_indices.clear();
+    for (auto d : defenders) {
+        if (std::round(d.assets) > 0) {
+            alive_defenders_indices.push_back(d.id);
+        }
+    }
+
+    alive_insurers_indices.clear();
+    for (auto i : insurers) {
+        if (std::round(i.assets) > 0) {
+            alive_insurers_indices.push_back(i.id);
+        }
+    }
 }
 
 void Game::run_iterations() {
@@ -309,11 +352,14 @@ void Game::run_iterations() {
         std::uniform_int_distribution<> alive_defender_indices_dist(0, alive_defenders_indices.size());
 
         for (auto& a_i : alive_attackers_indices) {
+            
+            // pick victims
             std::unordered_set<unsigned int> victim_indices;
             while (victim_indices.size() < ATTACKS_PER_EPOCH) {
                 victim_indices.insert(alive_defender_indices_dist(gen));
             }
 
+            // fight all chosen victims 
             for (const auto& d_i : victim_indices) {
                 Attacker *a = &attackers[alive_attackers_indices[a_i]];
                 Defender *d = &defenders[alive_defenders_indices[d_i]];
@@ -321,43 +367,13 @@ void Game::run_iterations() {
             }
         }
 
-        alive_attackers_indices.clear();
-        for (auto& a : attackers) {
-            if (std::round(a.assets) > 0) {
-                alive_attackers_indices.push_back(a.id);
-            }
-        }
-
-        alive_defenders_indices.clear();
-        for (auto d : defenders) {
-            if (std::round(d.assets) > 0) {
-                alive_defenders_indices.push_back(d.id);
-            }
-        }
-
-        // Insurance policy expires
-        for (uint i=0; i<defenders.size(); i++) {
-            Defender d = defenders[i];
-            d.ins_idx = -1;
-            d.insured = false; 
-        }
-
-        prevRoundAttacks = roundAttacks;
-
-
-        if (p.verbose) {
-            Defender::cumulative_assets.push_back(Defender::current_sum_assets);
-            Attacker::cumulative_assets.push_back(Attacker::current_sum_assets);
-            Insurer::cumulative_assets.push_back(Insurer::current_sum_assets);
-        }
-
+        conclude_round();
         if (game_over()) {
-            return;
+            break;
         }
     }
 
-    game_over();
-    return;
+    conclude_game();
 }
 
 
