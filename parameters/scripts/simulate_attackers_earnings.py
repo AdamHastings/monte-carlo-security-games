@@ -6,6 +6,9 @@ from scipy.stats import lognorm
 
 from scipy.stats import lognorm
 
+np.set_printoptions(formatter={'float': '{:0.2e}'.format})
+
+
 mu=1.1356082157016467
 sigma=1.1184432636889245
 
@@ -14,9 +17,9 @@ num_attackers = 50
 
 expected_posture_mu = 0.28
 
-# attackers_wealth = np.max(np.random.lognormal(mean=mu, sigma=sigma, size=num_attackers)) * 10 ** 9 * inequality
+attackers_wealths = np.random.lognormal(mean=mu, sigma=sigma, size=num_attackers) * 10 ** 9 * inequality
 # print("attacker_wealth: ", "{:e}".format(attackers_wealth))
-
+print("attackers_wealths: ", attackers_wealths)
 
 num_attacks = 100 # TODO TODO TODO this is assuming that the attacker had enough to gamble for each of these attacks?
 prob_attack_success = 1 - expected_posture_mu
@@ -51,6 +54,8 @@ print("sample R/C = ", total_revenue/total_costs_to_attack)
 print("")
 
 
+
+
 target_rc_ratio = 0.33
 
 
@@ -74,6 +79,18 @@ print("analytic_revenue: ", "{:e}".format(analytic_revenue))
 print("analytic_costs: ", "{:e}".format(analytic_costs))
 print("analytic_rc_ratio: ", analytic_rc_ratio)
 print("analytic_magic_scalar: ", analytic_magic_scalar)
+
+
+print("")
+print("Example cost_to_attacks:")
+for i in range(50):
+    cost_to_attack = wealths[i] *  postures[i] * analytic_magic_scalar
+    expected_loot = ransoms[i] * (1 - postures[i]) 
+    worth_attacking = "YES" if expected_loot > cost_to_attack else "NO"
+    have_enough = "YES" if cost_to_attack < attackers_wealths[i] else "NO"
+    fstring = "  -- wealth = {:.2e}\t posture = {}\t\t cost to attack = {:.2e}\t ransom = {:.2e}\t expected_loot = {:2e}\t worth attacking? {}\t have_enough? {}".format(wealths[i], round(postures[i],2), cost_to_attack, ransoms[i], expected_loot, worth_attacking, have_enough)
+    print(fstring)
+
 
 plt.hist(ransoms, bins=100)
 plt.xlabel("earnings")
