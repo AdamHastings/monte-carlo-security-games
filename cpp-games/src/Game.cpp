@@ -208,6 +208,7 @@ bool Game::equilibrium_reached() {
         consecutiveNoAttacks = 0;
     }
 
+    // TODO think about what value DELTA should be
     return (consecutiveNoAttacks >= DELTA);
 }
 
@@ -354,13 +355,14 @@ void Game::run_iterations() {
 
         init_round();
 
-        std::uniform_int_distribution<> alive_defender_indices_dist(0, alive_defenders_indices.size());
+        unsigned int num_alive_defenders = alive_defenders_indices.size();
+        std::uniform_int_distribution<> alive_defender_indices_dist(0, num_alive_defenders-1);
 
         for (auto& a_i : alive_attackers_indices) {
             
             // pick victims
             std::unordered_set<unsigned int> victim_indices;
-            while (victim_indices.size() < ATTACKS_PER_EPOCH) {
+            while (victim_indices.size() < std::min(ATTACKS_PER_EPOCH, num_alive_defenders)) {
                 victim_indices.insert(alive_defender_indices_dist(gen));
             }
 
