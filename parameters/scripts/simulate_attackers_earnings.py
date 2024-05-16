@@ -12,25 +12,27 @@ sigma=1.1184432636889245
 inequality = 0.001
 num_attackers = 50
 
+expected_posture_mu = 0.28
+
 # attackers_wealth = np.max(np.random.lognormal(mean=mu, sigma=sigma, size=num_attackers)) * 10 ** 9 * inequality
 # print("attacker_wealth: ", "{:e}".format(attackers_wealth))
 
 
 num_attacks = 100 # TODO TODO TODO this is assuming that the attacker had enough to gamble for each of these attacks?
-prob_attack_success = 1 - 0.28
+prob_attack_success = 1 - expected_posture_mu
 num_success_attacks = (int) (num_attacks * prob_attack_success)
 
 wealths = np.random.lognormal(mean=mu, sigma=sigma, size=num_attacks)
 wealths = wealths * 10**9
 
-postures = np.random.normal(loc=0.28, scale=0.10, size=num_attacks)
+postures = np.random.normal(loc=expected_posture_mu, scale=0.10, size=num_attacks)
 
 
-MAGIC_SCALAR = 0.012
+MAGIC_SCALAR = 0.01026
 
 
 costs_to_attack = [MAGIC_SCALAR * x[0] * x[1] for x in zip(wealths, postures)]
-print(costs_to_attack)
+# print(costs_to_attack)
 total_costs_to_attack = np.sum(costs_to_attack)
 
 
@@ -41,10 +43,37 @@ successful_attacks = wealths[0: num_success_attacks]
 ransoms = ransom_base * wealths ** ransom_exp
 
 total_revenue = np.sum(ransoms)
-print("total_revenue: ", "{:e}".format(total_revenue))
+print("sample revenue: ", "{:e}".format(total_revenue))
+print("sample costs: ", "{:e}".format(total_costs_to_attack))
 
-print("R/C = ", total_revenue/total_costs_to_attack)
 
+print("sample R/C = ", total_revenue/total_costs_to_attack)
+print("")
+
+
+target_rc_ratio = 0.33
+
+
+expected_assets = np.exp(mu + (sigma **2 / 2) ) * 10**9
+
+print("expected_assets: ", "{:e}".format(expected_assets))
+
+analytic_revenue = num_success_attacks * ransom_base * expected_assets ** ransom_exp
+
+
+analytic_magic_scalar = analytic_revenue / (target_rc_ratio * num_attacks * expected_posture_mu * expected_assets )
+
+analytic_costs = num_attacks * analytic_magic_scalar * expected_posture_mu * expected_assets
+
+
+analytic_rc_ratio = analytic_revenue / analytic_costs
+
+
+
+print("analytic_revenue: ", "{:e}".format(analytic_revenue))
+print("analytic_costs: ", "{:e}".format(analytic_costs))
+print("analytic_rc_ratio: ", analytic_rc_ratio)
+print("analytic_magic_scalar: ", analytic_magic_scalar)
 
 plt.hist(ransoms, bins=100)
 plt.xlabel("earnings")
