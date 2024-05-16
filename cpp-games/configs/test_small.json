@@ -20,6 +20,16 @@
         "distribution" : "fixed",
         "val" : 0.254
     },
+    "RECOVERY_COST_BASE" :
+    {
+        "distribution" : "fixed",
+        "val" : 230123
+    },
+    "RECOVERY_COST_EXP" :
+    {
+        "distribution" : "fixed",
+        "val" : 0.125
+    },
     "WEALTH" :
     {
         "distribution" : "lognormal",

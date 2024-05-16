@@ -27,7 +27,6 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     current_sum_assets += assets;
 
     assert(Defender::d_init == Defender::current_sum_assets);
-
 }
 
 double Defender::estimated_probability_of_attack = 0;
@@ -85,7 +84,7 @@ void Defender::make_security_investment(double x) {
     assert(posture >= 0);
     assert(posture <= 1);
     lose(x);
-    costToAttack = assets * posture; // Why wasn't this included until now?
+    costToAttack = assets * posture; // Why wasn't this included until now? // TODO this should be deprecated anyway
     assert(costToAttack >= 0);
 }
 
@@ -108,9 +107,9 @@ void Defender::choose_security_strategy() {
     assert(mean_EFFICIENCY >= 0);
     assert(mean_EFFICIENCY <= 1);
 
-    double ransom = 10000; // TODO FIX
-    double recovery_costs = 10000; // TODO FIX use new distributions 
-    double total_losses = ransom + recovery_costs;
+    double ransom = p.RANSOM_BASE_distribution->mean() * pow(assets,  p.RANSOM_EXP_distribution->mean());
+    double recovery_cost = p.RECOVERY_COST_BASE_distribution->mean() * pow(assets, p.RECOVERY_COST_EXP_distribution->mean());
+    double total_losses = ransom + recovery_cost;
 
     // 1. Get insurance policy from insurer
     PolicyType policy = i->provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
@@ -128,33 +127,16 @@ void Defender::choose_security_strategy() {
     // can they assume p_a_hat? 
 
     // 2. Find optimum security investment
-    double optimal_investment = 0; // TODO don't use PAYOFF anymore!! std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF)));
+    double optimal_investment = 0; // TODO don't use PAYOFF anymore!! MUST RE-IMPLEMENT!! std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF)));
     double expected_loss_with_optimal_investment = total_losses; // TODO stand in for compilation DELETE !!!! TODO don't use PAYOFF anymore!! std::max(0.0, (assets - optimal_investment) * mean_PAYOFF * (p_A_hat * (1 - (posture * (mean_EFFICIENCY * (optimal_investment/assets))))) + optimal_investment);
     assert(optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment >= 0);
 
-
-    // 3. Find cost to achieve perfect security
-    // TODO shouldn't this never happen?
-    // double perfect_security_investment = (assets * (assets * posture)) / (posture * mean_EFFICIENCY);
-    // double expected_loss_with_perfect_security = perfect_security_investment;
-    // assert(perfect_security_investment >= 0);
-    // assert(expected_loss_with_perfect_security >= 0);
-
     // Choose the optimal strategy.
-    // TODO premiums are a bit high!! look into this. maybe set the #attackers to be such that intial premiums match existing payments
-    // TODO think about what happens when premiums are 0. Does this count as a valid policy? Does this mean expected loss is 0? What happens then?
-    // double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment,expected_loss_with_perfect_security});
-    double minimum = std::min({expected_loss_with_insurance, expected_loss_with_optimal_investment});
-
-    if (minimum == expected_loss_with_insurance) {
+    if (expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(i, policy);
-    } else if (minimum == expected_loss_with_optimal_investment) {
-        make_security_investment(optimal_investment);
-    // } else if (minimum == expected_loss_with_perfect_security) {
-    //     make_security_investment(perfect_security_investment);
     } else {
-        assert(false); // should never reach this
+        make_security_investment(optimal_investment);
     }
 }
 

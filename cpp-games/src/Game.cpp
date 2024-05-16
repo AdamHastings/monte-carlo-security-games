@@ -239,10 +239,8 @@ void Game::fight(Attacker &a, Defender &d) {
     }
 
     double ransom = p.RANSOM_BASE_distribution->draw() * pow(d.assets,  p.RANSOM_EXP_distribution->draw());
-    double total_losses = ransom; // + recovery costs TODO TODO TODO 
-
-    // Mercy kill the Defenders if the loot is very low
     if (ransom > d.assets) {
+        // Mercy kill the defender if the ransom is low
         ransom = d.assets;
     }
     
@@ -267,7 +265,15 @@ void Game::fight(Attacker &a, Defender &d) {
             a.gain(ransom);
             d.lose(ransom);
 
+            double recovery_cost = p.RECOVERY_COST_BASE_distribution->draw() * pow(d.assets, p.RECOVERY_COST_EXP_distribution->draw());
+            if (recovery_cost > d.assets) {
+                recovery_cost = d.assets;
+            }
+            
+            d.lose(recovery_cost);
+            
             if (d.insured) {
+                double total_losses = ransom + recovery_cost;
                 d.submit_claim(total_losses);
             }
         }
@@ -381,7 +387,9 @@ Game::~Game() {
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
     delete p.RANSOM_BASE_distribution;
-    delete p.RANSOM_EXP_distribution;     
+    delete p.RANSOM_EXP_distribution;  
+    delete p.RECOVERY_COST_BASE_distribution;
+    delete p.RECOVERY_COST_EXP_distribution;   
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution;  
     delete p.LOSS_RATIO_distribution;

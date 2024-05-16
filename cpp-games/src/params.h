@@ -10,6 +10,8 @@ struct Params {
     Distribution* EFFICIENCY_distribution;
     Distribution* RANSOM_BASE_distribution;
     Distribution* RANSOM_EXP_distribution;
+    Distribution* RECOVERY_COST_BASE_distribution;
+    Distribution* RECOVERY_COST_EXP_distribution;
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
 

@@ -22,6 +22,8 @@ revenue = revenue.reshape(-1, 1)
 # print(median_ransom)
 # print(revenue)
 
+# TODO this data really looks like it'd be better fit by a power series 
+
 reg = LinearRegression().fit(revenue, median_ransom)
 print(reg.coef_)
 print(reg.intercept_)
