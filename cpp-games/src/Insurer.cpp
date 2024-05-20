@@ -10,6 +10,12 @@ double Insurer::insurer_iter_sum = 0;
 
 double Insurer::loss_ratio = 0;
 double Insurer::retention_regression_factor = 0;
+double Insurer::expected_ransom_base = 0;
+double Insurer::expected_ransom_exponent = 0;
+double Insurer::expected_recovery_base = 0;
+double Insurer::expected_recovery_exponent = 0;
+unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing memory leaks
+
 
 std::vector<double> Insurer::cumulative_assets; 
 std::vector<Defender>* Insurer::defenders;
@@ -58,33 +64,30 @@ double Insurer::issue_payment(double claim) {
     return amount_covered;
 }
 
-// TODO rework entirely 
 PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
     
-    PolicyType policy;
+    double p_getting_paired_with_attacker_a = (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0);
+    assert(p_getting_paired_with_attacker_a >= 0);
+    assert(p_getting_paired_with_attacker_a <= 1);
 
-    double probability_of_getting_paried_with_attacker = std::min(1.0, ((attackers->size() * 1.0) / (defenders->size() * 1.0)));
-    assert(probability_of_getting_paried_with_attacker >= 0);
-    assert(probability_of_getting_paried_with_attacker <= 1);
+    double p_getting_attacked = pow((1 - p_getting_paired_with_attacker_a), (double) attackers->size());
+    assert(p_getting_attacked >= 0);
+    assert(p_getting_attacked <= 1);
 
-    double probability_random_attacker_has_enough_to_attack = (1 - estimated_costToAttackPercentile);
-    assert(probability_random_attacker_has_enough_to_attack >= 0);
-    assert(probability_random_attacker_has_enough_to_attack <= 1);
+    double p_one_attacker_has_enough_to_attempt_attack = 0.5;// TODO TODO fix hardcoded. Use estimated_costToAttackPercentile
+    assert(p_one_attacker_has_enough_to_attempt_attack >= 0);
+    assert(p_one_attacker_has_enough_to_attempt_attack <= 1);
 
-    double p_A = probability_of_getting_paried_with_attacker * probability_random_attacker_has_enough_to_attack;
-    assert(p_A >= 0);
-    assert(p_A <= 1);
+    double p_loss = p_getting_attacked * p_one_attacker_has_enough_to_attempt_attack * (1 - estimated_posture);
+    assert(p_loss >= 0);
+    assert(p_loss <= 1);
 
-    double p_L = p_A * (1 - estimated_posture);
-    assert(p_L >= 0);
-    assert(p_L <= 1);
-
-    double ransom = 10000; // TODO FIX
-    double recovery_costs = 10000; // TODO FIX use new distributions 
+    double ransom = expected_ransom_base * pow(assets, expected_ransom_exponent); 
+    double recovery_costs = expected_recovery_base * pow(assets, expected_recovery_exponent);
     double total_losses = ransom + recovery_costs;
 
-    
-    policy.premium = (p_L * total_losses) / (retention_regression_factor * p_L + loss_ratio);
+    PolicyType policy;
+    policy.premium = (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
     policy.retention = retention_regression_factor * policy.premium;
 
     assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0

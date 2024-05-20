@@ -13,14 +13,14 @@ class Defender : public Player {
         static double defender_iter_sum;
         static std::vector<double> cumulative_assets; // running total of all defenders' assets
         static double current_sum_assets; // sum total of all class instances
-
+        static double sum_recovery_costs;
         static unsigned int policiesPurchased;
         static unsigned int defensesPurchased;
         // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
 
         uint id;
         double posture;
-        double costToAttack;
+        double costToAttack; // TODO maybe this should always be computed on the fly? So as to not make the mistake of not updating this somewhere where it should be.
        
         std::vector<Insurer>* insurers;
         bool insured = false;

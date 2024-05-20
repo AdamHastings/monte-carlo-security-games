@@ -34,8 +34,13 @@ Game::Game(Params prm, unsigned int game_number) {
         Insurer i = Insurer(j, p, defenders, attackers);
         insurers.push_back(i);
     }
+    // TODO maybe all this should happen in the Insurers' constructor? Or no because it's only called once?
     Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
+    Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean();
+    Insurer::expected_ransom_exponent = p.RANSOM_EXP_distribution->mean();
+    Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
+    Insurer::expected_recovery_exponent = p.RECOVERY_COST_EXP_distribution->mean();
 
     uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
     for (uint i=0; i < num_blue_players; i++) {
@@ -46,6 +51,7 @@ Game::Game(Params prm, unsigned int game_number) {
 
     NUM_ATTACKERS = p.NUM_ATTACKERS_distribution->draw();
     ATTACKS_PER_EPOCH = p.ATTACKS_PER_EPOCH_distribution->draw();
+    Insurer::ATTACKS_PER_EPOCH = &ATTACKS_PER_EPOCH;
 
     assert(NUM_ATTACKERS > 0);
     assert(ATTACKS_PER_EPOCH > 0);
@@ -181,7 +187,7 @@ void Game::verify_outcome() {
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
     // assert(round(Insurer::i_init  + Insurer- Insurer::paid_claims) >= 0); // This can be violated if insurers collect money from insurance.
     assert(round(Insurer::paid_claims) >= 0);
-    assert(round(Attacker::attackerLoots - Insurer::paid_claims) >= 0);
+    // assert(round(Attacker::attackerLoots - Insurer::paid_claims) >= 0); // No longer always true in new model because of recovery costs
     assert(Attacker::attackerExpenditures >= 0);
 
     if (final_outcome == "E") {
@@ -196,7 +202,7 @@ void Game::verify_outcome() {
 
     // Master checksum
     double init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
-    double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures; 
+    double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures + Defender::sum_recovery_costs; 
 
     assert(round(init_ - end_) == 0); 
 }
@@ -234,12 +240,17 @@ bool Game::game_over() {
 
 void Game::fight(Attacker &a, Defender &d) {
 
+    verify_outcome(); // TODO delete
+
     if (a.assets == 0 || d.assets == 0) {
         // One player is dead already. Skip.
+        std::cout << "dead player" << std::endl;
         return;
     }
 
     double ransom = p.RANSOM_BASE_distribution->draw() * pow(d.assets,  p.RANSOM_EXP_distribution->draw());
+    double recovery_cost = p.RECOVERY_COST_BASE_distribution->draw() * pow(d.assets, p.RECOVERY_COST_EXP_distribution->draw());
+
     if (ransom > d.assets) {
         // Mercy kill the defender if the ransom is low
         ransom = d.assets;
@@ -266,19 +277,24 @@ void Game::fight(Attacker &a, Defender &d) {
             a.gain(ransom);
             d.lose(ransom);
 
-            double recovery_cost = p.RECOVERY_COST_BASE_distribution->draw() * pow(d.assets, p.RECOVERY_COST_EXP_distribution->draw());
             if (recovery_cost > d.assets) {
                 recovery_cost = d.assets;
             }
             
             d.lose(recovery_cost);
+            Defender::sum_recovery_costs += recovery_cost;
+
             
             if (d.insured) {
                 double total_losses = ransom + recovery_cost;
                 d.submit_claim(total_losses);
+                verify_outcome(); // TODO delete
             }
+            verify_outcome(); // TODO delete
         }
-    } 
+        verify_outcome(); // TODO delete
+    }
+    verify_outcome(); // TODO delete
 }
 
 void Game::init_round() {
@@ -291,7 +307,7 @@ void Game::init_round() {
     Insurer::perform_market_analysis(prevRoundAttacks);
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
-        defenders[alive_defenders_indices[i]].choose_security_strategy();
+        defenders[alive_defenders_indices[i]].choose_security_strategy(); 
     }
 }
 
@@ -353,7 +369,9 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < max_iterations + 1; iter_num++) {
 
+        verify_outcome(); // TODO delete
         init_round();
+        verify_outcome(); // TODO delete
 
         unsigned int num_alive_defenders = alive_defenders_indices.size();
         std::uniform_int_distribution<> alive_defender_indices_dist(0, num_alive_defenders-1);
@@ -363,6 +381,7 @@ void Game::run_iterations() {
             // pick victims
             std::unordered_set<unsigned int> victim_indices;
             while (victim_indices.size() < std::min(ATTACKS_PER_EPOCH, num_alive_defenders)) {
+                // TODO consider having attackers fight until they've attempted ATTACKS_PER_EPOCH attacks
                 victim_indices.insert(alive_defender_indices_dist(gen));
             }
 
@@ -373,13 +392,11 @@ void Game::run_iterations() {
                 fight(*a, *d);
             }
         }
-
         conclude_round();
         if (game_over()) {
             break;
         }
     }
-
     conclude_game();
 }
 

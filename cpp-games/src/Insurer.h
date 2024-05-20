@@ -15,7 +15,13 @@ class Insurer : public Player {
         static double current_sum_assets; // sum total of all class instances
 
         static double loss_ratio;
+        static unsigned int* ATTACKS_PER_EPOCH;
         static double retention_regression_factor;  // TODO double check retention regression factor
+        static double expected_ransom_base;
+        static double expected_ransom_exponent;
+        static double expected_recovery_base;
+        static double expected_recovery_exponent;
+
 
         static double paid_claims;
 

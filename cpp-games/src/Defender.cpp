@@ -2,6 +2,15 @@
 #include <math.h>
 #include "Defender.h"
 
+double Defender::estimated_probability_of_attack = 0;
+double Defender::d_init = 0; 
+double Defender::defender_iter_sum = 0;
+double Defender::current_sum_assets = 0;
+double Defender::sum_recovery_costs = 0;
+unsigned int Defender::policiesPurchased = 0;
+unsigned int Defender::defensesPurchased = 0;
+std::vector<double> Defender::cumulative_assets;
+
 Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Player(p) {
     id = id_in;
 
@@ -27,19 +36,7 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     current_sum_assets += assets;
 
     assert(Defender::d_init == Defender::current_sum_assets);
-}
-
-double Defender::estimated_probability_of_attack = 0;
-
-double Defender::d_init = 0; 
-double Defender::defender_iter_sum = 0;
-double Defender::current_sum_assets = 0;
-
-unsigned int Defender::policiesPurchased = 0;
-unsigned int Defender::defensesPurchased = 0;
-
-std::vector<double> Defender::cumulative_assets; 
-
+} 
 
 // TODO what if retention > assets????
 void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
@@ -153,6 +150,7 @@ void Defender::gain(double gain) {
     current_sum_assets += gain;
 }
 
+// TODO name conflict confusion with reset_alive_players in Game.cpp
 void Defender::reset() {
     estimated_probability_of_attack = 0;
     d_init = 0;
@@ -160,6 +158,7 @@ void Defender::reset() {
     current_sum_assets = 0; 
     policiesPurchased = 0;
     defensesPurchased = 0;
+    sum_recovery_costs = 0;
     cumulative_assets.clear();
 }
 
