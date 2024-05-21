@@ -33,9 +33,9 @@ wealths = wealths * 10**9
 
 postures = np.random.normal(loc=expected_posture_mu, scale=expected_posture_stddev, size=num_attacks)
 
-target_rc_ratio = 0.33
+target_rc_ratio = 0.333
 
-MAGIC_SCALAR = target_rc_ratio * (1 - expected_posture_mu)
+MAGIC_SCALAR = target_rc_ratio * (1 - expected_posture_mu) / expected_posture_mu
 
 
 
@@ -45,7 +45,7 @@ ransom_exp = 0.254
 
 ransoms = ransom_base * wealths ** ransom_exp
 
-costs_to_attack = [MAGIC_SCALAR * x for x in ransoms]
+costs_to_attack = [MAGIC_SCALAR * x[0] * x[1] for x in zip(ransoms, postures)]
 # f.write(costs_to_attack)
 total_costs_to_attack = np.sum(costs_to_attack)
 total_revenue = np.sum(ransoms[0: num_success_attacks])
@@ -54,7 +54,7 @@ f.write("sample revenue: {:e}\n".format(total_revenue))
 f.write("sample costs: {:e}\n".format(total_costs_to_attack))
 
 
-f.write("sample R/C = {}\n".format(total_costs_to_attack/total_revenue))
+f.write("sample C/R = {}\n".format(total_costs_to_attack/total_revenue))
 f.write("")
 
 
@@ -81,15 +81,15 @@ f.write("")
 # f.write("analytic_revenue: {:e}\n".format(analytic_revenue))
 # f.write("analytic_costs:{:e}\n".format(analytic_costs))
 # f.write("analytic_rc_ratio: {}\n".format(analytic_rc_ratio))
-# f.write("analytic_magic_scalar: {}\n".format(analytic_magic_scalar))
+f.write("MAGIC_SCALAR: {}\n".format(MAGIC_SCALAR))
 
-f.write("Pr[E[gain] > E[cost]] = Pr[Posture < 1 - S]  = {}\n".format( norm.cdf((1 - MAGIC_SCALAR), loc=expected_posture_mu, scale=expected_posture_stddev )))
+f.write("Pr[gain > cost] = Pr[(1-Posture) > MAGIC_SCALAR * Posture]  = {}\n".format( norm.cdf(1/(1 + MAGIC_SCALAR), loc=expected_posture_mu, scale=expected_posture_stddev )))
 
 f.write("\n")
 f.write("Example cost_to_attacks:\n")
 for i in range(100):
     expected_loot = ransoms[i] * (1 - expected_posture_mu) 
-    expected_cost_to_attack = MAGIC_SCALAR * ransoms[i]
+    expected_cost_to_attack = MAGIC_SCALAR * ransoms[i] * postures[i]
     worth_attacking = "YES" if expected_loot > expected_cost_to_attack else "NO"
     have_enough = "YES" if expected_cost_to_attack < attackers_wealths[i] else "NO"
     fstring = "  -- wealth = {:.2e}\t posture = {}\t\t expected cost to attack = {:.2e}\t ransom = {:.2e}\t expected_loot = {:2e}\t worth attacking? {}\t have_enough? {}\n".format(wealths[i], round(postures[i],2), expected_cost_to_attack, ransoms[i], expected_loot, worth_attacking, have_enough)
