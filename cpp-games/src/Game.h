@@ -30,7 +30,7 @@ class Game {
         unsigned int ATTACKS_PER_EPOCH; 
         double cta_scaling_factor;
         
-        unsigned int max_iterations = 1000; // TODO make this a game parameter
+        unsigned int max_iterations = 5000; // TODO make this a game parameter
 
 
         uint DELTA;
