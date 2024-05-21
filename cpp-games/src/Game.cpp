@@ -41,6 +41,7 @@ Game::Game(Params prm, unsigned int game_number) {
     Insurer::expected_ransom_exponent = p.RANSOM_EXP_distribution->mean();
     Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
     Insurer::expected_recovery_exponent = p.RECOVERY_COST_EXP_distribution->mean();
+    Insurer::cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->draw();
 
     uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
     for (uint i=0; i < num_blue_players; i++) {
@@ -416,6 +417,7 @@ Game::~Game() {
     delete p.NUM_DEFENDERS_distribution;
     delete p.NUM_INSURERS_distribution;
     delete p.ATTACKS_PER_EPOCH_distribution;
+    delete p.CTA_SCALING_FACTOR_distribution;
     delete p.EPSILON_distribution;
     delete p.DELTA_distribution;
 }

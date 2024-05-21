@@ -30,6 +30,8 @@ Params params_loader::load_cfg(std::string basename) {
     p.NUM_DEFENDERS_distribution               = Distribution::createDistribution(jsonData["NUM_DEFENDERS"]);
     p.NUM_INSURERS_distribution                = Distribution::createDistribution(jsonData["NUM_INSURERS"]);
     p.ATTACKS_PER_EPOCH_distribution           = Distribution::createDistribution(jsonData["ATTACKS_PER_EPOCH"]);
+    p.CTA_SCALING_FACTOR_distribution          = Distribution::createDistribution(jsonData["CTA_SCALING_FACTOR"]);
+
 
     p.EPSILON_distribution = Distribution::createDistribution(jsonData["EPSILON"]);
     p.DELTA_distribution   = Distribution::createDistribution(jsonData["DELTA"]);

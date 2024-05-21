@@ -8,6 +8,9 @@ double Insurer::i_init = 0; // Initialization outside the class definition
 double Insurer::current_sum_assets = 0;
 double Insurer::insurer_iter_sum = 0;
 
+double Insurer::estimated_current_attacker_welth_mean = 0;
+double Insurer::estimated_current_attacker_wealth_stdddev = 0;
+
 double Insurer::loss_ratio = 0;
 double Insurer::retention_regression_factor = 0;
 double Insurer::expected_ransom_base = 0;
@@ -15,6 +18,8 @@ double Insurer::expected_ransom_exponent = 0;
 double Insurer::expected_recovery_base = 0;
 double Insurer::expected_recovery_exponent = 0;
 unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing memory leaks
+
+double Insurer::cta_scaling_factor = 0;
 
 
 std::vector<double> Insurer::cumulative_assets; 
@@ -133,6 +138,9 @@ double computeVariance(const std::vector<double>& data, double mean) {
 // which informs current defender risks before writing policies.
 void Insurer::perform_market_analysis(int prevRoundAttacks){
     
+    // TODO TODO TODO should Insurers lose 20% of their assets each round as part of operating overhead?
+
+
     std::vector<double> attacker_assets;
 
     for (auto a = attackers->begin(); a != attackers->end(); ++a) {
@@ -141,17 +149,6 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
         }
     }
 
-    // std::sort(attacker_assets.begin(), attacker_assets.end());
-
-    // TODO TODO this doesn't work. Need to so something like MLE to fit a lognormal...
-    // double sum = std::accumulate(attacker_assets.begin(), attacker_assets.end(), 0.0);
-    // double attackers_assets_mean = sum / attacker_assets.size();
-
-    // std::vector<double> diff(attacker_assets.size());
-    // std::transform(attacker_assets.begin(), attacker_assets.end(), diff.begin(), [attackers_assets_mean](double x) { return x - attackers_assets_mean; });
-    // double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-    // double attackers_assets_stdev = std::sqrt(sq_sum / attacker_assets.size());
-    
     // Compute sample mean and variance
     double sampleMean = computeMean(attacker_assets);
     double sampleVariance = computeVariance(attacker_assets, sampleMean);
@@ -160,23 +157,29 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     double mu_mom = log(sampleMean) - 0.5 * log(1 + sampleVariance / (sampleMean * sampleMean));
     double sigma_mom = sqrt(log(1 + sampleVariance / (sampleMean * sampleMean)));
 
+    // TODO check that working in terms of Billions of assets is not causing numerical overflow
 
-    for (auto d = defenders->begin(); d != defenders->end(); ++d) {
-        // d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
-        double cta = d->costToAttack;
-        double cdf_d =  0.5 * (1 + erf((log(cta) - mu_mom) / (sigma_mom * sqrt(2))));;
-        if (cdf_d >= 0.99) {
-            cdf_d = 0.99;
-        }
-        assert(cdf_d <= 1);
-        assert(cdf_d >= 0);
-        d->costToAttackPercentile = cdf_d;
-    }
+    estimated_current_attacker_welth_mean     = mu_mom;
+    estimated_current_attacker_wealth_stdddev = sigma_mom;
+    
+
+    // Just compute policies when getting a quote so that we can capture variations in sampling of posture 
+    // for (auto d = defenders->begin(); d != defenders->end(); ++d) {
+    //     // d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
+    //     double cdf_d =  0.5 * (1 + erf((log(cta) - mu_mom) / (sigma_mom * sqrt(2))));;
+    //     if (cdf_d >= 0.99) {
+    //         cdf_d = 0.99;
+    //     }
+    //     assert(cdf_d <= 1);
+    //     assert(cdf_d >= 0);
+    //     d->costToAttack
+    // }
 
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
-    Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(defenders->size() * 1.0));
-    assert(Defender::estimated_probability_of_attack >= 0);
-    assert(Defender::estimated_probability_of_attack <= 1);
+    // TODO move to Defender::perform_market_analysis
+    // Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(defenders->size() * 1.0));
+    // assert(Defender::estimated_probability_of_attack >= 0);
+    // assert(Defender::estimated_probability_of_attack <= 1);
 }
 
 void Insurer::reset(){

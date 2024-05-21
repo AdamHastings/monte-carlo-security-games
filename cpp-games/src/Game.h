@@ -28,6 +28,7 @@ class Game {
         std::mt19937 gen;
         int NUM_ATTACKERS; // TODO pick a capitalization convention
         unsigned int ATTACKS_PER_EPOCH; 
+        static double cta_scaling_factor;
         
         unsigned int max_iterations = 1000; // TODO make this a game parameter
 
