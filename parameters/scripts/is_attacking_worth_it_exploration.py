@@ -19,7 +19,7 @@ CTA_SCALING_FACTOR = 0.0103
 mu=1.1356082157016467
 sigma=1.1184432636889245
 
-N = 1000000
+N = 100000
 # defender_wealths = np.random.lognormal(mean=mu, sigma=sigma, size=N)
 
 # print("defender_wealths", defender_wealths * 10 **9)
@@ -34,7 +34,7 @@ expected_posture_stddev = 0.10
 worth_it_count = 0
 
 for i in range(N):
-    wealth = np.random.lognormal(mean=mu, sigma=sigma, size=1)
+    wealth = np.random.lognormal(mean=mu, sigma=sigma, size=1) * 10**9
     posture = np.random.normal(loc=expected_posture_mu, scale=expected_posture_stddev, size=1)
     payoff = (ransom_base * wealth ** ransom_exp) * (1 - posture)
     cta = CTA_SCALING_FACTOR * posture * wealth

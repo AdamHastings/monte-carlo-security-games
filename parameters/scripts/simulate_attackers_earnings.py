@@ -85,11 +85,11 @@ f.write("analytic_magic_scalar: {}\n".format(analytic_magic_scalar))
 f.write("\n")
 f.write("Example cost_to_attacks:\n")
 for i in range(50):
-    cost_to_attack = wealths[i] *  postures[i] * analytic_magic_scalar
-    expected_loot = ransoms[i] * (1 - postures[i]) 
-    worth_attacking = "YES" if expected_loot > cost_to_attack else "NO"
-    have_enough = "YES" if cost_to_attack < attackers_wealths[i] else "NO"
-    fstring = "  -- wealth = {:.2e}\t posture = {}\t\t cost to attack = {:.2e}\t ransom = {:.2e}\t expected_loot = {:2e}\t worth attacking? {}\t have_enough? {}\n".format(wealths[i], round(postures[i],2), cost_to_attack, ransoms[i], expected_loot, worth_attacking, have_enough)
+    expected_cost_to_attack = wealths[i] *  expected_posture_mu * analytic_magic_scalar
+    expected_loot = ransoms[i] * (1 - expected_posture_mu) 
+    worth_attacking = "YES" if expected_loot > expected_cost_to_attack else "NO"
+    have_enough = "YES" if expected_cost_to_attack < attackers_wealths[i] else "NO"
+    fstring = "  -- wealth = {:.2e}\t posture = {}\t\t expected cost to attack = {:.2e}\t ransom = {:.2e}\t expected_loot = {:2e}\t worth attacking? {}\t have_enough? {}\n".format(wealths[i], round(postures[i],2), expected_cost_to_attack, ransoms[i], expected_loot, worth_attacking, have_enough)
     f.write(fstring)
 
 

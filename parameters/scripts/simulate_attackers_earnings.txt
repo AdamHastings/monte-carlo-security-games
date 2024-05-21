@@ -1,6 +1,6 @@
-sample revenue: 6.372380e+08
-sample costs: 1.248360e+09
-sample R/C = 0.5104601108398488
+sample revenue: 7.050821e+08
+sample costs: 1.928506e+09
+sample R/C = 0.36561044835042816
 expected_assets: 5.818636e+09
 analytic_revenue: 5.518639e+08
 analytic_costs:1.672315e+09
@@ -8,53 +8,53 @@ analytic_rc_ratio: 0.33
 analytic_magic_scalar: 0.010264523191385207
 
 Example cost_to_attacks:
-  -- wealth = 1.05e+08	 posture = 0.32		 cost to attack = 3.49e+05	 ransom = 2.76e+06	 expected_loot = 1.867443e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.38e+09	 posture = 0.47		 cost to attack = 6.58e+06	 ransom = 5.32e+06	 expected_loot = 2.843944e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 1.59e+09	 posture = 0.26		 cost to attack = 4.21e+06	 ransom = 5.51e+06	 expected_loot = 4.093056e+06	 worth attacking? NO	 have_enough? YES
-  -- wealth = 5.65e+09	 posture = 0.15		 cost to attack = 8.92e+06	 ransom = 7.61e+06	 expected_loot = 6.438351e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.02e+10	 posture = 0.03		 cost to attack = 7.25e+06	 ransom = 1.05e+07	 expected_loot = 1.015026e+07	 worth attacking? YES	 have_enough? NO
-  -- wealth = 3.27e+10	 posture = 0.37		 cost to attack = 1.25e+08	 ransom = 1.19e+07	 expected_loot = 7.457734e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.06e+09	 posture = 0.35		 cost to attack = 7.48e+06	 ransom = 5.89e+06	 expected_loot = 3.810532e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.86e+09	 posture = 0.26		 cost to attack = 7.51e+06	 ransom = 6.40e+06	 expected_loot = 4.765511e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 4.29e+09	 posture = 0.11		 cost to attack = 4.91e+06	 ransom = 7.09e+06	 expected_loot = 6.301947e+06	 worth attacking? YES	 have_enough? NO
-  -- wealth = 7.27e+09	 posture = 0.27		 cost to attack = 2.03e+07	 ransom = 8.11e+06	 expected_loot = 5.900366e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 3.30e+09	 posture = 0.28		 cost to attack = 9.48e+06	 ransom = 6.64e+06	 expected_loot = 4.780113e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.20e+09	 posture = 0.19		 cost to attack = 4.25e+06	 ransom = 5.99e+06	 expected_loot = 4.863711e+06	 worth attacking? YES	 have_enough? NO
-  -- wealth = 1.57e+09	 posture = 0.34		 cost to attack = 5.54e+06	 ransom = 5.49e+06	 expected_loot = 3.597730e+06	 worth attacking? NO	 have_enough? YES
-  -- wealth = 2.19e+08	 posture = 0.32		 cost to attack = 7.26e+05	 ransom = 3.33e+06	 expected_loot = 2.254656e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.37e+09	 posture = 0.21		 cost to attack = 2.89e+06	 ransom = 5.30e+06	 expected_loot = 4.212735e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.03e+09	 posture = 0.25		 cost to attack = 2.60e+06	 ransom = 4.94e+06	 expected_loot = 3.725028e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 2.04e+09	 posture = 0.28		 cost to attack = 5.95e+06	 ransom = 5.87e+06	 expected_loot = 4.203716e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 1.32e+09	 posture = 0.34		 cost to attack = 4.68e+06	 ransom = 5.26e+06	 expected_loot = 3.451590e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 7.94e+09	 posture = 0.4		 cost to attack = 3.24e+07	 ransom = 8.29e+06	 expected_loot = 4.999460e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 7.26e+09	 posture = 0.34		 cost to attack = 2.53e+07	 ransom = 8.11e+06	 expected_loot = 5.353454e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 6.92e+09	 posture = 0.21		 cost to attack = 1.49e+07	 ransom = 8.01e+06	 expected_loot = 6.327639e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 1.86e+08	 posture = 0.26		 cost to attack = 4.87e+05	 ransom = 3.20e+06	 expected_loot = 2.378352e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.67e+09	 posture = 0.22		 cost to attack = 3.73e+06	 ransom = 5.58e+06	 expected_loot = 4.366310e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.05e+09	 posture = 0.22		 cost to attack = 2.41e+06	 ransom = 4.96e+06	 expected_loot = 3.844741e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.27e+09	 posture = 0.3		 cost to attack = 3.91e+06	 ransom = 5.20e+06	 expected_loot = 3.639243e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.21e+10	 posture = 0.21		 cost to attack = 4.79e+07	 ransom = 1.08e+07	 expected_loot = 8.480673e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 9.30e+08	 posture = 0.09		 cost to attack = 8.90e+05	 ransom = 4.81e+06	 expected_loot = 4.362790e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 8.96e+09	 posture = 0.24		 cost to attack = 2.23e+07	 ransom = 8.55e+06	 expected_loot = 6.485795e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 7.40e+08	 posture = 0.28		 cost to attack = 2.15e+06	 ransom = 4.54e+06	 expected_loot = 3.256315e+06	 worth attacking? YES	 have_enough? NO
-  -- wealth = 1.09e+09	 posture = 0.28		 cost to attack = 3.10e+06	 ransom = 5.00e+06	 expected_loot = 3.612260e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.65e+09	 posture = 0.27		 cost to attack = 4.57e+06	 ransom = 5.56e+06	 expected_loot = 4.060609e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 1.47e+10	 posture = 0.44		 cost to attack = 6.62e+07	 ransom = 9.69e+06	 expected_loot = 5.426407e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.46e+10	 posture = 0.37		 cost to attack = 9.48e+07	 ransom = 1.11e+07	 expected_loot = 6.913803e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 1.67e+09	 posture = 0.12		 cost to attack = 2.07e+06	 ransom = 5.58e+06	 expected_loot = 4.901533e+06	 worth attacking? YES	 have_enough? NO
-  -- wealth = 2.75e+09	 posture = 0.3		 cost to attack = 8.47e+06	 ransom = 6.33e+06	 expected_loot = 4.429766e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.63e+09	 posture = 0.43		 cost to attack = 1.16e+07	 ransom = 6.26e+06	 expected_loot = 3.559787e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 6.81e+08	 posture = 0.18		 cost to attack = 1.25e+06	 ransom = 4.45e+06	 expected_loot = 3.652774e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 9.88e+09	 posture = 0.22		 cost to attack = 2.19e+07	 ransom = 8.77e+06	 expected_loot = 6.878531e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 1.46e+10	 posture = 0.27		 cost to attack = 4.07e+07	 ransom = 9.68e+06	 expected_loot = 7.047386e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 4.54e+09	 posture = 0.3		 cost to attack = 1.39e+07	 ransom = 7.19e+06	 expected_loot = 5.039774e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 7.28e+09	 posture = 0.1		 cost to attack = 7.75e+06	 ransom = 8.11e+06	 expected_loot = 7.272089e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 7.52e+09	 posture = 0.22		 cost to attack = 1.67e+07	 ransom = 8.18e+06	 expected_loot = 6.415739e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 1.34e+09	 posture = 0.2		 cost to attack = 2.71e+06	 ransom = 5.28e+06	 expected_loot = 4.242183e+06	 worth attacking? YES	 have_enough? NO
-  -- wealth = 1.97e+10	 posture = 0.23		 cost to attack = 4.64e+07	 ransom = 1.04e+07	 expected_loot = 8.048213e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 2.91e+08	 posture = 0.14		 cost to attack = 4.04e+05	 ransom = 3.58e+06	 expected_loot = 3.098680e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 7.69e+08	 posture = 0.25		 cost to attack = 1.94e+06	 ransom = 4.58e+06	 expected_loot = 3.457124e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 4.26e+09	 posture = 0.25		 cost to attack = 1.09e+07	 ransom = 7.08e+06	 expected_loot = 5.320190e+06	 worth attacking? NO	 have_enough? NO
-  -- wealth = 5.50e+08	 posture = 0.01		 cost to attack = 5.25e+04	 ransom = 4.21e+06	 expected_loot = 4.170212e+06	 worth attacking? YES	 have_enough? YES
-  -- wealth = 1.35e+09	 posture = 0.35		 cost to attack = 4.83e+06	 ransom = 5.28e+06	 expected_loot = 3.438031e+06	 worth attacking? NO	 have_enough? YES
-  -- wealth = 2.83e+09	 posture = 0.27		 cost to attack = 7.83e+06	 ransom = 6.38e+06	 expected_loot = 4.665566e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.65e+09	 posture = 0.33		 expected cost to attack = 7.61e+06	 ransom = 6.27e+06	 expected_loot = 4.517869e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.91e+09	 posture = 0.18		 expected cost to attack = 8.36e+06	 ransom = 6.43e+06	 expected_loot = 4.627801e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 3.86e+09	 posture = 0.4		 expected cost to attack = 1.11e+07	 ransom = 6.91e+06	 expected_loot = 4.972522e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.12e+09	 posture = 0.17		 expected cost to attack = 6.09e+06	 ransom = 5.93e+06	 expected_loot = 4.270598e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 1.96e+09	 posture = 0.41		 expected cost to attack = 5.62e+06	 ransom = 5.81e+06	 expected_loot = 4.183775e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.23e+09	 posture = 0.37		 expected cost to attack = 6.42e+06	 ransom = 6.01e+06	 expected_loot = 4.327592e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.96e+10	 posture = 0.31		 expected cost to attack = 5.64e+07	 ransom = 1.04e+07	 expected_loot = 7.516279e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.52e+09	 posture = 0.24		 expected cost to attack = 4.35e+06	 ransom = 5.45e+06	 expected_loot = 3.921023e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 1.88e+09	 posture = 0.3		 expected cost to attack = 5.39e+06	 ransom = 5.75e+06	 expected_loot = 4.140202e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 1.72e+10	 posture = 0.3		 expected cost to attack = 4.93e+07	 ransom = 1.01e+07	 expected_loot = 7.263453e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.17e+09	 posture = 0.26		 expected cost to attack = 3.36e+06	 ransom = 5.10e+06	 expected_loot = 3.671082e+06	 worth attacking? YES	 have_enough? YES
+  -- wealth = 5.86e+08	 posture = 0.31		 expected cost to attack = 1.69e+06	 ransom = 4.28e+06	 expected_loot = 3.081088e+06	 worth attacking? YES	 have_enough? NO
+  -- wealth = 1.79e+08	 posture = 0.32		 expected cost to attack = 5.15e+05	 ransom = 3.17e+06	 expected_loot = 2.279826e+06	 worth attacking? YES	 have_enough? YES
+  -- wealth = 1.50e+08	 posture = 0.33		 expected cost to attack = 4.30e+05	 ransom = 3.03e+06	 expected_loot = 2.178147e+06	 worth attacking? YES	 have_enough? YES
+  -- wealth = 2.43e+09	 posture = 0.24		 expected cost to attack = 6.97e+06	 ransom = 6.14e+06	 expected_loot = 4.419170e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 4.96e+09	 posture = 0.42		 expected cost to attack = 1.43e+07	 ransom = 7.36e+06	 expected_loot = 5.300665e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 6.14e+09	 posture = 0.29		 expected cost to attack = 1.76e+07	 ransom = 7.77e+06	 expected_loot = 5.594612e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.48e+09	 posture = 0.32		 expected cost to attack = 4.25e+06	 ransom = 5.41e+06	 expected_loot = 3.897261e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 1.47e+09	 posture = 0.34		 expected cost to attack = 4.23e+06	 ransom = 5.40e+06	 expected_loot = 3.891595e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 7.02e+09	 posture = 0.14		 expected cost to attack = 2.02e+07	 ransom = 8.04e+06	 expected_loot = 5.787487e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 5.83e+09	 posture = 0.17		 expected cost to attack = 1.67e+07	 ransom = 7.67e+06	 expected_loot = 5.520520e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.93e+10	 posture = 0.3		 expected cost to attack = 5.54e+07	 ransom = 1.04e+07	 expected_loot = 7.480147e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.58e+09	 posture = 0.36		 expected cost to attack = 4.53e+06	 ransom = 5.50e+06	 expected_loot = 3.959867e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 3.11e+10	 posture = 0.26		 expected cost to attack = 8.94e+07	 ransom = 1.17e+07	 expected_loot = 8.447393e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 5.94e+09	 posture = 0.29		 expected cost to attack = 1.71e+07	 ransom = 7.71e+06	 expected_loot = 5.548778e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 8.57e+08	 posture = 0.35		 expected cost to attack = 2.46e+06	 ransom = 4.71e+06	 expected_loot = 3.392885e+06	 worth attacking? YES	 have_enough? YES
+  -- wealth = 5.02e+09	 posture = 0.1		 expected cost to attack = 1.44e+07	 ransom = 7.38e+06	 expected_loot = 5.316436e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.59e+10	 posture = 0.27		 expected cost to attack = 4.56e+07	 ransom = 9.89e+06	 expected_loot = 7.120538e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.89e+09	 posture = 0.32		 expected cost to attack = 8.31e+06	 ransom = 6.42e+06	 expected_loot = 4.620434e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 7.77e+09	 posture = 0.2		 expected cost to attack = 2.23e+07	 ransom = 8.25e+06	 expected_loot = 5.939290e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.10e+09	 posture = 0.19		 expected cost to attack = 6.04e+06	 ransom = 5.92e+06	 expected_loot = 4.260627e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 6.83e+09	 posture = 0.3		 expected cost to attack = 1.96e+07	 ransom = 7.98e+06	 expected_loot = 5.748494e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.98e+09	 posture = 0.25		 expected cost to attack = 8.56e+06	 ransom = 6.47e+06	 expected_loot = 4.655299e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 3.06e+09	 posture = 0.27		 expected cost to attack = 8.81e+06	 ransom = 6.51e+06	 expected_loot = 4.689277e+06	 worth attacking? NO	 have_enough? YES
+  -- wealth = 6.15e+09	 posture = 0.32		 expected cost to attack = 1.77e+07	 ransom = 7.77e+06	 expected_loot = 5.597601e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.06e+09	 posture = 0.38		 expected cost to attack = 3.04e+06	 ransom = 4.97e+06	 expected_loot = 3.580115e+06	 worth attacking? YES	 have_enough? NO
+  -- wealth = 1.18e+10	 posture = 0.32		 expected cost to attack = 3.40e+07	 ransom = 9.18e+06	 expected_loot = 6.606538e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.37e+09	 posture = 0.27		 expected cost to attack = 3.95e+06	 ransom = 5.31e+06	 expected_loot = 3.824103e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.30e+08	 posture = 0.21		 expected cost to attack = 6.60e+05	 ransom = 3.37e+06	 expected_loot = 2.428153e+06	 worth attacking? YES	 have_enough? YES
+  -- wealth = 1.58e+09	 posture = 0.3		 expected cost to attack = 4.55e+06	 ransom = 5.51e+06	 expected_loot = 3.964973e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 6.65e+09	 posture = 0.11		 expected cost to attack = 1.91e+07	 ransom = 7.93e+06	 expected_loot = 5.708775e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 6.34e+09	 posture = 0.19		 expected cost to attack = 1.82e+07	 ransom = 7.83e+06	 expected_loot = 5.640240e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.22e+09	 posture = 0.34		 expected cost to attack = 6.39e+06	 ransom = 6.00e+06	 expected_loot = 4.321365e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 3.73e+10	 posture = 0.45		 expected cost to attack = 1.07e+08	 ransom = 1.23e+07	 expected_loot = 8.845589e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 3.50e+09	 posture = 0.4		 expected cost to attack = 1.01e+07	 ransom = 6.73e+06	 expected_loot = 4.849169e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 2.93e+09	 posture = 0.43		 expected cost to attack = 8.42e+06	 ransom = 6.44e+06	 expected_loot = 4.635248e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 5.94e+09	 posture = 0.16		 expected cost to attack = 1.71e+07	 ransom = 7.70e+06	 expected_loot = 5.547529e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 6.48e+09	 posture = 0.14		 expected cost to attack = 1.86e+07	 ransom = 7.88e+06	 expected_loot = 5.671361e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.97e+10	 posture = 0.16		 expected cost to attack = 5.65e+07	 ransom = 1.04e+07	 expected_loot = 7.519599e+06	 worth attacking? NO	 have_enough? NO
+  -- wealth = 1.14e+09	 posture = 0.33		 expected cost to attack = 3.27e+06	 ransom = 5.07e+06	 expected_loot = 3.647237e+06	 worth attacking? YES	 have_enough? YES
