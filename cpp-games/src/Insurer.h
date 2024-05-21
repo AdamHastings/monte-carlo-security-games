@@ -20,6 +20,8 @@ class Insurer : public Player {
         static double loss_ratio;
         static unsigned int* ATTACKS_PER_EPOCH;
         static double* cta_scaling_factor;
+        static std::mt19937* gen;
+
         static double retention_regression_factor;  // TODO double check retention regression factor
         static double expected_ransom_base;
         static double expected_ransom_exponent;
@@ -42,7 +44,7 @@ class Insurer : public Player {
         void gain(double gain) override;
         void lose(double loss) override;
 
-        PolicyType provide_a_quote(double assets, double posture, double estimated_costToAttackPercentile);
+        PolicyType provide_a_quote(double assets, double posture);
         double issue_payment(double claim);
         static void perform_market_analysis(int prevRoundAttacks);
 

@@ -57,6 +57,7 @@ Game::Game(Params prm, unsigned int game_number) {
     cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->draw();
     Insurer::cta_scaling_factor = &cta_scaling_factor;
 
+    Insurer::gen = &gen;
 
     assert(NUM_ATTACKERS > 0);
     assert(ATTACKS_PER_EPOCH > 0);
@@ -266,20 +267,21 @@ void Game::fight(Attacker &a, Defender &d) {
     // Attackers don't know defenders' posture until they attack and cannot compute the odds of success
     // But they can compute the expected ransom
 
-    // TODO TODO attackers should have some estimate of expected payouts and costs
-    // Maybe attackers should also do a "market analysis" at the start of each round?
-    // E.g. estimate params for wealth and posture distributions
+    // TODO maybe attackers should also do a "market analysis" at the start of each round?
+    // E.g. estimate params for current wealth and posture distributions 
+    // instead of relying on means as is implemented below.
     double estimated_probability_of_attack_success = (1 - p.POSTURE_distribution->mean());
+    assert(estimated_probability_of_attack_success <= 1);
+    assert(estimated_probability_of_attack_success >= 0);
+
     double expected_payoff = ransom * estimated_probability_of_attack_success;
+    assert(expected_payoff >= 0);
 
     double expected_cost_to_attack = p.CTA_SCALING_FACTOR_distribution->mean() * p.POSTURE_distribution->mean() * p.WEALTH_distribution->mean();
 
-    // if (ransom > d.costToAttack && d.costToAttack <= a.assets) {
     if (expected_payoff > expected_cost_to_attack) { 
-
         // Attacking  appears to be financially worth it
 
-        // Q: d.costToAttack? where does this come in? A: I don't think it does.
         double cost_to_attack =  p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * d.assets;
         
         // Attackers do a hail mary if it turns out they don't have enough to attack

@@ -30,8 +30,6 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
         posture = 1;
     }
 
-    costToAttack = assets * posture;
-
     d_init += assets;
     current_sum_assets += assets;
 
@@ -81,8 +79,9 @@ void Defender::make_security_investment(double x) {
     assert(posture >= 0);
     assert(posture <= 1);
     lose(x);
-    costToAttack = assets * posture; // Why wasn't this included until now? // TODO this should be deprecated anyway
-    assert(costToAttack >= 0);
+    // TODO do we need to update any kind of costToAttack? Since it's been removed (for now)
+    // costToAttack = assets * posture; // TODO this should be deprecated anyway
+    // assert(costToAttack >= 0);
 }
 
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
@@ -109,7 +108,7 @@ void Defender::choose_security_strategy() {
     double total_losses = ransom + recovery_cost;
 
     // 1. Get insurance policy from insurer
-    PolicyType policy = i->provide_a_quote(assets, posture, costToAttackPercentile); // TODO add noise to posture? or costToAttackPercentile?
+    PolicyType policy = i->provide_a_quote(assets, posture); // TODO add noise to posture?
     double expected_loss_with_insurance = policy.premium +(p_L_hat * policy.retention);
     assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
     assert(policy.retention > 0);

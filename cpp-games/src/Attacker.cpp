@@ -7,6 +7,11 @@ double Attacker::attacker_iter_sum = 0;
 double Attacker::current_sum_assets = 0;
 std::vector<double> Attacker::cumulative_assets; 
 
+double Attacker::estimated_current_defender_wealth_mean = 0;
+double Attacker::estimated_current_defender_wealth_stdddev = 0;
+double Attacker::estimated_current_defender_posture_mean = 0;
+double Attacker::estimated_current_defender_posture_stdddev = 0;
+
 int Attacker::attacksAttempted = 0;
 int Attacker::attacksSucceeded = 0;
 double Attacker::attackerExpenditures = 0;

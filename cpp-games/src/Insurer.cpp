@@ -3,6 +3,7 @@
 #include <cmath>
 #include "Insurer.h"
 #include "Defender.h"
+#include "Attacker.h"
 
 double Insurer::i_init = 0; // Initialization outside the class definition
 double Insurer::current_sum_assets = 0;
@@ -18,8 +19,8 @@ double Insurer::expected_ransom_exponent = 0;
 double Insurer::expected_recovery_base = 0;
 double Insurer::expected_recovery_exponent = 0;
 unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing memory leaks
-double* Insurer::cta_scaling_factor;
-
+double* Insurer::cta_scaling_factor = 0;
+std::mt19937* Insurer::gen = 0;
 
 std::vector<double> Insurer::cumulative_assets; 
 std::vector<Defender>* Insurer::defenders;
@@ -68,7 +69,7 @@ double Insurer::issue_payment(double claim) {
     return amount_covered;
 }
 
-PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, double estimated_costToAttackPercentile) {    
+PolicyType Insurer::provide_a_quote(double assets, double estimated_posture) {    
     
     double p_getting_paired_with_attacker_a = (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0);
     assert(p_getting_paired_with_attacker_a >= 0);
@@ -78,11 +79,13 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture, dou
     assert(p_getting_attacked >= 0);
     assert(p_getting_attacked <= 1);
 
-    double p_one_attacker_has_enough_to_attempt_attack = 0.5;// TODO TODO fix hardcoded. Use estimated_costToAttackPercentile
-    assert(p_one_attacker_has_enough_to_attempt_attack >= 0);
-    assert(p_one_attacker_has_enough_to_attempt_attack <= 1);
+    // double p_one_attacker_has_enough_to_attempt_attack = 0.5;// TODO TODO fix hardcoded. Use estimated_costToAttackPercentile
+    // assert(p_one_attacker_has_enough_to_attempt_attack >= 0);
+    // assert(p_one_attacker_has_enough_to_attempt_attack <= 1);
 
-    double p_loss = p_getting_attacked * p_one_attacker_has_enough_to_attempt_attack * (1 - estimated_posture);
+    double p_attacking_is_worth_it = 0.5; // TODO TODO remove hardcoded
+
+    double p_loss = p_getting_attacked * p_attacking_is_worth_it * (1 - estimated_posture);
     assert(p_loss >= 0);
     assert(p_loss <= 1);
 
@@ -160,6 +163,29 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
 
     estimated_current_attacker_welth_mean     = mu_mom;
     estimated_current_attacker_wealth_stdddev = sigma_mom;
+    
+
+    // Compute the probability that a random defender is worth attacking based on the Attackers' market analysis
+    // No closed form solution so we will simulate
+    std::normal_distribution<double> attacker_estimated_defender_posture_distribution(Attacker::estimated_current_defender_posture_mean, Attacker::estimated_current_defender_posture_stdddev);
+    std::lognormal_distribution<double> attacker_estimated_defender_wealth_distribution(Attacker::estimated_current_defender_wealth_mean, Attacker::estimated_current_defender_wealth_stdddev);
+    int worth_attacking = 0;
+    int NUM_MC_TRIALS = 100;
+    for (int i=0; i<NUM_MC_TRIALS; i++) {
+        double sample_posture = attacker_estimated_defender_posture_distribution(gen);
+        double sample_wealth  = attacker_estimated_defender_wealth_distribution(gen);
+        double sample_ransom = expected_ransom_base * pow(sample_wealth, expected_ransom_exponent);
+        double sample_estimated_probability_of_attack_success = (1 - attacker_estimated_defender_posture_distribution.mean());
+        double sample_expected_payoff = sample_ransom * sample_estimated_probability_of_attack_success;
+
+        double sample_expected_cost_to_attack = *Insurer::cta_scaling_factor * sample_posture * sample_wealth;
+        if (sample_expected_payoff > sample_expected_cost_to_attack) { 
+            worth_attacking++;
+        }
+    }
+
+    // TODO TODO wait...should this be a function of defender's wealth?
+    double prob_defender_is_worth_attacking = (worth_attacking) / (NUM_MC_TRIALS * 1.0);
     
 
     // Just compute policies when getting a quote so that we can capture variations in sampling of posture 
