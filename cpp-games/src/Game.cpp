@@ -270,6 +270,7 @@ void Game::fight(Attacker &a, Defender &d) {
     // TODO maybe attackers should also do a "market analysis" at the start of each round?
     // E.g. estimate params for current wealth and posture distributions 
     // instead of relying on means as is implemented below.
+    // could even just be proportion instead of method of moments technique
     double estimated_probability_of_attack_success = (1 - p.POSTURE_distribution->mean());
     assert(estimated_probability_of_attack_success <= 1);
     assert(estimated_probability_of_attack_success >= 0);
@@ -277,20 +278,20 @@ void Game::fight(Attacker &a, Defender &d) {
     double expected_payoff = ransom * estimated_probability_of_attack_success;
     assert(expected_payoff >= 0);
 
-    double expected_cost_to_attack = p.CTA_SCALING_FACTOR_distribution->mean() * p.POSTURE_distribution->mean() * p.WEALTH_distribution->mean();
+    double expected_cost_to_attack = p.CTA_SCALING_FACTOR_distribution->mean() * p.POSTURE_distribution->mean() * ransom;
 
-    if (expected_payoff > expected_cost_to_attack) { 
+    if (expected_payoff > expected_cost_to_attack && expected_cost_to_attack < a.assets) { 
         // Attacking  appears to be financially worth it
 
-        double cost_to_attack =  p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * d.assets;
+        double cost_to_attack =  p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * ransom;
         
         // Attackers do a hail mary if it turns out they don't have enough to attack
         // So that we don't end the game with a bunch of attackers with $0.01
         // TODO this might give the attackers a slight advantage...maybe have it count against their earnings if they're succesful?
         // bool cost_gt_assets = false;
-        // double debt = 0;
+        double debt = 0;
         if (cost_to_attack > a.assets) {
-            // debt = cost_to_attack - a.assets;
+            debt = cost_to_attack - a.assets;
             // cost_gt_assets = true;
             cost_to_attack = a.assets;
         }
@@ -306,6 +307,15 @@ void Game::fight(Attacker &a, Defender &d) {
             Attacker::attacksSucceeded += 1;
             
             a.gain(ransom);
+            if (debt > 0) {
+                assert(ransom > debt); 
+                // This should always be true. ransom is always greater than cost_to_Attack
+                // So the debt is always less than the ransom.
+                // If the attacker gains the ransom, they should be able to pay the debt. 
+                // Basically I just want to make sure that attackers are not winning ransoms and then the debt is still more than they can pay even with ransom.
+                a.lose(debt); // pay off the debt they accrued
+            }
+
             d.lose(ransom);
 
             if (recovery_cost > d.assets) {
@@ -338,7 +348,7 @@ void Game::init_round() {
     Insurer::perform_market_analysis(prevRoundAttacks);
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
-        defenders[alive_defenders_indices[i]].choose_security_strategy(); 
+        // defenders[alive_defenders_indices[i]].choose_security_strategy();  // TODO uncomment later!! for testing purposes only.
     }
 }
 
@@ -400,9 +410,7 @@ void Game::run_iterations() {
 
     for (iter_num = 1; iter_num < max_iterations + 1; iter_num++) {
 
-        verify_outcome(); // TODO delete
         init_round();
-        verify_outcome(); // TODO delete
 
         unsigned int num_alive_defenders = alive_defenders_indices.size();
         std::uniform_int_distribution<> alive_defender_indices_dist(0, num_alive_defenders-1);

@@ -87,7 +87,7 @@
     "CTA_SCALING_FACTOR":
     {
         "distribution" : "fixed",
-        "val" : 0.0103
+        "val" : 0.8562857142857142
     },
     "NUM_GAMES": 100,
     "verbose":false,

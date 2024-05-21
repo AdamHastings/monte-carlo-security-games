@@ -21,7 +21,6 @@ void Distribution::seed(unsigned int seed){
 UniformRealDistribution::UniformRealDistribution(double _min, double _max) : dist(_min, _max) {}
 
 double UniformRealDistribution::draw() {
-    // static std::uniform_real_distribution<double> dist(0,1); // TODO what was this doing here?? TODO confirm that uniform dists are actually generating values in range
     return dist(generator);
 }
 

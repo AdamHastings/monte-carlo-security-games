@@ -167,25 +167,26 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
 
     // Compute the probability that a random defender is worth attacking based on the Attackers' market analysis
     // No closed form solution so we will simulate
-    std::normal_distribution<double> attacker_estimated_defender_posture_distribution(Attacker::estimated_current_defender_posture_mean, Attacker::estimated_current_defender_posture_stdddev);
-    std::lognormal_distribution<double> attacker_estimated_defender_wealth_distribution(Attacker::estimated_current_defender_wealth_mean, Attacker::estimated_current_defender_wealth_stdddev);
-    int worth_attacking = 0;
-    int NUM_MC_TRIALS = 100;
-    for (int i=0; i<NUM_MC_TRIALS; i++) {
-        double sample_posture = attacker_estimated_defender_posture_distribution(gen);
-        double sample_wealth  = attacker_estimated_defender_wealth_distribution(gen);
-        double sample_ransom = expected_ransom_base * pow(sample_wealth, expected_ransom_exponent);
-        double sample_estimated_probability_of_attack_success = (1 - attacker_estimated_defender_posture_distribution.mean());
-        double sample_expected_payoff = sample_ransom * sample_estimated_probability_of_attack_success;
 
-        double sample_expected_cost_to_attack = *Insurer::cta_scaling_factor * sample_posture * sample_wealth;
-        if (sample_expected_payoff > sample_expected_cost_to_attack) { 
-            worth_attacking++;
-        }
-    }
+    
+    // std::normal_distribution<double> attacker_estimated_defender_posture_distribution(Attacker::estimated_current_defender_posture_mean, Attacker::estimated_current_defender_posture_stdddev);
+    // std::lognormal_distribution<double> attacker_estimated_defender_wealth_distribution(Attacker::estimated_current_defender_wealth_mean, Attacker::estimated_current_defender_wealth_stdddev);
+    // int worth_attacking = 0;
+    // int NUM_MC_TRIALS = 100;
+    // for (int i=0; i<NUM_MC_TRIALS; i++) {
+    //     double sample_posture = attacker_estimated_defender_posture_distribution(gen);
+    //     double sample_wealth  = attacker_estimated_defender_wealth_distribution(gen);
+    //     double sample_ransom = expected_ransom_base * pow(sample_wealth, expected_ransom_exponent);
+    //     double sample_estimated_probability_of_attack_success = (1 - attacker_estimated_defender_posture_distribution.mean());
+    //     double sample_expected_payoff = sample_ransom * sample_estimated_probability_of_attack_success;
 
-    // TODO TODO wait...should this be a function of defender's wealth?
-    double prob_defender_is_worth_attacking = (worth_attacking) / (NUM_MC_TRIALS * 1.0);
+    //     double sample_expected_cost_to_attack = *Insurer::cta_scaling_factor * sample_posture * sample_wealth;
+    //     if (sample_expected_payoff > sample_expected_cost_to_attack) { 
+    //         worth_attacking++;
+        
+
+    // // TODO TODO wait...should this be a function of defender's wealth?
+    // double prob_defender_is_worth_attacking = (worth_attacking) / (NUM_MC_TRIALS * 1.0);
     
 
     // Just compute policies when getting a quote so that we can capture variations in sampling of posture 
