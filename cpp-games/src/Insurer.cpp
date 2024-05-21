@@ -18,8 +18,7 @@ double Insurer::expected_ransom_exponent = 0;
 double Insurer::expected_recovery_base = 0;
 double Insurer::expected_recovery_exponent = 0;
 unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing memory leaks
-
-double Insurer::cta_scaling_factor = 0;
+double* Insurer::cta_scaling_factor;
 
 
 std::vector<double> Insurer::cumulative_assets; 
