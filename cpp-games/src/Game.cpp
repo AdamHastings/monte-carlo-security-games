@@ -135,7 +135,7 @@ void Game::verify_init() {
         assert(d.id >= 0);
         assert(d.id < defenders.size());
         assert(d.assets >= 0);
-        assert(d.costToAttack >= 0);
+        // assert(d.costToAttack >= 0); // Getting rid of this param
         assert(d.posture >= 0);
         assert(d.posture <= 1);
         assert(d.id == i);
@@ -260,20 +260,44 @@ void Game::fight(Attacker &a, Defender &d) {
         // Mercy kill the defender if the ransom is low
         ransom = d.assets;
     }
-    
-    // TODO should attackers YOLO their savings if their assets get very low?
-    // So that we don't end the game with a bunch of attackers with $0.01
 
     // TODO is (expected_loot > d.costToAttack) part of the underwriting process at the moment? I don't think it is
-    if (ransom > d.costToAttack && d.costToAttack <= a.assets) {
-        // Attacking is financially worth it
+    // if (ransom > d.costToAttack && d.costToAttack <= a.assets) {
+    // Attackers don't know defenders' posture until they attack and cannot compute the odds of success
+    // But they can compute the expected ransom
 
+    // TODO TODO attackers should have some estimate of expected payouts and costs
+    // Maybe attackers should also do a "market analysis" at the start of each round?
+    // E.g. estimate params for wealth and posture distributions
+    double estimated_probability_of_attack_success = (1 - p.POSTURE_distribution->mean());
+    double expected_payoff = ransom * estimated_probability_of_attack_success;
+
+    double expected_cost_to_attack = p.CTA_SCALING_FACTOR_distribution->mean() * p.POSTURE_distribution->mean() * p.WEALTH_distribution->mean();
+
+    // if (ransom > d.costToAttack && d.costToAttack <= a.assets) {
+    if (expected_payoff > expected_cost_to_attack) { 
+
+        // Attacking  appears to be financially worth it
+
+        // Q: d.costToAttack? where does this come in? A: I don't think it does.
+        double cost_to_attack =  p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * d.assets;
+        
+        // Attackers do a hail mary if it turns out they don't have enough to attack
+        // So that we don't end the game with a bunch of attackers with $0.01
+        // TODO this might give the attackers a slight advantage...maybe have it count against their earnings if they're succesful?
+        // bool cost_gt_assets = false;
+        // double debt = 0;
+        if (cost_to_attack > a.assets) {
+            // debt = cost_to_attack - a.assets;
+            // cost_gt_assets = true;
+            cost_to_attack = a.assets;
+        }
 
         // bookkeeping
         Attacker::attacksAttempted += 1;
         roundAttacks += 1;
-        a.lose(d.costToAttack);
-        Attacker::attackerExpenditures += d.costToAttack;
+        a.lose(cost_to_attack);
+        Attacker::attackerExpenditures += cost_to_attack;
 
         if (RandUniformDist.draw() > d.posture) {
 

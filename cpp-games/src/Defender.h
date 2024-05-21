@@ -20,7 +20,7 @@ class Defender : public Player {
 
         uint id;
         double posture;
-        double costToAttack; // TODO maybe this should always be computed on the fly? So as to not make the mistake of not updating this somewhere where it should be.
+        // double costToAttack; // TODO maybe this should always be computed on the fly? So as to not make the mistake of not updating this somewhere where it should be.
        
         std::vector<Insurer>* insurers;
         bool insured = false;
