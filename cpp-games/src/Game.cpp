@@ -163,36 +163,36 @@ void Game::verify_init() {
 
 void Game::verify_outcome() {
 
-    assert(round(Defender::current_sum_assets) >= 0);
-    assert(round(Attacker::current_sum_assets) >= 0);
-    assert(round(Insurer::current_sum_assets)  >= 0); 
+    assert(Defender::current_sum_assets >= 0);
+    assert(Attacker::current_sum_assets >= 0);
+    assert(Insurer::current_sum_assets  >= 0);
 
     double checksum_attacker_sum_assets = 0;
     for (uint i=0; i<attackers.size(); i++) {
-        assert(round(attackers[i].assets) >= 0);
+        assert(attackers[i].assets >= 0);
         checksum_attacker_sum_assets += attackers[i].assets;
     }
-    assert(round(Attacker::current_sum_assets - checksum_attacker_sum_assets) < 50); // compare to 10 to deal with floating point imprecision
+    assert(Attacker::current_sum_assets - checksum_attacker_sum_assets == 0); 
 
     double checksum_defender_sum_assets = 0;
     for (uint i=0; i<defenders.size(); i++) {
         Defender d = defenders[i];
-        assert(round(d.assets) >= 0);
+        assert(d.assets >= 0);
         checksum_defender_sum_assets += d.assets;
     }
-    assert(round(Defender::current_sum_assets - checksum_defender_sum_assets) < 50);
+    assert(Defender::current_sum_assets - checksum_defender_sum_assets == 0);
 
     double checksum_insurer_sum_assets = 0;
     for (uint i=0; i<insurers.size(); i++) {
         Insurer ins = insurers[i];
-        assert(round(ins.assets) >= 0);
+        assert(ins.assets >= 0);
         checksum_insurer_sum_assets += ins.assets;
     }
-    assert(round(Insurer::current_sum_assets - checksum_insurer_sum_assets) < 50);
+    assert(Insurer::current_sum_assets - checksum_insurer_sum_assets == 0);
 
     // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
     // assert(round(Insurer::i_init  + Insurer- Insurer::paid_claims) >= 0); // This can be violated if insurers collect money from insurance.
-    assert(round(Insurer::paid_claims) >= 0);
+    assert(Insurer::paid_claims >= 0);
     // assert(round(Attacker::attackerLoots - Insurer::paid_claims) >= 0); // No longer always true in new model because of recovery costs
     assert(Attacker::attackerExpenditures >= 0);
 
@@ -210,7 +210,7 @@ void Game::verify_outcome() {
     double init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
     double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures + Defender::sum_recovery_costs; 
 
-    assert(round(init_ - end_) < 50); // This is a big error margin....maybe for precision and speed I should just be considering all wealth to be integer type?
+    assert(init_ - end_ == 0); 
 }
 
 bool Game::equilibrium_reached() {

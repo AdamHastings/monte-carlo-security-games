@@ -23,8 +23,8 @@ N = 100000
 defender_wealths = np.random.lognormal(mean=mu, sigma=sigma, size=N)
 # np.set_printoptions(formatter={'float': '{:0.2e}'.format})
 
-print("typical defender wealth = {:.2E}".format(defender_wealths[0] * 10 **6)) # in terms of millions  ")
-print("max(defender_wealths) = {:.2E}".format(max(defender_wealths) * 10 **6)) # in terms of millions 
+print("typical defender wealth = {:.2E}".format(defender_wealths[0] * 10 **6)) # in terms of thousands  ")
+print("max(defender_wealths) = {:.2E}".format(max(defender_wealths) * 10 **6)) # in terms of thousands 
 
 expected_posture_mu = 0.28
 expected_posture_stddev = 0.10
