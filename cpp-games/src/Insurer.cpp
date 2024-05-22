@@ -94,11 +94,11 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     
     uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
-    double p_one_attacker_has_enough_to_attack =  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2))));;
+    double p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2))));;
     assert(p_one_attacker_has_enough_to_attack >= 0);
     assert(p_one_attacker_has_enough_to_attack <= 1);
 
-    double p_at_least_one_attacker_has_enough_to_attack = 1 - pow((1 - p_one_attacker_has_enough_to_attack), *Insurer::ATTACKS_PER_EPOCH);   
+    double p_at_least_one_attacker_has_enough_to_attack = 1 - pow((1 - p_one_attacker_has_enough_to_attack), *Insurer::ATTACKS_PER_EPOCH);   // TODO shouldn't this be expected number of attacks, and not ATTACKS_PER_EPOCH?? 
     assert(p_at_least_one_attacker_has_enough_to_attack >= 0);
     assert(p_at_least_one_attacker_has_enough_to_attack <= 1);
 
