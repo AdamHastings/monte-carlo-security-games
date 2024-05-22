@@ -9,6 +9,8 @@
 unsigned long long Insurer::i_init = 0; // Initialization outside the class definition
 unsigned long long Insurer::current_sum_assets = 0;
 unsigned long long Insurer::insurer_iter_sum = 0;
+unsigned long long Insurer::operating_expenses = 0;
+
 
 double Insurer::estimated_current_attacker_wealth_mean = 0;
 double Insurer::estimated_current_attacker_wealth_stdddev = 0;
@@ -31,7 +33,7 @@ unsigned long long Insurer::paid_claims = 0;
 
 Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers) : Player(p) {
     id = id_in;
-    last_round_loss_ratio = p.LOSS_RATIO_distribution->draw();
+    // last_round_loss_ratio = p.LOSS_RATIO_distribution->draw();
 
     defenders = &_defenders;
     attackers = &_attackers;
@@ -66,6 +68,7 @@ uint32_t Insurer::issue_payment(uint32_t claim) {
         amount_covered = claim;
     }
     lose(amount_covered); 
+    round_losses += amount_covered;
     return amount_covered;
 }
 
@@ -85,9 +88,9 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     assert(p_getting_attacked <= 1);
 
     bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + *cta_scaling_factor)));
-    if (!attacking_expected_gains_outweigh_expected_costs) {
-        std::cout << "Attacking no longer worth it!" << std::endl;
-    }
+    // if (!attacking_expected_gains_outweigh_expected_costs) {
+    //     std::cout << "Attacking no longer worth it!" << std::endl;
+    // }
 
     uint32_t ransom = (uint32_t) expected_ransom_base * pow(assets, expected_ransom_exponent); 
     uint32_t recovery_costs = (uint32_t) expected_recovery_base * pow(assets, expected_recovery_exponent);
@@ -111,8 +114,10 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     policy.premium = (uint32_t) (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
     policy.retention = (uint32_t) retention_regression_factor * policy.premium;
 
-    assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
-    assert(policy.retention > 0);
+    if (policy.premium != 0) {
+        assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
+        assert(policy.retention > 0);
+    }
 
     return policy;
 }
@@ -120,10 +125,31 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
 
 // Insurers use their overhead to conduct operations and perform risk analysis
 // which informs current defender risks before writing policies.
-void Insurer::perform_market_analysis(){
+void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     
     // TODO TODO TODO should Insurers lose 20% of their assets each round as part of operating overhead?
 
+    for (auto i = insurers.begin(); i != insurers.end(); ++i) {
+        if (i->alive) {
+            // TODO these vals need to be updated when collecting premiums/paying claims 
+            // double last_roud_loss_ratio = ((double) i->round_losses / (double) i->round_earnings);
+            
+            // loss_ratio = round_losses / (round_losses + allowed_spending)
+            // round_losses + allowed_spending = round_losses / loss_ratio
+            unsigned int allowed_spending = (int) (((double) i->round_losses / loss_ratio) -  i->round_losses);
+            if (allowed_spending > i->assets) {
+                allowed_spending = i->assets;
+            }
+            i->lose(allowed_spending);
+            operating_expenses += allowed_spending;
+
+
+            i->round_losses = 0;
+            // i->round_earnings = 0;
+
+        }
+
+    }
 
     std::vector<double> attacker_assets;
 
@@ -153,5 +179,6 @@ void Insurer::reset(){
     paid_claims = 0;
     defenders = nullptr;
     attackers = nullptr;
+    operating_expenses = 0;
     cumulative_assets.clear();
 }

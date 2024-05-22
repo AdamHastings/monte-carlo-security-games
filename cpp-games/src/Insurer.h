@@ -30,6 +30,7 @@ class Insurer : public Player {
 
 
         static unsigned long long paid_claims;
+        static unsigned long long operating_expenses;
 
         static std::vector<Defender>* defenders;
         static std::vector<Attacker>* attackers;
@@ -38,7 +39,9 @@ class Insurer : public Player {
 
     public:
         uint id;
-        double last_round_loss_ratio;
+        // double last_round_loss_ratio;
+        double round_earnings;
+        double round_losses;
 
         Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers);
         void gain(uint32_t gain) override;
@@ -46,5 +49,5 @@ class Insurer : public Player {
 
         PolicyType provide_a_quote(uint32_t assets, double posture);
         uint32_t issue_payment(uint32_t claim);
-        static void perform_market_analysis();
+        static void perform_market_analysis(std::vector<Insurer> &insurers);
 };

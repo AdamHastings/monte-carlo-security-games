@@ -99,10 +99,21 @@ void Defender::choose_security_strategy() {
 
     // 1. Get insurance policy from insurer
     PolicyType policy = i->provide_a_quote(assets, posture); // TODO add noise to posture?
-    uint32_t expected_loss_with_insurance = (uint32_t) policy.premium + (p_L_hat * policy.retention);
-    assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
-    assert(policy.retention > 0);
-    assert(expected_loss_with_insurance >= 0);
+    
+    bool insurable = true;
+    uint32_t expected_loss_with_insurance;
+    if (policy.premium == 0 ||  policy.premium >= assets) {
+        // Coverage not available
+        insurable = false; 
+    } else {
+        assert(policy.premium > 0); 
+        assert(policy.retention > 0);
+
+        expected_loss_with_insurance = (uint32_t) policy.premium + (p_L_hat * policy.retention);
+        assert(expected_loss_with_insurance >= 0);
+    }
+
+
     // TODO maybe insurers *should* be able to write policies to defenders who have impenetrable...
     // it'd be like taking candy from a baby
     // but insurers need to still compute same loss ratio 
@@ -120,7 +131,7 @@ void Defender::choose_security_strategy() {
 
     // TODO what about do nothing? i.e. check bounds of x=0, x=assets
 
-    if (expected_loss_with_insurance < expected_loss_with_optimal_investment && policy.premium < assets) {
+    if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(i, policy);
     } else {
         //make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 

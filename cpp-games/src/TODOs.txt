@@ -3,17 +3,15 @@ Verify above in Mathematica (2 hrs)
 Add support for multiple Insurers (3 hrs)
 Add support for noise to defender posture when requesting a policy (1 hr)
 Figure out what the distribution of this noise should be (2 hrs)
-Figure out efficient way for Attackers to choose ATTACKS_PER_EPOCH victims (1 hr)
 Figure out better way of determining game convergence using new parameters (3 hrs)
 Have Insurers "spend" wealth (1 - lossratio?) on market analysis (1 hr)
 Check for memory leaks (1 hr)
-Re-do retention regression or find old data (1 hr)
 
 
 Optional:
+Figure out more efficient way for Attackers to choose ATTACKS_PER_EPOCH victims (1 hr)
 Use pointers to Game object instead of implementing redundant static class variables (1 hr)
 Figure out and implement better naming convention for param vs game variables (1 hr)
 Implement game-ending conditions as an enum type (1 hr)
 Implement game logging in its own class (1 hr)
 Implement timestamped runs/figure out if this is a good idea (1 hr)
-Figure out how to get debug runs to run in serial and release runs to run in parallel

@@ -206,8 +206,8 @@ void Game::verify_outcome() {
     }
 
     // Master checksum
-    double init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
-    double end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures + Defender::sum_recovery_costs; 
+    long long init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
+    long long end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures + Defender::sum_recovery_costs + Insurer::operating_expenses; 
 
     assert(init_ - end_ == 0); 
 }
@@ -342,9 +342,13 @@ void Game::init_round() {
     roundAttacks = 0;
     // roundAttackSuccesses = 0;
 
-    Insurer::perform_market_analysis();
+    verify_outcome(); // TODO delete
+    Insurer::perform_market_analysis(insurers);
     Defender::perform_market_analysis(prevRoundAttacks, defenders.size());
     Attacker::perform_market_analysis(defenders);
+    verify_outcome(); // TODO delete
+
+    // TODO put into market analysis?
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
         defenders[alive_defenders_indices[i]].choose_security_strategy(); 
