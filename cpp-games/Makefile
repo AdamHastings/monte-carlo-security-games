@@ -9,7 +9,7 @@ TARGET=run_games
 DEBUG_FLAGS = -O0 -DDEBUG -g3 -ggdb3 $(CPPFLAGS)
 
 # Release compiler flags
-RELEASE_FLAGS = -O3 -march=native -Ofast  $(CPPFLAGS)
+RELEASE_FLAGS = -O3 -march=native -Ofast -DRELEASE $(CPPFLAGS)
 
 # Source files
 SOURCES = $(wildcard src/*.cpp)

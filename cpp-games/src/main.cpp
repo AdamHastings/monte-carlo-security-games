@@ -178,10 +178,13 @@ int main(int argc, char** argv) {
 
     auto start = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-
     std::cout << "started " << p.NUM_GAMES << " games at " << std::ctime(&start_time);
-    // ParallelRunGames(p);
-    SerialRunGames(basename);
+    
+    #ifdef RELEASE
+        ParallelRunGames(p); // run fast 
+    #else
+        SerialRunGames(basename); // run for easy debug
+    #endif
 
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;

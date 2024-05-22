@@ -16,3 +16,4 @@ Figure out and implement better naming convention for param vs game variables (1
 Implement game-ending conditions as an enum type (1 hr)
 Implement game logging in its own class (1 hr)
 Implement timestamped runs/figure out if this is a good idea (1 hr)
+Figure out how to get debug runs to run in serial and release runs to run in parallel
