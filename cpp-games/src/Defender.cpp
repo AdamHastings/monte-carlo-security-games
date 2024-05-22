@@ -59,7 +59,7 @@ void Defender::submit_claim(uint32_t loss) {
     assert(ins_idx >= 0); 
     // TODO: assert(ins_idx < alive_insurers.size());
 
-    uint32_t claim_after_retention = std::max((uint32_t) 0, (loss - policy.retention));
+    uint32_t claim_after_retention = std::max(0, ((int32_t)loss - (int32_t)policy.retention));
     assert(claim_after_retention >= 0);
     if (claim_after_retention > 0) {
         if (insurers->at(ins_idx).alive) {
