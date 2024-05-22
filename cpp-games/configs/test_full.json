@@ -13,7 +13,7 @@
     "RANSOM_BASE" :
     {
         "distribution" : "fixed",
-        "val" : 25365
+        "val" : 146
     },
     "RANSOM_EXP" :
     {
@@ -23,7 +23,7 @@
     "RECOVERY_COST_BASE" :
     {
         "distribution" : "fixed",
-        "val" : 230123
+        "val" : 544
     },
     "RECOVERY_COST_EXP" :
     {

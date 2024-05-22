@@ -9,10 +9,10 @@
 
 class Insurer : public Player {
     public:
-        static double i_init;
-        static double insurer_iter_sum;
-        static std::vector<double> cumulative_assets; // running total of all insurers' assets
-        static double current_sum_assets; // sum total of all class instances
+        static unsigned long long i_init;
+        static unsigned long long insurer_iter_sum;
+        static std::vector<unsigned long long> cumulative_assets; // running total of all insurers' assets
+        static unsigned long long current_sum_assets; // sum total of all class instances
         
         static double estimated_current_attacker_welth_mean;
         static double estimated_current_attacker_wealth_stdddev;
@@ -29,7 +29,7 @@ class Insurer : public Player {
         static double expected_recovery_exponent;
 
 
-        static double paid_claims;
+        static unsigned long long paid_claims;
 
         static std::vector<Defender>* defenders;
         static std::vector<Attacker>* attackers;
@@ -41,11 +41,11 @@ class Insurer : public Player {
         double last_round_loss_ratio;
 
         Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers);
-        void gain(double gain) override;
-        void lose(double loss) override;
+        void gain(uint32_t gain) override;
+        void lose(uint32_t loss) override;
 
-        PolicyType provide_a_quote(double assets, double posture);
-        double issue_payment(double claim);
+        PolicyType provide_a_quote(uint32_t assets, double posture);
+        uint32_t issue_payment(uint32_t claim);
         static void perform_market_analysis(int prevRoundAttacks);
 
     // private:

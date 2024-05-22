@@ -9,13 +9,13 @@ class Defender : public Player {
     public:
         static double estimated_probability_of_attack;
 
-        static double d_init;
-        static double defender_iter_sum;
-        static std::vector<double> cumulative_assets; // running total of all defenders' assets
-        static double current_sum_assets; // sum total of all class instances
-        static double sum_recovery_costs;
-        static unsigned int policiesPurchased;
-        static unsigned int defensesPurchased;
+        static unsigned long long d_init;
+        static unsigned long long defender_iter_sum;
+        static std::vector<unsigned long long> cumulative_assets; // running total of all defenders' assets
+        static unsigned long long current_sum_assets; // sum total of all class instances
+        static unsigned long long sum_recovery_costs;
+        static unsigned long long policiesPurchased;
+        static unsigned long long defensesPurchased;
         // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
 
         uint id;
@@ -27,17 +27,17 @@ class Defender : public Player {
         PolicyType policy;
 
         Defender(int id_in, Params &p, std::vector<Insurer> &insurers);
-        void gain(double gain) override;
-        void lose(double loss) override;
+        void gain(uint32_t gain) override;
+        void lose(uint32_t loss) override;
 
         void choose_security_strategy();
-        void submit_claim(double loss);
+        void submit_claim(uint32_t loss);
 
         static void reset();
 
 
     private:
         void purchase_insurance_policy(Insurer* i, PolicyType p);
-        void make_security_investment(double x);
+        void make_security_investment(uint32_t x);
 };
 

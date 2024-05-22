@@ -10,18 +10,18 @@ class Defender;
 class Attacker;
 
 struct PolicyType {
-    double premium;
-    double retention;
+    uint32_t premium;
+    uint32_t retention;
 };
 
 class Player {
     public:
-        double assets;
+        uint32_t assets;
         Params p;
         bool alive = true;
 
         Player(Params &p_in);
-        virtual void gain(double gain);
-        virtual void lose(double loss);
-        double get_assets();
+        virtual void gain(uint32_t gain);
+        virtual void lose(uint32_t loss);
+        uint32_t get_assets();
 };

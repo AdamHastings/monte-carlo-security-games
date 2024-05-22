@@ -37,9 +37,9 @@ Game::Game(Params prm, unsigned int game_number) {
     // TODO maybe all this should happen in the Insurers' constructor? Or no because it's only called once?
     Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
-    Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean();
+    Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean(); // to account for in terms of millions. TODO maybe redo regression to account for this.
     Insurer::expected_ransom_exponent = p.RANSOM_EXP_distribution->mean();
-    Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
+    Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean(); // to account for in terms of millions. TODO maybe redo regression to account for this.
     Insurer::expected_recovery_exponent = p.RECOVERY_COST_EXP_distribution->mean();
 
     uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
@@ -259,8 +259,8 @@ void Game::fight(Attacker &a, Defender &d) {
         return;
     }
 
-    double ransom = p.RANSOM_BASE_distribution->draw() * pow(d.assets,  p.RANSOM_EXP_distribution->draw());
-    double recovery_cost = p.RECOVERY_COST_BASE_distribution->draw() * pow(d.assets, p.RECOVERY_COST_EXP_distribution->draw());
+    uint32_t ransom = (uint32_t) (p.RANSOM_BASE_distribution->draw() * pow((double) d.assets,  p.RANSOM_EXP_distribution->draw()));
+    uint32_t recovery_cost = (uint32_t) (p.RECOVERY_COST_BASE_distribution->draw() * pow((double) d.assets, p.RECOVERY_COST_EXP_distribution->draw()));
 
     if (ransom > d.assets) {
         // Mercy kill the defender if the ransom is low
@@ -280,21 +280,21 @@ void Game::fight(Attacker &a, Defender &d) {
     assert(estimated_probability_of_attack_success <= 1);
     assert(estimated_probability_of_attack_success >= 0);
 
-    double expected_payoff = ransom * estimated_probability_of_attack_success;
+    uint32_t expected_payoff = ransom * estimated_probability_of_attack_success;
     assert(expected_payoff >= 0);
 
-    double expected_cost_to_attack = p.CTA_SCALING_FACTOR_distribution->mean() * p.POSTURE_distribution->mean() * ransom;
+    uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * p.POSTURE_distribution->mean() * ransom);
 
     if (expected_payoff > expected_cost_to_attack && expected_cost_to_attack < a.assets) { 
         // Attacking  appears to be financially worth it
 
-        double cost_to_attack =  p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * ransom;
+        uint32_t cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * ransom);
         
         // Attackers do a hail mary if it turns out they don't have enough to attack
         // So that we don't end the game with a bunch of attackers with $0.01
         // TODO this might give the attackers a slight advantage...maybe have it count against their earnings if they're succesful?
         // bool cost_gt_assets = false;
-        double debt = 0;
+        uint32_t debt = 0;
         if (cost_to_attack > a.assets) {
             debt = cost_to_attack - a.assets;
             // cost_gt_assets = true;
@@ -333,7 +333,7 @@ void Game::fight(Attacker &a, Defender &d) {
             
             
             if (d.insured) {
-                double total_losses = ransom + recovery_cost;
+                uint32_t total_losses = ransom + recovery_cost;
                 d.submit_claim(total_losses);
                 // verify_outcome(); // TODO delete
             }

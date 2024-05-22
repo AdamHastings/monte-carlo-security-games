@@ -13,12 +13,12 @@ Player::Player(Params &p_in) {
     p = p_in;
 }
 
-void Player::gain(double gain) {
+void Player::gain(uint32_t gain) {
     assert(gain >= 0);
     assets += gain;
 }
 
-void Player::lose(double loss) {
+void Player::lose(uint32_t loss) {
     assert(loss >= 0);
     assert(loss <= assets);
     assets -= loss;
@@ -27,7 +27,7 @@ void Player::lose(double loss) {
     }
 }
 
-double Player::get_assets() {
+uint32_t Player::get_assets() {
     return assets;
 }
 

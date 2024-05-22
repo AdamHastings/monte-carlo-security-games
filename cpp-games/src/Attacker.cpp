@@ -2,20 +2,20 @@
 
 double Attacker::inequality_ratio = 0;
 
-double Attacker::a_init = 0; 
-double Attacker::attacker_iter_sum = 0;
-double Attacker::current_sum_assets = 0;
-std::vector<double> Attacker::cumulative_assets; 
+long long Attacker::a_init = 0; 
+long long Attacker::attacker_iter_sum = 0;
+long long Attacker::current_sum_assets = 0;
+std::vector<unsigned long long> Attacker::cumulative_assets; 
 
 double Attacker::estimated_current_defender_wealth_mean = 0;
 double Attacker::estimated_current_defender_wealth_stdddev = 0;
 double Attacker::estimated_current_defender_posture_mean = 0;
 double Attacker::estimated_current_defender_posture_stdddev = 0;
 
-int Attacker::attacksAttempted = 0;
-int Attacker::attacksSucceeded = 0;
-double Attacker::attackerExpenditures = 0;
-double Attacker::attackerLoots = 0; 
+long long Attacker::attacksAttempted = 0;
+long long Attacker::attacksSucceeded = 0;
+long long Attacker::attackerExpenditures = 0;
+long long Attacker::attackerLoots = 0; 
 
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -23,24 +23,21 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
     assert(inequality_ratio > 0);
     assert(inequality_ratio <= 1);
     
-    // parameters scaled down by 1B during curve fitting to avoid numerical overflow
-    // so I re-scale back up by 1B here to compensate
-    assets = p.WEALTH_distribution->draw() * pow(10, 9) * inequality_ratio;
-    if (assets < 0) {
-        assets = 0;
-    }
+    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6) * inequality_ratio; // In terms of thousands. Baseline params in terms of millions. TODO make sure this new convention is implemented everywhere!
+    assert(fp_assets < __UINT32_MAX__);
+    assets = (uint32_t) fp_assets;
 
     a_init += assets; 
     current_sum_assets += assets;
 }
 
-void Attacker::lose(double loss) {
+void Attacker::lose(uint32_t loss) {
     Player::lose(loss);
     attacker_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
-void Attacker::gain(double gain) {
+void Attacker::gain(uint32_t gain) {
     Player::gain(gain);
     attacker_iter_sum += gain;
     current_sum_assets += gain;

@@ -3,25 +3,22 @@
 #include "Defender.h"
 
 double Defender::estimated_probability_of_attack = 0;
-double Defender::d_init = 0; 
-double Defender::defender_iter_sum = 0;
-double Defender::current_sum_assets = 0;
-double Defender::sum_recovery_costs = 0;
-unsigned int Defender::policiesPurchased = 0;
-unsigned int Defender::defensesPurchased = 0;
-std::vector<double> Defender::cumulative_assets;
+unsigned long long Defender::d_init = 0; 
+unsigned long long Defender::defender_iter_sum = 0;
+unsigned long long Defender::current_sum_assets = 0;
+unsigned long long Defender::sum_recovery_costs = 0;
+unsigned long long Defender::policiesPurchased = 0;
+unsigned long long Defender::defensesPurchased = 0;
+std::vector<unsigned long long> Defender::cumulative_assets;
 
 Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Player(p) {
     id = id_in;
 
     insurers = &_insurers;
 
-    // parameters scaled down by 1B during curve fitting to avoid numerical overflow
-    // so I re-scale back up by 1B here to compensate
-    assets = p.WEALTH_distribution->draw() * pow(10, 9); 
-    if (assets < 0) {
-        assets = 0;
-    }
+    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of millions. TODO make sure this new convention is implemented everywhere!
+    assert(fp_assets < __UINT32_MAX__);
+    assets = (uint32_t) fp_assets;
 
     posture = p.POSTURE_distribution->draw();
     if (posture < 0) {
@@ -54,16 +51,16 @@ void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     // Or maybe if retention > assets, there's no point in buying insurance so they automatically buy security? TODO TODO TODO
 }
 
-void Defender::submit_claim(double loss) {
+void Defender::submit_claim(uint32_t loss) {
     
     assert(insured); // you should only call this function if you have an active insurance policy
     assert(ins_idx >= 0); 
 
-    double claim_after_retention = std::max(0.0, (loss - policy.retention));
+    uint32_t claim_after_retention = std::max((uint32_t) 0, (loss - policy.retention));
     assert(claim_after_retention >= 0);
     if (claim_after_retention > 0) {
         if (insurers->at(ins_idx).alive) {
-            double amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
+            uint32_t amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
             assert(loss >= amount_recovered);
             assert(claim_after_retention >= amount_recovered);
             assert(amount_recovered > 0);
@@ -72,9 +69,9 @@ void Defender::submit_claim(double loss) {
     }
 }
 
-void Defender::make_security_investment(double x) {
+void Defender::make_security_investment(uint32_t x) {
     defensesPurchased += 1;
-    double sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
+    uint32_t sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
     posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
     assert(posture >= 0);
     assert(posture <= 1);
@@ -137,13 +134,13 @@ void Defender::choose_security_strategy() {
 }
 
 
-void Defender::lose(double loss) {
+void Defender::lose(uint32_t loss) {
     Player::lose(loss);
     defender_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
-void Defender::gain(double gain) {
+void Defender::gain(uint32_t gain) {
     Player::gain(gain);
     defender_iter_sum += gain;
     current_sum_assets += gain;

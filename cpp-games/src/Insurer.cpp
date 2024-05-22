@@ -5,9 +5,9 @@
 #include "Defender.h"
 #include "Attacker.h"
 
-double Insurer::i_init = 0; // Initialization outside the class definition
-double Insurer::current_sum_assets = 0;
-double Insurer::insurer_iter_sum = 0;
+unsigned long long Insurer::i_init = 0; // Initialization outside the class definition
+unsigned long long Insurer::current_sum_assets = 0;
+unsigned long long Insurer::insurer_iter_sum = 0;
 
 double Insurer::estimated_current_attacker_welth_mean = 0;
 double Insurer::estimated_current_attacker_wealth_stdddev = 0;
@@ -22,11 +22,11 @@ unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing 
 double* Insurer::cta_scaling_factor = 0;
 std::mt19937* Insurer::gen = 0;
 
-std::vector<double> Insurer::cumulative_assets; 
+std::vector<unsigned long long> Insurer::cumulative_assets; 
 std::vector<Defender>* Insurer::defenders;
 std::vector<Attacker>* Insurer::attackers;
 
-double Insurer::paid_claims = 0;
+unsigned long long Insurer::paid_claims = 0;
 
 Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers) : Player(p) {
     id = id_in;
@@ -35,31 +35,30 @@ Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::v
     defenders = &_defenders;
     attackers = &_attackers;
 
-    assets = p.WEALTH_distribution->draw() * pow(10, 9);
-    if (assets < 0) {
-        assets = 0;
-    }
+    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of millions. TODO make sure this new convention is implemented everywhere!
+    assert(fp_assets < __UINT32_MAX__);
+    assets = (uint32_t) fp_assets;
 
     i_init += assets; 
     current_sum_assets += assets;
 }
 
-void Insurer::lose(double loss) {
+void Insurer::lose(uint32_t loss) {
     Player::lose(loss);
     paid_claims += loss; //assumes that Insures *only* lose money when paying claims!
     insurer_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
-void Insurer::gain(double gain) {
+void Insurer::gain(uint32_t gain) {
     Player::gain(gain);
     insurer_iter_sum += gain;
     current_sum_assets += gain;
 }
 
-double Insurer::issue_payment(double claim) {
+uint32_t Insurer::issue_payment(uint32_t claim) {
     
-    double amount_covered;
+    uint32_t amount_covered;
     if (claim > assets) { // insurer cannot cover full amount and goes bust
         amount_covered = assets;
     } else {
@@ -69,7 +68,7 @@ double Insurer::issue_payment(double claim) {
     return amount_covered;
 }
 
-PolicyType Insurer::provide_a_quote(double assets, double estimated_posture) {    
+PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {    
     
     double p_getting_paired_with_attacker_a = (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0);
     assert(p_getting_paired_with_attacker_a >= 0);
@@ -89,13 +88,15 @@ PolicyType Insurer::provide_a_quote(double assets, double estimated_posture) {
     assert(p_loss >= 0);
     assert(p_loss <= 1);
 
-    double ransom = expected_ransom_base * pow(assets, expected_ransom_exponent); 
-    double recovery_costs = expected_recovery_base * pow(assets, expected_recovery_exponent);
-    double total_losses = ransom + recovery_costs;
+    uint32_t ransom = (uint32_t) expected_ransom_base * pow(assets, expected_ransom_exponent); 
+    uint32_t recovery_costs = (uint32_t) expected_recovery_base * pow(assets, expected_recovery_exponent);
+    uint32_t total_losses = ransom + recovery_costs;
+    assert(total_losses < ransom);
+    assert(total_losses < recovery_costs);
 
     PolicyType policy;
-    policy.premium = (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
-    policy.retention = retention_regression_factor * policy.premium;
+    policy.premium = (uint32_t) (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
+    policy.retention = (uint32_t) retention_regression_factor * policy.premium;
 
     assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
     assert(policy.retention > 0);
@@ -168,7 +169,7 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     // Compute the probability that a random defender is worth attacking based on the Attackers' market analysis
     // No closed form solution so we will simulate
 
-    
+
     // std::normal_distribution<double> attacker_estimated_defender_posture_distribution(Attacker::estimated_current_defender_posture_mean, Attacker::estimated_current_defender_posture_stdddev);
     // std::lognormal_distribution<double> attacker_estimated_defender_wealth_distribution(Attacker::estimated_current_defender_wealth_mean, Attacker::estimated_current_defender_wealth_stdddev);
     // int worth_attacking = 0;
