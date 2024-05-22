@@ -9,7 +9,7 @@ std::vector<unsigned long long> Attacker::cumulative_assets;
 
 double Attacker::estimated_current_defender_wealth_mean = 0;
 double Attacker::estimated_current_defender_wealth_stdddev = 0;
-double Attacker::estimated_current_defender_posture_mean = 0;
+double Attacker::estimated_current_defender_posture_mean = 0.28; /// TODO undo!!
 double Attacker::estimated_current_defender_posture_stdddev = 0;
 
 long long Attacker::attacksAttempted = 0;

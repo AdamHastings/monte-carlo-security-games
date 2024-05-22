@@ -14,7 +14,7 @@ class Insurer : public Player {
         static std::vector<unsigned long long> cumulative_assets; // running total of all insurers' assets
         static unsigned long long current_sum_assets; // sum total of all class instances
         
-        static double estimated_current_attacker_welth_mean;
+        static double estimated_current_attacker_wealth_mean;
         static double estimated_current_attacker_wealth_stdddev;
 
         static double loss_ratio;

@@ -283,7 +283,7 @@ void Game::fight(Attacker &a, Defender &d) {
     uint32_t expected_payoff = ransom * estimated_probability_of_attack_success;
     assert(expected_payoff >= 0);
 
-    uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * p.POSTURE_distribution->mean() * ransom);
+    uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
     if (expected_payoff > expected_cost_to_attack && expected_cost_to_attack < a.assets) { 
         // Attacking  appears to be financially worth it

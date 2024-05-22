@@ -9,7 +9,7 @@ unsigned long long Insurer::i_init = 0; // Initialization outside the class defi
 unsigned long long Insurer::current_sum_assets = 0;
 unsigned long long Insurer::insurer_iter_sum = 0;
 
-double Insurer::estimated_current_attacker_welth_mean = 0;
+double Insurer::estimated_current_attacker_wealth_mean = 0;
 double Insurer::estimated_current_attacker_wealth_stdddev = 0;
 
 double Insurer::loss_ratio = 0;
@@ -83,18 +83,29 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     assert(p_getting_attacked >= 0);
     assert(p_getting_attacked <= 1);
 
-    bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + *cta_scaling_factor))); // TODO TODO remove hardcoded
+    bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + *cta_scaling_factor)));
     if (!attacking_expected_gains_outweigh_expected_costs) {
         std::cout << "Attacking no longer worth it!" << std::endl;
     }
 
-    double p_loss = p_getting_attacked * attacking_expected_gains_outweigh_expected_costs * (1 - estimated_posture);
-    assert(p_loss >= 0);
-    assert(p_loss <= 1);
-
     uint32_t ransom = (uint32_t) expected_ransom_base * pow(assets, expected_ransom_exponent); 
     uint32_t recovery_costs = (uint32_t) expected_recovery_base * pow(assets, expected_recovery_exponent);
     uint32_t total_losses = ransom + recovery_costs;
+    
+    uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
+
+    double p_one_attacker_has_enough_to_attack =  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2))));;
+    assert(p_one_attacker_has_enough_to_attack >= 0);
+    assert(p_one_attacker_has_enough_to_attack <= 1);
+
+    double p_at_least_one_attacker_has_enough_to_attack = 1 - pow((1 - p_one_attacker_has_enough_to_attack), *Insurer::ATTACKS_PER_EPOCH);   
+    assert(p_at_least_one_attacker_has_enough_to_attack >= 0);
+    assert(p_at_least_one_attacker_has_enough_to_attack <= 1);
+
+    // TODO what about probability that one attacker has enough to attack?
+    double p_loss = p_getting_attacked * p_at_least_one_attacker_has_enough_to_attack * attacking_expected_gains_outweigh_expected_costs * (1 - estimated_posture);
+    assert(p_loss >= 0);
+    assert(p_loss <= 1);
 
     PolicyType policy;
     policy.premium = (uint32_t) (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
@@ -163,7 +174,7 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     double sigma_mom = sqrt(log(1 + sampleVariance / (sampleMean * sampleMean)));
 
     // TODO check that working in terms of Billions of assets is not causing numerical overflow
-    estimated_current_attacker_welth_mean     = mu_mom;
+    estimated_current_attacker_wealth_mean     = mu_mom;
     estimated_current_attacker_wealth_stdddev = sigma_mom;
     
 
