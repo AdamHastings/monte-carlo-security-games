@@ -70,17 +70,18 @@ uint32_t Insurer::issue_payment(uint32_t claim) {
 
 PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {    
     
-    double p_getting_paired_with_attacker_a = (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0);
+    double p_getting_paired_with_attacker_a = std::min(1.0, (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0));
     assert(p_getting_paired_with_attacker_a >= 0);
     assert(p_getting_paired_with_attacker_a <= 1);
 
-    double p_getting_attacked = pow((1 - p_getting_paired_with_attacker_a), (double) attackers->size());
+    double p_getting_attacked;
+    if (p_getting_paired_with_attacker_a == 1.0) {
+        p_getting_attacked = 1.0;
+    } else {
+       p_getting_attacked = 1 - pow((1 - p_getting_paired_with_attacker_a), (double) attackers->size());      
+    } 
     assert(p_getting_attacked >= 0);
     assert(p_getting_attacked <= 1);
-
-    // double p_one_attacker_has_enough_to_attempt_attack = 0.5;// TODO TODO fix hardcoded. Use estimated_costToAttackPercentile
-    // assert(p_one_attacker_has_enough_to_attempt_attack >= 0);
-    // assert(p_one_attacker_has_enough_to_attempt_attack <= 1);
 
     bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + *cta_scaling_factor))); // TODO TODO remove hardcoded
     if (!attacking_expected_gains_outweigh_expected_costs) {
@@ -204,9 +205,9 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
 
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
     // TODO move to Defender::perform_market_analysis
-    // Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(defenders->size() * 1.0));
-    // assert(Defender::estimated_probability_of_attack >= 0);
-    // assert(Defender::estimated_probability_of_attack <= 1);
+    Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(defenders->size() * 1.0));
+    assert(Defender::estimated_probability_of_attack >= 0);
+    assert(Defender::estimated_probability_of_attack <= 1);
 }
 
 void Insurer::reset(){
