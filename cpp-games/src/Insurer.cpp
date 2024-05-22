@@ -36,7 +36,7 @@ Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::v
     defenders = &_defenders;
     attackers = &_attackers;
 
-    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of millions. TODO make sure this new convention is implemented everywhere!
+    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of billions. 
     assert(fp_assets < __UINT32_MAX__);
     assets = (uint32_t) fp_assets;
 
@@ -119,7 +119,6 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
 
 
 // Insurers use their overhead to conduct operations and perform risk analysis
-// As part of this, the insurers find the median assets of the attackers (TODO maybe estimate it even?)
 // which informs current defender risks before writing policies.
 void Insurer::perform_market_analysis(){
     

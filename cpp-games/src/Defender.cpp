@@ -16,7 +16,7 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
 
     insurers = &_insurers;
 
-    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of millions. TODO make sure this new convention is implemented everywhere!
+    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of billions. 
     assert(fp_assets < __UINT32_MAX__);
     assets = (uint32_t) fp_assets;
 

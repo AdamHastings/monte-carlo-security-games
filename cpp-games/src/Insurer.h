@@ -47,8 +47,4 @@ class Insurer : public Player {
         PolicyType provide_a_quote(uint32_t assets, double posture);
         uint32_t issue_payment(uint32_t claim);
         static void perform_market_analysis();
-
-    // private:
-        // static double findPercentile(const std::vector<double>& sortedVector, double newValue);
-
 };

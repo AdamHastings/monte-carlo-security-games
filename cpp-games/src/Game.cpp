@@ -37,9 +37,9 @@ Game::Game(Params prm, unsigned int game_number) {
     // TODO maybe all this should happen in the Insurers' constructor? Or no because it's only called once?
     Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
-    Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean(); // to account for in terms of millions. TODO maybe redo regression to account for this.
+    Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean();
     Insurer::expected_ransom_exponent = p.RANSOM_EXP_distribution->mean();
-    Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean(); // to account for in terms of millions. TODO maybe redo regression to account for this.
+    Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
     Insurer::expected_recovery_exponent = p.RECOVERY_COST_EXP_distribution->mean();
 
     uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
@@ -136,7 +136,6 @@ void Game::verify_init() {
         assert(d.id >= 0);
         assert(d.id < defenders.size());
         assert(d.assets >= 0);
-        // assert(d.costToAttack >= 0); // Getting rid of this param
         assert(d.posture >= 0);
         assert(d.posture <= 1);
         assert(d.id == i);
@@ -268,12 +267,8 @@ void Game::fight(Attacker &a, Defender &d) {
     }
 
     // Attackers don't know defenders' posture until they attack and cannot compute the odds of success
-    // But they can compute the expected ransom
+    // But they can compute the expected ransom payoff
 
-    // TODO maybe attackers should also do a "market analysis" at the start of each round?
-    // E.g. estimate params for current wealth and posture distributions 
-    // instead of relying on means as is implemented below.
-    // could even just be proportion instead of method of moments technique
     double estimated_probability_of_attack_success = (1 - Attacker::estimated_current_defender_posture_mean);
     assert(estimated_probability_of_attack_success <= 1);
     assert(estimated_probability_of_attack_success >= 0);
@@ -288,14 +283,10 @@ void Game::fight(Attacker &a, Defender &d) {
 
         uint32_t cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * ransom);
         
-        // Attackers do a hail mary if it turns out they don't have enough to attack
-        // So that we don't end the game with a bunch of attackers with $0.01
-        // TODO this might give the attackers a slight advantage...maybe have it count against their earnings if they're succesful?
-        // bool cost_gt_assets = false;
+
         uint32_t debt = 0;
         if (cost_to_attack > a.assets) {
             debt = cost_to_attack - a.assets;
-            // cost_gt_assets = true;
             cost_to_attack = a.assets;
         }
 

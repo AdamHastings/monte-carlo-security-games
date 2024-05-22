@@ -1,4 +1,3 @@
-Have Attackers compute approximation of Defenders' wealth and posture distribution (Attacker::perform_market_analysis()) (1 hr)
 Re-derive optimal security investment using new power law distribution of ransom prices and new equation for computing cost_to_attack (3 hrs)
 Verify above in Mathematica (2 hrs)
 Add support for multiple Insurers (3 hrs)
