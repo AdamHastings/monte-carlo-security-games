@@ -46,15 +46,18 @@ void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
 
     i->gain(policy.premium);
 
-    assert(assets > p.retention); // TODO not sure about this...based on odds, some defenders may YOLO 
+    // assert(assets > p.retention); // TODO not sure about this...based on odds, some defenders may YOLO 
     // TODO maybe we should only sell policies if Defenders are able to pay the retention
     // Or maybe if retention > assets, there's no point in buying insurance so they automatically buy security? TODO TODO TODO
+    // my solution: the above is wrong. The retention comes out of the claim amount. The defender doesn't need to "pay" it
+    // You can delete this comment block in the next commit.
 }
 
 void Defender::submit_claim(uint32_t loss) {
     
     assert(insured); // you should only call this function if you have an active insurance policy
     assert(ins_idx >= 0); 
+    // TODO: assert(ins_idx < alive_insurers.size());
 
     uint32_t claim_after_retention = std::max((uint32_t) 0, (loss - policy.retention));
     assert(claim_after_retention >= 0);

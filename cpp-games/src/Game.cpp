@@ -354,7 +354,7 @@ void Game::init_round() {
     Insurer::perform_market_analysis(prevRoundAttacks);
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
-        // defenders[alive_defenders_indices[i]].choose_security_strategy();  // TODO uncomment later!! for testing purposes only.
+        defenders[alive_defenders_indices[i]].choose_security_strategy();  // TODO uncomment later!! for testing purposes only.
     }
 }
 

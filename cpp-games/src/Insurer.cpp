@@ -82,17 +82,18 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     // assert(p_one_attacker_has_enough_to_attempt_attack >= 0);
     // assert(p_one_attacker_has_enough_to_attempt_attack <= 1);
 
-    double p_attacking_is_worth_it = 0.5; // TODO TODO remove hardcoded
+    bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + *cta_scaling_factor))); // TODO TODO remove hardcoded
+    if (!attacking_expected_gains_outweigh_expected_costs) {
+        std::cout << "Attacking no longer worth it!" << std::endl;
+    }
 
-    double p_loss = p_getting_attacked * p_attacking_is_worth_it * (1 - estimated_posture);
+    double p_loss = p_getting_attacked * attacking_expected_gains_outweigh_expected_costs * (1 - estimated_posture);
     assert(p_loss >= 0);
     assert(p_loss <= 1);
 
     uint32_t ransom = (uint32_t) expected_ransom_base * pow(assets, expected_ransom_exponent); 
     uint32_t recovery_costs = (uint32_t) expected_recovery_base * pow(assets, expected_recovery_exponent);
     uint32_t total_losses = ransom + recovery_costs;
-    assert(total_losses < ransom);
-    assert(total_losses < recovery_costs);
 
     PolicyType policy;
     policy.premium = (uint32_t) (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
@@ -161,7 +162,6 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     double sigma_mom = sqrt(log(1 + sampleVariance / (sampleMean * sampleMean)));
 
     // TODO check that working in terms of Billions of assets is not causing numerical overflow
-
     estimated_current_attacker_welth_mean     = mu_mom;
     estimated_current_attacker_wealth_stdddev = sigma_mom;
     
