@@ -102,7 +102,6 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     assert(p_at_least_one_attacker_has_enough_to_attack >= 0);
     assert(p_at_least_one_attacker_has_enough_to_attack <= 1);
 
-    // TODO what about probability that one attacker has enough to attack?
     double p_loss = p_getting_attacked * p_at_least_one_attacker_has_enough_to_attack * attacking_expected_gains_outweigh_expected_costs * (1 - estimated_posture);
     assert(p_loss >= 0);
     assert(p_loss <= 1);
@@ -117,42 +116,11 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     return policy;
 }
 
-// double Insurer::findPercentile(const std::vector<double>& sortedVector, double newValue) {
-//     // Find the rank of the new value within the sorted vector
-//     auto rankIterator = std::lower_bound(sortedVector.begin(), sortedVector.end(), newValue);
-//     int rank = std::distance(sortedVector.begin(), rankIterator);
-    
-//     // Calculate the percentile
-//     double percentile = (static_cast<double>(rank) / ((sortedVector.size() + 1) * 1.0));
-//     assert(percentile >= 0);
-//     assert(percentile <= 1);
-    
-//     return percentile;
-// }
-
-
-// Function to compute the mean of a vector
-double computeMean(const std::vector<double>& data) {
-    double sum = 0.0;
-    for (const auto& value : data) {
-        sum += value;
-    }
-    return sum / data.size();
-}
-
-// Function to compute the variance of a vector
-double computeVariance(const std::vector<double>& data, double mean) {
-    double sumSquaredDiff = 0.0;
-    for (const auto& value : data) {
-        sumSquaredDiff += (value - mean) * (value - mean);
-    }
-    return sumSquaredDiff / data.size();
-}
 
 // Insurers use their overhead to conduct operations and perform risk analysis
 // As part of this, the insurers find the median assets of the attackers (TODO maybe estimate it even?)
 // which informs current defender risks before writing policies.
-void Insurer::perform_market_analysis(int prevRoundAttacks){
+void Insurer::perform_market_analysis(){
     
     // TODO TODO TODO should Insurers lose 20% of their assets each round as part of operating overhead?
 
@@ -170,55 +138,12 @@ void Insurer::perform_market_analysis(int prevRoundAttacks){
     double sampleVariance = computeVariance(attacker_assets, sampleMean);
 
     // Compute parameters using method of moments
-    double mu_mom = log(sampleMean) - 0.5 * log(1 + sampleVariance / (sampleMean * sampleMean));
-    double sigma_mom = sqrt(log(1 + sampleVariance / (sampleMean * sampleMean)));
+    double variance_mom = log(1 + pow(sampleVariance, 2) / pow(sampleMean, 2));
+    double mu_mom = log(sampleMean) - 0.5 * variance_mom;
+    double sigma_mom = sqrt(variance_mom);
 
-    // TODO check that working in terms of Billions of assets is not causing numerical overflow
-    estimated_current_attacker_wealth_mean     = mu_mom;
+    estimated_current_attacker_wealth_mean    = mu_mom;
     estimated_current_attacker_wealth_stdddev = sigma_mom;
-    
-
-    // Compute the probability that a random defender is worth attacking based on the Attackers' market analysis
-    // No closed form solution so we will simulate
-
-
-    // std::normal_distribution<double> attacker_estimated_defender_posture_distribution(Attacker::estimated_current_defender_posture_mean, Attacker::estimated_current_defender_posture_stdddev);
-    // std::lognormal_distribution<double> attacker_estimated_defender_wealth_distribution(Attacker::estimated_current_defender_wealth_mean, Attacker::estimated_current_defender_wealth_stdddev);
-    // int worth_attacking = 0;
-    // int NUM_MC_TRIALS = 100;
-    // for (int i=0; i<NUM_MC_TRIALS; i++) {
-    //     double sample_posture = attacker_estimated_defender_posture_distribution(gen);
-    //     double sample_wealth  = attacker_estimated_defender_wealth_distribution(gen);
-    //     double sample_ransom = expected_ransom_base * pow(sample_wealth, expected_ransom_exponent);
-    //     double sample_estimated_probability_of_attack_success = (1 - attacker_estimated_defender_posture_distribution.mean());
-    //     double sample_expected_payoff = sample_ransom * sample_estimated_probability_of_attack_success;
-
-    //     double sample_expected_cost_to_attack = *Insurer::cta_scaling_factor * sample_posture * sample_wealth;
-    //     if (sample_expected_payoff > sample_expected_cost_to_attack) { 
-    //         worth_attacking++;
-        
-
-    // // TODO TODO wait...should this be a function of defender's wealth?
-    // double prob_defender_is_worth_attacking = (worth_attacking) / (NUM_MC_TRIALS * 1.0);
-    
-
-    // Just compute policies when getting a quote so that we can capture variations in sampling of posture 
-    // for (auto d = defenders->begin(); d != defenders->end(); ++d) {
-    //     // d->costToAttackPercentile = findPercentile(attacker_assets, d->costToAttack);
-    //     double cdf_d =  0.5 * (1 + erf((log(cta) - mu_mom) / (sigma_mom * sqrt(2))));;
-    //     if (cdf_d >= 0.99) {
-    //         cdf_d = 0.99;
-    //     }
-    //     assert(cdf_d <= 1);
-    //     assert(cdf_d >= 0);
-    //     d->costToAttack
-    // }
-
-    // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
-    // TODO move to Defender::perform_market_analysis
-    Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(defenders->size() * 1.0));
-    assert(Defender::estimated_probability_of_attack >= 0);
-    assert(Defender::estimated_probability_of_attack <= 1);
 }
 
 void Insurer::reset(){

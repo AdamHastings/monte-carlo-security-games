@@ -351,10 +351,12 @@ void Game::init_round() {
     Insurer::insurer_iter_sum = 0;
     roundAttacks = 0;
 
-    Insurer::perform_market_analysis(prevRoundAttacks);
+    Insurer::perform_market_analysis();
+    Defender::perform_market_analysis(prevRoundAttacks, defenders.size());
+    Attacker::perform_market_analysis();
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
-        defenders[alive_defenders_indices[i]].choose_security_strategy();  // TODO uncomment later!! for testing purposes only.
+        defenders[alive_defenders_indices[i]].choose_security_strategy(); 
     }
 }
 

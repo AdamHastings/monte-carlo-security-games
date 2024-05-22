@@ -33,24 +33,14 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     assert(Defender::d_init == Defender::current_sum_assets);
 } 
 
-// TODO what if retention > assets????
 void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     policiesPurchased += 1;
-    
     assert(assets > p.premium);
-    
     insured = true;
     ins_idx = i->id;
     policy = p;
     lose(policy.premium);
-
     i->gain(policy.premium);
-
-    // assert(assets > p.retention); // TODO not sure about this...based on odds, some defenders may YOLO 
-    // TODO maybe we should only sell policies if Defenders are able to pay the retention
-    // Or maybe if retention > assets, there's no point in buying insurance so they automatically buy security? TODO TODO TODO
-    // my solution: the above is wrong. The retention comes out of the claim amount. The defender doesn't need to "pay" it
-    // You can delete this comment block in the next commit.
 }
 
 void Defender::submit_claim(uint32_t loss) {
@@ -128,11 +118,20 @@ void Defender::choose_security_strategy() {
     assert(optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment >= 0);
 
+    // TODO what about do nothing? i.e. check bounds of x=0, x=assets
+
     if (expected_loss_with_insurance < expected_loss_with_optimal_investment && policy.premium < assets) {
         purchase_insurance_policy(i, policy);
     } else {
         //make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 
     }
+}
+
+void Defender::perform_market_analysis(int prevRoundAttacks, int num_current_defenders) {
+    // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
+    Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(num_current_defenders * 1.0));
+    assert(Defender::estimated_probability_of_attack >= 0);
+    assert(Defender::estimated_probability_of_attack <= 1);
 }
 
 

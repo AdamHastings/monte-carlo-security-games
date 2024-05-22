@@ -33,5 +33,5 @@ class Attacker : public Player {
         void lose(uint32_t loss) override;
 
         // To re-estimate current defender params
-        void perform_market_analysis(); // TODO TODO TODO implement
+        static void perform_market_analysis(); // TODO TODO TODO implement
 };

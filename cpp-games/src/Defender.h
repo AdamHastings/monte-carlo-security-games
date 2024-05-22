@@ -33,6 +33,8 @@ class Defender : public Player {
         void choose_security_strategy();
         void submit_claim(uint32_t loss);
 
+        static void perform_market_analysis(int prevRoundAttacks, int num_current_defenders);
+
         static void reset();
 
 

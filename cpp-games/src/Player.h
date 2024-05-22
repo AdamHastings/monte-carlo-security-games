@@ -3,7 +3,6 @@
 #include <map>
 #include <cassert>
 #include "params.h"
-// #include "Insurer.h"
 
 class Insurer;
 class Defender;
