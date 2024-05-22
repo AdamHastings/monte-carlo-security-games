@@ -57,17 +57,17 @@
     "NUM_DEFENDERS":
     {
         "distribution" : "fixed",
-        "val" : 10000
+        "val" : 1000
     },
     "NUM_INSURERS":
     {
         "distribution" : "fixed",
-        "val" : 400
+        "val" : 40
     },
     "NUM_ATTACKERS" :
     {
         "distribution" : "fixed",
-        "val" : 50
+        "val" : 5
     },
     "ATTACKS_PER_EPOCH" :
     {

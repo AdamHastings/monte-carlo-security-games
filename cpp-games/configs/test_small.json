@@ -62,7 +62,7 @@
     "NUM_INSURERS":
     {
         "distribution" : "fixed",
-        "val" : 4
+        "val" : 1
     },
     "NUM_ATTACKERS" :
     {
