@@ -267,8 +267,6 @@ void Game::fight(Attacker &a, Defender &d) {
         ransom = d.assets;
     }
 
-    // TODO is (expected_loot > d.costToAttack) part of the underwriting process at the moment? I don't think it is
-    // if (ransom > d.costToAttack && d.costToAttack <= a.assets) {
     // Attackers don't know defenders' posture until they attack and cannot compute the odds of success
     // But they can compute the expected ransom
 
@@ -276,7 +274,7 @@ void Game::fight(Attacker &a, Defender &d) {
     // E.g. estimate params for current wealth and posture distributions 
     // instead of relying on means as is implemented below.
     // could even just be proportion instead of method of moments technique
-    double estimated_probability_of_attack_success = (1 - p.POSTURE_distribution->mean());
+    double estimated_probability_of_attack_success = (1 - Attacker::estimated_current_defender_posture_mean);
     assert(estimated_probability_of_attack_success <= 1);
     assert(estimated_probability_of_attack_success >= 0);
 
@@ -285,7 +283,7 @@ void Game::fight(Attacker &a, Defender &d) {
 
     uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
-    if (expected_payoff > expected_cost_to_attack && expected_cost_to_attack < a.assets) { 
+    if (expected_payoff > expected_cost_to_attack && expected_cost_to_attack <= a.assets) { 
         // Attacking  appears to be financially worth it
 
         uint32_t cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * ransom);
@@ -310,8 +308,9 @@ void Game::fight(Attacker &a, Defender &d) {
         if (RandUniformDist.draw() > d.posture) {
 
             Attacker::attacksSucceeded += 1;
-            
+            // roundAttackSuccesses += 1;
             a.gain(ransom);
+
             if (debt > 0) {
                 assert(ransom > debt); 
                 // This should always be true. ransom is always greater than cost_to_Attack
@@ -350,10 +349,11 @@ void Game::init_round() {
     Attacker::attacker_iter_sum = 0;
     Insurer::insurer_iter_sum = 0;
     roundAttacks = 0;
+    // roundAttackSuccesses = 0;
 
     Insurer::perform_market_analysis();
     Defender::perform_market_analysis(prevRoundAttacks, defenders.size());
-    Attacker::perform_market_analysis();
+    Attacker::perform_market_analysis(defenders);
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
         defenders[alive_defenders_indices[i]].choose_security_strategy(); 

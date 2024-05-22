@@ -49,6 +49,7 @@ class Game {
         std::vector<int> alive_insurers_indices;
         
         uint roundAttacks = 0;
+        // uint roundAttackSuccesses = 0;
         uint prevRoundAttacks = 0;
         uint consecutiveNoAttacks=0;
 

@@ -4,6 +4,7 @@
 #include "Insurer.h"
 #include "Defender.h"
 #include "Attacker.h"
+#include "utils.h"
 
 unsigned long long Insurer::i_init = 0; // Initialization outside the class definition
 unsigned long long Insurer::current_sum_assets = 0;
@@ -134,8 +135,8 @@ void Insurer::perform_market_analysis(){
     }
 
     // Compute sample mean and variance
-    double sampleMean = computeMean(attacker_assets);
-    double sampleVariance = computeVariance(attacker_assets, sampleMean);
+    double sampleMean = utils::computeMean(attacker_assets);
+    double sampleVariance = utils::computeVariance(attacker_assets, sampleMean);
 
     // Compute parameters using method of moments
     double variance_mom = log(1 + pow(sampleVariance, 2) / pow(sampleMean, 2));

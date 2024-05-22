@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
-#include <vector>
 #include "utils.h"
 
 // Function to compute the mean of a vector

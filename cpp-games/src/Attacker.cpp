@@ -1,4 +1,6 @@
 #include "Attacker.h"
+#include "Defender.h"
+#include "utils.h"
 
 double Attacker::inequality_ratio = 0;
 
@@ -7,10 +9,10 @@ long long Attacker::attacker_iter_sum = 0;
 long long Attacker::current_sum_assets = 0;
 std::vector<unsigned long long> Attacker::cumulative_assets; 
 
-double Attacker::estimated_current_defender_wealth_mean = 0;
-double Attacker::estimated_current_defender_wealth_stdddev = 0;
-double Attacker::estimated_current_defender_posture_mean = 0; /// TODO undo!!
-double Attacker::estimated_current_defender_posture_stdddev = 0;
+// double Attacker::estimated_current_defender_wealth_mean = 0;
+// double Attacker::estimated_current_defender_wealth_stdddev = 0;
+double Attacker::estimated_current_defender_posture_mean = 0; 
+// double Attacker::estimated_current_defender_posture_stdddev = 0;
 
 long long Attacker::attacksAttempted = 0;
 long long Attacker::attacksSucceeded = 0;
@@ -31,29 +33,34 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
     current_sum_assets += assets;
 }
 
-// // Function to compute the mean of a vector
-// // TODO it takes a vector of doubles but assets are ints?
-// // TODO does this work for lognormal data........ TODO TODO
-// double computeMean(const std::vector<double>& data) {
-//     double sum = 0.0;
-//     for (const auto& value : data) {
-//         sum += value;
-//     }
-//     return sum / data.size();
-// }
+void Attacker::perform_market_analysis(std::vector<Defender> &defenders) {
+    // we can't rely on a simple proportion of numSuccessfulRoundAttacks / numRoundAttacks
+    // because presumably there will be valid round with no attacks
+    // and this doesn't mean that the estimated posture should be super high.
+    // So we do MOM
 
-// // Function to compute the variance of a vector
-// double computeVariance(const std::vector<double>& data, double mean) {
-//     double sumSquaredDiff = 0.0;
-//     for (const auto& value : data) {
-//         sumSquaredDiff += (value - mean) * (value - mean);
-//     }
-//     return sumSquaredDiff / data.size();
-// }
+    std::vector<double> defender_postures;
 
-void Attacker::perform_market_analysis() {
-    // estimate estimated_current_defender_posture_mean
-    Attacker::estimated_current_defender_posture_mean = 0.28; // TODO implement
+    for (uint i=0; i<defenders.size(); i++) {
+        if (defenders[i].alive) {
+            defender_postures.push_back(defenders[i].posture);
+        }
+    }
+
+    // Compute sample mean and variance
+    double sampleMean = utils::computeMean(defender_postures);
+    // double sampleVariance = utils::computeVariance(defender_postures, sampleMean);
+
+    // // Compute parameters using method of moments
+    // double variance_mom = log(1 + pow(sampleVariance, 2) / pow(sampleMean, 2));
+    // double mu_mom = log(sampleMean) - 0.5 * variance_mom;
+    // double sigma_mom = sqrt(variance_mom);
+
+    // estimated_current_defender_wealth_mean    = mu_mom;
+    // estimated_current_defender_wealth_stdddev = sigma_mom;
+
+    estimated_current_defender_posture_mean = sampleMean;
+    // estimated_current_defender_posture_stdddev
 }
 
 void Attacker::lose(uint32_t loss) {
@@ -70,7 +77,6 @@ void Attacker::gain(uint32_t gain) {
 }
 
 void Attacker::reset() {
-
     a_init = 0;
     attacker_iter_sum = 0; // how much the attackers have cumulatively gained or lost this round
     current_sum_assets = 0; // sum total of all class instances
