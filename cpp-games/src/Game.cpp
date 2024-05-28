@@ -211,9 +211,10 @@ void Game::verify_outcome() {
 
     // Master checksum
     long long init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
-    long long end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets + Attacker::attackerExpenditures + Defender::sum_recovery_costs + Insurer::operating_expenses; 
+    long long end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets;
+    long long expenses_ = Defender::sum_security_investments +  Attacker::attackerExpenditures + Defender::sum_recovery_costs + Insurer::operating_expenses; 
 
-    assert(init_ - end_ == 0); 
+    assert(init_ - expenses_ == end_); 
 }
 
 bool Game::equilibrium_reached() {

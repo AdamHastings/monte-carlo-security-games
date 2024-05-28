@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <math.h>
+#include <limits>
 #include "Defender.h"
 
 double Defender::estimated_probability_of_attack = 0;
@@ -9,6 +10,7 @@ unsigned long long Defender::current_sum_assets = 0;
 unsigned long long Defender::sum_recovery_costs = 0;
 unsigned long long Defender::policiesPurchased = 0;
 unsigned long long Defender::defensesPurchased = 0;
+unsigned long long Defender::sum_security_investments = 0;
 std::vector<unsigned long long> Defender::cumulative_assets;
 
 double Defender::ransom_b0 = 0;
@@ -69,10 +71,14 @@ void Defender::submit_claim(uint32_t loss) {
 
 void Defender::make_security_investment(uint32_t x) {
     defensesPurchased += 1;
-    uint32_t sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
-    posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
+    // uint32_t sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
+    // posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
+    assert(x >= 0);
+    assert(x <= assets);
+    posture = posture_if_investment(x);
     assert(posture >= 0);
     assert(posture <= 1);
+    sum_security_investments += x;
     lose(x);
     // TODO do we need to update any kind of costToAttack? Since it's been removed (for now)
     // costToAttack = assets * posture; // TODO this should be deprecated anyway
@@ -85,6 +91,32 @@ long long Defender::ransom(int assets) {
 
 long long Defender::recovery_cost(int assets) {
     return recovery_base * pow(assets, recovery_exp);
+}
+
+
+double Defender::posture_if_investment(int investment) {
+    return erf(investment / assets  * 25); // tODO remove 25,,,use config
+}
+
+// TODO convex function...you can stop once minimum is found
+double Defender::find_optimal_investment(){
+    int samples = 100; // sample at 1% increments
+    double minimum = std::numeric_limits<double>::max();
+    double optimal_investment = 0;
+    for (int i=0; i<samples; i++) {
+        double inv_percent = ((double) i/ (double) samples);
+        long long investment = (long long) assets * inv_percent;
+        double p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment)); // TODO fix constant via config
+        long long cost_if_attacked = ransom(assets - investment) + recovery_cost(assets - investment);
+
+        double loss = investment + p_loss * cost_if_attacked;
+
+        if (loss < minimum) {
+            minimum = loss;
+            optimal_investment = investment;
+        }
+    } // TODO add assertions 
+    return optimal_investment; // TODO return struct with minimum *and* minimum_pct
 }
 
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
@@ -106,10 +138,10 @@ void Defender::choose_security_strategy() {
     assert(mean_EFFICIENCY >= 0);
     assert(mean_EFFICIENCY <= 1);
 
-    long long total_losses = ransom(assets) + recovery_cost(assets);
+    // long long total_losses = ransom(assets) + recovery_cost(assets);
 
     // 1. Get insurance policy from insurer
-    PolicyType policy = i->provide_a_quote(assets, posture); // TODO add noise to posture?
+    PolicyType policy = i->provide_a_quote(assets, 0); // TODO add noise to posture?
     
     bool insurable = true;
     long long expected_loss_with_insurance;
@@ -135,8 +167,18 @@ void Defender::choose_security_strategy() {
     // can they assume p_a_hat? 
 
     // 2. Find optimum security investment
-    double optimal_investment = total_losses; // TODO don't use PAYOFF anymore!! MUST RE-IMPLEMENT!! std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF)));
-    double expected_loss_with_optimal_investment = optimal_investment * p_L_hat; // TODO stand in for compilation DELETE !!!! TODO don't use PAYOFF anymore!! std::max(0.0, (assets - optimal_investment) * mean_PAYOFF * (p_A_hat * (1 - (posture * (mean_EFFICIENCY * (optimal_investment/assets))))) + optimal_investment);
+    long long  optimal_investment = find_optimal_investment(); // TODO don't use PAYOFF anymore!! MUST RE-IMPLEMENT!! std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF))); 
+    assert(optimal_investment <= assets);
+    long long expected_cost_if_attacked_at_optimal_investment = ransom(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
+    assert(expected_cost_if_attacked_at_optimal_investment >= 0);
+    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(optimal_investment));
+    assert(p_loss_with_optimal_investment <= 1);
+    assert(p_loss_with_optimal_investment >= 0);
+    double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;
+    assert(expected_loss_with_optimal_investment >= 0);
+    // double expected_loss_with_optimal_investment = optimal_investment * p_L_hat; // TODO stand in for compilation DELETE !!!! TODO don't use PAYOFF anymore!! std::max(0.0, (assets - optimal_investment) * mean_PAYOFF * (p_A_hat * (1 - (posture * (mean_EFFICIENCY * (optimal_investment/assets))))) + optimal_investment);
+
+
     assert(optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment >= 0);
 
@@ -145,7 +187,7 @@ void Defender::choose_security_strategy() {
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(i, policy);
     } else {
-        //make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 
+        make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 
     }
 }
 
@@ -175,6 +217,7 @@ void Defender::reset() {
     d_init = 0;
     defender_iter_sum = 0;
     current_sum_assets = 0; 
+    sum_security_investments = 0;
     policiesPurchased = 0;
     defensesPurchased = 0;
     sum_recovery_costs = 0;

@@ -16,6 +16,7 @@ class Defender : public Player {
         static unsigned long long sum_recovery_costs;
         static unsigned long long policiesPurchased;
         static unsigned long long defensesPurchased;
+        static unsigned long long sum_security_investments;
         // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
 
         static double ransom_b0;
@@ -48,5 +49,7 @@ class Defender : public Player {
     private:
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
+        double find_optimal_investment();
+        double posture_if_investment(int investment);
 };
 
