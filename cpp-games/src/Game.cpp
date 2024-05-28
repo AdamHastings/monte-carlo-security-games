@@ -37,10 +37,10 @@ Game::Game(Params prm, unsigned int game_number) {
     // TODO maybe all this should happen in the Insurers' constructor? Or no because it's only called once?
     Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
-    Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean();
-    Insurer::expected_ransom_exponent = p.RANSOM_EXP_distribution->mean();
-    Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
-    Insurer::expected_recovery_exponent = p.RECOVERY_COST_EXP_distribution->mean();
+    // Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean();
+    // Insurer::expected_ransom_exponent = p.RANSOM_EXP_distribution->mean();
+    // Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
+    // Insurer::expected_recovery_exponent = p.RECOVERY_COST_EXP_distribution->mean();
 
     uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
     for (uint i=0; i < num_blue_players; i++) {
@@ -48,6 +48,10 @@ Game::Game(Params prm, unsigned int game_number) {
         defenders.push_back(d);
         alive_defenders_indices.push_back(i);
     }
+    Defender::ransom_b0 = p.RANSOM_B0_distribution->mean();
+    Defender::ransom_b1 = p.RANSOM_B1_distribution->mean();
+    Defender::recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
+    Defender::recovery_exp  = p.RECOVERY_COST_EXP_distribution->mean();
 
     NUM_ATTACKERS = p.NUM_ATTACKERS_distribution->draw();
     
@@ -258,8 +262,8 @@ void Game::fight(Attacker &a, Defender &d) {
         return;
     }
 
-    uint32_t ransom = (uint32_t) (p.RANSOM_BASE_distribution->draw() * pow((double) d.assets,  p.RANSOM_EXP_distribution->draw()));
-    uint32_t recovery_cost = (uint32_t) (p.RECOVERY_COST_BASE_distribution->draw() * pow((double) d.assets, p.RECOVERY_COST_EXP_distribution->draw()));
+    uint32_t ransom = Defender::ransom(d.assets);
+    uint32_t recovery_cost = Defender::recovery_cost(d.assets);
 
     if (ransom > d.assets) {
         // Mercy kill the defender if the ransom is low
@@ -342,11 +346,9 @@ void Game::init_round() {
     roundAttacks = 0;
     // roundAttackSuccesses = 0;
 
-    verify_outcome(); // TODO delete
     Insurer::perform_market_analysis(insurers);
     Defender::perform_market_analysis(prevRoundAttacks, defenders.size());
     Attacker::perform_market_analysis(defenders);
-    verify_outcome(); // TODO delete
 
     // TODO put into market analysis?
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
@@ -410,7 +412,6 @@ void Game::run_iterations() {
 
     init_game();
 
-
     for (iter_num = 1; iter_num < max_iterations + 1; iter_num++) {
 
         init_round();
@@ -448,8 +449,8 @@ Game::~Game() {
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
     delete p.EFFICIENCY_distribution; 
-    delete p.RANSOM_BASE_distribution;
-    delete p.RANSOM_EXP_distribution;  
+    delete p.RANSOM_B0_distribution;
+    delete p.RANSOM_B1_distribution;
     delete p.RECOVERY_COST_BASE_distribution;
     delete p.RECOVERY_COST_EXP_distribution;   
     delete p.WEALTH_distribution;     

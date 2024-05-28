@@ -11,6 +11,11 @@ unsigned long long Defender::policiesPurchased = 0;
 unsigned long long Defender::defensesPurchased = 0;
 std::vector<unsigned long long> Defender::cumulative_assets;
 
+double Defender::ransom_b0 = 0;
+double Defender::ransom_b1 = 0;
+double Defender::recovery_base = 0;
+double Defender::recovery_exp = 0;
+
 Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Player(p) {
     id = id_in;
 
@@ -74,6 +79,14 @@ void Defender::make_security_investment(uint32_t x) {
     // assert(costToAttack >= 0);
 }
 
+uint32_t Defender::ransom(int assets) {
+    return ransom_b0 + (assets * ransom_b1);
+}
+
+uint32_t Defender::recovery_cost(int assets) {
+    return recovery_base * pow(assets, recovery_exp);
+}
+
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy() {
 
@@ -93,9 +106,7 @@ void Defender::choose_security_strategy() {
     assert(mean_EFFICIENCY >= 0);
     assert(mean_EFFICIENCY <= 1);
 
-    uint32_t ransom = (uint32_t) p.RANSOM_BASE_distribution->mean() * pow(assets,  p.RANSOM_EXP_distribution->mean());
-    uint32_t recovery_cost = (uint32_t) p.RECOVERY_COST_BASE_distribution->mean() * pow(assets, p.RECOVERY_COST_EXP_distribution->mean());
-    uint32_t total_losses = ransom + recovery_cost;
+    uint32_t total_losses = ransom(assets) + recovery_cost(assets);
 
     // 1. Get insurance policy from insurer
     PolicyType policy = i->provide_a_quote(assets, posture); // TODO add noise to posture?

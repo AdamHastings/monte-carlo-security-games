@@ -17,10 +17,7 @@ double Insurer::estimated_current_attacker_wealth_stdddev = 0;
 
 double Insurer::loss_ratio = 0;
 double Insurer::retention_regression_factor = 0;
-double Insurer::expected_ransom_base = 0;
-double Insurer::expected_ransom_exponent = 0;
-double Insurer::expected_recovery_base = 0;
-double Insurer::expected_recovery_exponent = 0;
+
 unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing memory leaks
 double* Insurer::cta_scaling_factor = 0;
 std::mt19937* Insurer::gen = 0;
@@ -92,9 +89,9 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     //     std::cout << "Attacking no longer worth it!" << std::endl;
     // }
 
-    uint32_t ransom = (uint32_t) expected_ransom_base * pow(assets, expected_ransom_exponent); 
-    uint32_t recovery_costs = (uint32_t) expected_recovery_base * pow(assets, expected_recovery_exponent);
-    uint32_t total_losses = ransom + recovery_costs;
+    uint32_t ransom = Defender::ransom(assets);
+    uint32_t recovery_cost = Defender::recovery_cost(assets);
+    uint32_t total_losses = ransom + recovery_cost;
     
     uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 

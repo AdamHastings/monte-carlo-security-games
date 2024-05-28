@@ -4,7 +4,6 @@ Add support for multiple Insurers (3 hrs)
 Add support for noise to defender posture when requesting a policy (1 hr)
 Figure out what the distribution of this noise should be (2 hrs)
 Figure out better way of determining game convergence using new parameters (3 hrs)
-Have Insurers "spend" wealth (1 - lossratio?) on market analysis (1 hr)
 Check for memory leaks (1 hr)
 
 

@@ -23,10 +23,6 @@ class Insurer : public Player {
         static std::mt19937* gen;
 
         static double retention_regression_factor;  // TODO double check retention regression factor
-        static double expected_ransom_base;
-        static double expected_ransom_exponent;
-        static double expected_recovery_base;
-        static double expected_recovery_exponent;
 
 
         static unsigned long long paid_claims;

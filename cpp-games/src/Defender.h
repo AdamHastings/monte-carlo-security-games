@@ -18,6 +18,11 @@ class Defender : public Player {
         static unsigned long long defensesPurchased;
         // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
 
+        static double ransom_b0;
+        static double ransom_b1;
+        static double recovery_base;
+        static double recovery_exp;
+
         uint id;
         double posture;
        
@@ -34,6 +39,8 @@ class Defender : public Player {
         void submit_claim(uint32_t loss);
 
         static void perform_market_analysis(int prevRoundAttacks, int num_current_defenders);
+        static uint32_t ransom(int assets); // TODO add bounds check assertion
+        static uint32_t recovery_cost(int assets); // TODO add bounds check assertion
 
         static void reset();
 
