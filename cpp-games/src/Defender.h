@@ -39,8 +39,8 @@ class Defender : public Player {
         void submit_claim(uint32_t loss);
 
         static void perform_market_analysis(int prevRoundAttacks, int num_current_defenders);
-        static uint32_t ransom(int assets); // TODO add bounds check assertion
-        static uint32_t recovery_cost(int assets); // TODO add bounds check assertion
+        static long long ransom(int assets); // TODO add bounds check assertion
+        static long long recovery_cost(int assets); // TODO add bounds check assertion
 
         static void reset();
 

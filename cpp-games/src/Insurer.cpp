@@ -89,9 +89,9 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     //     std::cout << "Attacking no longer worth it!" << std::endl;
     // }
 
-    uint32_t ransom = Defender::ransom(assets);
-    uint32_t recovery_cost = Defender::recovery_cost(assets);
-    uint32_t total_losses = ransom + recovery_cost;
+    long long ransom = Defender::ransom(assets);
+    long long recovery_cost = Defender::recovery_cost(assets);
+    long long total_losses = ransom + recovery_cost;
     
     uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 

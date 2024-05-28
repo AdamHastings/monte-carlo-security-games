@@ -79,11 +79,11 @@ void Defender::make_security_investment(uint32_t x) {
     // assert(costToAttack >= 0);
 }
 
-uint32_t Defender::ransom(int assets) {
+long long Defender::ransom(int assets) {
     return ransom_b0 + (assets * ransom_b1);
 }
 
-uint32_t Defender::recovery_cost(int assets) {
+long long Defender::recovery_cost(int assets) {
     return recovery_base * pow(assets, recovery_exp);
 }
 
@@ -106,13 +106,13 @@ void Defender::choose_security_strategy() {
     assert(mean_EFFICIENCY >= 0);
     assert(mean_EFFICIENCY <= 1);
 
-    uint32_t total_losses = ransom(assets) + recovery_cost(assets);
+    long long total_losses = ransom(assets) + recovery_cost(assets);
 
     // 1. Get insurance policy from insurer
     PolicyType policy = i->provide_a_quote(assets, posture); // TODO add noise to posture?
     
     bool insurable = true;
-    uint32_t expected_loss_with_insurance;
+    long long expected_loss_with_insurance;
     if (policy.premium == 0 ||  policy.premium >= assets) {
         // Coverage not available
         insurable = false; 
