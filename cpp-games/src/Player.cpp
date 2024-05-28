@@ -16,6 +16,8 @@ Player::Player(Params &p_in) {
 void Player::gain(uint32_t gain) {
     assert(gain >= 0);
     assets += gain;
+    assert(assets > 0); // Players do not exist in a state of long-term debt. 
+    alive = true;       // Players do not exist in a state of long-term debt. 
 }
 
 void Player::lose(uint32_t loss) {
