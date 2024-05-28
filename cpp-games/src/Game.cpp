@@ -388,24 +388,24 @@ void Game::conclude_game(){
 void Game::reset_alive_players() {
     alive_attackers_indices.clear();
     for (auto& a : attackers) {
-        if (a.assets > 0) {
-            assert(a.alive);
+        if (a.is_alive()) {
+            // assert(a.alive);
             alive_attackers_indices.push_back(a.id);
         }
     }
 
     alive_defenders_indices.clear();
     for (auto d : defenders) {
-        if (d.assets > 0) {
-            assert(d.alive);
+        if (d.is_alive()) {
+            // assert(d.alive);
             alive_defenders_indices.push_back(d.id);
         }
     }
 
     alive_insurers_indices.clear();
     for (auto i : insurers) {
-        if (i.assets > 0) {
-            assert(i.alive);
+        if (i.is_alive()) {
+            // assert(i.alive);
             alive_insurers_indices.push_back(i.id);
         }
     }

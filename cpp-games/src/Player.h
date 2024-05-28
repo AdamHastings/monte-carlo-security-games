@@ -17,10 +17,11 @@ class Player {
     public:
         uint32_t assets;
         Params p;
-        bool alive = true;
 
         Player(Params &p_in);
         virtual void gain(uint32_t gain);
         virtual void lose(uint32_t loss);
         uint32_t get_assets();
+
+        bool is_alive(); 
 };

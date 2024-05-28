@@ -127,7 +127,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     // TODO TODO TODO should Insurers lose 20% of their assets each round as part of operating overhead?
 
     for (auto i = insurers.begin(); i != insurers.end(); ++i) {
-        if (i->alive) {
+        if (i->is_alive()) {
             // TODO these vals need to be updated when collecting premiums/paying claims 
             // double last_roud_loss_ratio = ((double) i->round_losses / (double) i->round_earnings);
             
@@ -151,7 +151,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     std::vector<double> attacker_assets;
 
     for (auto a = attackers->begin(); a != attackers->end(); ++a) {
-        if (a->alive) {
+        if (a->is_alive()) {
             attacker_assets.push_back(a->assets);
         }
     }

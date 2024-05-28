@@ -38,7 +38,7 @@ void Attacker::perform_market_analysis(std::vector<Defender> &defenders) {
 
     std::vector<double> defender_postures;
     for (uint i=0; i<defenders.size(); i++) {
-        if (defenders[i].alive) {
+        if (defenders[i].is_alive()) {
             defender_postures.push_back(defenders[i].posture);
         }
     }
