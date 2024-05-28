@@ -95,7 +95,12 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     
     uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
-    double p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2)))); // CDF of lognormal distribution
+    double p_one_attacker_has_enough_to_attack;
+    if (std::isnan(estimated_current_attacker_wealth_stdddev)) {
+        p_one_attacker_has_enough_to_attack = (estimated_current_attacker_wealth_mean > expected_cost_to_attack) ? true : false;
+    } else {
+        p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2)))); // CDF of lognormal distribution
+    }
     assert(p_one_attacker_has_enough_to_attack >= 0);
     assert(p_one_attacker_has_enough_to_attack <= 1);
 
@@ -171,10 +176,11 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     
     // double sigma_mom = sqrt(variance_mom);
 
-    estimated_current_attacker_wealth_mean    = utils::compute_mu_mom(attacker_assets);
+    estimated_current_attacker_wealth_mean    = utils::compute_mu_mom(attacker_assets); // Note!! This is the log of actual lognormal mean!!
     assert(estimated_current_attacker_wealth_mean >= 0);
-    estimated_current_attacker_wealth_stdddev = sqrt(utils::compute_var_mom(attacker_assets));
-    assert(estimated_current_attacker_wealth_stdddev >= 0);
+    // Can return nan. Need to check against this condition elsewhere.
+    estimated_current_attacker_wealth_stdddev = sqrt(utils::compute_var_mom(attacker_assets)); // Note!! This is the log of actual lognormal stddev!!
+    assert(std::isnan(estimated_current_attacker_wealth_stdddev) ? attacker_assets.size() == 1 : true);
 }
 
 void Insurer::reset(){

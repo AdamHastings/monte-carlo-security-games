@@ -75,7 +75,8 @@ void Defender::make_security_investment(uint32_t x) {
     // posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
     assert(x >= 0);
     assert(x <= assets);
-    posture = posture_if_investment(x);
+    double investment_pct = x / (double) assets;
+    posture = posture_if_investment(investment_pct);
     assert(posture >= 0);
     assert(posture <= 1);
     sum_security_investments += x;
@@ -94,19 +95,19 @@ long long Defender::recovery_cost(int assets) {
 }
 
 
-double Defender::posture_if_investment(int investment) {
-    return erf(investment / assets  * 25); // tODO remove 25,,,use config
+double Defender::posture_if_investment(double investment_pct) {
+    return erf(investment_pct * 25); // tODO remove 25,,,use config
 }
 
 // TODO convex function...you can stop once minimum is found
 double Defender::find_optimal_investment(){
-    int samples = 100; // sample at 1% increments
+    int samples = 1000; // sample at 1% increments
     double minimum = std::numeric_limits<double>::max();
     double optimal_investment = 0;
     for (int i=0; i<samples; i++) {
         double inv_percent = ((double) i/ (double) samples);
         long long investment = (long long) assets * inv_percent;
-        double p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment)); // TODO fix constant via config
+        double p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(inv_percent)); 
         long long cost_if_attacked = ransom(assets - investment) + recovery_cost(assets - investment);
 
         double loss = investment + p_loss * cost_if_attacked;
@@ -171,7 +172,8 @@ void Defender::choose_security_strategy() {
     assert(optimal_investment <= assets);
     long long expected_cost_if_attacked_at_optimal_investment = ransom(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
     assert(expected_cost_if_attacked_at_optimal_investment >= 0);
-    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(optimal_investment));
+    double investment_pct = optimal_investment / (double) assets;
+    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(investment_pct));
     assert(p_loss_with_optimal_investment <= 1);
     assert(p_loss_with_optimal_investment >= 0);
     double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;

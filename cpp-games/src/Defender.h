@@ -50,6 +50,6 @@ class Defender : public Player {
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
         double find_optimal_investment();
-        double posture_if_investment(int investment);
+        double posture_if_investment(double investment);
 };
 

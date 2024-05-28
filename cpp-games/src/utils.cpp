@@ -33,7 +33,7 @@ double utils::compute_mu_mom(const std::vector<double>& data) {
     double t2 = 2 * log(sum);
     double t3 = -1.5 * log(data.size());
 
-    double mu_mom = t1 + t2 + t3; // TODO test
+    double mu_mom = t1 + t2 + t3; 
     assert(mu_mom >= 0);
 
     return mu_mom;
@@ -50,5 +50,5 @@ double utils::compute_var_mom(const std::vector<double>& data) {
     double t2 = -2 * log(sum);
     double t3 = log(data.size());
 
-    return t1 + t2 + t3; // tODO test 
+    return t1 + t2 + t3; 
 }
