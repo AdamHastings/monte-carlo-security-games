@@ -95,7 +95,7 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     
     uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
-    double p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2))));;
+    double p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2)))); // CDF of lognormal distribution
     assert(p_one_attacker_has_enough_to_attack >= 0);
     assert(p_one_attacker_has_enough_to_attack <= 1);
 
@@ -155,18 +155,26 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
             attacker_assets.push_back(a->assets);
         }
     }
+    assert(attacker_assets.size() > 0);
 
     // Compute sample mean and variance
-    double sampleMean = utils::computeMean(attacker_assets);
-    double sampleVariance = utils::computeVariance(attacker_assets, sampleMean);
+    // double sampleMean = utils::computeMean(attacker_assets);
+    // double sampleVariance = utils::computeVariance(attacker_assets, sampleMean);
 
     // Compute parameters using method of moments
-    double variance_mom = log(1 + pow(sampleVariance, 2) / pow(sampleMean, 2));
-    double mu_mom = log(sampleMean) - 0.5 * variance_mom;
-    double sigma_mom = sqrt(variance_mom);
+    // https://web.archive.org/web/20180423000433id_/https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2927&context=etd
+    // TODO: cite this!
+    // double variance_mom = log(1 + pow(sampleVariance, 2) / pow(sampleMean, 2)); // Don't know where these came from 
+    // double mu_mom = log(sampleMean) - 0.5 * variance_mom;
+    // double variance_mom = log()
+    
+    
+    // double sigma_mom = sqrt(variance_mom);
 
-    estimated_current_attacker_wealth_mean    = mu_mom;
-    estimated_current_attacker_wealth_stdddev = sigma_mom;
+    estimated_current_attacker_wealth_mean    = utils::compute_mu_mom(attacker_assets);
+    assert(estimated_current_attacker_wealth_mean >= 0);
+    estimated_current_attacker_wealth_stdddev = sqrt(utils::compute_var_mom(attacker_assets));
+    assert(estimated_current_attacker_wealth_stdddev >= 0);
 }
 
 void Insurer::reset(){

@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
+#include <cassert>
 #include "utils.h"
 
 // Function to compute the mean of a vector
@@ -19,4 +20,35 @@ double utils::computeVariance(const std::vector<double>& data, double mean) {
         sumSquaredDiff += pow((value - mean), 2);
     }
     return sumSquaredDiff / (data.size() - 1);
+}
+
+double utils::compute_mu_mom(const std::vector<double>& data) {
+    double sum = 0;
+    double sq_sum = 0;
+    for (const auto& value : data) {
+        sum += value;
+        sq_sum += value * value;
+    }
+    double t1 = -0.5 * log(sq_sum);
+    double t2 = 2 * log(sum);
+    double t3 = -1.5 * log(data.size());
+
+    double mu_mom = t1 + t2 + t3; // TODO test
+    assert(mu_mom >= 0);
+
+    return mu_mom;
+}
+
+double utils::compute_var_mom(const std::vector<double>& data) {
+    double sum = 0;
+    double sq_sum = 0;
+    for (const auto& value : data) {
+        sum += value;
+        sq_sum += value * value;
+    }
+    double t1 = log(sq_sum);
+    double t2 = -2 * log(sum);
+    double t3 = log(data.size());
+
+    return t1 + t2 + t3; // tODO test 
 }
