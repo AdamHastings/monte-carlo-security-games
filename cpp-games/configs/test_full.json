@@ -10,15 +10,15 @@
         "distribution" : "poisson",
         "lambda" : 1
     },
-    "RANSOM_BASE" :
+    "RANSOM_B0" :
     {
         "distribution" : "fixed",
-        "val" : 146
+        "val" : 641
     },
-    "RANSOM_EXP" :
+    "RANSOM_B1" :
     {
         "distribution" : "fixed",
-        "val" : 0.254
+        "val" : 0.125
     },
     "RECOVERY_COST_BASE" :
     {
