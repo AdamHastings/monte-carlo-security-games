@@ -4,6 +4,8 @@ Add support for noise to defender posture when requesting a policy (1 hr)
 Figure out what the distribution of this noise should be (2 hrs)
 Figure out better way of determining game convergence using new parameters (3 hrs)
 Check for memory leaks (1 hr)
+Find out reasonable number of policies to be quoted. 
+Figure out reasonable security depreciation
 
 
 Optional:

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <limits>
 #include <unordered_set>
+#include <algorithm>
 #include "Defender.h"
 
 double Defender::estimated_probability_of_attack = 0;
@@ -125,6 +126,11 @@ double Defender::find_optimal_investment(){
     return optimal_investment; // TODO return struct with minimum *and* minimum_pct
 }
 
+// TODO this is too harsh of depreciation 
+void Defender::security_depreciation() {
+    posture = 0;
+}
+
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy() {
 
@@ -160,8 +166,16 @@ void Defender::choose_security_strategy() {
     for (const auto& j : insurer_indices) {
         Insurer* i = &insurers->at(j);
         
-        // TODO insurer currently assume 0 posture if insurance is bought 
-        PolicyType policy = i->provide_a_quote(assets, 0); // TODO add noise to posture?
+        double noise = p.POSTURE_NOISE_distribution->draw();
+        double estimated_posture = posture + noise;
+        // adding noise might cause posture to go out of bounds 
+        estimated_posture = std::max(0.0, estimated_posture);
+        estimated_posture = std::min(1.0, estimated_posture);
+
+        assert(estimated_posture >= 0);
+        assert(estimated_posture <= 1);
+        // TODO assumes that defender maintains posture after policy is purchased, which currently is untrue.
+        PolicyType policy = i->provide_a_quote(assets, estimated_posture); 
         
         // bool insurable = true;
         if (policy.premium == 0 ||  policy.premium >= assets) {
@@ -204,6 +218,7 @@ void Defender::choose_security_strategy() {
 
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(best_insurer, best_policy);
+        security_depreciation(); // TODO should this happen in both cases? i.e. even if we make_security_investment
     } else {
         make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 
     }

@@ -14,6 +14,7 @@ struct Params {
     Distribution* RECOVERY_COST_EXP_distribution;
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
+    Distribution* POSTURE_NOISE_distribution;
 
     Distribution* NUM_QUOTES_distribution;
     Distribution* LOSS_RATIO_distribution;

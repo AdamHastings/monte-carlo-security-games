@@ -461,7 +461,8 @@ Game::~Game() {
     delete p.RECOVERY_COST_BASE_distribution;
     delete p.RECOVERY_COST_EXP_distribution;   
     delete p.WEALTH_distribution;     
-    delete p.POSTURE_distribution;  
+    delete p.POSTURE_distribution;
+    delete p.POSTURE_NOISE_distribution;
     delete p.NUM_QUOTES_distribution;
     delete p.LOSS_RATIO_distribution;
     delete p.RETENTION_REGRESSION_FACTOR_distribution;

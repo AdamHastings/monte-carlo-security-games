@@ -25,6 +25,7 @@ Params params_loader::load_cfg(std::string basename) {
     p.RECOVERY_COST_EXP_distribution = Distribution::createDistribution(jsonData["RECOVERY_COST_EXP"]);
     p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
     p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);    
+    p.POSTURE_NOISE_distribution    = Distribution::createDistribution(jsonData["POSTURE_NOISE"]);    
 
     p.LOSS_RATIO_distribution                  = Distribution::createDistribution(jsonData["LOSS_RATIO"]);
     p.RETENTION_REGRESSION_FACTOR_distribution = Distribution::createDistribution(jsonData["RETENTION_REGRESSION_FACTOR"]);

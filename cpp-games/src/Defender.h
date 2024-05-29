@@ -20,7 +20,7 @@ class Defender : public Player {
         // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
         
         static std::mt19937* gen;
-        
+
         static double ransom_b0;
         static double ransom_b1;
         static double recovery_base;
@@ -53,5 +53,6 @@ class Defender : public Player {
         void make_security_investment(uint32_t x);
         double find_optimal_investment();
         double posture_if_investment(double investment);
+        void security_depreciation();
 };
 
