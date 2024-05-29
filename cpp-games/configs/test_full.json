@@ -44,6 +44,14 @@
         "min" : 0.0,
         "max" : 1.0
     },
+    "NUM_QUOTES" :
+    {
+        "distribution" : "truncated_normal",
+        "mean" : 10,
+        "stddev" : 2,
+        "min" : -1,
+        "max" : -1
+    },
     "LOSS_RATIO" : 
     {
         "distribution" : "fixed",

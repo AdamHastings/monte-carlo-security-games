@@ -1,4 +1,5 @@
 #include <fstream>
+#include <cassert>
 #include "params.h"
 
 
@@ -28,7 +29,21 @@ Params params_loader::load_cfg(std::string basename) {
     p.LOSS_RATIO_distribution                  = Distribution::createDistribution(jsonData["LOSS_RATIO"]);
     p.RETENTION_REGRESSION_FACTOR_distribution = Distribution::createDistribution(jsonData["RETENTION_REGRESSION_FACTOR"]);
     p.NUM_DEFENDERS_distribution               = Distribution::createDistribution(jsonData["NUM_DEFENDERS"]);
-    p.NUM_INSURERS_distribution                = Distribution::createDistribution(jsonData["NUM_INSURERS"]);
+    // TODO assert that NUM_* params are fixed points, not distributions
+    
+    Json::Value num_insurers_json = jsonData["NUM_INSURERS"];
+    assert(num_insurers_json["distribution"] == "fixed");
+    p.NUM_INSURERS_distribution = Distribution::createDistribution(num_insurers_json);
+
+    Json::Value num_quotes_json = jsonData["NUM_QUOTES"];
+    if (num_quotes_json["distribution"] == "truncated_normal"  || num_quotes_json["distribution"] == "fixed") {
+        assert(num_quotes_json["mean"] <  num_insurers_json["val"]);
+        num_quotes_json["min"] = 0;
+        num_quotes_json["max"] = num_insurers_json["val"];
+    }
+
+    p.NUM_QUOTES_distribution = Distribution::createDistribution(num_quotes_json);
+
     p.ATTACKS_PER_EPOCH_distribution           = Distribution::createDistribution(jsonData["ATTACKS_PER_EPOCH"]);
     p.CTA_SCALING_FACTOR_distribution          = Distribution::createDistribution(jsonData["CTA_SCALING_FACTOR"]);
 

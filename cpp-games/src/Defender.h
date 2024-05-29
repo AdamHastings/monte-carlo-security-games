@@ -18,7 +18,9 @@ class Defender : public Player {
         static int64_t defensesPurchased;
         static int64_t sum_security_investments;
         // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
-
+        
+        static std::mt19937* gen;
+        
         static double ransom_b0;
         static double ransom_b1;
         static double recovery_base;

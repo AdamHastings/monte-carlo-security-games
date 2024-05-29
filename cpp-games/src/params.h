@@ -15,6 +15,7 @@ struct Params {
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
 
+    Distribution* NUM_QUOTES_distribution;
     Distribution* LOSS_RATIO_distribution;
     Distribution* RETENTION_REGRESSION_FACTOR_distribution;
     Distribution* NUM_DEFENDERS_distribution;

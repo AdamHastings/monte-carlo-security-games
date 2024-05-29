@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <math.h>
 #include <limits>
+#include <unordered_set>
 #include "Defender.h"
 
 double Defender::estimated_probability_of_attack = 0;
@@ -12,6 +13,8 @@ int64_t Defender::policiesPurchased = 0;
 int64_t Defender::defensesPurchased = 0;
 int64_t Defender::sum_security_investments = 0;
 std::vector<unsigned long long> Defender::cumulative_assets;
+
+std::mt19937* Defender::gen = 0;
 
 double Defender::ransom_b0 = 0;
 double Defender::ransom_b1 = 0;
@@ -55,7 +58,6 @@ void Defender::submit_claim(uint32_t loss) {
     
     assert(insured); // you should only call this function if you have an active insurance policy
     assert(ins_idx >= 0); 
-    // TODO: assert(ins_idx < alive_insurers.size());
 
     uint32_t claim_after_retention = std::max(0, ((int32_t)loss - (int32_t)policy.retention));
     assert(claim_after_retention >= 0);
@@ -65,26 +67,21 @@ void Defender::submit_claim(uint32_t loss) {
             assert(loss >= amount_recovered);
             assert(claim_after_retention >= amount_recovered);
             assert(amount_recovered > 0);
-            gain(amount_recovered);
+            this->gain(amount_recovered);
         }
     }
 }
 
 void Defender::make_security_investment(uint32_t x) {
     defensesPurchased += 1;
-    // uint32_t sec_investment_efficiency_draw = p.EFFICIENCY_distribution->draw();
-    // posture = std::min(1.0, posture*(1 + sec_investment_efficiency_draw * (x / (assets*1.0))));
     assert(x >= 0);
     assert(x <= assets);
     double investment_pct = x / (double) assets;
-    posture = posture_if_investment(investment_pct);
+    posture = posture_if_investment(investment_pct); // TODO try out alternative definitions
     assert(posture >= 0);
     assert(posture <= 1);
     sum_security_investments += x;
-    lose(x);
-    // TODO do we need to update any kind of costToAttack? Since it's been removed (for now)
-    // costToAttack = assets * posture; // TODO this should be deprecated anyway
-    // assert(costToAttack >= 0);
+    this->lose(x);
 }
 
 long long Defender::ransom(int assets) {
@@ -97,11 +94,11 @@ long long Defender::recovery_cost(int assets) {
 
 
 double Defender::posture_if_investment(double investment_pct) {
-    return erf(investment_pct * 25); // tODO remove 25,,,use config
+    return erf(investment_pct * 25); // TODO remove 25, use config instead 
 }
 
 
-// This can be improved by doing a gradient descent or binary search perhaps
+// This can be approximated using Newton Raphon method
 double Defender::find_optimal_investment(){
     int samples = 1000; // sample at 1% increments
     double minimum = std::numeric_limits<double>::max(); // TODO use inf instead?
@@ -131,10 +128,7 @@ double Defender::find_optimal_investment(){
 // TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy() {
 
-    assert(insurers->size() >= 0);
 
-    Insurer* i = &insurers->at(0); // TODO iterate through all insurers!!!
-    
     double p_A_hat = estimated_probability_of_attack;
     assert(p_A_hat >= 0);
     assert(p_A_hat <= 1);
@@ -147,34 +141,50 @@ void Defender::choose_security_strategy() {
     assert(mean_EFFICIENCY >= 0);
     assert(mean_EFFICIENCY <= 1);
 
-    // long long total_losses = ransom(assets) + recovery_cost(assets);
-
     // 1. Get insurance policy from insurer
-    PolicyType policy = i->provide_a_quote(assets, 0); // TODO add noise to posture?
-    
-    bool insurable = true;
-    long long expected_loss_with_insurance;
-    if (policy.premium == 0 ||  policy.premium >= assets) {
-        // Coverage not available
-        insurable = false; 
-    } else {
-        assert(policy.premium > 0); 
-        assert(policy.retention > 0);
-
-        expected_loss_with_insurance = (uint32_t) policy.premium + (p_L_hat * policy.retention);
-        assert(expected_loss_with_insurance >= 0);
+    uint32_t num_quotes_requested = p.NUM_QUOTES_distribution->draw();
+    std::uniform_int_distribution<> insurer_indices_dist(0, insurers->size()-1);
+    // pick insurers for quotes
+    // TODO think about how to do this in a cache-friendly way
+    std::unordered_set<unsigned int> insurer_indices;
+    while (insurer_indices.size() < num_quotes_requested) {
+        // TODO consider having attackers fight until they've attempted ATTACKS_PER_EPOCH attacks
+        insurer_indices.insert(insurer_indices_dist(*gen));
     }
 
+    Insurer* best_insurer;
+    PolicyType best_policy;
+    best_policy.premium = INT64_MAX;
+    bool insurable = false;
+    
+    for (const auto& j : insurer_indices) {
+        Insurer* i = &insurers->at(j);
+        
+        // TODO insurer currently assume 0 posture if insurance is bought 
+        PolicyType policy = i->provide_a_quote(assets, 0); // TODO add noise to posture?
+        
+        // bool insurable = true;
+        if (policy.premium == 0 ||  policy.premium >= assets) {
+            // Coverage not available
+            continue;
+        } else {
+            assert(policy.premium > 0); 
+            assert(policy.retention > 0);
 
-    // TODO maybe insurers *should* be able to write policies to defenders who have impenetrable...
-    // it'd be like taking candy from a baby
-    // but insurers need to still compute same loss ratio 
-    // maybe insurers should keep a running total of their gains and losses
-    // and only sell to super strong defenders if their loss ratios are too low.
-    // this will change some things about the model though...will change underwriting quite a bit. 
-    // but then what do they charge if they know they're ripping off the defender?
-    // can they assume p_a_hat? 
+            if (policy.premium < best_policy.premium) { // works because retetion is a scaled version of premium
+                insurable = true;
+                best_policy = policy;
+                best_insurer = i;
+            }      
+        }
+    }
 
+    int64_t expected_loss_with_insurance;
+    if (insurable) {
+        expected_loss_with_insurance = (int64_t) best_policy.premium + (p_L_hat * best_policy.retention);
+        assert(expected_loss_with_insurance >= 0);
+    }
+    
     // 2. Find optimum security investment
     long long  optimal_investment = find_optimal_investment(); // TODO don't use PAYOFF anymore!! MUST RE-IMPLEMENT!! std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF))); 
     assert(optimal_investment <= assets);
@@ -193,7 +203,7 @@ void Defender::choose_security_strategy() {
     assert(expected_loss_with_optimal_investment >= 0);
 
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
-        purchase_insurance_policy(i, policy);
+        purchase_insurance_policy(best_insurer, best_policy);
     } else {
         make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 
     }

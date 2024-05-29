@@ -20,7 +20,7 @@ class Insurer : public Player {
         static double loss_ratio;
         static unsigned int* ATTACKS_PER_EPOCH;
         static double* cta_scaling_factor;
-        static std::mt19937* gen;
+        // static std::mt19937* gen;
 
         static double retention_regression_factor;  // TODO double check retention regression factor
 

@@ -1,6 +1,5 @@
 Re-derive optimal security investment using new power law distribution of ransom prices and new equation for computing cost_to_attack (3 hrs)
 Verify above in Mathematica (2 hrs)
-Add support for multiple Insurers (3 hrs)
 Add support for noise to defender posture when requesting a policy (1 hr)
 Figure out what the distribution of this noise should be (2 hrs)
 Figure out better way of determining game convergence using new parameters (3 hrs)

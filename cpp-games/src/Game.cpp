@@ -61,7 +61,8 @@ Game::Game(Params prm, unsigned int game_number) {
     cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->draw();
     Insurer::cta_scaling_factor = &cta_scaling_factor;
 
-    Insurer::gen = &gen;
+    // Insurer::gen = &gen;
+    Defender::gen = &gen;
 
     assert(NUM_ATTACKERS > 0);
     assert(ATTACKS_PER_EPOCH > 0);
@@ -461,6 +462,7 @@ Game::~Game() {
     delete p.RECOVERY_COST_EXP_distribution;   
     delete p.WEALTH_distribution;     
     delete p.POSTURE_distribution;  
+    delete p.NUM_QUOTES_distribution;
     delete p.LOSS_RATIO_distribution;
     delete p.RETENTION_REGRESSION_FACTOR_distribution;
     delete p.NUM_DEFENDERS_distribution;

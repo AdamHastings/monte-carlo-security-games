@@ -20,7 +20,7 @@ double Insurer::retention_regression_factor = 0;
 
 unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing memory leaks
 double* Insurer::cta_scaling_factor = 0;
-std::mt19937* Insurer::gen = 0;
+// std::mt19937* Insurer::gen = 0;
 
 std::vector<unsigned long long> Insurer::cumulative_assets; 
 std::vector<Defender>* Insurer::defenders;
@@ -135,26 +135,21 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     for (uint j=0; j < insurers.size(); j++) {
         Insurer *i = &insurers[j];
 
-        if (i->is_alive()) {
-            // TODO these vals need to be updated when collecting premiums/paying claims 
-            // double last_roud_loss_ratio = ((double) i->round_losses / (double) i->round_earnings);
-            
-            // loss_ratio = round_losses / (round_losses + allowed_spending)
-            // round_losses + allowed_spending = round_losses / loss_ratio
+        if (i->is_alive()) {            
             // must be in terms of losses, not earnings, because earnings are based on expected losses
             // whereas losses are based on real losses!
-            // unsigned int allowed_spending = (int) (((double) i->round_losses / loss_ratio) -  i->round_losses);
-            int64_t allowed_spending = (int64_t) ((abs((double) i->round_losses)) / loss_ratio - abs(i->round_losses));
+            // i.e. don't do this: // unsigned int allowed_spending = (int) (((double) i->round_losses / loss_ratio) -  i->round_losses);
+            
+            int64_t last_round_losses = i->round_losses;
+            i->round_losses = 0;
+
+            int64_t allowed_spending = (int64_t) ((abs((double) last_round_losses)) / loss_ratio - abs(last_round_losses));
 
             if (allowed_spending > i->assets) {
                 allowed_spending = i->assets;
             }
             i->lose(allowed_spending);
-            operating_expenses += allowed_spending;
-
-            // TODO put in round_end() function perhaps? And make new last_round_earnings perhaps.
-            i->round_losses = 0;
-            // i.round_earnings = 0;
+            operating_expenses += allowed_spending;  
         }
     }
 
@@ -166,10 +161,6 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
         }
     }
     assert(attacker_assets.size() > 0);
-
-    // Compute sample mean and variance
-    // double sampleMean = utils::computeMean(attacker_assets);
-    // double sampleVariance = utils::computeVariance(attacker_assets, sampleMean);
 
     // Compute parameters using method of moments
     // https://web.archive.org/web/20180423000433id_/https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2927&context=etd
