@@ -9,19 +9,19 @@ class Defender;
 class Attacker;
 
 struct PolicyType {
-    uint32_t premium;
-    uint32_t retention;
+    int64_t premium;
+    int64_t retention;
 };
 
 class Player {
     public:
-        uint32_t assets;
+        int64_t assets;
         Params p;
 
         Player(Params &p_in);
-        virtual void gain(uint32_t gain);
-        virtual void lose(uint32_t loss);
-        uint32_t get_assets();
+        virtual void gain(int64_t gain);
+        virtual void lose(int64_t loss);
+        int64_t get_assets();
 
         bool is_alive(); 
 };

@@ -301,6 +301,8 @@ void Game::fight(Attacker &a, Defender &d) {
         a.lose(cost_to_attack);
         Attacker::attackerExpenditures += cost_to_attack;
 
+        // verify_outcome(); // TODO delete
+
         if (RandUniformDist.draw() > d.posture) {
 
             Attacker::attacksSucceeded += 1;
@@ -326,11 +328,9 @@ void Game::fight(Attacker &a, Defender &d) {
             d.lose(recovery_cost);
             Defender::sum_recovery_costs += recovery_cost;
             
-            
             if (d.insured) {
                 uint32_t total_losses = ransom + recovery_cost;
                 d.submit_claim(total_losses);
-                // verify_outcome(); // TODO delete
             }
             // verify_outcome(); // TODO delete
         }
@@ -356,6 +356,8 @@ void Game::init_round() {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
         defenders[alive_defenders_indices[i]].choose_security_strategy(); 
     }
+
+    verify_outcome(); // TODO delete
 }
 
 void Game::conclude_round() {

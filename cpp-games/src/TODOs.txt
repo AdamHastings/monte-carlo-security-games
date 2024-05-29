@@ -8,6 +8,8 @@ Check for memory leaks (1 hr)
 
 
 Optional:
+Fix makefile re-linking problem
+Compute optimal investment using Newton-Raphson method
 Figure out more efficient way for Attackers to choose ATTACKS_PER_EPOCH victims (1 hr)
 Use pointers to Game object instead of implementing redundant static class variables (1 hr)
 Figure out and implement better naming convention for param vs game variables (1 hr)

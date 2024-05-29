@@ -5,8 +5,8 @@
 double Attacker::inequality_ratio = 0;
 
 long long Attacker::a_init = 0; 
-long long Attacker::attacker_iter_sum = 0;
-long long Attacker::current_sum_assets = 0;
+int64_t Attacker::attacker_iter_sum = 0;
+int64_t Attacker::current_sum_assets = 0;
 std::vector<unsigned long long> Attacker::cumulative_assets; 
 
 double Attacker::estimated_current_defender_posture_mean = 0; 
@@ -18,6 +18,8 @@ long long Attacker::attackerLoots = 0;
 
 Attacker::Attacker(int id_in, Params &p) : Player(p) {
     id = id_in;
+    assert(id >= 0);
+
     double inequality_ratio = p.INEQUALITY_distribution->draw();
     assert(inequality_ratio > 0);
     assert(inequality_ratio <= 1);
@@ -47,13 +49,13 @@ void Attacker::perform_market_analysis(std::vector<Defender> &defenders) {
     estimated_current_defender_posture_mean = sampleMean;
 }
 
-void Attacker::lose(uint32_t loss) {
+void Attacker::lose(int64_t loss) {
     Player::lose(loss);
     attacker_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
-void Attacker::gain(uint32_t gain) {
+void Attacker::gain(int64_t gain) {
     Player::gain(gain);
     attacker_iter_sum += gain;
     current_sum_assets += gain;

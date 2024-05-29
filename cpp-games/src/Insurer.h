@@ -10,9 +10,9 @@
 class Insurer : public Player {
     public:
         static unsigned long long i_init;
-        static unsigned long long insurer_iter_sum;
+        static int64_t insurer_iter_sum; // Can be negative! Must be signed. 
         static std::vector<unsigned long long> cumulative_assets; // running total of all insurers' assets
-        static unsigned long long current_sum_assets; // sum total of all class instances
+        static int64_t current_sum_assets; // sum total of all class instances
         
         static double estimated_current_attacker_wealth_mean;
         static double estimated_current_attacker_wealth_stdddev;
@@ -34,16 +34,15 @@ class Insurer : public Player {
         static void reset();
 
     public:
-        uint id;
-        // double last_round_loss_ratio;
-        double round_earnings;
-        double round_losses;
+        uint64_t id;
+        // uint64_t round_earnings = 0; // TODO make sure these are updated in gain
+        int64_t round_losses = 0; // TODO make sure these are updated in loss
 
         Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers);
-        void gain(uint32_t gain) override;
-        void lose(uint32_t loss) override;
+        void gain(int64_t gain) override;
+        void lose(int64_t loss) override;
 
-        PolicyType provide_a_quote(uint32_t assets, double posture);
-        uint32_t issue_payment(uint32_t claim);
+        PolicyType provide_a_quote(int64_t assets, double posture);
+        int64_t issue_payment(int64_t claim);
         static void perform_market_analysis(std::vector<Insurer> &insurers);
 };

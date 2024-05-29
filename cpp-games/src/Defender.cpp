@@ -4,13 +4,13 @@
 #include "Defender.h"
 
 double Defender::estimated_probability_of_attack = 0;
-unsigned long long Defender::d_init = 0; 
-unsigned long long Defender::defender_iter_sum = 0;
-unsigned long long Defender::current_sum_assets = 0;
-unsigned long long Defender::sum_recovery_costs = 0;
-unsigned long long Defender::policiesPurchased = 0;
-unsigned long long Defender::defensesPurchased = 0;
-unsigned long long Defender::sum_security_investments = 0;
+int64_t Defender::d_init = 0; 
+int64_t Defender::defender_iter_sum = 0;
+int64_t Defender::current_sum_assets = 0;
+int64_t Defender::sum_recovery_costs = 0;
+int64_t Defender::policiesPurchased = 0;
+int64_t Defender::defensesPurchased = 0;
+int64_t Defender::sum_security_investments = 0;
 std::vector<unsigned long long> Defender::cumulative_assets;
 
 double Defender::ransom_b0 = 0;
@@ -20,6 +20,7 @@ double Defender::recovery_exp = 0;
 
 Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Player(p) {
     id = id_in;
+    assert(id >= 0);
 
     insurers = &_insurers;
 
@@ -58,7 +59,7 @@ void Defender::submit_claim(uint32_t loss) {
 
     uint32_t claim_after_retention = std::max(0, ((int32_t)loss - (int32_t)policy.retention));
     assert(claim_after_retention >= 0);
-    if (claim_after_retention > 0) {
+    if (claim_after_retention > 0){
         if (insurers->at(ins_idx).is_alive()) {
             uint32_t amount_recovered = insurers->at(ins_idx).issue_payment(claim_after_retention);
             assert(loss >= amount_recovered);
@@ -99,11 +100,13 @@ double Defender::posture_if_investment(double investment_pct) {
     return erf(investment_pct * 25); // tODO remove 25,,,use config
 }
 
-// TODO convex function...you can stop once minimum is found
+
+// This can be improved by doing a gradient descent or binary search perhaps
 double Defender::find_optimal_investment(){
     int samples = 1000; // sample at 1% increments
-    double minimum = std::numeric_limits<double>::max();
+    double minimum = std::numeric_limits<double>::max(); // TODO use inf instead?
     double optimal_investment = 0;
+    double last_round_loss= -std::numeric_limits<double>::max();
     for (int i=0; i<samples; i++) {
         double inv_percent = ((double) i/ (double) samples);
         long long investment = (long long) assets * inv_percent;
@@ -115,7 +118,12 @@ double Defender::find_optimal_investment(){
         if (loss < minimum) {
             minimum = loss;
             optimal_investment = investment;
+        } else if (loss > last_round_loss) { // This function was killing performance...hopefully this reduces calculations
+            break;
         }
+        last_round_loss = loss;
+
+        
     } // TODO add assertions 
     return optimal_investment; // TODO return struct with minimum *and* minimum_pct
 }
@@ -184,8 +192,6 @@ void Defender::choose_security_strategy() {
     assert(optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment >= 0);
 
-    // TODO what about do nothing? i.e. check bounds of x=0, x=assets
-
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(i, policy);
     } else {
@@ -201,13 +207,13 @@ void Defender::perform_market_analysis(int prevRoundAttacks, int num_current_def
 }
 
 
-void Defender::lose(uint32_t loss) {
+void Defender::lose(int64_t loss) {
     Player::lose(loss);
     defender_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
-void Defender::gain(uint32_t gain) {
+void Defender::gain(int64_t gain) {
     Player::gain(gain);
     defender_iter_sum += gain;
     current_sum_assets += gain;

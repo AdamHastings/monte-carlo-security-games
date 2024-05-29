@@ -7,8 +7,8 @@
 #include "utils.h"
 
 unsigned long long Insurer::i_init = 0; // Initialization outside the class definition
-unsigned long long Insurer::current_sum_assets = 0;
-unsigned long long Insurer::insurer_iter_sum = 0;
+int64_t Insurer::current_sum_assets = 0;
+int64_t Insurer::insurer_iter_sum = 0;
 unsigned long long Insurer::operating_expenses = 0;
 
 
@@ -30,6 +30,7 @@ unsigned long long Insurer::paid_claims = 0;
 
 Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers) : Player(p) {
     id = id_in;
+    assert(id >= 0);
     // last_round_loss_ratio = p.LOSS_RATIO_distribution->draw();
 
     defenders = &_defenders;
@@ -43,33 +44,34 @@ Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::v
     current_sum_assets += assets;
 }
 
-void Insurer::lose(uint32_t loss) {
+void Insurer::lose(int64_t loss) {
     Player::lose(loss);
-    paid_claims += loss; //assumes that Insures *only* lose money when paying claims!
+    this->round_losses -= loss;
     insurer_iter_sum -= loss;
     current_sum_assets -= loss;
 }
 
-void Insurer::gain(uint32_t gain) {
+void Insurer::gain(int64_t gain) {
     Player::gain(gain);
+    // this->round_earnings += gain; // assumes gains are only from premiums 
     insurer_iter_sum += gain;
     current_sum_assets += gain;
 }
 
-uint32_t Insurer::issue_payment(uint32_t claim) {
+int64_t Insurer::issue_payment(int64_t claim) {
     
-    uint32_t amount_covered;
+    int64_t amount_covered;
     if (claim > assets) { // insurer cannot cover full amount and goes bust
         amount_covered = assets;
     } else {
         amount_covered = claim;
     }
     lose(amount_covered); 
-    round_losses += amount_covered;
+    paid_claims += amount_covered; 
     return amount_covered;
 }
 
-PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {    
+PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {    
     
     double p_getting_paired_with_attacker_a = std::min(1.0, (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0));
     assert(p_getting_paired_with_attacker_a >= 0);
@@ -93,7 +95,7 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     long long recovery_cost = Defender::recovery_cost(assets);
     long long total_losses = ransom + recovery_cost;
     
-    uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
+    int64_t expected_cost_to_attack = (int64_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
     double p_one_attacker_has_enough_to_attack;
     if (std::isnan(estimated_current_attacker_wealth_stdddev)) {
@@ -113,8 +115,8 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
     assert(p_loss <= 1);
 
     PolicyType policy;
-    policy.premium = (uint32_t) (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
-    policy.retention = (uint32_t) retention_regression_factor * policy.premium;
+    policy.premium = (int64_t) (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
+    policy.retention = (int64_t) retention_regression_factor * policy.premium;
 
     if (policy.premium != 0) {
         assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
@@ -129,28 +131,31 @@ PolicyType Insurer::provide_a_quote(uint32_t assets, double estimated_posture) {
 // which informs current defender risks before writing policies.
 void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     
-    // TODO TODO TODO should Insurers lose 20% of their assets each round as part of operating overhead?
+    // Insurers spend previous round's earnings on operating expenses 
+    for (uint j=0; j < insurers.size(); j++) {
+        Insurer *i = &insurers[j];
 
-    for (auto i = insurers.begin(); i != insurers.end(); ++i) {
         if (i->is_alive()) {
             // TODO these vals need to be updated when collecting premiums/paying claims 
             // double last_roud_loss_ratio = ((double) i->round_losses / (double) i->round_earnings);
             
             // loss_ratio = round_losses / (round_losses + allowed_spending)
             // round_losses + allowed_spending = round_losses / loss_ratio
-            unsigned int allowed_spending = (int) (((double) i->round_losses / loss_ratio) -  i->round_losses);
+            // must be in terms of losses, not earnings, because earnings are based on expected losses
+            // whereas losses are based on real losses!
+            // unsigned int allowed_spending = (int) (((double) i->round_losses / loss_ratio) -  i->round_losses);
+            int64_t allowed_spending = (int64_t) ((abs((double) i->round_losses)) / loss_ratio - abs(i->round_losses));
+
             if (allowed_spending > i->assets) {
                 allowed_spending = i->assets;
             }
             i->lose(allowed_spending);
             operating_expenses += allowed_spending;
 
-
+            // TODO put in round_end() function perhaps? And make new last_round_earnings perhaps.
             i->round_losses = 0;
-            // i->round_earnings = 0;
-
+            // i.round_earnings = 0;
         }
-
     }
 
     std::vector<double> attacker_assets;
@@ -169,13 +174,6 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     // Compute parameters using method of moments
     // https://web.archive.org/web/20180423000433id_/https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2927&context=etd
     // TODO: cite this!
-    // double variance_mom = log(1 + pow(sampleVariance, 2) / pow(sampleMean, 2)); // Don't know where these came from 
-    // double mu_mom = log(sampleMean) - 0.5 * variance_mom;
-    // double variance_mom = log()
-    
-    
-    // double sigma_mom = sqrt(variance_mom);
-
     estimated_current_attacker_wealth_mean    = utils::compute_mu_mom(attacker_assets); // Note!! This is the log of actual lognormal mean!!
     assert(estimated_current_attacker_wealth_mean >= 0);
     // Can return nan. Need to check against this condition elsewhere.
