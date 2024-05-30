@@ -49,7 +49,6 @@ Params params_loader::load_cfg(std::string basename) {
     p.CTA_SCALING_FACTOR_distribution          = Distribution::createDistribution(jsonData["CTA_SCALING_FACTOR"]);
 
 
-    p.EPSILON_distribution = Distribution::createDistribution(jsonData["EPSILON"]);
     p.DELTA_distribution   = Distribution::createDistribution(jsonData["DELTA"]);
 
     p.NUM_GAMES = jsonData["NUM_GAMES"].asInt();    

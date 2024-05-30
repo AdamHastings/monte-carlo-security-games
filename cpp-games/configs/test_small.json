@@ -85,11 +85,6 @@
         "distribution" : "fixed",
         "val" : 100
     },
-    "EPSILON":
-    {
-        "distribution" : "fixed",
-        "val" : 100
-    },
     "DELTA":
     {
         "distribution" : "fixed",

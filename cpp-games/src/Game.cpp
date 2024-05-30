@@ -78,7 +78,6 @@ Game::Game(Params prm, unsigned int game_number) {
     }
     
     DELTA = p.DELTA_distribution->draw();
-    EPSILON = p.EPSILON_distribution->draw();
 
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::d_init);
@@ -468,6 +467,5 @@ Game::~Game() {
     delete p.NUM_INSURERS_distribution;
     delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.CTA_SCALING_FACTOR_distribution;
-    delete p.EPSILON_distribution;
     delete p.DELTA_distribution;
 }

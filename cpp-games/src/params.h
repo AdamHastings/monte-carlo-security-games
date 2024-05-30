@@ -24,7 +24,6 @@ struct Params {
     Distribution* ATTACKS_PER_EPOCH_distribution;
     Distribution* CTA_SCALING_FACTOR_distribution;
     
-    Distribution* EPSILON_distribution;
     Distribution* DELTA_distribution;
 
     unsigned int NUM_GAMES;

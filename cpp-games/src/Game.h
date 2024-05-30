@@ -34,7 +34,6 @@ class Game {
 
 
         uint DELTA;
-        uint EPSILON;
 
         std::vector<Defender> defenders;
         std::vector<Attacker> attackers;
