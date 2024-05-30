@@ -10,33 +10,53 @@ def trillion_formatter(x, pos):
 
 def plot_verbose(df):
     
-    num_figs = 20 # this is enough to get a sense of what's going on
 
-    for i in range(num_figs):
+    df['d_cumulative_assets'] = df['d_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['a_cumulative_assets'] = df['a_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['i_cumulative_assets'] = df['i_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
 
-        row = df.iloc[i]
-        defender_assets = np.array(row['d_cumulative_assets'].replace('[','').replace(']','').split(',')).astype(int)
-        attacker_assets = np.array(row['a_cumulative_assets'].replace('[','').replace(']','').split(',')).astype(int)
-        insurer_assets  = np.array(row['i_cumulative_assets'].replace('[','').replace(']','').split(',')).astype(int)
+    df.final_iter = df.final_iter.astype(int)
 
-        plt.figure(i)
-        fig, ax = plt.subplots()
-        ax.yaxis.set_major_formatter(trillion_formatter)
+    fig, ax = plt.subplots()
 
-        plt.plot(defender_assets, color='b', label="defenders", linestyle='--')
-        plt.plot(attacker_assets, color='r', label="attackers", linestyle="-")
-        plt.plot(insurer_assets, color='y', label="insurers", linestyle="-.")
-        plt.ylabel("cumulative wealth")
-        plt.xlabel("time")
-        plt.legend()
 
-        basetitle = "cumulative_assets_" + str(i)
+    for frame, label, c, l in zip(['d_cumulative_assets', 'a_cumulative_assets', 'i_cumulative_assets'], ['defenders', 'attackers', 'insurers'], ['b', 'r', 'y'], ['--', '-', '-.']):
 
-        plt.savefig("figures/verbose/png/" + basetitle + ".png")
-        plt.savefig("figures/verbose/pdf/" + basetitle + ".pdf")
+        cumulative_assets_5th_pct = []
+        cumulative_assets_median = []
+        cumulative_assets_95th_pct = []
+
+        longest_run = df[frame].map(lambda x : len(x)).max()
+
+
+        for i in range(longest_run):
+            col = [x[i] for x in df[frame] if i < len(x)]
+
+            cumulative_assets_5th_pct.append(np.percentile(col, 5))
+            cumulative_assets_median.append(np.percentile(col, 50))
+            cumulative_assets_95th_pct.append(np.percentile(col, 95))
+
+        x = range(longest_run)
+        
+
+
+        plt.fill_between(x, cumulative_assets_5th_pct, cumulative_assets_95th_pct, color=c, alpha=0.5, edgecolor='none')
+        plt.plot(cumulative_assets_median, color=c, label=label, linestyle=l)
+
+
+    ax.yaxis.set_major_formatter(trillion_formatter)
+
+    plt.ylabel("cumulative wealth")
+    plt.xlabel("time")
+    plt.legend()
+
+    basetitle = "cumulative_assets"
+
+    plt.savefig("figures/verbose/" + basetitle + ".png")
+    plt.savefig("figures/verbose/" + basetitle + ".pdf")
 
 
 
 if __name__=="__main__":
-    df = pd.read_csv("../logs/fullsize_short_verbose.csv", index_col=0, header=0)
+    df = pd.read_csv("../logs/fullsize_short_verbose.csv", header=0)
     plot_verbose(df)
