@@ -15,6 +15,8 @@ int64_t Defender::defensesPurchased = 0;
 int64_t Defender::sum_security_investments = 0;
 std::vector<unsigned long long> Defender::cumulative_assets;
 
+uint32_t Defender::NUM_QUOTES = 0;
+
 std::mt19937* Defender::gen = 0;
 
 double Defender::ransom_b0 = 0;
@@ -146,12 +148,12 @@ void Defender::choose_security_strategy() {
     // assert(mean_EFFICIENCY <= 1);
 
     // 1. Get insurance policy from insurer
-    uint32_t num_quotes_requested = p.NUM_QUOTES_distribution->draw();
+    // uint32_t num_quotes_requested = NUM_QUOTES;
     std::uniform_int_distribution<> insurer_indices_dist(0, insurers->size()-1);
     // pick insurers for quotes
     // TODO think about how to do this in a cache-friendly way
     std::unordered_set<unsigned int> insurer_indices;
-    while (insurer_indices.size() < num_quotes_requested) {
+    while (insurer_indices.size() < NUM_QUOTES && insurer_indices.size() < insurers->size()) {
         // TODO consider having attackers fight until they've attempted ATTACKS_PER_EPOCH attacks
         insurer_indices.insert(insurer_indices_dist(*gen));
     }

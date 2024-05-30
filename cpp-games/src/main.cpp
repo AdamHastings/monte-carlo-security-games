@@ -117,6 +117,7 @@ void init_logs(std::string basename, Params p) {
     header += "attackerExpenditures,";
     header += "policiesPurchased,";
     header += "defensesPurchased,";
+    header += "NUM_QUOTES,";
     header += "paid_claims,";
     header += "final_iter,";
     header += "outcome";

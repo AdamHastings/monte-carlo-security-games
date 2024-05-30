@@ -71,3 +71,14 @@ class FixedDistribution : public Distribution {
         double draw();
         double mean() override;
 };
+
+// class SweepDistribution : public Distribution {
+//     public:
+//         double next_val;
+//         double min;
+//         double max;
+//         double step;
+//         SweepDistribution(double _min, double _max, double _step);
+//         double draw();
+//         double mean() override;
+// };

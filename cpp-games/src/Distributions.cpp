@@ -85,6 +85,27 @@ double FixedDistribution::mean() {
     return val;
 }
 
+// SweepDistribution::SweepDistribution(double _min, double _max, double _step) {
+//     min = _min;
+//     max = _max;
+//     step = _step;
+//     next_val = min;
+// }
+
+// double SweepDistribution::draw() {
+//     double ret = next_val;
+//     assert(ret <= max);
+//     assert(ret >= min);
+
+//     next_val += step;
+
+//     return ret;
+// }
+
+// double SweepDistribution::mean() {
+//     return (min + max) / 2;
+// }
+
 
 Distribution* Distribution::createDistribution(Json::Value d) {
     Distribution* dist;
