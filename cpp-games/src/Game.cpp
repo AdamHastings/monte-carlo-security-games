@@ -112,25 +112,35 @@ std::string Game::to_string() {
 
     ss << std::scientific << std::setprecision(2) << Insurer::paid_claims <<  ",";
     ss << iter_num <<  ",";
-    ss << final_outcome << ",";
+    ss << final_outcome << "";
 
     if (p.verbose) {
-        ss << "\"[";
-        for (auto d : Defender::cumulative_assets) {
-            ss << std::scientific << std::setprecision(2) << d << ",";
+        ss << ",\"[";
+        for (auto & d : Defender::cumulative_assets) {
+            ss << std::scientific << std::setprecision(2) << d;
+            if (&d != &Defender::cumulative_assets.back()) {
+                ss << ",";
+            }
         }
         ss << "]\",";
         ss << "\"[";
-        for (auto a : Attacker::cumulative_assets) {
-            ss << std::scientific << std::setprecision(2) << a << ",";
+        for (auto & a : Attacker::cumulative_assets) {
+            ss << std::scientific << std::setprecision(2) << a;
+            if (&a != &Attacker::cumulative_assets.back()) {
+                ss << ",";
+            }
         }
         ss << "]\",";
         ss << "\"[";
-        for (auto i : Insurer::cumulative_assets) {
-            ss << std::scientific << std::setprecision(2) << i << ",";
+        for (auto & i : Insurer::cumulative_assets) {
+            ss << std::scientific << std::setprecision(2) << i;
+            if (&i != &Insurer::cumulative_assets.back()) {
+                ss << ",";
+            }
         }
-        ss << "]\",";
+        ss << "]\"";
     }
+
     
     ss << "\n";
     return ss.str();
