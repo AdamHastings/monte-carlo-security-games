@@ -46,7 +46,7 @@ void Attacker::perform_market_analysis(std::vector<Defender> &defenders) {
     }
 
     double sampleMean = utils::computeMean(defender_postures);
-    estimated_current_defender_posture_mean = sampleMean;
+    estimated_current_defender_posture_mean = sampleMean; 
 }
 
 void Attacker::lose(int64_t loss) {

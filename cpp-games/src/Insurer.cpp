@@ -66,7 +66,7 @@ int64_t Insurer::issue_payment(int64_t claim) {
     } else {
         amount_covered = claim;
     }
-    lose(amount_covered); 
+    this->lose(amount_covered); 
     paid_claims += amount_covered; 
     return amount_covered;
 }
@@ -76,6 +76,8 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     double p_getting_paired_with_attacker_a = std::min(1.0, (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0));
     assert(p_getting_paired_with_attacker_a >= 0);
     assert(p_getting_paired_with_attacker_a <= 1);
+
+    // double expected_num_attacks_from_attacker_a = // TODO do everything in terms of expected number of attacks i.e. allow for more than one attack per round. Need to re-derive formulae
 
     double p_getting_attacked;
     if (p_getting_paired_with_attacker_a == 1.0) {
@@ -87,6 +89,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     assert(p_getting_attacked <= 1);
 
     bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + *cta_scaling_factor)));
+    // TODO output to log if this condition occurs
     // if (!attacking_expected_gains_outweigh_expected_costs) {
     //     std::cout << "Attacking no longer worth it!" << std::endl;
     // }
@@ -98,7 +101,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     int64_t expected_cost_to_attack = (int64_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
     double p_one_attacker_has_enough_to_attack;
-    if (std::isnan(estimated_current_attacker_wealth_stdddev)) {
+    if (std::isnan(estimated_current_attacker_wealth_stdddev)) { // There is only one attacker, so using CDF doesn't make sense 
         p_one_attacker_has_enough_to_attack = (estimated_current_attacker_wealth_mean > expected_cost_to_attack) ? true : false;
     } else {
         p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2)))); // CDF of lognormal distribution
@@ -167,6 +170,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     // TODO: cite this!
     estimated_current_attacker_wealth_mean    = utils::compute_mu_mom(attacker_assets); // Note!! This is the log of actual lognormal mean!!
     assert(estimated_current_attacker_wealth_mean >= 0);
+
     // Can return nan. Need to check against this condition elsewhere.
     estimated_current_attacker_wealth_stdddev = sqrt(utils::compute_var_mom(attacker_assets)); // Note!! This is the log of actual lognormal stddev!!
     assert(std::isnan(estimated_current_attacker_wealth_stdddev) ? attacker_assets.size() == 1 : true);

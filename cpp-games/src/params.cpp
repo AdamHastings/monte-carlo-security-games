@@ -18,7 +18,7 @@ Params params_loader::load_cfg(std::string basename) {
     
     p.NUM_ATTACKERS_distribution = Distribution::createDistribution(jsonData["NUM_ATTACKERS"]);
     p.INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
-    p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
+    // p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
     p.RANSOM_B0_distribution = Distribution::createDistribution(jsonData["RANSOM_B0"]);
     p.RANSOM_B1_distribution = Distribution::createDistribution(jsonData["RANSOM_B1"]);
     p.RECOVERY_COST_BASE_distribution = Distribution::createDistribution(jsonData["RECOVERY_COST_BASE"]);

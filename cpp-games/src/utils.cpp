@@ -34,7 +34,6 @@ double utils::compute_mu_mom(const std::vector<double>& data) {
     double t3 = -1.5 * log(data.size());
 
     double mu_mom = t1 + t2 + t3; 
-    assert(mu_mom >= 0);
 
     return mu_mom;
 }

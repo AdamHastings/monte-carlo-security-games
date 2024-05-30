@@ -1,0 +1,1 @@
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./run/debug/run_games_debug configs/test_tiny.json 

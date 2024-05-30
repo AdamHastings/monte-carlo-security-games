@@ -290,6 +290,7 @@ void Game::fight(Attacker &a, Defender &d) {
         uint32_t cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * ransom);
         
 
+        // This is to model that attackers can go "all in" but they can't get away with paying less than the full cost of an attack
         uint32_t debt = 0;
         if (cost_to_attack > a.assets) {
             debt = cost_to_attack - a.assets;
@@ -298,9 +299,9 @@ void Game::fight(Attacker &a, Defender &d) {
 
         // bookkeeping
         Attacker::attacksAttempted += 1;
+        Attacker::attackerExpenditures += cost_to_attack;
         roundAttacks += 1;
         a.lose(cost_to_attack);
-        Attacker::attackerExpenditures += cost_to_attack;
 
         // verify_outcome(); // TODO delete
 
@@ -358,7 +359,7 @@ void Game::init_round() {
         defenders[alive_defenders_indices[i]].choose_security_strategy(); 
     }
 
-    verify_outcome(); // TODO delete
+    // verify_outcome(); // TODO delete
 }
 
 void Game::conclude_round() {
@@ -393,7 +394,6 @@ void Game::reset_alive_players() {
     alive_attackers_indices.clear();
     for (auto& a : attackers) {
         if (a.is_alive()) {
-            // assert(a.alive);
             alive_attackers_indices.push_back(a.id);
         }
     }
@@ -401,7 +401,6 @@ void Game::reset_alive_players() {
     alive_defenders_indices.clear();
     for (auto d : defenders) {
         if (d.is_alive()) {
-            // assert(d.alive);
             alive_defenders_indices.push_back(d.id);
         }
     }
@@ -409,7 +408,6 @@ void Game::reset_alive_players() {
     alive_insurers_indices.clear();
     for (auto i : insurers) {
         if (i.is_alive()) {
-            // assert(i.alive);
             alive_insurers_indices.push_back(i.id);
         }
     }
@@ -455,7 +453,7 @@ void Game::run_iterations() {
 Game::~Game() {
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
-    delete p.EFFICIENCY_distribution; 
+    // delete p.EFFICIENCY_distribution; 
     delete p.RANSOM_B0_distribution;
     delete p.RANSOM_B1_distribution;
     delete p.RECOVERY_COST_BASE_distribution;

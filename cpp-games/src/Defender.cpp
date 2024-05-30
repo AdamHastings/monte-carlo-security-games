@@ -51,8 +51,8 @@ void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     insured = true;
     ins_idx = i->id;
     policy = p;
-    lose(policy.premium);
-    i->gain(policy.premium);
+    this->lose(policy.premium);
+    i->gain(policy.premium); // TODO maybe but into Insurer.cpp
 }
 
 void Defender::submit_claim(uint32_t loss) {
@@ -99,7 +99,7 @@ double Defender::posture_if_investment(double investment_pct) {
 }
 
 
-// This can be approximated using Newton Raphon method
+// TODO This can be approximated using Newton Raphon method
 double Defender::find_optimal_investment(){
     int samples = 1000; // sample at 1% increments
     double minimum = std::numeric_limits<double>::max(); // TODO use inf instead?
@@ -131,9 +131,7 @@ void Defender::security_depreciation() {
     posture = 0;
 }
 
-// TODO this is only for one insurer...shouldn't Defender query all Insurers?
 void Defender::choose_security_strategy() {
-
 
     double p_A_hat = estimated_probability_of_attack;
     assert(p_A_hat >= 0);
@@ -143,9 +141,9 @@ void Defender::choose_security_strategy() {
     assert(p_L_hat >= 0);
     assert(p_L_hat <= 1);
 
-    double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
-    assert(mean_EFFICIENCY >= 0);
-    assert(mean_EFFICIENCY <= 1);
+    // double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
+    // assert(mean_EFFICIENCY >= 0);
+    // assert(mean_EFFICIENCY <= 1);
 
     // 1. Get insurance policy from insurer
     uint32_t num_quotes_requested = p.NUM_QUOTES_distribution->draw();
@@ -158,9 +156,9 @@ void Defender::choose_security_strategy() {
         insurer_indices.insert(insurer_indices_dist(*gen));
     }
 
-    Insurer* best_insurer;
+    Insurer* best_insurer = nullptr;
     PolicyType best_policy;
-    best_policy.premium = INT64_MAX;
+    best_policy.premium = std::numeric_limits<int64_t>::max();
     bool insurable = false;
     
     for (const auto& j : insurer_indices) {
@@ -168,16 +166,17 @@ void Defender::choose_security_strategy() {
         
         double noise = p.POSTURE_NOISE_distribution->draw();
         double estimated_posture = posture + noise;
+
         // adding noise might cause posture to go out of bounds 
         estimated_posture = std::max(0.0, estimated_posture);
         estimated_posture = std::min(1.0, estimated_posture);
 
         assert(estimated_posture >= 0);
         assert(estimated_posture <= 1);
+
         // TODO assumes that defender maintains posture after policy is purchased, which currently is untrue.
         PolicyType policy = i->provide_a_quote(assets, estimated_posture); 
         
-        // bool insurable = true;
         if (policy.premium == 0 ||  policy.premium >= assets) {
             // Coverage not available
             continue;
@@ -185,7 +184,7 @@ void Defender::choose_security_strategy() {
             assert(policy.premium > 0); 
             assert(policy.retention > 0);
 
-            if (policy.premium < best_policy.premium) { // works because retetion is a scaled version of premium
+            if (policy.premium < best_policy.premium) { // works because retention is a scaled version of premium. So best premium = best policy
                 insurable = true;
                 best_policy = policy;
                 best_insurer = i;
@@ -193,16 +192,19 @@ void Defender::choose_security_strategy() {
         }
     }
 
-    int64_t expected_loss_with_insurance;
+    double expected_loss_with_insurance = std::numeric_limits<double>::infinity();
     if (insurable) {
-        expected_loss_with_insurance = (int64_t) best_policy.premium + (p_L_hat * best_policy.retention);
+        assert(best_policy.premium > 0 ); 
+        assert(best_policy.retention > 0);
+        assert(best_insurer != nullptr);
+        expected_loss_with_insurance = best_policy.premium + (p_L_hat * best_policy.retention);
         assert(expected_loss_with_insurance >= 0);
     }
     
     // 2. Find optimum security investment
-    long long  optimal_investment = find_optimal_investment(); // TODO don't use PAYOFF anymore!! MUST RE-IMPLEMENT!! std::min(assets, std::max(0.0, (assets * (-1 + (assets * (mean_PAYOFF + posture * (-1 + mean_EFFICIENCY) * mean_PAYOFF))))/(2 * posture * p_A_hat * mean_EFFICIENCY * mean_PAYOFF))); 
+    int64_t  optimal_investment = find_optimal_investment();
     assert(optimal_investment <= assets);
-    long long expected_cost_if_attacked_at_optimal_investment = ransom(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
+    int64_t expected_cost_if_attacked_at_optimal_investment = ransom(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
     assert(expected_cost_if_attacked_at_optimal_investment >= 0);
     double investment_pct = optimal_investment / (double) assets;
     double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(investment_pct));
@@ -210,8 +212,6 @@ void Defender::choose_security_strategy() {
     assert(p_loss_with_optimal_investment >= 0);
     double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;
     assert(expected_loss_with_optimal_investment >= 0);
-    // double expected_loss_with_optimal_investment = optimal_investment * p_L_hat; // TODO stand in for compilation DELETE !!!! TODO don't use PAYOFF anymore!! std::max(0.0, (assets - optimal_investment) * mean_PAYOFF * (p_A_hat * (1 - (posture * (mean_EFFICIENCY * (optimal_investment/assets))))) + optimal_investment);
-
 
     assert(optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment >= 0);
@@ -224,6 +224,7 @@ void Defender::choose_security_strategy() {
     }
 }
 
+// TODO consider the possibility of multiple attacks
 void Defender::perform_market_analysis(int prevRoundAttacks, int num_current_defenders) {
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
     Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(num_current_defenders * 1.0));

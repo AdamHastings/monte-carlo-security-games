@@ -26,6 +26,17 @@ class Defender : public Player {
         static double recovery_base;
         static double recovery_exp;
 
+        static void perform_market_analysis(int prevRoundAttacks, int num_current_defenders);
+        static long long ransom(int assets); // TODO add bounds check assertion
+        static long long recovery_cost(int assets); // TODO add bounds check assertion
+
+        static void reset();
+
+    public: 
+        Defender(int id_in, Params &p, std::vector<Insurer> &insurers);
+        void gain(int64_t gain) override;
+        void lose(int64_t loss) override;
+
         uint64_t id;
         double posture;
        
@@ -34,21 +45,11 @@ class Defender : public Player {
         int ins_idx = -1;
         PolicyType policy;
 
-        Defender(int id_in, Params &p, std::vector<Insurer> &insurers);
-        void gain(int64_t gain) override;
-        void lose(int64_t loss) override;
-
         void choose_security_strategy();
         void submit_claim(uint32_t loss);
 
-        static void perform_market_analysis(int prevRoundAttacks, int num_current_defenders);
-        static long long ransom(int assets); // TODO add bounds check assertion
-        static long long recovery_cost(int assets); // TODO add bounds check assertion
 
-        static void reset();
-
-
-    private:
+    private:   
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
         double find_optimal_investment();
