@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def trillion_formatter(x, pos):
+    return "$%.0fT" % (x * 1E3 / 1E12)
+
+
 def plot_verbose(df):
     
     num_figs = 20 # this is enough to get a sense of what's going on
@@ -16,11 +20,15 @@ def plot_verbose(df):
         insurer_assets  = np.array(row['i_cumulative_assets'].replace('[','').replace(']','').split(',')).astype(int)
 
         plt.figure(i)
-        plt.plot(defender_assets, color='b')
-        plt.plot(attacker_assets, color='r')
-        plt.plot(insurer_assets, color='y')
+        fig, ax = plt.subplots()
+        ax.yaxis.set_major_formatter(trillion_formatter)
+
+        plt.plot(defender_assets, color='b', label="defenders", linestyle='--')
+        plt.plot(attacker_assets, color='r', label="attackers", linestyle="-")
+        plt.plot(insurer_assets, color='y', label="insurers", linestyle="-.")
         plt.ylabel("cumulative wealth")
         plt.xlabel("time")
+        plt.legend()
 
         basetitle = "cumulative_assets_" + str(i)
 
