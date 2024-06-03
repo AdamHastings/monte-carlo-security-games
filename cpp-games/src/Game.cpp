@@ -264,21 +264,15 @@ bool Game::game_over() {
 
 void Game::fight(Attacker &a, Defender &d) {
 
-    if (a.assets == 0) {
-        // One player is dead already. Skip.
-        return;
-    }
-    if (d.assets == 0) {
-        // One player is dead already. Skip.
-        return;
-    }
+    assert(d.attacked == false);
+    assert(d.assets > 0);
+    assert(a.assets > 0);
 
     uint32_t ransom = Defender::ransom(d.assets);
     uint32_t recovery_cost = Defender::recovery_cost(d.assets);
 
     if (ransom > d.assets) {
-        // Mercy kill the defender if the ransom is low
-        ransom = d.assets;
+        ransom = d.assets;  // Mercy kill the defender if the ransom is low
     }
 
     // Attackers don't know defenders' posture until they attack and cannot compute the odds of success
@@ -381,11 +375,14 @@ void Game::init_round() {
     for (Defender &d : defenders) {
         if (d.is_alive()) {
             alive_defenders_indices.push_back(d.id);
+            
             // Insurance policy expires
             d.ins_idx = -1;
             d.insured = false; 
+            
             // reset attacked status
             d.attacked = false;
+            
             d.security_depreciation();
             d.choose_security_strategy(); 
         }
