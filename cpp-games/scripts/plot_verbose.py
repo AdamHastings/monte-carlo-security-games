@@ -20,7 +20,9 @@ def plot_verbose(df):
     fig, ax = plt.subplots()
 
 
-    for frame, label, c, l in zip(['d_cumulative_assets', 'a_cumulative_assets', 'i_cumulative_assets'], ['defenders', 'attackers', 'insurers'], ['b', 'r', 'y'], ['--', '-', '-.']):
+    for label, c, l in zip(['defenders', 'attackers', 'insurers'], ['b', 'r', 'y'], ['--', '-', '-.']):
+
+        frame = label[0] + "_cumulative_assets"
 
         cumulative_assets_5th_pct = []
         cumulative_assets_median = []
