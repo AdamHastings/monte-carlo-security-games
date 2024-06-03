@@ -42,6 +42,8 @@ class Defender : public Player {
         uint64_t id;
         int64_t capex = 0;
         double posture;
+
+        bool attacked = false; // Has this defender been attacked yet this round?
        
         std::vector<Insurer>* insurers; // TODO should this be static?
         std::vector<Defender>* defenders; // TODO use if you want to move choose_security_strategy into perform_market_analysis

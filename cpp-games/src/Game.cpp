@@ -364,6 +364,7 @@ void Game::init_round() {
 
     // TODO put into market analysis?
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
+        defenders[alive_defenders_indices[i]].attacked = false;
         assert(defenders[alive_defenders_indices[i]].assets > 0);
         defenders[alive_defenders_indices[i]].security_depreciation();
         defenders[alive_defenders_indices[i]].choose_security_strategy(); 
@@ -440,7 +441,12 @@ void Game::run_iterations() {
             std::unordered_set<unsigned int> victim_indices;
             while (victim_indices.size() < std::min(ATTACKS_PER_EPOCH, num_alive_defenders)) {
                 // TODO consider having attackers fight until they've attempted ATTACKS_PER_EPOCH attacks
-                victim_indices.insert(alive_defender_indices_dist(gen));
+                // TODO potential to get stuck here
+                int candidate_victim = alive_defender_indices_dist(gen);
+                bool attacked_this_round = defenders[alive_defenders_indices[candidate_victim]].attacked;
+                if (!attacked_this_round) {
+                    victim_indices.insert(candidate_victim);
+                }
             }
 
             // fight all chosen victims 

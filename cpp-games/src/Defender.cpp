@@ -104,7 +104,6 @@ long long Defender::recovery_cost(int assets) {
 // yields the expected posture if a defender were to invest amount into security
 double Defender::posture_if_investment(int64_t amount) {
     double investment_pct = (double) amount / (double) assets;
-    // TODO should I be adding noise here?
     return erf(investment_pct * 25); // TODO remove 25, use config instead 
 }
 
@@ -154,18 +153,13 @@ void Defender::choose_security_strategy() {
     assert(p_L_hat >= 0);
     assert(p_L_hat <= 1);
 
-    // double mean_EFFICIENCY = p.EFFICIENCY_distribution->mean();
-    // assert(mean_EFFICIENCY >= 0);
-    // assert(mean_EFFICIENCY <= 1);
-
     // 1. Get insurance policy from insurer
-    // uint32_t num_quotes_requested = NUM_QUOTES;
     std::uniform_int_distribution<> insurer_indices_dist(0, insurers->size()-1);
+    
     // pick insurers for quotes
     // TODO think about how to do this in a cache-friendly way
     std::unordered_set<unsigned int> insurer_indices;
     while (insurer_indices.size() < NUM_QUOTES && insurer_indices.size() < insurers->size()) {
-        // TODO consider having attackers fight until they've attempted ATTACKS_PER_EPOCH attacks
         insurer_indices.insert(insurer_indices_dist(*gen));
     }
 
@@ -187,7 +181,6 @@ void Defender::choose_security_strategy() {
         assert(estimated_posture >= 0);
         assert(estimated_posture <= 1);
 
-        // TODO assumes that defender maintains posture after policy is purchased, which currently is untrue.
         PolicyType policy = i->provide_a_quote(assets, estimated_posture); 
         
         if (policy.premium == 0 ||  policy.premium >= assets) {
@@ -216,6 +209,7 @@ void Defender::choose_security_strategy() {
     
     // 2. Find optimum security investment
     int64_t  optimal_investment = find_optimal_investment();
+    assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
     
     int64_t expected_cost_if_attacked_at_optimal_investment = ransom(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
@@ -228,20 +222,18 @@ void Defender::choose_security_strategy() {
     double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;
     assert(expected_loss_with_optimal_investment >= 0);
 
-    assert(optimal_investment >= 0);
-    assert(expected_loss_with_optimal_investment >= 0);
-
     // TODO consider possibility that players can choose both
+    // TODO consider case where insurer requires 1% investment 
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(best_insurer, best_policy);
     } else {
-        make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 
+        make_security_investment(optimal_investment);
     }
 }
 
-// TODO consider the possibility of multiple attacks
 void Defender::perform_market_analysis(int prevRoundAttacks, int num_current_defenders) {
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
+    assert(prevRoundAttacks <= num_current_defenders);
     Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(num_current_defenders * 1.0));
     assert(Defender::estimated_probability_of_attack >= 0);
     assert(Defender::estimated_probability_of_attack <= 1);

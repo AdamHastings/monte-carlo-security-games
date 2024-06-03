@@ -66,17 +66,17 @@
     "NUM_DEFENDERS":
     {
         "distribution" : "fixed",
-        "val" : 1000
+        "val" : 10000
     },
     "NUM_INSURERS":
     {
         "distribution" : "fixed",
-        "val" : 40
+        "val" : 400
     },
     "NUM_ATTACKERS" :
     {
         "distribution" : "fixed",
-        "val" : 5
+        "val" : 50
     },
     "ATTACKS_PER_EPOCH" :
     {
@@ -93,7 +93,7 @@
         "distribution" : "fixed",
         "val" : 0.85714285714
     },
-    "NUM_GAMES": 1000,
+    "NUM_GAMES": 100,
     "verbose":true,
     "assertions_on":true
 }
