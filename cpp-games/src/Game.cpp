@@ -362,25 +362,37 @@ void Game::init_round() {
     Defender::perform_market_analysis(prevRoundAttacks, defenders.size());
     Attacker::perform_market_analysis(defenders);
 
-    // TODO put into market analysis?
-    for (uint i=0; i < alive_defenders_indices.size(); i++) {
-        defenders[alive_defenders_indices[i]].attacked = false;
-        assert(defenders[alive_defenders_indices[i]].assets > 0);
-        defenders[alive_defenders_indices[i]].security_depreciation();
-        defenders[alive_defenders_indices[i]].choose_security_strategy(); 
+    // this could be faster if you iterated through the alive players instead 
+    alive_attackers_indices.clear();
+    for (Attacker &a : attackers) {
+        if (a.is_alive()) {
+            alive_attackers_indices.push_back(a.id);
+        }
     }
-    // verify_outcome(); // TODO delete
+
+    alive_insurers_indices.clear();
+    for (Insurer &i : insurers) {
+        if (i.is_alive()) {
+            alive_insurers_indices.push_back(i.id);
+        }
+    }
+
+    alive_defenders_indices.clear();
+    for (Defender &d : defenders) {
+        if (d.is_alive()) {
+            alive_defenders_indices.push_back(d.id);
+            // Insurance policy expires
+            d.ins_idx = -1;
+            d.insured = false; 
+            // reset attacked status
+            d.attacked = false;
+            d.security_depreciation();
+            d.choose_security_strategy(); 
+        }
+    }
 }
 
 void Game::conclude_round() {
-    reset_alive_players();
-
-    // Insurance policy expires
-    for (uint i=0; i<defenders.size(); i++) {
-        Defender d = defenders[i];
-        d.ins_idx = -1;
-        d.insured = false; 
-    }
 
     prevRoundAttacks = roundAttacks;
 
@@ -398,29 +410,6 @@ void Game::init_game(){
 void Game::conclude_game(){
     game_over();
     verify_outcome();
-}
-
-void Game::reset_alive_players() {
-    alive_attackers_indices.clear();
-    for (auto& a : attackers) {
-        if (a.is_alive()) {
-            alive_attackers_indices.push_back(a.id);
-        }
-    }
-
-    alive_defenders_indices.clear();
-    for (auto d : defenders) {
-        if (d.is_alive()) {
-            alive_defenders_indices.push_back(d.id);
-        }
-    }
-
-    alive_insurers_indices.clear();
-    for (auto i : insurers) {
-        if (i.is_alive()) {
-            alive_insurers_indices.push_back(i.id);
-        }
-    }
 }
 
 void Game::run_iterations() {

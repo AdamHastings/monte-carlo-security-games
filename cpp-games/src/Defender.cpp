@@ -35,7 +35,7 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     assets = (uint32_t) fp_assets;
 
     // posture = p.POSTURE_distribution->draw();
-    capex = (int64_t) fp_assets * 0.01; // initialize defenders with initial capex that will yield average posture // TODO params?
+    capex = (int64_t) fp_assets * 0.01; // initialize defenders with initial capex that will yield average posture // TODO make this an input param?
     double noise = p.POSTURE_NOISE_distribution->draw();
     posture = posture_if_investment(capex) + noise;
 
@@ -59,7 +59,7 @@ void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     ins_idx = i->id;
     policy = p;
     this->lose(policy.premium);
-    i->gain(policy.premium); // TODO maybe put into Insurer.cpp
+    i->gain(policy.premium); // May be worth considering putting this into Insurer.cpp
 }
 
 void Defender::submit_claim(uint32_t loss) {
@@ -252,7 +252,6 @@ void Defender::gain(int64_t gain) {
     current_sum_assets += gain;
 }
 
-// TODO name conflict confusion with reset_alive_players in Game.cpp
 void Defender::reset() {
     estimated_probability_of_attack = 0;
     d_init = 0;

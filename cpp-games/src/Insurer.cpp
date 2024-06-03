@@ -73,6 +73,9 @@ int64_t Insurer::issue_payment(int64_t claim) {
 
 PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {    
     
+    // Makes the assumption that defenders will only be attacked once per epoch
+    // A reasonable assumption first of all
+    // And second, it makes the math orders of magnitude easier 
     double p_getting_paired_with_attacker_a = std::min(1.0, (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0));
     assert(p_getting_paired_with_attacker_a >= 0);
     assert(p_getting_paired_with_attacker_a <= 1);
