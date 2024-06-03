@@ -84,7 +84,7 @@ void Defender::make_security_investment(uint32_t amount) {
     defensesPurchased += 1;
     assert(amount >= 0);
     assert(amount <= assets);
-    posture = posture_if_investment(amount);
+    posture = posture_if_investment(capex + amount);
     assert(posture >= 0);
     assert(posture <= 1);
     sum_security_investments += amount;
