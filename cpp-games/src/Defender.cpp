@@ -34,7 +34,12 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     assert(fp_assets < __UINT32_MAX__);
     assets = (uint32_t) fp_assets;
 
-    posture = p.POSTURE_distribution->draw();
+    // posture = p.POSTURE_distribution->draw();
+    capex = (int64_t) fp_assets * 0.01; // initialize defenders with initial capex that will yield average posture // TODO params?
+    double noise = p.POSTURE_NOISE_distribution->draw();
+    posture = posture_if_investment(capex) + noise;
+
+
     if (posture < 0) {
         posture = 0;
     } else if (posture > 1) {
@@ -54,7 +59,7 @@ void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     ins_idx = i->id;
     policy = p;
     this->lose(policy.premium);
-    i->gain(policy.premium); // TODO maybe but into Insurer.cpp
+    i->gain(policy.premium); // TODO maybe put into Insurer.cpp
 }
 
 void Defender::submit_claim(uint32_t loss) {
@@ -75,16 +80,17 @@ void Defender::submit_claim(uint32_t loss) {
     }
 }
 
-void Defender::make_security_investment(uint32_t x) {
+void Defender::make_security_investment(uint32_t amount) {
     defensesPurchased += 1;
-    assert(x >= 0);
-    assert(x <= assets);
-    double investment_pct = x / (double) assets;
-    posture = posture_if_investment(investment_pct); // TODO try out alternative definitions
+    assert(amount >= 0);
+    assert(amount <= assets);
+    posture = posture_if_investment(amount);
     assert(posture >= 0);
     assert(posture <= 1);
-    sum_security_investments += x;
-    this->lose(x);
+    sum_security_investments += amount;
+    this->lose(amount);
+
+    capex += amount / 3; // opex is twice capex spending ==> amount = capex + opex = capex + 2 * capex ==> (new) capex = amount / 3
 }
 
 long long Defender::ransom(int assets) {
@@ -95,8 +101,10 @@ long long Defender::recovery_cost(int assets) {
     return recovery_base * pow(assets, recovery_exp);
 }
 
-
-double Defender::posture_if_investment(double investment_pct) {
+// yields the expected posture if a defender were to invest amount into security
+double Defender::posture_if_investment(int64_t amount) {
+    double investment_pct = (double) amount / (double) assets;
+    // TODO should I be adding noise here?
     return erf(investment_pct * 25); // TODO remove 25, use config instead 
 }
 
@@ -110,7 +118,7 @@ double Defender::find_optimal_investment(){
     for (int i=0; i<samples; i++) {
         double inv_percent = ((double) i/ (double) samples);
         long long investment = (long long) assets * inv_percent;
-        double p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(inv_percent)); 
+        double p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment)); 
         long long cost_if_attacked = ransom(assets - investment) + recovery_cost(assets - investment);
 
         double loss = investment + p_loss * cost_if_attacked;
@@ -128,9 +136,12 @@ double Defender::find_optimal_investment(){
     return optimal_investment; // TODO return struct with minimum *and* minimum_pct
 }
 
-// TODO this is too harsh of depreciation 
 void Defender::security_depreciation() {
-    posture = 0;
+    // We assume that opex is twice capex
+    // the value of previous opex spending depreciates to zero after it is spent (by definition)
+    double DEPRECIATION = 0.4; // TODO put into config // justify this value
+    capex = capex * (1 - DEPRECIATION);
+    posture = posture_if_investment(capex);
 }
 
 void Defender::choose_security_strategy() {
@@ -206,21 +217,23 @@ void Defender::choose_security_strategy() {
     // 2. Find optimum security investment
     int64_t  optimal_investment = find_optimal_investment();
     assert(optimal_investment <= assets);
+    
     int64_t expected_cost_if_attacked_at_optimal_investment = ransom(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
     assert(expected_cost_if_attacked_at_optimal_investment >= 0);
-    double investment_pct = optimal_investment / (double) assets;
-    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(investment_pct));
+        
+    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(optimal_investment));
     assert(p_loss_with_optimal_investment <= 1);
     assert(p_loss_with_optimal_investment >= 0);
+    
     double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;
     assert(expected_loss_with_optimal_investment >= 0);
 
     assert(optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment >= 0);
 
+    // TODO consider possibility that players can choose both
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(best_insurer, best_policy);
-        security_depreciation(); // TODO should this happen in both cases? i.e. even if we make_security_investment
     } else {
         make_security_investment(optimal_investment); // TODO what about case where optimal investment is greater than assets? 
     }

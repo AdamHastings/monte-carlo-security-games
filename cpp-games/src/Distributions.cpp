@@ -147,6 +147,8 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         double stddev = d["stddev"].asDouble();
         double min    = d["min"].asDouble();
         double max    = d["max"].asDouble();
+        assert(mean >= min);
+        assert(mean <= max);
         dist = new TruncatedNormalDistribution(mean, stddev, min, max);
     } else if (d["distribution"] == "poisson") {
         if (!d["lambda"]) {

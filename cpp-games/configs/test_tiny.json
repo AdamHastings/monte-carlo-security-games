@@ -5,11 +5,6 @@
         "distribution" : "fixed",
         "val" : 0.001
     },
-    "EFFICIENCY" :
-    {
-        "distribution" : "poisson",
-        "lambda" : 1
-    },
     "RANSOM_B0" :
     {
         "distribution" : "fixed",

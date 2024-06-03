@@ -40,13 +40,16 @@ class Defender : public Player {
         void lose(int64_t loss) override;
 
         uint64_t id;
+        int64_t capex = 0;
         double posture;
        
-        std::vector<Insurer>* insurers;
+        std::vector<Insurer>* insurers; // TODO should this be static?
+        std::vector<Defender>* defenders; // TODO use if you want to move choose_security_strategy into perform_market_analysis
         bool insured = false;
         int ins_idx = -1;
         PolicyType policy;
 
+        void security_depreciation();
         void choose_security_strategy();
         void submit_claim(uint32_t loss);
 
@@ -55,7 +58,6 @@ class Defender : public Player {
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
         double find_optimal_investment();
-        double posture_if_investment(double investment);
-        void security_depreciation();
+        double posture_if_investment(int64_t amount);
 };
 

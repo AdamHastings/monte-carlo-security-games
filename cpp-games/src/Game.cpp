@@ -111,7 +111,7 @@ std::string Game::to_string() {
     ss << Defender::NUM_QUOTES << ",";
 
     ss << std::scientific << std::setprecision(2) << Insurer::paid_claims <<  ",";
-    ss << iter_num <<  ",";
+    ss << iter_num + 1 <<  ",";
     ss << final_outcome << "";
 
     if (p.verbose) {
@@ -264,16 +264,12 @@ bool Game::game_over() {
 
 void Game::fight(Attacker &a, Defender &d) {
 
-    // verify_outcome(); // TODO delete
-
     if (a.assets == 0) {
         // One player is dead already. Skip.
-        // std::cout << "dead attacker" << std::endl;
         return;
     }
     if (d.assets == 0) {
         // One player is dead already. Skip.
-        // std::cout << "dead defender" << std::endl;
         return;
     }
 
@@ -369,9 +365,9 @@ void Game::init_round() {
     // TODO put into market analysis?
     for (uint i=0; i < alive_defenders_indices.size(); i++) {
         assert(defenders[alive_defenders_indices[i]].assets > 0);
+        defenders[alive_defenders_indices[i]].security_depreciation();
         defenders[alive_defenders_indices[i]].choose_security_strategy(); 
     }
-
     // verify_outcome(); // TODO delete
 }
 
@@ -430,7 +426,7 @@ void Game::run_iterations() {
 
     init_game();
 
-    for (iter_num = 1; iter_num < max_iterations + 1; iter_num++) {
+    for (iter_num = 0; iter_num < max_iterations; iter_num++) {
 
         init_round();
 
