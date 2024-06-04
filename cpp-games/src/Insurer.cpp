@@ -102,8 +102,8 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     int64_t expected_cost_to_attack = (int64_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
     double p_one_attacker_has_enough_to_attack;
-    if (std::isnan(estimated_current_attacker_wealth_stdddev)) { // There is only one attacker, so using CDF doesn't make sense 
-        p_one_attacker_has_enough_to_attack = (estimated_current_attacker_wealth_mean > expected_cost_to_attack) ? true : false;
+    if (std::isnan(estimated_current_attacker_wealth_stdddev) || estimated_current_attacker_wealth_stdddev == 0) { // There is only one attacker, so using CDF doesn't make sense 
+        p_one_attacker_has_enough_to_attack = (exp(estimated_current_attacker_wealth_mean) > expected_cost_to_attack) ? true : false;
     } else {
         p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2)))); // CDF of lognormal distribution
     }
@@ -175,6 +175,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     // Can return nan. Need to check against this condition elsewhere.
     estimated_current_attacker_wealth_stdddev = sqrt(utils::compute_var_mom(attacker_assets)); // Note!! This is the log of actual lognormal stddev!!
     assert(std::isnan(estimated_current_attacker_wealth_stdddev) ? attacker_assets.size() == 1 : true);
+    assert(estimated_current_attacker_wealth_stdddev == 0 ? attacker_assets.size() == 1 : true);
 }
 
 void Insurer::reset(){
