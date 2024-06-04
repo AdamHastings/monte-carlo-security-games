@@ -18,19 +18,20 @@ Params params_loader::load_cfg(std::string basename) {
     
     p.NUM_ATTACKERS_distribution = Distribution::createDistribution(jsonData["NUM_ATTACKERS"]);
     p.INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
-    // p.EFFICIENCY_distribution = Distribution::createDistribution(jsonData["EFFICIENCY"]);
     p.RANSOM_B0_distribution = Distribution::createDistribution(jsonData["RANSOM_B0"]);
     p.RANSOM_B1_distribution = Distribution::createDistribution(jsonData["RANSOM_B1"]);
     p.RECOVERY_COST_BASE_distribution = Distribution::createDistribution(jsonData["RECOVERY_COST_BASE"]);
     p.RECOVERY_COST_EXP_distribution = Distribution::createDistribution(jsonData["RECOVERY_COST_EXP"]);
     p.WEALTH_distribution     = Distribution::createDistribution(jsonData["WEALTH"]);
     p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);    
-    p.POSTURE_NOISE_distribution    = Distribution::createDistribution(jsonData["POSTURE_NOISE"]);    
+    p.POSTURE_NOISE_distribution    = Distribution::createDistribution(jsonData["POSTURE_NOISE"]);   
+
+    p.DEPRECIATION_distribution  = Distribution::createDistribution(jsonData["DEPRECIATION"]); 
+ 
 
     p.LOSS_RATIO_distribution                  = Distribution::createDistribution(jsonData["LOSS_RATIO"]);
     p.RETENTION_REGRESSION_FACTOR_distribution = Distribution::createDistribution(jsonData["RETENTION_REGRESSION_FACTOR"]);
     p.NUM_DEFENDERS_distribution               = Distribution::createDistribution(jsonData["NUM_DEFENDERS"]);
-    // TODO assert that NUM_* params are fixed points, not distributions
     
     Json::Value num_insurers_json = jsonData["NUM_INSURERS"];
     assert(num_insurers_json["distribution"] == "fixed");

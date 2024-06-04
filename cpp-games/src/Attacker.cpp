@@ -37,7 +37,7 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
 // and this doesn't mean that the estimated posture should be super high.
 // So we do Method of Moments
 void Attacker::perform_market_analysis(std::vector<Defender> &defenders) {
-
+    // TODO consider using alive_defenders?
     std::vector<double> defender_postures;
     for (uint i=0; i<defenders.size(); i++) {
         if (defenders[i].is_alive()) {

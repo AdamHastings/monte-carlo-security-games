@@ -90,6 +90,11 @@
         "distribution" : "fixed",
         "val" : 0.85714285714
     },
+    "DEPRECIATION" :
+    {
+        "distribution" : "fixed",
+        "val" : 0.4
+    },
     "NUM_GAMES": 100,
     "verbose":false,
     "assertions_on":true

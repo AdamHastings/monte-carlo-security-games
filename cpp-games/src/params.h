@@ -7,7 +7,6 @@
 struct Params {
     Distribution* NUM_ATTACKERS_distribution;
     Distribution* INEQUALITY_distribution;
-    // Distribution* EFFICIENCY_distribution;
     Distribution* RANSOM_B0_distribution;
     Distribution* RANSOM_B1_distribution;
     Distribution* RECOVERY_COST_BASE_distribution;
@@ -15,6 +14,8 @@ struct Params {
     Distribution* WEALTH_distribution;
     Distribution* POSTURE_distribution;
     Distribution* POSTURE_NOISE_distribution;
+
+    Distribution* DEPRECIATION_distribution;
 
     Distribution* NUM_QUOTES_distribution;
     Distribution* LOSS_RATIO_distribution;

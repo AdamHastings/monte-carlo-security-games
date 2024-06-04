@@ -19,7 +19,7 @@ Game::Game(Params prm, unsigned int game_number) {
     
     game_num = game_number;
 
-    // std::random_device rd;  // Uncomment if you need true randomness
+    // std::random_device rd;  // Uncomment if you need true randomness // TOOD consider for release run?
     Distribution::seed(game_num);
     gen.seed(game_num);
      
@@ -34,13 +34,9 @@ Game::Game(Params prm, unsigned int game_number) {
         Insurer i = Insurer(j, p, defenders, attackers);
         insurers.push_back(i);
     }
-    // TODO maybe all this should happen in the Insurers' constructor? Or no because it's only called once?
+    
     Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
-    // Insurer::expected_ransom_base = p.RANSOM_BASE_distribution->mean();
-    // Insurer::expected_ransom_exponent = p.RANSOM_EXP_distribution->mean();
-    // Insurer::expected_recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
-    // Insurer::expected_recovery_exponent = p.RECOVERY_COST_EXP_distribution->mean();
 
     uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
     for (uint i=0; i < num_blue_players; i++) {
@@ -72,7 +68,7 @@ Game::Game(Params prm, unsigned int game_number) {
     assert(Attacker::inequality_ratio > 0);
     assert(Attacker::inequality_ratio <= 1.0);
 
-    for (int i=0; i < NUM_ATTACKERS; i++) {
+    for (uint32_t i=0; i < NUM_ATTACKERS; i++) {
         Attacker a = Attacker(i, p);
         attackers.push_back(a);
         alive_attackers_indices.push_back(i);
@@ -112,7 +108,17 @@ std::string Game::to_string() {
 
     ss << std::scientific << std::setprecision(2) << Insurer::paid_claims <<  ",";
     ss << iter_num + 1 <<  ",";
-    ss << final_outcome << "";
+    if (final_outcome == Outcomes::ATTACKERS_WIN) {
+        ss << "ATTACKERS_WIN" << "";
+    } else if (final_outcome == Outcomes::DEFENDERS_WIN) {
+        ss << "DEFENDERS_WIN" << "";
+    } else if (final_outcome == Outcomes::EQUILIBRIUM) {
+        ss << "EQUILIBRIUM" << "";
+    } else if (final_outcome == Outcomes::NO_EQUILIBRIUM) {
+        ss << "NO_EQUILIBRIUM" << "";
+    } else {
+        assert(false);
+    }
 
     if (p.verbose) {
         ss << ",\"[";
@@ -206,20 +212,16 @@ void Game::verify_outcome() {
         checksum_insurer_sum_assets += ins.assets;
     }
     assert(Insurer::current_sum_assets - checksum_insurer_sum_assets == 0);
-
-    // assert(round(Defender::d_init - current_defender_sum_assets) >= 0); // This might actually not be the case! E.g. all defender losses have been covered, and an attacker who received no claims then gets recouped.
-    // assert(round(Insurer::i_init  + Insurer- Insurer::paid_claims) >= 0); // This can be violated if insurers collect money from insurance.
     assert(Insurer::paid_claims >= 0);
-    // assert(round(Attacker::attackerLoots - Insurer::paid_claims) >= 0); // No longer always true in new model because of recovery costs
     assert(Attacker::attackerExpenditures >= 0);
 
-    if (final_outcome == "E") {
+    if (final_outcome == Outcomes::EQUILIBRIUM) {
         assert(alive_attackers_indices.size() > 0);
         assert(alive_defenders_indices.size() > 0);
         assert(iter_num >= DELTA); 
-    } else if (final_outcome == "D") {
+    } else if (final_outcome == Outcomes::ATTACKERS_WIN) {
         assert(alive_defenders_indices.size() == 0);
-    } else if (final_outcome == "A") {
+    } else if (final_outcome == Outcomes::DEFENDERS_WIN) {
         assert(alive_attackers_indices.size() == 0);
     }
 
@@ -246,16 +248,16 @@ bool Game::game_over() {
 
     bool game_over = false;
     if (alive_attackers_indices.size() == 0) {
-        final_outcome = "A"; // TODO make this an enum
+        final_outcome = Outcomes::DEFENDERS_WIN;
         game_over = true;
     } else if (alive_defenders_indices.size() == 0) {
-        final_outcome = "D";
+        final_outcome = Outcomes::ATTACKERS_WIN;
         game_over = true;
     } else if (equilibrium_reached()) {
-        final_outcome = "E";
+        final_outcome = Outcomes::EQUILIBRIUM;
         game_over = true;
     } else if (iter_num == max_iterations) {
-        final_outcome = "N";
+        final_outcome = Outcomes::NO_EQUILIBRIUM;
         game_over = true;
     }
 
@@ -305,8 +307,7 @@ void Game::fight(Attacker &a, Defender &d) {
         Attacker::attackerExpenditures += cost_to_attack;
         roundAttacks += 1;
         a.lose(cost_to_attack);
-
-        // verify_outcome(); // TODO delete
+        d.attacked = true;
 
         if (RandUniformDist.draw() > d.posture) {
 
@@ -337,11 +338,8 @@ void Game::fight(Attacker &a, Defender &d) {
                 uint32_t total_losses = ransom + recovery_cost;
                 d.submit_claim(total_losses);
             }
-            // verify_outcome(); // TODO delete
         }
-        // verify_outcome(); // TODO delete
     }
-    // verify_outcome(); // TODO delete
 }
 
 void Game::init_round() {
@@ -353,8 +351,27 @@ void Game::init_round() {
     // roundAttackSuccesses = 0;
 
     Insurer::perform_market_analysis(insurers);
-    Defender::perform_market_analysis(prevRoundAttacks, defenders.size());
+    Defender::perform_market_analysis(prevRoundAttacks, alive_defenders_indices.size());
     Attacker::perform_market_analysis(defenders);
+
+    for (Defender &d : defenders) {
+        if (d.is_alive()) {            
+            // Insurance policy expires
+            d.ins_idx = -1;
+            d.insured = false; 
+            
+            // reset attacked status
+            d.attacked = false;
+            
+            d.security_depreciation();
+            d.choose_security_strategy(); 
+        }
+    }
+}
+
+void Game::conclude_round() {
+    assert(roundAttacks <= alive_defenders_indices.size());
+    prevRoundAttacks = roundAttacks;
 
     // this could be faster if you iterated through the alive players instead 
     alive_attackers_indices.clear();
@@ -375,23 +392,8 @@ void Game::init_round() {
     for (Defender &d : defenders) {
         if (d.is_alive()) {
             alive_defenders_indices.push_back(d.id);
-            
-            // Insurance policy expires
-            d.ins_idx = -1;
-            d.insured = false; 
-            
-            // reset attacked status
-            d.attacked = false;
-            
-            d.security_depreciation();
-            d.choose_security_strategy(); 
         }
     }
-}
-
-void Game::conclude_round() {
-
-    prevRoundAttacks = roundAttacks;
 
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::current_sum_assets);
@@ -421,6 +423,9 @@ void Game::run_iterations() {
         std::uniform_int_distribution<> alive_defender_indices_dist(0, num_alive_defenders-1);
 
         for (auto& a_i : alive_attackers_indices) {
+            assert(a_i < attackers.size());
+            Attacker *a = &attackers[a_i];
+
             
             // pick victims
             // TODO think about how to do this in a cache-friendly way
@@ -429,17 +434,25 @@ void Game::run_iterations() {
                 // TODO consider having attackers fight until they've attempted ATTACKS_PER_EPOCH attacks
                 // TODO potential to get stuck here
                 int candidate_victim = alive_defender_indices_dist(gen);
-                bool attacked_this_round = defenders[alive_defenders_indices[candidate_victim]].attacked;
-                if (!attacked_this_round) {
-                    victim_indices.insert(candidate_victim);
-                }
+                // bool attacked_this_round = defenders[alive_defenders_indices[candidate_victim]].attacked;
+                // if (!attacked_this_round) {
+                victim_indices.insert(candidate_victim);
+                // }
             }
+
 
             // fight all chosen victims 
             for (const auto& d_i : victim_indices) {
-                Attacker *a = &attackers[alive_attackers_indices[a_i]];
-                Defender *d = &defenders[alive_defenders_indices[d_i]];
-                fight(*a, *d);
+                assert(d_i < defenders.size());
+                Defender *d = &defenders[d_i];
+                
+                if (!d->attacked) {
+                    fight(*a, *d);
+                }
+                
+                if (!a->is_alive()) {
+                    break;
+                }
             }
         }
         conclude_round();
@@ -454,7 +467,6 @@ void Game::run_iterations() {
 Game::~Game() {
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
-    // delete p.EFFICIENCY_distribution; 
     delete p.RANSOM_B0_distribution;
     delete p.RANSOM_B1_distribution;
     delete p.RECOVERY_COST_BASE_distribution;
@@ -470,4 +482,5 @@ Game::~Game() {
     delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.CTA_SCALING_FACTOR_distribution;
     delete p.DELTA_distribution;
+    delete p.DEPRECIATION_distribution;
 }

@@ -22,6 +22,7 @@ double utils::computeVariance(const std::vector<double>& data, double mean) {
     return sumSquaredDiff / (data.size() - 1);
 }
 
+// Method of moments to compute the mean of a distribution
 double utils::compute_mu_mom(const std::vector<double>& data) {
     double sum = 0;
     double sq_sum = 0;
@@ -32,12 +33,11 @@ double utils::compute_mu_mom(const std::vector<double>& data) {
     double t1 = -0.5 * log(sq_sum);
     double t2 = 2 * log(sum);
     double t3 = -1.5 * log(data.size());
-
-    double mu_mom = t1 + t2 + t3; 
-
-    return mu_mom;
+    
+    return t1 + t2 + t3;
 }
 
+// Method of moments to compute the variance of a distribution
 double utils::compute_var_mom(const std::vector<double>& data) {
     double sum = 0;
     double sq_sum = 0;

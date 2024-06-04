@@ -80,8 +80,6 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     assert(p_getting_paired_with_attacker_a >= 0);
     assert(p_getting_paired_with_attacker_a <= 1);
 
-    // double expected_num_attacks_from_attacker_a = // TODO do everything in terms of expected number of attacks i.e. allow for more than one attack per round. Need to re-derive formulae
-
     double p_getting_attacked;
     if (p_getting_paired_with_attacker_a == 1.0) {
         p_getting_attacked = 1.0;
@@ -125,7 +123,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     policy.retention = (int64_t) retention_regression_factor * policy.premium;
 
     if (policy.premium != 0) {
-        assert(policy.premium > 0); // I'd like to not have to consider cases where premium = 0
+        assert(policy.premium > 0);
         assert(policy.retention > 0);
     }
 

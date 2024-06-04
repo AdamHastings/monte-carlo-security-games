@@ -138,7 +138,7 @@ double Defender::find_optimal_investment(){
 void Defender::security_depreciation() {
     // We assume that opex is twice capex
     // the value of previous opex spending depreciates to zero after it is spent (by definition)
-    double DEPRECIATION = 0.4; // TODO put into config // justify this value
+    double DEPRECIATION = p.DEPRECIATION_distribution->draw();
     capex = capex * (1 - DEPRECIATION);
     posture = posture_if_investment(capex);
 }
@@ -233,7 +233,6 @@ void Defender::choose_security_strategy() {
 
 void Defender::perform_market_analysis(int prevRoundAttacks, int num_current_defenders) {
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
-    assert(prevRoundAttacks <= num_current_defenders);
     Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(num_current_defenders * 1.0));
     assert(Defender::estimated_probability_of_attack >= 0);
     assert(Defender::estimated_probability_of_attack <= 1);

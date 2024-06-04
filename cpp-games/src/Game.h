@@ -10,6 +10,13 @@
 #include "params.h"
 #include "Distributions.h"
 
+enum class Outcomes {
+    INIT,
+    DEFENDERS_WIN, 
+    ATTACKERS_WIN, 
+    EQUILIBRIUM, 
+    NO_EQUILIBRIUM
+}; 
 
 class Game {
 
@@ -21,19 +28,18 @@ class Game {
 
     private:
 
-        unsigned int game_num = 0;
+        uint32_t game_num = 0;
 
         Params p;
 
         std::mt19937 gen;
-        int NUM_ATTACKERS; // TODO pick a capitalization convention
-        unsigned int ATTACKS_PER_EPOCH; 
+        uint32_t NUM_ATTACKERS; // TODO pick a capitalization convention
+        uint32_t ATTACKS_PER_EPOCH; 
         double cta_scaling_factor;
         
-        unsigned int max_iterations = 5000; // TODO make this a game parameter
+        uint32_t max_iterations = 5000; // TODO make this a game parameter
 
-
-        uint DELTA;
+        uint32_t DELTA;
 
         std::vector<Defender> defenders;
         std::vector<Attacker> attackers;
@@ -41,18 +47,18 @@ class Game {
 
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
-        unsigned int iter_num = 0;
+        uint32_t iter_num = 0;
 
-        std::vector<int> alive_attackers_indices;
-        std::vector<int> alive_defenders_indices;
-        std::vector<int> alive_insurers_indices;
+        std::vector<uint32_t> alive_attackers_indices;
+        std::vector<uint32_t> alive_defenders_indices;
+        std::vector<uint32_t> alive_insurers_indices;
         
-        uint roundAttacks = 0;
+        uint32_t roundAttacks = 0;
         // uint roundAttackSuccesses = 0;
-        uint prevRoundAttacks = 0;
-        uint consecutiveNoAttacks=0;
+        uint32_t prevRoundAttacks = 0;
+        uint32_t consecutiveNoAttacks=0;
 
-        std::string final_outcome = "X"; // TODO turn this into an enum perhaps?
+        Outcomes final_outcome = Outcomes::INIT;
 
         void fight(Attacker &a, Defender &d);
         bool equilibrium_reached();
@@ -66,7 +72,4 @@ class Game {
 
         void init_round();
         void conclude_round();
-    
-
-        void reset_alive_players();
 };

@@ -76,7 +76,6 @@ void SerialRunGames(std::string basename) {
         
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
-    // delete p.EFFICIENCY_distribution; 
     delete p.RANSOM_B0_distribution;
     delete p.RANSOM_B1_distribution;
     delete p.RECOVERY_COST_BASE_distribution;
@@ -92,6 +91,7 @@ void SerialRunGames(std::string basename) {
     delete p.CTA_SCALING_FACTOR_distribution;
     delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.DELTA_distribution;
+    delete p.DEPRECIATION_distribution;
 
     for (uint i=0; i < p.NUM_GAMES; i++) {
         p = params_loader::load_cfg(basename);
@@ -134,7 +134,6 @@ void init_logs(std::string basename, Params p) {
     ofstream log;
 
     // Check if log file already exists so that we don't accidentally write over it
-    // TODO consider timestamping each run.
     ifstream f(fpath.c_str());
     if (f.good() && !basename.compare(0, 4, "test") == 0) {
         std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it (Y)? Or append to it (A)? Y/A/n\n >> ";
@@ -190,7 +189,6 @@ int main(int argc, char** argv) {
 
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
-    // delete p.EFFICIENCY_distribution; 
     delete p.RANSOM_B0_distribution;
     delete p.RANSOM_B1_distribution;
     delete p.RECOVERY_COST_BASE_distribution;
@@ -206,6 +204,7 @@ int main(int argc, char** argv) {
     delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.CTA_SCALING_FACTOR_distribution;
     delete p.DELTA_distribution;
+    delete p.DEPRECIATION_distribution;
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
