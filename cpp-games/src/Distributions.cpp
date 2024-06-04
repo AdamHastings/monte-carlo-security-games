@@ -118,6 +118,7 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         }
         double min = d["min"].asDouble();
         double max = d["max"].asDouble();
+        assert(min < max); // If you want min == max, use a fixed distribution instead
         dist = new UniformRealDistribution(min, max);
     } else if (d["distribution"] == "normal") {
         if (!d["mean"] || !d["stddev"]) {
@@ -127,6 +128,7 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         }
         double mean = d["mean"].asDouble();
         double stddev = d["stddev"].asDouble();
+        assert(stddev > 0);
         dist = new NormalDistribution(mean, stddev);
     } else if (d["distribution"] == "lognormal") {
         if (!d["mean"] || !d["stddev"]) {
@@ -136,6 +138,7 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         }
         double mean = d["mean"].asDouble();
         double stddev = d["stddev"].asDouble();
+        assert(stddev > 0);
         dist = new LogNormalDistribution(mean, stddev);
     } else if (d["distribution"] == "truncated_normal") {
         if (!d["mean"] || !d["stddev"] || !d["min"] || !d["max"]) {
@@ -147,8 +150,10 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         double stddev = d["stddev"].asDouble();
         double min    = d["min"].asDouble();
         double max    = d["max"].asDouble();
+        assert(min < max); // If you want min == max, use a fixed distribution instead
         assert(mean >= min);
         assert(mean <= max);
+        assert(stddev > 0);
         dist = new TruncatedNormalDistribution(mean, stddev, min, max);
     } else if (d["distribution"] == "poisson") {
         if (!d["lambda"]) {
@@ -164,6 +169,7 @@ Distribution* Distribution::createDistribution(Json::Value d) {
     } else {
         std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
         std::cerr << "Offending parameter: " << d << endl;
+        assert(false);
         exit(1);
     }
     return dist;

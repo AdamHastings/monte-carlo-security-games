@@ -17,7 +17,6 @@ class Defender : public Player {
         static int64_t policiesPurchased;
         static int64_t defensesPurchased;
         static int64_t sum_security_investments;
-        // static unsigned int doNothing; // TODO implement? what is this for? maybe delete
         
         static std::mt19937* gen;
 
@@ -29,8 +28,8 @@ class Defender : public Player {
         static uint32_t NUM_QUOTES;
 
         static void perform_market_analysis(int prevRoundAttacks, int num_current_defenders);
-        static long long ransom(int assets); // TODO add bounds check assertion
-        static long long recovery_cost(int assets); // TODO add bounds check assertion
+        static long long ransom(int assets); 
+        static long long recovery_cost(int assets);
 
         static void reset();
 

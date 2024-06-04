@@ -33,13 +33,15 @@ class Game {
         Params p;
 
         std::mt19937 gen;
-        uint32_t NUM_ATTACKERS; // TODO pick a capitalization convention
+        uint32_t NUM_ATTACKERS;
         uint32_t ATTACKS_PER_EPOCH; 
-        double cta_scaling_factor;
-        
-        uint32_t max_iterations = 5000; // TODO make this a game parameter
 
-        uint32_t DELTA;
+        int32_t iter_num;
+        int32_t MAX_ITERATIONS = -1; // TODO make this a game parameter // TODO need to set this in Game construction
+
+        int32_t DELTA;
+        int32_t consecutiveNoAttacks=0;
+
 
         std::vector<Defender> defenders;
         std::vector<Attacker> attackers;
@@ -47,16 +49,13 @@ class Game {
 
         UniformRealDistribution RandUniformDist = UniformRealDistribution(0.0, 1.0);
 
-        uint32_t iter_num = 0;
 
         std::vector<uint32_t> alive_attackers_indices;
         std::vector<uint32_t> alive_defenders_indices;
         std::vector<uint32_t> alive_insurers_indices;
         
         uint32_t roundAttacks = 0;
-        // uint roundAttackSuccesses = 0;
         uint32_t prevRoundAttacks = 0;
-        uint32_t consecutiveNoAttacks=0;
 
         Outcomes final_outcome = Outcomes::INIT;
 

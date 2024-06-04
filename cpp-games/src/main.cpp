@@ -19,16 +19,14 @@ using namespace std;
 
 void RunGame(Params p, unsigned int game_number) {
     
-    // TODO need to do two more draws when creating game!!
+    // Create and run the game
     Game g = Game(p, game_number);
-
     g.run_iterations();
 
     // Write response to log file;
-    // TODO maybe handle all logging in its own file(s)
     ofstream log;
     log.open(p.logname, ios::app);
-    log << g.to_string(); // TODO might need to check since the distribution format changed.
+    log << g.to_string();
     log.close();
 }
 
@@ -92,6 +90,9 @@ void SerialRunGames(std::string basename) {
     delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.DELTA_distribution;
     delete p.DEPRECIATION_distribution;
+    delete p.TARGET_SECURITY_SPENDING_distribution;
+    delete p.INVESTMENT_SCALING_FACTOR_distribution;
+    delete p.MAX_ITERATIONS_distribution;
 
     for (uint i=0; i < p.NUM_GAMES; i++) {
         p = params_loader::load_cfg(basename);
@@ -158,7 +159,6 @@ void init_logs(std::string basename, Params p) {
 }
 
 
-
 int main(int argc, char** argv) {
 
     // Validate the inputs
@@ -205,6 +205,9 @@ int main(int argc, char** argv) {
     delete p.CTA_SCALING_FACTOR_distribution;
     delete p.DELTA_distribution;
     delete p.DEPRECIATION_distribution;
+    delete p.TARGET_SECURITY_SPENDING_distribution;
+    delete p.INVESTMENT_SCALING_FACTOR_distribution;
+    delete p.MAX_ITERATIONS_distribution;
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

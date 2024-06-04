@@ -1,10 +1,7 @@
-Re-derive optimal security investment using new power law distribution of ransom prices and new equation for computing cost_to_attack (3 hrs)
 Verify above in Mathematica (2 hrs)
 Figure out what the distribution of posture noise should be
 Find out reasonable number of policies to be quoted. 
 Figure out reasonable security depreciation schedule
-Figure out if defenders can be attack more than once per round
-
 
 Optional:
 Add a "sweep" distribution that sweeps across a space 

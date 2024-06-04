@@ -95,6 +95,21 @@
         "distribution" : "fixed",
         "val" : 0.4
     },
+    "TARGET_SECURITY_SPENDING" :
+    {
+        "distribution" : "fixed",
+        "val" : 0.01
+    },
+    "INVESTMENT_SCALING_FACTOR" :
+    {
+        "distribution" : "fixed",
+        "val" : 25
+    },
+    "MAX_ITERATIONS" :
+    {
+        "distribution" : "fixed",
+        "val": 5000
+    },
     "NUM_GAMES": 100,
     "verbose":false,
     "assertions_on":true

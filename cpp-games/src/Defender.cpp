@@ -34,8 +34,8 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     assert(fp_assets < __UINT32_MAX__);
     assets = (uint32_t) fp_assets;
 
-    // posture = p.POSTURE_distribution->draw();
-    capex = (int64_t) fp_assets * 0.01; // initialize defenders with initial capex that will yield average posture // TODO make this an input param?
+    // initialize defenders with initial capex that will yield average posture 
+    capex = (int64_t) fp_assets * p.TARGET_SECURITY_SPENDING_distribution->draw(); 
     double noise = p.POSTURE_NOISE_distribution->draw();
     posture = posture_if_investment(capex) + noise;
 
@@ -90,13 +90,18 @@ void Defender::make_security_investment(uint32_t amount) {
     sum_security_investments += amount;
     this->lose(amount);
 
-    capex += amount / 3; // opex is twice capex spending ==> amount = capex + opex = capex + 2 * capex ==> (new) capex = amount / 3
+    // opex is twice capex spending 
+    // => amount = capex + opex = capex + 2 * capex 
+    // => (new) capex = amount / 3
+    capex += amount / 3;
 }
 
+// Assumes that ransom payments are linear with organization size
 long long Defender::ransom(int assets) {
     return ransom_b0 + (assets * ransom_b1);
 }
 
+// Assumes that recovery costs are a power law function of organization size
 long long Defender::recovery_cost(int assets) {
     return recovery_base * pow(assets, recovery_exp);
 }
@@ -104,11 +109,12 @@ long long Defender::recovery_cost(int assets) {
 // yields the expected posture if a defender were to invest amount into security
 double Defender::posture_if_investment(int64_t amount) {
     double investment_pct = (double) amount / (double) assets;
-    return erf(investment_pct * 25); // TODO remove 25, use config instead 
+    double investment_scaling_factor = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
+    return erf(investment_pct * investment_scaling_factor);
 }
 
 
-// TODO This can be approximated using Newton Raphon method
+// TODO This can be approximated using Newton Raphson method
 double Defender::find_optimal_investment(){
     int samples = 1000; // sample at 1% increments
     double minimum = std::numeric_limits<double>::max(); // TODO use inf instead?
@@ -136,7 +142,6 @@ double Defender::find_optimal_investment(){
 }
 
 void Defender::security_depreciation() {
-    // We assume that opex is twice capex
     // the value of previous opex spending depreciates to zero after it is spent (by definition)
     double DEPRECIATION = p.DEPRECIATION_distribution->draw();
     capex = capex * (1 - DEPRECIATION);
@@ -157,7 +162,7 @@ void Defender::choose_security_strategy() {
     std::uniform_int_distribution<> insurer_indices_dist(0, insurers->size()-1);
     
     // pick insurers for quotes
-    // TODO think about how to do this in a cache-friendly way
+    // Probably a more performant way of doing this 
     std::unordered_set<unsigned int> insurer_indices;
     while (insurer_indices.size() < NUM_QUOTES && insurer_indices.size() < insurers->size()) {
         insurer_indices.insert(insurer_indices_dist(*gen));

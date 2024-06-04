@@ -16,6 +16,7 @@ Params params_loader::load_cfg(std::string basename) {
 
     Params p;
     
+    
     p.NUM_ATTACKERS_distribution = Distribution::createDistribution(jsonData["NUM_ATTACKERS"]);
     p.INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
     p.RANSOM_B0_distribution = Distribution::createDistribution(jsonData["RANSOM_B0"]);
@@ -26,12 +27,17 @@ Params params_loader::load_cfg(std::string basename) {
     p.POSTURE_distribution    = Distribution::createDistribution(jsonData["POSTURE"]);    
     p.POSTURE_NOISE_distribution    = Distribution::createDistribution(jsonData["POSTURE_NOISE"]);   
 
-    p.DEPRECIATION_distribution  = Distribution::createDistribution(jsonData["DEPRECIATION"]); 
  
 
     p.LOSS_RATIO_distribution                  = Distribution::createDistribution(jsonData["LOSS_RATIO"]);
     p.RETENTION_REGRESSION_FACTOR_distribution = Distribution::createDistribution(jsonData["RETENTION_REGRESSION_FACTOR"]);
     p.NUM_DEFENDERS_distribution               = Distribution::createDistribution(jsonData["NUM_DEFENDERS"]);
+    
+    p.DEPRECIATION_distribution  = Distribution::createDistribution(jsonData["DEPRECIATION"]); 
+    p.TARGET_SECURITY_SPENDING_distribution = Distribution::createDistribution(jsonData["TARGET_SECURITY_SPENDING"]); 
+    p.INVESTMENT_SCALING_FACTOR_distribution = Distribution::createDistribution(jsonData["INVESTMENT_SCALING_FACTOR"]);
+    p.MAX_ITERATIONS_distribution = Distribution::createDistribution(jsonData["MAX_ITERATIONS"]); 
+
     
     Json::Value num_insurers_json = jsonData["NUM_INSURERS"];
     assert(num_insurers_json["distribution"] == "fixed");

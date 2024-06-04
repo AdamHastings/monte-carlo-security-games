@@ -19,10 +19,8 @@ class Insurer : public Player {
 
         static double loss_ratio;
         static unsigned int* ATTACKS_PER_EPOCH;
-        static double* cta_scaling_factor;
-        // static std::mt19937* gen;
 
-        static double retention_regression_factor;  // TODO double check retention regression factor
+        static double retention_regression_factor;
 
 
         static unsigned long long paid_claims;
@@ -35,8 +33,7 @@ class Insurer : public Player {
 
     public:
         uint64_t id;
-        // uint64_t round_earnings = 0; // TODO make sure these are updated in gain
-        int64_t round_losses = 0; // TODO make sure these are updated in loss
+        int64_t round_losses = 0;
 
         Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers);
         void gain(int64_t gain) override;

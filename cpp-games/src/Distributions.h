@@ -21,7 +21,7 @@ class Distribution {
 
         static void seed(unsigned int seed);
 
-        static std::mt19937 generator; // Standard mersenne_twister_engine seeded with rd()
+        static std::mt19937 generator; // Standard mersenne_twister_engine
 };
 
 class UniformRealDistribution : public Distribution {

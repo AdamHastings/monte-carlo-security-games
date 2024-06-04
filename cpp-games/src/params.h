@@ -15,7 +15,6 @@ struct Params {
     Distribution* POSTURE_distribution;
     Distribution* POSTURE_NOISE_distribution;
 
-    Distribution* DEPRECIATION_distribution;
 
     Distribution* NUM_QUOTES_distribution;
     Distribution* LOSS_RATIO_distribution;
@@ -24,6 +23,12 @@ struct Params {
     Distribution* NUM_INSURERS_distribution;
     Distribution* ATTACKS_PER_EPOCH_distribution;
     Distribution* CTA_SCALING_FACTOR_distribution;
+
+    Distribution* DEPRECIATION_distribution;
+    Distribution* TARGET_SECURITY_SPENDING_distribution;
+    Distribution* INVESTMENT_SCALING_FACTOR_distribution;
+    Distribution* MAX_ITERATIONS_distribution;
+
     
     Distribution* DELTA_distribution;
 

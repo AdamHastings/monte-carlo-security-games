@@ -6,7 +6,8 @@
 #include "Attacker.h"
 #include "utils.h"
 
-unsigned long long Insurer::i_init = 0; // Initialization outside the class definition
+// Initialization outside the class definition
+unsigned long long Insurer::i_init = 0; 
 int64_t Insurer::current_sum_assets = 0;
 int64_t Insurer::insurer_iter_sum = 0;
 unsigned long long Insurer::operating_expenses = 0;
@@ -18,9 +19,7 @@ double Insurer::estimated_current_attacker_wealth_stdddev = 0;
 double Insurer::loss_ratio = 0;
 double Insurer::retention_regression_factor = 0;
 
-unsigned int* Insurer::ATTACKS_PER_EPOCH; // TODO check that this isn't causing memory leaks
-double* Insurer::cta_scaling_factor = 0;
-// std::mt19937* Insurer::gen = 0;
+unsigned int* Insurer::ATTACKS_PER_EPOCH;
 
 std::vector<unsigned long long> Insurer::cumulative_assets; 
 std::vector<Defender>* Insurer::defenders;
@@ -31,7 +30,6 @@ unsigned long long Insurer::paid_claims = 0;
 Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers) : Player(p) {
     id = id_in;
     assert(id >= 0);
-    // last_round_loss_ratio = p.LOSS_RATIO_distribution->draw();
 
     defenders = &_defenders;
     attackers = &_attackers;
@@ -53,7 +51,6 @@ void Insurer::lose(int64_t loss) {
 
 void Insurer::gain(int64_t gain) {
     Player::gain(gain);
-    // this->round_earnings += gain; // assumes gains are only from premiums 
     insurer_iter_sum += gain;
     current_sum_assets += gain;
 }
@@ -89,7 +86,8 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     assert(p_getting_attacked >= 0);
     assert(p_getting_attacked <= 1);
 
-    bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + *cta_scaling_factor)));
+    double expected_cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->mean();
+    bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + expected_cta_scaling_factor)));
     // TODO output to log if this condition occurs
     // if (!attacking_expected_gains_outweigh_expected_costs) {
     //     std::cout << "Attacking no longer worth it!" << std::endl;

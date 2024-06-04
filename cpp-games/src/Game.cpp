@@ -19,9 +19,11 @@ Game::Game(Params prm, unsigned int game_number) {
     
     game_num = game_number;
 
-    // std::random_device rd;  // Uncomment if you need true randomness // TOOD consider for release run?
     Distribution::seed(game_num);
     gen.seed(game_num);
+    // Uncomment if you want to seed with true randomness
+    // std::random_device rd;  
+    // gen.seed(rd)
      
     Attacker::reset();
     Defender::reset();
@@ -55,10 +57,6 @@ Game::Game(Params prm, unsigned int game_number) {
     ATTACKS_PER_EPOCH = p.ATTACKS_PER_EPOCH_distribution->draw();
     Insurer::ATTACKS_PER_EPOCH = &ATTACKS_PER_EPOCH;
 
-    cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->draw();
-    Insurer::cta_scaling_factor = &cta_scaling_factor;
-
-    // Insurer::gen = &gen;
     Defender::gen = &gen;
 
     assert(NUM_ATTACKERS > 0);
@@ -74,7 +72,8 @@ Game::Game(Params prm, unsigned int game_number) {
         alive_attackers_indices.push_back(i);
     }
     
-    DELTA = p.DELTA_distribution->draw();
+    DELTA = (int32_t) p.DELTA_distribution->draw();
+    MAX_ITERATIONS = (int32_t) p.MAX_ITERATIONS_distribution->draw();
 
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::d_init);
@@ -154,7 +153,9 @@ std::string Game::to_string() {
 
 void Game::verify_init() {
 
-    // TODO store each D's init conditions? To compare against later...?
+    assert(MAX_ITERATIONS > 0);
+    assert(DELTA > 0);
+
     for (uint i=0; i<defenders.size(); i++) {
         Defender d = defenders[i];
         assert(d.id >= 0);
@@ -226,9 +227,9 @@ void Game::verify_outcome() {
     }
 
     // Master checksum
-    long long init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
-    long long end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets;
-    long long expenses_ = Defender::sum_security_investments +  Attacker::attackerExpenditures + Defender::sum_recovery_costs + Insurer::operating_expenses; 
+    int64_t init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
+    int64_t end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets;
+    int64_t expenses_ = Defender::sum_security_investments +  Attacker::attackerExpenditures + Defender::sum_recovery_costs + Insurer::operating_expenses; 
 
     assert(init_ - expenses_ == end_); 
 }
@@ -256,7 +257,7 @@ bool Game::game_over() {
     } else if (equilibrium_reached()) {
         final_outcome = Outcomes::EQUILIBRIUM;
         game_over = true;
-    } else if (iter_num == max_iterations) {
+    } else if (iter_num == MAX_ITERATIONS) {
         final_outcome = Outcomes::NO_EQUILIBRIUM;
         game_over = true;
     }
@@ -292,7 +293,7 @@ void Game::fight(Attacker &a, Defender &d) {
     if (expected_payoff > expected_cost_to_attack && expected_cost_to_attack <= a.assets) { 
         // Attacking  appears to be financially worth it
 
-        uint32_t cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * d.posture * ransom);
+        uint32_t cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->draw() * d.posture * ransom);
         
 
         // This is to model that attackers can go "all in" but they can't get away with paying less than the full cost of an attack
@@ -312,7 +313,6 @@ void Game::fight(Attacker &a, Defender &d) {
         if (RandUniformDist.draw() > d.posture) {
 
             Attacker::attacksSucceeded += 1;
-            // roundAttackSuccesses += 1;
             a.gain(ransom);
 
             if (debt > 0) {
@@ -348,12 +348,12 @@ void Game::init_round() {
     Attacker::attacker_iter_sum = 0;
     Insurer::insurer_iter_sum = 0;
     roundAttacks = 0;
-    // roundAttackSuccesses = 0;
 
     Insurer::perform_market_analysis(insurers);
     Defender::perform_market_analysis(prevRoundAttacks, alive_defenders_indices.size());
     Attacker::perform_market_analysis(defenders);
 
+    // this could be faster if you iterated through the alive players instead 
     for (Defender &d : defenders) {
         if (d.is_alive()) {            
             // Insurance policy expires
@@ -415,7 +415,7 @@ void Game::run_iterations() {
 
     init_game();
 
-    for (iter_num = 0; iter_num < max_iterations; iter_num++) {
+    for (iter_num = 0; iter_num < MAX_ITERATIONS; iter_num++) {
 
         init_round();
 
@@ -428,17 +428,14 @@ void Game::run_iterations() {
 
             
             // pick victims
-            // TODO think about how to do this in a cache-friendly way
             std::unordered_set<unsigned int> victim_indices;
             while (victim_indices.size() < std::min(ATTACKS_PER_EPOCH, num_alive_defenders)) {
-                // TODO consider having attackers fight until they've attempted ATTACKS_PER_EPOCH attacks
-                // TODO potential to get stuck here
+                // This quick-and-dirty approach has the potential to become very slow in degenerate cases
+                // Check here if performance becomes an issue
                 int candidate_victim = alive_defender_indices_dist(gen);
-                // bool attacked_this_round = defenders[alive_defenders_indices[candidate_victim]].attacked;
-                // if (!attacked_this_round) {
                 victim_indices.insert(candidate_victim);
-                // }
             }
+            // May be more cache friendly if victims are sorted here? May or may not be worth the overhead
 
 
             // fight all chosen victims 
@@ -463,7 +460,6 @@ void Game::run_iterations() {
     conclude_game();
 }
 
-
 Game::~Game() {
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
@@ -483,4 +479,7 @@ Game::~Game() {
     delete p.CTA_SCALING_FACTOR_distribution;
     delete p.DELTA_distribution;
     delete p.DEPRECIATION_distribution;
+    delete p.TARGET_SECURITY_SPENDING_distribution;
+    delete p.INVESTMENT_SCALING_FACTOR_distribution;
+    delete p.MAX_ITERATIONS_distribution;
 }
