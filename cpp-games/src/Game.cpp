@@ -99,13 +99,16 @@ std::string Game::to_string() {
     ss << std::scientific << std::setprecision(2) << Attacker::attacksAttempted <<  ",";
     ss << std::scientific << std::setprecision(2) << Attacker::attacksSucceeded <<  ",";
     ss << std::scientific << std::setprecision(2) << Attacker::attackerLoots <<  ",";
+    ss << std::scientific << std::setprecision(2) << Defender::sum_recovery_costs <<  ",";
     ss << std::scientific << std::setprecision(2) << Attacker::attackerExpenditures <<  ",";
     ss << std::scientific << std::setprecision(2) << Defender::policiesPurchased << ",";   
     ss << std::scientific << std::setprecision(2) << Defender::defensesPurchased <<  ",";
+    ss << std::scientific << std::setprecision(2) << Defender::sum_security_investments <<  ",";
 
     ss << Defender::NUM_QUOTES << ",";
-
+    ss << std::scientific << std::setprecision(2) << Insurer::sum_premiums_collected <<  ",";
     ss << std::scientific << std::setprecision(2) << Insurer::paid_claims <<  ",";
+    ss << std::scientific << std::setprecision(2) << Insurer::operating_expenses <<  ",";
     ss << iter_num + 1 <<  ",";
     if (final_outcome == Outcomes::ATTACKERS_WIN) {
         ss << "ATTACKERS_WIN" << "";

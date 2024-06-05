@@ -115,11 +115,15 @@ void init_logs(std::string basename, Params p) {
     header += "attacksAttempted,";
     header += "attacksSucceeded,";
     header += "attackerLoots,";
+    header += "d_sum_recovery_costs,";
     header += "attackerExpenditures,";
     header += "policiesPurchased,";
     header += "defensesPurchased,";
+    header += "d_sum_security_investments,";
     header += "NUM_QUOTES,";
+    header += "sum_premiums_collected,";
     header += "paid_claims,";
+    header += "insurer_expenditures,";
     header += "final_iter,";
     header += "outcome";
 

@@ -10,6 +10,7 @@
 unsigned long long Insurer::i_init = 0; 
 int64_t Insurer::current_sum_assets = 0;
 int64_t Insurer::insurer_iter_sum = 0;
+int64_t Insurer::sum_premiums_collected = 0;
 unsigned long long Insurer::operating_expenses = 0;
 
 
@@ -66,6 +67,12 @@ int64_t Insurer::issue_payment(int64_t claim) {
     this->lose(amount_covered); 
     paid_claims += amount_covered; 
     return amount_covered;
+}
+
+// returns the id of the seller
+void Insurer::sell_policy(PolicyType policy) {
+    Insurer::sum_premiums_collected += policy.premium;
+    this->gain(policy.premium); 
 }
 
 PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {    

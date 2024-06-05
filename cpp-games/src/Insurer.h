@@ -25,6 +25,8 @@ class Insurer : public Player {
 
         static unsigned long long paid_claims;
         static unsigned long long operating_expenses;
+        static int64_t sum_premiums_collected ;
+
 
         static std::vector<Defender>* defenders;
         static std::vector<Attacker>* attackers;
@@ -41,5 +43,7 @@ class Insurer : public Player {
 
         PolicyType provide_a_quote(int64_t assets, double posture);
         int64_t issue_payment(int64_t claim);
+        void sell_policy(PolicyType policy);
+        
         static void perform_market_analysis(std::vector<Insurer> &insurers);
 };

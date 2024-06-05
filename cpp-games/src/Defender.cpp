@@ -55,13 +55,13 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
 } 
 
 void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
-    policiesPurchased += 1;
     assert(assets > p.premium);
+    policiesPurchased += 1;
     insured = true;
-    ins_idx = i->id;
     policy = p;
     this->lose(policy.premium);
-    i->gain(policy.premium); // May be worth considering putting this into Insurer.cpp
+    i->sell_policy(policy);
+    ins_idx = i->id;
 }
 
 void Defender::submit_claim(uint32_t loss) {
@@ -175,44 +175,12 @@ double Defender::d_d_probability_of_loss(int64_t investment) {
     return d_d_prob_loss;
 }
 
-
-// TODO this is giving incorrect results. Need to examine!!!
 double Defender::find_optimal_investment(){
 
-    // int samples = 100; // sample at 1% increments
-    // double minimum_loss = std::numeric_limits<double>::max(); // TODO use inf instead?
-    // double iterative_optimal_investment = 0;
-    // // double last_round_loss= -std::numeric_limits<double>::max();
-    // double loss;
-    // // long long iterative_cost_if_attacked;
-    // for (int i=0; i<=samples; i++) {
-    //     double inv_percent = ((double) i/ (double) samples);
-    //     double investment = (long long) assets * inv_percent;
-    //     // p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment)); 
-    //     // iterative_cost_if_attacked = ransom(assets - investment) + recovery_cost(assets - investment);
-
-    //     loss = investment + probability_of_loss(investment) * cost_if_attacked(investment);
-
-    //     if (loss < minimum_loss) {
-    //         minimum_loss = loss;
-    //         iterative_optimal_investment = investment;
-    //     }
-    //     // } else if (loss > last_round_loss) { // This function was killing performance...hopefully this reduces calculations
-    //     //     break;
-    //     // }
-    //     // last_round_loss = loss;
-
-        
-    // } // TODO add assertions 
-
     // Newton-Raphson method for finding the root of the derivative
-    int64_t guess = (int64_t) ((double) assets * 0.05); // Provide an initial guess 
-    if (guess == 0) {
-        guess = 1;
-    }
+    int64_t guess = std::max((int64_t) 1, (int64_t) ((double) assets * 0.05)); // Provide an initial guess
     assert(guess > 0);
-    int64_t last_guess = 0, last_last_guess = 0;
-
+    int64_t last_guess = -INT32_MAX, last_last_guess = -INT32_MAX; 
     do {
         
         int64_t investment = guess;
@@ -229,7 +197,6 @@ double Defender::find_optimal_investment(){
         last_last_guess = last_guess;
         last_guess = guess;
 
-        // double fx = investment + probability_of_loss(investment) * cost_if_attacked(investment);
         double d_fx = 1 + (d_probability_of_loss(investment) * cost_if_attacked(investment)) + (probability_of_loss(investment) * d_cost_if_attacked(investment)); // multiplication rule
         
         double t1 = d_d_probability_of_loss(investment) * cost_if_attacked(investment);
@@ -237,41 +204,13 @@ double Defender::find_optimal_investment(){
         double t3 = probability_of_loss(investment) * d_d_cost_if_attacked(investment);
         double d_d_fx = t1 + t2 + t3;
         guess = (int64_t) (last_guess - (d_fx / d_d_fx));
-
-        // if (guess < 0) { // TODO maybe assert this isn't true
-        //     guess = 0;
-        //     break;
-        // }
-        // if (guess > assets) { // TODO maybe assert this isn't true
-        //     guess = assets;
-        //     break;
-        // }
     
     // Compare against the last *two* guesses to avoid getting stuck in oscillatory loops
     }  while (guess != last_guess && guess != last_last_guess);
 
     int64_t optimal_investment = guess;
-
-    if (optimal_investment < 0) {// TODO maybe assert this isn't true
-        optimal_investment = 0;
-    }
-    if (optimal_investment > assets) { // TODO maybe assert this isn't true
-        optimal_investment = assets;
-    }
-
-    // double expected_loss = optimal_investment + probability_of_loss(optimal_investment) * cost_if_attacked(optimal_investment);
-
     assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
-
-    // WolframAlpha shows that the loss function is not concave.....
-    // x + 0.6*(1-erf((x/1000000 + 0.01)))*(641 + (1000000-x)*0.125  + (1000000 - x)^0.125), 0 < x < 1000000
-
-    // TODO the iterative and newton-raphson approaches should be reasonably close....
-    // TODO double check these 
-    // assert(abs(expected_loss - minimum_loss)/this->assets < 1);
-    // assert(abs((optimal_investment - iterative_optimal_investment) / this->assets) < 1); // TODO delete
-
     return optimal_investment;
 }
 
@@ -293,6 +232,8 @@ void Defender::choose_security_strategy() {
     assert(p_L_hat <= 1);
 
     // 1. Get insurance policy from insurer
+    // TODO what if this is picking dead insurers...?
+    // TODO TODO TODO 
     std::uniform_int_distribution<> insurer_indices_dist(0, insurers->size()-1);
     
     // pick insurers for quotes
@@ -363,6 +304,7 @@ void Defender::choose_security_strategy() {
 
     // TODO consider possibility that players can choose both
     // TODO consider case where insurer requires 1% investment 
+    // TODO consider cases where insurer tells defender how much to invest 
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(best_insurer, best_policy);
     } else {
