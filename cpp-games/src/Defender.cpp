@@ -37,7 +37,9 @@ Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Play
     // initialize defenders with initial capex that will yield average posture 
     capex = (int64_t) fp_assets * p.TARGET_SECURITY_SPENDING_distribution->draw(); 
     double noise = p.POSTURE_NOISE_distribution->draw();
-    posture = posture_if_investment(capex) + noise;
+    posture = posture_if_investment(0); // No initial opex. Capex allocation above should produce desired distribution
+    assert(abs(posture - 0.28) < 0.01); // TODO make sure setup is correct using params
+    posture += noise;
 
 
     if (posture < 0) {
@@ -81,12 +83,13 @@ void Defender::submit_claim(uint32_t loss) {
 }
 
 void Defender::make_security_investment(uint32_t amount) {
-    defensesPurchased += 1;
+    
     assert(amount >= 0);
     assert(amount <= assets);
-    posture = posture_if_investment(capex + amount);
+    posture = posture_if_investment(amount);
     assert(posture >= 0);
     assert(posture <= 1);
+    defensesPurchased += 1;
     sum_security_investments += amount;
     this->lose(amount);
 
@@ -97,55 +100,170 @@ void Defender::make_security_investment(uint32_t amount) {
 }
 
 // Assumes that ransom payments are linear with organization size
-long long Defender::ransom(int assets) {
-    return ransom_b0 + (assets * ransom_b1);
+// TODO rename to ransom_cost
+long long Defender::ransom(int _assets) {
+    return ransom_b0 + (_assets * ransom_b1);
 }
 
 // Assumes that recovery costs are a power law function of organization size
-long long Defender::recovery_cost(int assets) {
-    return recovery_base * pow(assets, recovery_exp);
+long long Defender::recovery_cost(int _assets) {
+    return recovery_base * pow(_assets, recovery_exp);
 }
 
-// yields the expected posture if a defender were to invest amount into security
-double Defender::posture_if_investment(int64_t amount) {
-    double investment_pct = (double) amount / (double) assets;
+// yields the expected posture if a defender were to invest investment into security
+// TODO add default value for expected value vs random draw?
+double Defender::posture_if_investment(int64_t investment) {
+    double investment_pct = (double) investment / (double) this->assets;
     double investment_scaling_factor = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
-    return erf(investment_pct * investment_scaling_factor);
+    
+    double capex_pct = (double) capex / (double) this->assets;
+    double total_investment_pct = investment_pct + capex_pct;
+
+    return erf(total_investment_pct * investment_scaling_factor);
+}
+
+// derivative of posture_if_investment with respect to amount
+double Defender::d_posture_if_investment(int64_t investment) {
+    double s = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
+    double power = -1 * (pow((double) s, 2) * pow((double) capex + investment, 2)) / pow((double) this->assets, 2);
+    return (2 * s * exp(power)) / ((double) assets * sqrt(M_PI));
+}
+
+double Defender::d_d_posture_if_investment(int64_t investment) {
+    double s = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
+    double power = -1 * (pow((double) s, 2) * pow((double) capex + investment, 2)) / pow((double) this->assets, 2);
+    double numerator = -4 * pow(s, 3) * (capex + investment) * exp(power);
+    double denominator = sqrt(M_PI) * pow(this->assets, 3);
+    
+    return numerator / denominator; 
+}
+
+int64_t Defender::cost_if_attacked(int64_t investment) {
+    double rans = ransom(this->assets - investment);
+    double recovery = recovery_cost(this->assets - investment);
+    assert(rans > 0);
+    assert(recovery >= 0);
+    return rans + recovery;
+}
+
+// derivative of posture_if_investment with respect to investment
+double Defender::d_cost_if_attacked(int64_t investment) {
+   double d_ransom = -1 * ransom_b1;
+   double d_recovery = -1 * recovery_base * recovery_exp * pow(this->assets - investment, recovery_exp - 1);
+   return d_ransom + d_recovery;
+}
+
+// second derivative of posture_if_investment with respect to investment
+double Defender::d_d_cost_if_attacked(int64_t investment) {
+   return recovery_base * (recovery_exp - 1) * (recovery_base) * pow(this->assets - investment, recovery_exp - 2);
+}
+
+double Defender::probability_of_loss(int64_t investment) {
+    double prob_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment));
+    assert(prob_loss >= 0);
+    assert(prob_loss <= 1);
+    return prob_loss;
+}
+
+double Defender::d_probability_of_loss(int64_t investment) {
+    double d_prob_loss = -1 * Defender::estimated_probability_of_attack *  d_posture_if_investment(investment);
+    return d_prob_loss;
+}
+
+double Defender::d_d_probability_of_loss(int64_t investment) {
+    double d_d_prob_loss = -1 * Defender::estimated_probability_of_attack *  d_d_posture_if_investment(investment);
+    return d_d_prob_loss;
 }
 
 
-// TODO This can be approximated using Newton Raphson method
+// TODO this is giving incorrect results. Need to examine!!!
 double Defender::find_optimal_investment(){
-    int samples = 1000; // sample at 1% increments
-    double minimum = std::numeric_limits<double>::max(); // TODO use inf instead?
-    double optimal_investment = 0;
-    double last_round_loss= -std::numeric_limits<double>::max();
-    for (int i=0; i<samples; i++) {
-        double inv_percent = ((double) i/ (double) samples);
-        long long investment = (long long) assets * inv_percent;
-        double p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment)); 
-        long long cost_if_attacked = ransom(assets - investment) + recovery_cost(assets - investment);
 
-        double loss = investment + p_loss * cost_if_attacked;
+    // int samples = 100; // sample at 1% increments
+    // double minimum_loss = std::numeric_limits<double>::max(); // TODO use inf instead?
+    // double iterative_optimal_investment = 0;
+    // // double last_round_loss= -std::numeric_limits<double>::max();
+    // double loss;
+    // // long long iterative_cost_if_attacked;
+    // for (int i=0; i<=samples; i++) {
+    //     double inv_percent = ((double) i/ (double) samples);
+    //     double investment = (long long) assets * inv_percent;
+    //     // p_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment)); 
+    //     // iterative_cost_if_attacked = ransom(assets - investment) + recovery_cost(assets - investment);
 
-        if (loss < minimum) {
-            minimum = loss;
-            optimal_investment = investment;
-        } else if (loss > last_round_loss) { // This function was killing performance...hopefully this reduces calculations
-            break;
-        }
-        last_round_loss = loss;
+    //     loss = investment + probability_of_loss(investment) * cost_if_attacked(investment);
+
+    //     if (loss < minimum_loss) {
+    //         minimum_loss = loss;
+    //         iterative_optimal_investment = investment;
+    //     }
+    //     // } else if (loss > last_round_loss) { // This function was killing performance...hopefully this reduces calculations
+    //     //     break;
+    //     // }
+    //     // last_round_loss = loss;
 
         
-    } // TODO add assertions 
-    return optimal_investment; // TODO return struct with minimum *and* minimum_pct
+    // } // TODO add assertions 
+
+    // Newton-Raphson method for finding the root of the derivative
+    int64_t guess = (int64_t) ((double) assets * 0.05); // Provide an initial guess 
+    assert(guess > 0);
+    int64_t last_guess;
+
+    do {
+        
+        int64_t investment = guess;
+        last_guess = guess;
+
+        // double fx = investment + probability_of_loss(investment) * cost_if_attacked(investment);
+        double d_fx = 1 + (d_probability_of_loss(investment) * cost_if_attacked(investment)) + (probability_of_loss(investment) * d_cost_if_attacked(investment)); // multiplication rule
+        
+        double t1 = d_d_probability_of_loss(investment) * cost_if_attacked(investment);
+        double t2 = 2 * d_probability_of_loss(investment) * d_cost_if_attacked(investment);
+        double t3 = probability_of_loss(investment) * d_d_cost_if_attacked(investment);
+        double d_d_fx = t1 + t2 + t3;
+        guess = (int64_t) (last_guess - (d_fx / d_d_fx));
+
+        // if (guess < 0) { // TODO maybe assert this isn't true
+        //     guess = 0;
+        //     break;
+        // }
+        // if (guess > assets) { // TODO maybe assert this isn't true
+        //     guess = assets;
+        //     break;
+        // }
+    }  while (guess != last_guess);
+
+    int64_t optimal_investment = guess;
+
+    if (optimal_investment < 0) {// TODO maybe assert this isn't true
+        optimal_investment = 0;
+    }
+    if (optimal_investment > assets) { // TODO maybe assert this isn't true
+        optimal_investment = assets;
+    }
+
+    double expected_loss = optimal_investment + probability_of_loss(optimal_investment) * cost_if_attacked(optimal_investment);
+
+    assert(optimal_investment >= 0);
+    assert(optimal_investment <= assets);
+
+    // WolframAlpha shows that the loss function is not concave.....
+    // x + 0.6*(1-erf((x/1000000 + 0.01)))*(641 + (1000000-x)*0.125  + (1000000 - x)^0.125), 0 < x < 1000000
+
+    // TODO the iterative and newton-raphson approaches should be reasonably close....
+    // TODO double check these 
+    assert(abs(expected_loss - minimum_loss)/this->assets < 1);
+    assert(abs((optimal_investment - iterative_optimal_investment) / this->assets) < 1); // TODO delete
+
+    return optimal_investment;
 }
 
 void Defender::security_depreciation() {
     // the value of previous opex spending depreciates to zero after it is spent (by definition)
     double DEPRECIATION = p.DEPRECIATION_distribution->draw();
     capex = capex * (1 - DEPRECIATION);
-    posture = posture_if_investment(capex);
+    posture = posture_if_investment(0); // 0 invested in opex (for now)
 }
 
 void Defender::choose_security_strategy() {

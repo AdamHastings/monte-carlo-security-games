@@ -28,8 +28,8 @@ class Defender : public Player {
         static uint32_t NUM_QUOTES;
 
         static void perform_market_analysis(int prevRoundAttacks, int num_current_defenders);
-        static long long ransom(int assets); 
-        static long long recovery_cost(int assets);
+        static long long ransom(int _assets); 
+        static long long recovery_cost(int _assets);
 
         static void reset();
 
@@ -58,7 +58,17 @@ class Defender : public Player {
     private:   
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
-        double find_optimal_investment();
-        double posture_if_investment(int64_t amount);
-};
+        int64_t cost_if_attacked(int64_t investment);
+        double d_cost_if_attacked(int64_t investment);
+        double d_d_cost_if_attacked(int64_t investment);
 
+        double find_optimal_investment();
+        
+        double posture_if_investment(int64_t investment);
+        double d_posture_if_investment(int64_t investment);
+        double d_d_posture_if_investment(int64_t investment);
+
+        double probability_of_loss(int64_t investment);
+        double d_probability_of_loss(int64_t investment);
+        double d_d_probability_of_loss(int64_t investment);
+};

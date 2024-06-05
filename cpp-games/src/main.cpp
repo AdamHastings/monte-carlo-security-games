@@ -128,7 +128,6 @@ void init_logs(std::string basename, Params p) {
         header += "a_cumulative_assets,";
         header += "i_cumulative_assets";
     } else 
-    header.pop_back(); // remove trailing comma, regardless if verbose or not
 
     header += "\n";
 

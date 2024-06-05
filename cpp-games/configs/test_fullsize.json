@@ -114,6 +114,6 @@
         "val": 5000
     },
     "NUM_GAMES": 100,
-    "verbose":false,
+    "verbose":true,
     "assertions_on":true
 }
