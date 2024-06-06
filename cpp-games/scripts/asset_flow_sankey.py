@@ -10,35 +10,43 @@ class flow:
     self.val = val
     self.color = color
 
-b = '#636EFA'
-y = '#FECB52'
-r = '#EF553B'
-g = '#888888'
+opacity=0.6
+
+b = 'rgba(99,  110, 250, {})'.format(opacity)
+y = 'rgba(254, 203, 82,  {})'.format(opacity)
+r = 'rgba(239, 85,  59,  {})'.format(opacity)
+g = 'rgba(136, 136, 136, {})'.format(opacity)
+
+opaque = 1
+
+b0 = 'rgba(99,  110, 250, {})'.format(opaque)
+y0 = 'rgba(254, 203, 82,  {})'.format(opaque)
+r0 = 'rgba(239, 85,  59,  {})'.format(opaque)
+g0 = 'rgba(136, 136, 136, {})'.format(opaque)
 
 def asset_flow_sankey(df):
 
 
-  nodes = [
-      "Defenders' initial wealth",
-      "Attackers' initial wealth",
-      "Insurers' initial wealth",
-      "Security spending",
-      "Ransom payments",
-      "Recovery costs",
-      "Premium pool",
-      "Claims",
-      "Attacker spending",
-      "Insurer spending",
-      "Defenders' final wealth", 
-      "Attackers' final wealth", 
-      "Insurers' final wealth", 
-      "Expenses"
-  ]
+  nodes = {
+      "Defenders' initial wealth" : b0,
+      "Attackers' initial wealth" : r0,
+      "Insurers' initial wealth" : y0,
+      "Security spending" : b0,
+      "Ransom payments" : b0,
+      "Recovery costs" : b0,
+      "Insurance premiums" : b0,
+      "Premium pool" : y0,
+      "Claims" : y0,
+      "Attacker spending" : r0,
+      "Insurer spending" : y0,
+      "Defenders' final wealth" : b0,
+      "Attackers' final wealth" : r0,
+      "Insurers' final wealth" : y0,
+      "Expenses" : g0
+  }
 
   # nodemap
-  nm = {k: v for v, k in enumerate(nodes)}
-
-  print(nm)
+  nm = {k: v for v, k in enumerate(nodes.keys())}
 
   flows = []
 
@@ -86,6 +94,13 @@ def asset_flow_sankey(df):
 
   f = flow(
     source  = nm["Defenders' initial wealth"],
+    sink    = nm["Insurance premiums"],
+    val     = 306234183,
+    color   = b)  
+  flows.append(f)
+
+  f = flow(
+    source  = nm["Insurance premiums"],
     sink    = nm["Premium pool"],
     val     = 306234183,
     color   = b)  
@@ -137,7 +152,7 @@ def asset_flow_sankey(df):
     source  = nm["Claims"],
     sink    = nm["Defenders' final wealth"],
     val     = 311355971,
-    color   = y)  
+    color   = b)  
   flows.append(f)
 
   f = flow(
@@ -158,33 +173,33 @@ def asset_flow_sankey(df):
     source  = nm["Insurer spending"],
     sink    = nm["Expenses"],
     val     = 66514248,
-    color   = y)  
+    color   = g)  
   flows.append(f)
 
 
 
   
-  fig = go.Figure(data=[go.Sankey(
-      arrangement='perpendicular',
+  fig = go.Figure(go.Sankey(
+      arrangement='snap',
       node = dict(
-        # pad = 15,
+        pad = 15,
         thickness = 20,
-        # line = dict(color = "black", width = 0.5),
-        label = list(nm.keys())
-        # color = [b, r, y, g, r, g, y, y, g, g, b, r, y]
+        line = dict(color = "black", width = 0.5),
+        label = list(nm.keys()),
+        color = list(nodes.values())
       ),
       link = dict(
-        # source = [0, 0, 0, 0, 0,  1, 1,  6, 2, 6, 7,  6,  4],
-        # target = [3, 4, 5, 6, 10, 8, 11, 9, 6, 7, 10, 12, 11],
-        # value =  [8, 4, 2, 8, 4,  2, 3,  4, 4, 7, 7,  1,  4],
-        # color =  [b, b, b, b, b,  r, r,  y, y, y, b,  y,  r]
+        # line = dict(color = "black", width = 0.5),
         source = [x.source for x in flows],
         target = [x.sink for x in flows],
         value  = [x.val for x in flows],
         color  = [x.color for x in flows]
-    ))])
+      )
+  ))
 
-  fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
+  fig.show()
+
+  # fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
   fig.write_image("figures/asset_flow_sankey.pdf")
   fig.write_image("figures/asset_flow_sankey.png")
 
