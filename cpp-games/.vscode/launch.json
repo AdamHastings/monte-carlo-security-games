@@ -5,7 +5,7 @@
       "name": "C++ Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/run/debug/run_games_debug", // Path to your compiled executable
+      "program": "${workspaceFolder}/run/debug/run_games", // Path to your compiled executable
       "args": ["configs/test_fullsize.json"],
       "cwd": "${workspaceFolder}",
       "environment": [{ "name": "config", "value": "Debug" }],

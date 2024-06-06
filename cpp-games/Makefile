@@ -25,7 +25,7 @@ OBJECTS_RELEASE = $(SOURCES:src/%.cpp=$(OBJDIR_RELEASE)/%.o)
 # Executable names
 BINDIR_DEBUG = run/debug
 BINDIR_RELEASE = run/release
-EXECUTABLE_DEBUG = $(BINDIR_DEBUG)/$(TARGET)_debug
+EXECUTABLE_DEBUG = $(BINDIR_DEBUG)/$(TARGET)
 EXECUTABLE_RELEASE = $(BINDIR_RELEASE)/$(TARGET)
 
 all: debug release
@@ -33,6 +33,7 @@ all: debug release
 # Build rules for debug and release versions
 debug: $(EXECUTABLE_DEBUG)
 release: $(EXECUTABLE_RELEASE)
+
 
 $(EXECUTABLE_DEBUG): $(OBJECTS_DEBUG) | $(BINDIR_DEBUG)
 	$(CXX) $(DEBUG_FLAGS) $^ -o $@
@@ -51,5 +52,13 @@ $(OBJDIR_DEBUG) $(BINDIR_DEBUG) $(OBJDIR_RELEASE) $(BINDIR_RELEASE):
 
 clean:
 	rm -rf obj run
+
+depend: .depend
+
+.depend: $(SRCS)
+	rm -f "$@"
+	$(CC) $(CFLAGS) -MM $^ > "$@"
+	
+include .depend
 
 .PHONY: debug release clean

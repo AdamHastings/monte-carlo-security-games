@@ -1,3 +1,4 @@
 run/
 obj/
 oldlogs/
+.depend

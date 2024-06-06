@@ -1,611 +1,611 @@
-==21714== Memcheck, a memory error detector
-==21714== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==21714== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
-==21714== Command: ./run/release/run_games_release configs/test_tiny.json
-==21714== Parent PID: 21695
-==21714== 
---21714-- 
---21714-- Valgrind options:
---21714--    --leak-check=full
---21714--    --show-leak-kinds=all
---21714--    --track-origins=yes
---21714--    --verbose
---21714--    --log-file=valgrind-out-release.txt
---21714-- Contents of /proc/version:
---21714--   Linux version 5.3.0-7648-generic (buildd@lcy01-amd64-012) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #41~1586790036~18.04~600aeb5-Ubuntu SMP Mon Apr 13 17:47:15 UTC 
---21714-- 
---21714-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2-bmi
---21714-- Page sizes: currently 4096, max supported 4096
---21714-- Valgrind library directory: /usr/lib/valgrind
---21714-- Reading syms from /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release
---21714-- Reading syms from /lib/x86_64-linux-gnu/ld-2.27.so
---21714--   Considering /lib/x86_64-linux-gnu/ld-2.27.so ..
---21714--   .. CRC mismatch (computed 2977d8b2 wanted c64f09ed)
---21714--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.27.so ..
---21714--   .. CRC is valid
---21714-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
---21714--   Considering /usr/lib/valgrind/memcheck-amd64-linux ..
---21714--   .. CRC mismatch (computed 41ddb025 wanted 9972f546)
---21714--    object doesn't have a symbol table
---21714--    object doesn't have a dynamic symbol table
---21714-- Scheduler: using generic scheduler lock implementation.
---21714-- Reading suppressions file: /usr/lib/valgrind/default.supp
-==21714== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21714-by-adam-on-???
-==21714== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21714-by-adam-on-???
-==21714== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21714-by-adam-on-???
-==21714== 
-==21714== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21714== don't want to do, unless you know exactly what you're doing,
-==21714== or are doing some strange experiment):
-==21714==   /usr/lib/valgrind/../../bin/vgdb --pid=21714 ...command...
-==21714== 
-==21714== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21714==   /path/to/gdb ./run/release/run_games_release
-==21714== and then give GDB the following command
-==21714==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21714
-==21714== --pid is optional if only one valgrind process is running
-==21714== 
---21714-- REDIR: 0x4020d20 (ld-linux-x86-64.so.2:strlen) redirected to 0x580608c1 (???)
---21714-- REDIR: 0x4020b00 (ld-linux-x86-64.so.2:index) redirected to 0x580608db (???)
---21714-- Reading syms from /usr/lib/valgrind/vgpreload_core-amd64-linux.so
---21714--   Considering /usr/lib/valgrind/vgpreload_core-amd64-linux.so ..
---21714--   .. CRC mismatch (computed 50df1b30 wanted 4800a4cf)
---21714--    object doesn't have a symbol table
---21714-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
---21714--   Considering /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so ..
---21714--   .. CRC mismatch (computed f893b962 wanted 95ee359e)
---21714--    object doesn't have a symbol table
-==21714== WARNING: new redirection conflicts with existing -- ignoring it
---21714--     old: 0x04020d20 (strlen              ) R-> (0000.0) 0x580608c1 ???
---21714--     new: 0x04020d20 (strlen              ) R-> (2007.0) 0x04c34db0 strlen
---21714-- REDIR: 0x401d540 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c35ee0 (strcmp)
---21714-- REDIR: 0x4021260 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c394f0 (mempcpy)
---21714-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.32
---21714--    object doesn't have a symbol table
---21714-- Reading syms from /lib/x86_64-linux-gnu/libm-2.27.so
---21714--   Considering /lib/x86_64-linux-gnu/libm-2.27.so ..
---21714--   .. CRC mismatch (computed 4e7cf542 wanted 8d27f134)
---21714--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libm-2.27.so ..
---21714--   .. CRC is valid
---21714-- Reading syms from /lib/x86_64-linux-gnu/libgcc_s.so.1
---21714--    object doesn't have a symbol table
---21714-- Reading syms from /lib/x86_64-linux-gnu/libc-2.27.so
---21714--   Considering /lib/x86_64-linux-gnu/libc-2.27.so ..
---21714--   .. CRC mismatch (computed f250d419 wanted 4aacab51)
---21714--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.27.so ..
---21714--   .. CRC is valid
---21714-- REDIR: 0x58fda50 (libc.so.6:memmove) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fcd60 (libc.so.6:strncpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fdd30 (libc.so.6:strcasecmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fc7b0 (libc.so.6:strcat) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fcd90 (libc.so.6:rindex) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58ff480 (libc.so.6:rawmemchr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fdbc0 (libc.so.6:mempcpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fd9f0 (libc.so.6:bcmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fcd20 (libc.so.6:strncmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fc820 (libc.so.6:strcmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fdb20 (libc.so.6:memset) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x591adb0 (libc.so.6:wcschr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fccc0 (libc.so.6:strnlen) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fc890 (libc.so.6:strcspn) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fdd80 (libc.so.6:strncasecmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fc860 (libc.so.6:strcpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fdec0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fcdc0 (libc.so.6:strpbrk) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fc7e0 (libc.so.6:index) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fcc90 (libc.so.6:strlen) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x5907380 (libc.so.6:memrchr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fddd0 (libc.so.6:strcasecmp_l) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fd9c0 (libc.so.6:memchr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x591bb70 (libc.so.6:wcslen) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fd070 (libc.so.6:strspn) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fdd00 (libc.so.6:stpncpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fdcd0 (libc.so.6:stpcpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58ff4b0 (libc.so.6:strchrnul) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x58fde20 (libc.so.6:strncasecmp_l) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
---21714-- REDIR: 0x59ed280 (libc.so.6:__strrchr_avx2) redirected to 0x4c34730 (rindex)
---21714-- REDIR: 0x59ed450 (libc.so.6:__strlen_avx2) redirected to 0x4c34cf0 (strlen)
---21714-- REDIR: 0x59e9a60 (libc.so.6:__memcmp_avx2_movbe) redirected to 0x4c37e00 (bcmp)
---21714-- REDIR: 0x59e43d0 (libc.so.6:__strncmp_sse42) redirected to 0x4c35570 (__strncmp_sse42)
---21714-- REDIR: 0x58f6020 (libc.so.6:malloc) redirected to 0x4c31aa0 (malloc)
---21714-- REDIR: 0x4ef0610 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x4c32110 (operator new(unsigned long))
---21714-- REDIR: 0x59ed990 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x4c386e0 (memmove)
---21714-- REDIR: 0x59e92e0 (libc.so.6:__memchr_avx2) redirected to 0x4c35f80 (memchr)
---21714-- REDIR: 0x58fd5a0 (libc.so.6:__GI_strstr) redirected to 0x4c39760 (__strstr_sse2)
---21714-- REDIR: 0x4ef0670 (libstdc++.so.6:operator new[](unsigned long)) redirected to 0x4c32830 (operator new[](unsigned long))
---21714-- REDIR: 0x4eee920 (libstdc++.so.6:operator delete(void*)) redirected to 0x4c331d0 (operator delete(void*))
---21714-- REDIR: 0x58f6910 (libc.so.6:free) redirected to 0x4c32cd0 (free)
---21714-- REDIR: 0x4eee950 (libstdc++.so.6:operator delete[](void*)) redirected to 0x4c336d0 (operator delete[](void*))
---21714-- REDIR: 0x59ed970 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4c39130 (mempcpy)
---21714-- REDIR: 0x5908b30 (libc.so.6:__strcmp_sse2_unaligned) redirected to 0x4c35da0 (strcmp)
---21714-- REDIR: 0x59ed090 (libc.so.6:__strchrnul_avx2) redirected to 0x4c39020 (strchrnul)
---21714-- REDIR: 0x59ed5e0 (libc.so.6:__strnlen_avx2) redirected to 0x4c34c90 (strnlen)
---21734-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
---21735-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
---21738-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
-==21734== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21734-by-adam-on-???
-==21734== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21734-by-adam-on-???
-==21734== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21734-by-adam-on-???
-==21734== 
-==21734== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21734== don't want to do, unless you know exactly what you're doing,
-==21734== or are doing some strange experiment):
-==21734==   /usr/lib/valgrind/../../bin/vgdb --pid=21734 ...command...
-==21734== 
-==21734== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21734==   /path/to/gdb ./run/release/run_games_release
-==21734== and then give GDB the following command
-==21734==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21734
-==21734== --pid is optional if only one valgrind process is running
-==21734== 
---21739-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
---21743-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
-==21735== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21735-by-adam-on-???
-==21735== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21735-by-adam-on-???
-==21735== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21735-by-adam-on-???
-==21735== 
-==21735== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21735== don't want to do, unless you know exactly what you're doing,
-==21735== or are doing some strange experiment):
-==21735==   /usr/lib/valgrind/../../bin/vgdb --pid=21735 ...command...
-==21735== 
-==21735== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21735==   /path/to/gdb ./run/release/run_games_release
-==21735== and then give GDB the following command
-==21735==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21735
-==21735== --pid is optional if only one valgrind process is running
-==21735== 
-==21738== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21738-by-adam-on-???
-==21738== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21738-by-adam-on-???
-==21738== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21738-by-adam-on-???
-==21738== 
-==21738== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21738== don't want to do, unless you know exactly what you're doing,
-==21738== or are doing some strange experiment):
-==21738==   /usr/lib/valgrind/../../bin/vgdb --pid=21738 ...command...
-==21738== 
-==21738== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21738==   /path/to/gdb ./run/release/run_games_release
-==21738== and then give GDB the following command
-==21738==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21738
-==21738== --pid is optional if only one valgrind process is running
-==21738== 
-==21743== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21743-by-adam-on-???
-==21743== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21743-by-adam-on-???
-==21743== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21743-by-adam-on-???
-==21743== 
-==21743== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21743== don't want to do, unless you know exactly what you're doing,
-==21743== or are doing some strange experiment):
-==21743==   /usr/lib/valgrind/../../bin/vgdb --pid=21743 ...command...
-==21743== 
-==21743== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21743==   /path/to/gdb ./run/release/run_games_release
-==21743== and then give GDB the following command
-==21743==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21743
-==21743== --pid is optional if only one valgrind process is running
-==21743== 
-==21739== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21739-by-adam-on-???
-==21739== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21739-by-adam-on-???
-==21739== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21739-by-adam-on-???
-==21739== 
-==21739== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21739== don't want to do, unless you know exactly what you're doing,
-==21739== or are doing some strange experiment):
-==21739==   /usr/lib/valgrind/../../bin/vgdb --pid=21739 ...command...
-==21739== 
-==21739== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21739==   /path/to/gdb ./run/release/run_games_release
-==21739== and then give GDB the following command
-==21739==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21739
-==21739== --pid is optional if only one valgrind process is running
-==21739== 
---21745-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
---21746-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
---21767-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
---21749-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
-==21745== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21745-by-adam-on-???
-==21745== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21745-by-adam-on-???
-==21745== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21745-by-adam-on-???
-==21745== 
-==21745== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21745== don't want to do, unless you know exactly what you're doing,
-==21745== or are doing some strange experiment):
-==21745==   /usr/lib/valgrind/../../bin/vgdb --pid=21745 ...command...
-==21745== 
-==21745== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21745==   /path/to/gdb ./run/release/run_games_release
-==21745== and then give GDB the following command
-==21745==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21745
-==21745== --pid is optional if only one valgrind process is running
-==21745== 
---21757-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
-==21746== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21746-by-adam-on-???
-==21746== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21746-by-adam-on-???
-==21746== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21746-by-adam-on-???
-==21746== 
-==21746== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21746== don't want to do, unless you know exactly what you're doing,
-==21746== or are doing some strange experiment):
-==21746==   /usr/lib/valgrind/../../bin/vgdb --pid=21746 ...command...
-==21746== 
-==21746== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21746==   /path/to/gdb ./run/release/run_games_release
-==21746== and then give GDB the following command
-==21746==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21746
-==21746== --pid is optional if only one valgrind process is running
-==21746== 
-==21767== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21767-by-adam-on-???
-==21767== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21767-by-adam-on-???
-==21767== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21767-by-adam-on-???
-==21767== 
-==21767== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21767== don't want to do, unless you know exactly what you're doing,
-==21767== or are doing some strange experiment):
-==21767==   /usr/lib/valgrind/../../bin/vgdb --pid=21767 ...command...
-==21767== 
-==21767== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21767==   /path/to/gdb ./run/release/run_games_release
-==21767== and then give GDB the following command
-==21767==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21767
-==21767== --pid is optional if only one valgrind process is running
-==21767== 
-==21749== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21749-by-adam-on-???
-==21749== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21749-by-adam-on-???
-==21749== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21749-by-adam-on-???
-==21749== 
-==21749== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21749== don't want to do, unless you know exactly what you're doing,
-==21749== or are doing some strange experiment):
-==21749==   /usr/lib/valgrind/../../bin/vgdb --pid=21749 ...command...
-==21749== 
-==21749== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21749==   /path/to/gdb ./run/release/run_games_release
-==21749== and then give GDB the following command
-==21749==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21749
-==21749== --pid is optional if only one valgrind process is running
-==21749== 
-==21757== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-21757-by-adam-on-???
-==21757== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-21757-by-adam-on-???
-==21757== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-21757-by-adam-on-???
-==21757== 
-==21757== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==21757== don't want to do, unless you know exactly what you're doing,
-==21757== or are doing some strange experiment):
-==21757==   /usr/lib/valgrind/../../bin/vgdb --pid=21757 ...command...
-==21757== 
-==21757== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==21757==   /path/to/gdb ./run/release/run_games_release
-==21757== and then give GDB the following command
-==21757==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=21757
-==21757== --pid is optional if only one valgrind process is running
-==21757== 
-==21735== 
-==21735== HEAP SUMMARY:
-==21735==     in use at exit: 73 bytes in 3 blocks
-==21735==   total heap usage: 1,186 allocs, 1,183 frees, 177,314 bytes allocated
-==21735== 
-==21735== Searching for pointers to 3 not-freed blocks
-==21735== Checked 122,352 bytes
-==21735== 
-==21735== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21735==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21735==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21735==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21735== 
-==21735== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21735==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21735==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21735== 
-==21735== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21735==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21735==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21735==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21735==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21735== 
-==21735== LEAK SUMMARY:
-==21735==    definitely lost: 0 bytes in 0 blocks
-==21735==    indirectly lost: 0 bytes in 0 blocks
-==21735==      possibly lost: 0 bytes in 0 blocks
-==21735==    still reachable: 73 bytes in 3 blocks
-==21735==         suppressed: 0 bytes in 0 blocks
-==21735== 
-==21735== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21735== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21738== 
-==21738== HEAP SUMMARY:
-==21738==     in use at exit: 73 bytes in 3 blocks
-==21738==   total heap usage: 1,455 allocs, 1,452 frees, 187,904 bytes allocated
-==21738== 
-==21738== Searching for pointers to 3 not-freed blocks
-==21738== Checked 122,352 bytes
-==21738== 
-==21738== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21738==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21738==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21738==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21738== 
-==21738== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21738==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21738==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21738== 
-==21738== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21738==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21738==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21738==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21738==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21738== 
-==21738== LEAK SUMMARY:
-==21738==    definitely lost: 0 bytes in 0 blocks
-==21738==    indirectly lost: 0 bytes in 0 blocks
-==21738==      possibly lost: 0 bytes in 0 blocks
-==21738==    still reachable: 73 bytes in 3 blocks
-==21738==         suppressed: 0 bytes in 0 blocks
-==21738== 
-==21738== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21738== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21734== 
-==21734== HEAP SUMMARY:
-==21734==     in use at exit: 73 bytes in 3 blocks
-==21734==   total heap usage: 1,883 allocs, 1,880 frees, 204,910 bytes allocated
-==21734== 
-==21734== Searching for pointers to 3 not-freed blocks
-==21734== Checked 122,352 bytes
-==21734== 
-==21734== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21734==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21734==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21734==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21734== 
-==21734== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21734==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21734==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21734== 
-==21734== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21734==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21734==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21734==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21734==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21734== 
-==21734== LEAK SUMMARY:
-==21734==    definitely lost: 0 bytes in 0 blocks
-==21734==    indirectly lost: 0 bytes in 0 blocks
-==21734==      possibly lost: 0 bytes in 0 blocks
-==21734==    still reachable: 73 bytes in 3 blocks
-==21734==         suppressed: 0 bytes in 0 blocks
-==21734== 
-==21734== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21734== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21745== 
-==21745== HEAP SUMMARY:
-==21745==     in use at exit: 73 bytes in 3 blocks
-==21745==   total heap usage: 892 allocs, 889 frees, 165,311 bytes allocated
-==21745== 
-==21745== Searching for pointers to 3 not-freed blocks
-==21745== Checked 122,352 bytes
-==21745== 
-==21745== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21745==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21745==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21745==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21745== 
-==21745== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21745==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21745==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21745== 
-==21745== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21745==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21745==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21745==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21745==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21745== 
-==21745== LEAK SUMMARY:
-==21745==    definitely lost: 0 bytes in 0 blocks
-==21745==    indirectly lost: 0 bytes in 0 blocks
-==21745==      possibly lost: 0 bytes in 0 blocks
-==21745==    still reachable: 73 bytes in 3 blocks
-==21745==         suppressed: 0 bytes in 0 blocks
-==21745== 
-==21745== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21745== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21767== 
-==21767== HEAP SUMMARY:
-==21767==     in use at exit: 73 bytes in 3 blocks
-==21767==   total heap usage: 2,389 allocs, 2,386 frees, 228,498 bytes allocated
-==21767== 
-==21767== Searching for pointers to 3 not-freed blocks
-==21767== Checked 122,352 bytes
-==21767== 
-==21767== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21767==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21767==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21767==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21767== 
-==21767== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21767==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21767==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21767== 
-==21767== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21767==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21767==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21767==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21767==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21767== 
-==21767== LEAK SUMMARY:
-==21767==    definitely lost: 0 bytes in 0 blocks
-==21767==    indirectly lost: 0 bytes in 0 blocks
-==21767==      possibly lost: 0 bytes in 0 blocks
-==21767==    still reachable: 73 bytes in 3 blocks
-==21767==         suppressed: 0 bytes in 0 blocks
-==21767== 
-==21767== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21767== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21743== 
-==21743== HEAP SUMMARY:
-==21743==     in use at exit: 73 bytes in 3 blocks
-==21743==   total heap usage: 3,318 allocs, 3,315 frees, 264,785 bytes allocated
-==21743== 
-==21743== Searching for pointers to 3 not-freed blocks
-==21743== Checked 122,352 bytes
-==21743== 
-==21743== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21743==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21743==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21743==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21743== 
-==21743== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21743==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21743==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21743== 
-==21743== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21743==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21743==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21743==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21743==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21743== 
-==21743== LEAK SUMMARY:
-==21743==    definitely lost: 0 bytes in 0 blocks
-==21743==    indirectly lost: 0 bytes in 0 blocks
-==21743==      possibly lost: 0 bytes in 0 blocks
-==21743==    still reachable: 73 bytes in 3 blocks
-==21743==         suppressed: 0 bytes in 0 blocks
-==21743== 
-==21743== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21743== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21739== 
-==21739== HEAP SUMMARY:
-==21739==     in use at exit: 73 bytes in 3 blocks
-==21739==   total heap usage: 2,109 allocs, 2,106 frees, 218,601 bytes allocated
-==21739== 
-==21739== Searching for pointers to 3 not-freed blocks
-==21749== 
-==21749== HEAP SUMMARY:
-==21749==     in use at exit: 73 bytes in 3 blocks
-==21749==   total heap usage: 1,593 allocs, 1,590 frees, 196,278 bytes allocated
-==21749== 
-==21749== Searching for pointers to 3 not-freed blocks
-==21749== Checked 122,352 bytes
-==21749== 
-==21749== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21749==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21749==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21749==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21749== 
-==21749== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21749==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21739== Checked 122,352 bytes
-==21749==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21739== 
-==21749== 
-==21749== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21749==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21739== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21749==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21749==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21749==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21749== 
-==21749== LEAK SUMMARY:
-==21749==    definitely lost: 0 bytes in 0 blocks
-==21739==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21749==    indirectly lost: 0 bytes in 0 blocks
-==21749==      possibly lost: 0 bytes in 0 blocks
-==21749==    still reachable: 73 bytes in 3 blocks
-==21749==         suppressed: 0 bytes in 0 blocks
-==21749== 
-==21739==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21749== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21739==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21749== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21739== 
-==21739== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21739==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21739==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21739== 
-==21739== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21739==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21739==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21739==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21739==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21739== 
-==21739== LEAK SUMMARY:
-==21739==    definitely lost: 0 bytes in 0 blocks
-==21739==    indirectly lost: 0 bytes in 0 blocks
-==21739==      possibly lost: 0 bytes in 0 blocks
-==21739==    still reachable: 73 bytes in 3 blocks
-==21739==         suppressed: 0 bytes in 0 blocks
-==21739== 
-==21739== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21739== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21746== 
-==21746== HEAP SUMMARY:
-==21746==     in use at exit: 73 bytes in 3 blocks
-==21746==   total heap usage: 2,764 allocs, 2,761 frees, 250,177 bytes allocated
-==21746== 
-==21746== Searching for pointers to 3 not-freed blocks
-==21746== Checked 122,352 bytes
-==21746== 
-==21746== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21746==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21746==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21746==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21746== 
-==21746== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21746==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21746==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21746== 
-==21746== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21746==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21746==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21746==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21746==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21746== 
-==21746== LEAK SUMMARY:
-==21746==    definitely lost: 0 bytes in 0 blocks
-==21746==    indirectly lost: 0 bytes in 0 blocks
-==21746==      possibly lost: 0 bytes in 0 blocks
-==21746==    still reachable: 73 bytes in 3 blocks
-==21746==         suppressed: 0 bytes in 0 blocks
-==21746== 
-==21746== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21746== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21757== 
-==21757== HEAP SUMMARY:
-==21757==     in use at exit: 73 bytes in 3 blocks
-==21757==   total heap usage: 6,545 allocs, 6,542 frees, 417,700 bytes allocated
-==21757== 
-==21757== Searching for pointers to 3 not-freed blocks
-==21757== Checked 122,352 bytes
-==21757== 
-==21757== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
-==21757==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21757==    by 0x13A341: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21757==    by 0x10CB2E: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21757== 
-==21757== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
-==21757==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21757==    by 0x10CE14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21757== 
-==21757== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
-==21757==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-==21757==    by 0x10F4F7: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21757==    by 0x10E588: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21757==    by 0x10CA14: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games_release)
-==21757== 
-==21757== LEAK SUMMARY:
-==21757==    definitely lost: 0 bytes in 0 blocks
-==21757==    indirectly lost: 0 bytes in 0 blocks
-==21757==      possibly lost: 0 bytes in 0 blocks
-==21757==    still reachable: 73 bytes in 3 blocks
-==21757==         suppressed: 0 bytes in 0 blocks
-==21757== 
-==21757== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21757== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21714== 
-==21714== HEAP SUMMARY:
-==21714==     in use at exit: 0 bytes in 0 blocks
-==21714==   total heap usage: 632 allocs, 632 frees, 136,649 bytes allocated
-==21714== 
-==21714== All heap blocks were freed -- no leaks are possible
-==21714== 
-==21714== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21714== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==4998== Memcheck, a memory error detector
+==4998== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==4998== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==4998== Command: ./run/release/run_games configs/test_tiny.json
+==4998== Parent PID: 4896
+==4998== 
+--4998-- 
+--4998-- Valgrind options:
+--4998--    --leak-check=full
+--4998--    --show-leak-kinds=all
+--4998--    --track-origins=yes
+--4998--    --verbose
+--4998--    --log-file=valgrind-out-release.txt
+--4998-- Contents of /proc/version:
+--4998--   Linux version 5.3.0-7648-generic (buildd@lcy01-amd64-012) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #41~1586790036~18.04~600aeb5-Ubuntu SMP Mon Apr 13 17:47:15 UTC 
+--4998-- 
+--4998-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2-bmi
+--4998-- Page sizes: currently 4096, max supported 4096
+--4998-- Valgrind library directory: /usr/lib/valgrind
+--4998-- Reading syms from /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games
+--4998-- Reading syms from /lib/x86_64-linux-gnu/ld-2.27.so
+--4998--   Considering /lib/x86_64-linux-gnu/ld-2.27.so ..
+--4998--   .. CRC mismatch (computed 2977d8b2 wanted c64f09ed)
+--4998--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.27.so ..
+--4998--   .. CRC is valid
+--4998-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
+--4998--   Considering /usr/lib/valgrind/memcheck-amd64-linux ..
+--4998--   .. CRC mismatch (computed 41ddb025 wanted 9972f546)
+--4998--    object doesn't have a symbol table
+--4998--    object doesn't have a dynamic symbol table
+--4998-- Scheduler: using generic scheduler lock implementation.
+--4998-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==4998== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-4998-by-adam-on-???
+==4998== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-4998-by-adam-on-???
+==4998== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-4998-by-adam-on-???
+==4998== 
+==4998== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==4998== don't want to do, unless you know exactly what you're doing,
+==4998== or are doing some strange experiment):
+==4998==   /usr/lib/valgrind/../../bin/vgdb --pid=4998 ...command...
+==4998== 
+==4998== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==4998==   /path/to/gdb ./run/release/run_games
+==4998== and then give GDB the following command
+==4998==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=4998
+==4998== --pid is optional if only one valgrind process is running
+==4998== 
+--4998-- REDIR: 0x4020d20 (ld-linux-x86-64.so.2:strlen) redirected to 0x580608c1 (???)
+--4998-- REDIR: 0x4020b00 (ld-linux-x86-64.so.2:index) redirected to 0x580608db (???)
+--4998-- Reading syms from /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+--4998--   Considering /usr/lib/valgrind/vgpreload_core-amd64-linux.so ..
+--4998--   .. CRC mismatch (computed 50df1b30 wanted 4800a4cf)
+--4998--    object doesn't have a symbol table
+--4998-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+--4998--   Considering /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so ..
+--4998--   .. CRC mismatch (computed f893b962 wanted 95ee359e)
+--4998--    object doesn't have a symbol table
+==4998== WARNING: new redirection conflicts with existing -- ignoring it
+--4998--     old: 0x04020d20 (strlen              ) R-> (0000.0) 0x580608c1 ???
+--4998--     new: 0x04020d20 (strlen              ) R-> (2007.0) 0x04c34db0 strlen
+--4998-- REDIR: 0x401d540 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c35ee0 (strcmp)
+--4998-- REDIR: 0x4021260 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c394f0 (mempcpy)
+--4998-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.32
+--4998--    object doesn't have a symbol table
+--4998-- Reading syms from /lib/x86_64-linux-gnu/libm-2.27.so
+--4998--   Considering /lib/x86_64-linux-gnu/libm-2.27.so ..
+--4998--   .. CRC mismatch (computed 4e7cf542 wanted 8d27f134)
+--4998--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libm-2.27.so ..
+--4998--   .. CRC is valid
+--4998-- Reading syms from /lib/x86_64-linux-gnu/libgcc_s.so.1
+--4998--    object doesn't have a symbol table
+--4998-- Reading syms from /lib/x86_64-linux-gnu/libc-2.27.so
+--4998--   Considering /lib/x86_64-linux-gnu/libc-2.27.so ..
+--4998--   .. CRC mismatch (computed f250d419 wanted 4aacab51)
+--4998--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.27.so ..
+--4998--   .. CRC is valid
+--4998-- REDIR: 0x58fda50 (libc.so.6:memmove) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fcd60 (libc.so.6:strncpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fdd30 (libc.so.6:strcasecmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fc7b0 (libc.so.6:strcat) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fcd90 (libc.so.6:rindex) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58ff480 (libc.so.6:rawmemchr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fdbc0 (libc.so.6:mempcpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fd9f0 (libc.so.6:bcmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fcd20 (libc.so.6:strncmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fc820 (libc.so.6:strcmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fdb20 (libc.so.6:memset) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x591adb0 (libc.so.6:wcschr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fccc0 (libc.so.6:strnlen) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fc890 (libc.so.6:strcspn) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fdd80 (libc.so.6:strncasecmp) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fc860 (libc.so.6:strcpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fdec0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fcdc0 (libc.so.6:strpbrk) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fc7e0 (libc.so.6:index) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fcc90 (libc.so.6:strlen) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x5907380 (libc.so.6:memrchr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fddd0 (libc.so.6:strcasecmp_l) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fd9c0 (libc.so.6:memchr) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x591bb70 (libc.so.6:wcslen) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fd070 (libc.so.6:strspn) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fdd00 (libc.so.6:stpncpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fdcd0 (libc.so.6:stpcpy) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58ff4b0 (libc.so.6:strchrnul) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x58fde20 (libc.so.6:strncasecmp_l) redirected to 0x4a2c6e0 (_vgnU_ifunc_wrapper)
+--4998-- REDIR: 0x59ed280 (libc.so.6:__strrchr_avx2) redirected to 0x4c34730 (rindex)
+--4998-- REDIR: 0x59ed450 (libc.so.6:__strlen_avx2) redirected to 0x4c34cf0 (strlen)
+--4998-- REDIR: 0x59e9a60 (libc.so.6:__memcmp_avx2_movbe) redirected to 0x4c37e00 (bcmp)
+--4998-- REDIR: 0x59e43d0 (libc.so.6:__strncmp_sse42) redirected to 0x4c35570 (__strncmp_sse42)
+--4998-- REDIR: 0x58f6020 (libc.so.6:malloc) redirected to 0x4c31aa0 (malloc)
+--4998-- REDIR: 0x4ef0610 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x4c32110 (operator new(unsigned long))
+--4998-- REDIR: 0x59ed990 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x4c386e0 (memmove)
+--4998-- REDIR: 0x59e92e0 (libc.so.6:__memchr_avx2) redirected to 0x4c35f80 (memchr)
+--4998-- REDIR: 0x58fd5a0 (libc.so.6:__GI_strstr) redirected to 0x4c39760 (__strstr_sse2)
+--4998-- REDIR: 0x4ef0670 (libstdc++.so.6:operator new[](unsigned long)) redirected to 0x4c32830 (operator new[](unsigned long))
+--4998-- REDIR: 0x4eee920 (libstdc++.so.6:operator delete(void*)) redirected to 0x4c331d0 (operator delete(void*))
+--4998-- REDIR: 0x58f6910 (libc.so.6:free) redirected to 0x4c32cd0 (free)
+--4998-- REDIR: 0x4eee950 (libstdc++.so.6:operator delete[](void*)) redirected to 0x4c336d0 (operator delete[](void*))
+--4998-- REDIR: 0x59ed970 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4c39130 (mempcpy)
+--4998-- REDIR: 0x5908b30 (libc.so.6:__strcmp_sse2_unaligned) redirected to 0x4c35da0 (strcmp)
+--4998-- REDIR: 0x59ed090 (libc.so.6:__strchrnul_avx2) redirected to 0x4c39020 (strchrnul)
+--4998-- REDIR: 0x59ed5e0 (libc.so.6:__strnlen_avx2) redirected to 0x4c34c90 (strnlen)
+--5002-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+--5012-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+--5013-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+--5014-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+==5002== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5002-by-adam-on-???
+==5002== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5002-by-adam-on-???
+==5002== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5002-by-adam-on-???
+==5002== 
+==5002== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5002== don't want to do, unless you know exactly what you're doing,
+==5002== or are doing some strange experiment):
+==5002==   /usr/lib/valgrind/../../bin/vgdb --pid=5002 ...command...
+==5002== 
+==5002== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5002==   /path/to/gdb ./run/release/run_games
+==5002== and then give GDB the following command
+==5002==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5002
+==5002== --pid is optional if only one valgrind process is running
+==5002== 
+--5015-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+==5012== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5012-by-adam-on-???
+==5012== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5012-by-adam-on-???
+==5012== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5012-by-adam-on-???
+==5012== 
+==5012== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5012== don't want to do, unless you know exactly what you're doing,
+==5012== or are doing some strange experiment):
+==5012==   /usr/lib/valgrind/../../bin/vgdb --pid=5012 ...command...
+==5012== 
+==5012== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5012==   /path/to/gdb ./run/release/run_games
+==5012== and then give GDB the following command
+==5012==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5012
+==5012== --pid is optional if only one valgrind process is running
+==5012== 
+==5013== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5013-by-adam-on-???
+==5013== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5013-by-adam-on-???
+==5013== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5013-by-adam-on-???
+==5013== 
+==5013== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5013== don't want to do, unless you know exactly what you're doing,
+==5013== or are doing some strange experiment):
+==5013==   /usr/lib/valgrind/../../bin/vgdb --pid=5013 ...command...
+==5013== 
+==5013== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5013==   /path/to/gdb ./run/release/run_games
+==5013== and then give GDB the following command
+==5013==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5013
+==5013== --pid is optional if only one valgrind process is running
+==5013== 
+==5014== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5014-by-adam-on-???
+==5014== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5014-by-adam-on-???
+==5014== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5014-by-adam-on-???
+==5014== 
+==5014== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5014== don't want to do, unless you know exactly what you're doing,
+==5014== or are doing some strange experiment):
+==5014==   /usr/lib/valgrind/../../bin/vgdb --pid=5014 ...command...
+==5014== 
+==5014== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5014==   /path/to/gdb ./run/release/run_games
+==5014== and then give GDB the following command
+==5014==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5014
+==5014== --pid is optional if only one valgrind process is running
+==5014== 
+--5016-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+==5015== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5015-by-adam-on-???
+==5015== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5015-by-adam-on-???
+==5015== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5015-by-adam-on-???
+==5015== 
+==5015== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5015== don't want to do, unless you know exactly what you're doing,
+==5015== or are doing some strange experiment):
+==5015==   /usr/lib/valgrind/../../bin/vgdb --pid=5015 ...command...
+==5015== 
+==5015== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5015==   /path/to/gdb ./run/release/run_games
+==5015== and then give GDB the following command
+==5015==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5015
+==5015== --pid is optional if only one valgrind process is running
+==5015== 
+--5017-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+--5018-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+--5019-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+==5016== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5016-by-adam-on-???
+==5016== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5016-by-adam-on-???
+==5016== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5016-by-adam-on-???
+==5016== 
+==5016== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5016== don't want to do, unless you know exactly what you're doing,
+==5016== or are doing some strange experiment):
+==5016==   /usr/lib/valgrind/../../bin/vgdb --pid=5016 ...command...
+==5016== 
+==5016== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5016==   /path/to/gdb ./run/release/run_games
+==5016== and then give GDB the following command
+==5016==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5016
+==5016== --pid is optional if only one valgrind process is running
+==5016== 
+==5017== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5017-by-adam-on-???
+==5017== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5017-by-adam-on-???
+==5017== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5017-by-adam-on-???
+==5017== 
+==5017== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5017== don't want to do, unless you know exactly what you're doing,
+==5017== or are doing some strange experiment):
+==5017==   /usr/lib/valgrind/../../bin/vgdb --pid=5017 ...command...
+==5017== 
+==5017== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5017==   /path/to/gdb ./run/release/run_games
+==5017== and then give GDB the following command
+==5017==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5017
+==5017== --pid is optional if only one valgrind process is running
+==5017== 
+--5020-- REDIR: 0x59ede10 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4c385d0 (memset)
+==5018== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5018-by-adam-on-???
+==5018== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5018-by-adam-on-???
+==5018== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5018-by-adam-on-???
+==5018== 
+==5018== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5018== don't want to do, unless you know exactly what you're doing,
+==5018== or are doing some strange experiment):
+==5018==   /usr/lib/valgrind/../../bin/vgdb --pid=5018 ...command...
+==5018== 
+==5018== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5018==   /path/to/gdb ./run/release/run_games
+==5018== and then give GDB the following command
+==5018==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5018
+==5018== --pid is optional if only one valgrind process is running
+==5018== 
+==5019== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5019-by-adam-on-???
+==5019== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5019-by-adam-on-???
+==5019== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5019-by-adam-on-???
+==5019== 
+==5019== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5019== don't want to do, unless you know exactly what you're doing,
+==5019== or are doing some strange experiment):
+==5019==   /usr/lib/valgrind/../../bin/vgdb --pid=5019 ...command...
+==5019== 
+==5019== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5019==   /path/to/gdb ./run/release/run_games
+==5019== and then give GDB the following command
+==5019==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5019
+==5019== --pid is optional if only one valgrind process is running
+==5019== 
+==5020== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5020-by-adam-on-???
+==5020== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5020-by-adam-on-???
+==5020== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5020-by-adam-on-???
+==5020== 
+==5020== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5020== don't want to do, unless you know exactly what you're doing,
+==5020== or are doing some strange experiment):
+==5020==   /usr/lib/valgrind/../../bin/vgdb --pid=5020 ...command...
+==5020== 
+==5020== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5020==   /path/to/gdb ./run/release/run_games
+==5020== and then give GDB the following command
+==5020==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=5020
+==5020== --pid is optional if only one valgrind process is running
+==5020== 
+==5016== 
+==5016== HEAP SUMMARY:
+==5016==     in use at exit: 73 bytes in 3 blocks
+==5016==   total heap usage: 841 allocs, 838 frees, 155,813 bytes allocated
+==5016== 
+==5016== Searching for pointers to 3 not-freed blocks
+==5016== Checked 122,432 bytes
+==5016== 
+==5016== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5016==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5016==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5016==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5016== 
+==5016== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5016==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5016==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5016== 
+==5016== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5016==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5016==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5016==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5016==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5016== 
+==5016== LEAK SUMMARY:
+==5016==    definitely lost: 0 bytes in 0 blocks
+==5016==    indirectly lost: 0 bytes in 0 blocks
+==5016==      possibly lost: 0 bytes in 0 blocks
+==5016==    still reachable: 73 bytes in 3 blocks
+==5016==         suppressed: 0 bytes in 0 blocks
+==5016== 
+==5016== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5016== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5012== 
+==5012== HEAP SUMMARY:
+==5012==     in use at exit: 73 bytes in 3 blocks
+==5012==   total heap usage: 2,743 allocs, 2,740 frees, 236,379 bytes allocated
+==5012== 
+==5012== Searching for pointers to 3 not-freed blocks
+==5012== Checked 122,432 bytes
+==5012== 
+==5012== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5012==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5012==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5012==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5012== 
+==5012== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5012==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5012==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5012== 
+==5012== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5012==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5012==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5012==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5012==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5012== 
+==5012== LEAK SUMMARY:
+==5012==    definitely lost: 0 bytes in 0 blocks
+==5012==    indirectly lost: 0 bytes in 0 blocks
+==5012==      possibly lost: 0 bytes in 0 blocks
+==5012==    still reachable: 73 bytes in 3 blocks
+==5012==         suppressed: 0 bytes in 0 blocks
+==5012== 
+==5012== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5012== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5014== 
+==5014== HEAP SUMMARY:
+==5014==     in use at exit: 73 bytes in 3 blocks
+==5014==   total heap usage: 8,883 allocs, 8,880 frees, 459,355 bytes allocated
+==5014== 
+==5014== Searching for pointers to 3 not-freed blocks
+==5014== Checked 122,432 bytes
+==5014== 
+==5014== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5014==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5014==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5014==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5014== 
+==5014== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5014==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5014==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5014== 
+==5014== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5014==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5014==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5014==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5014==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5014== 
+==5014== LEAK SUMMARY:
+==5014==    definitely lost: 0 bytes in 0 blocks
+==5014==    indirectly lost: 0 bytes in 0 blocks
+==5014==      possibly lost: 0 bytes in 0 blocks
+==5014==    still reachable: 73 bytes in 3 blocks
+==5014==         suppressed: 0 bytes in 0 blocks
+==5014== 
+==5014== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5014== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5018== 
+==5018== HEAP SUMMARY:
+==5018==     in use at exit: 73 bytes in 3 blocks
+==5018==   total heap usage: 5,979 allocs, 5,976 frees, 387,738 bytes allocated
+==5018== 
+==5018== Searching for pointers to 3 not-freed blocks
+==5018== Checked 122,432 bytes
+==5018== 
+==5018== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5018==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5018==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5018==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5018== 
+==5018== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5018==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5018==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5018== 
+==5018== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5018==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5018==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5018==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5018==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5018== 
+==5018== LEAK SUMMARY:
+==5018==    definitely lost: 0 bytes in 0 blocks
+==5018==    indirectly lost: 0 bytes in 0 blocks
+==5018==      possibly lost: 0 bytes in 0 blocks
+==5018==    still reachable: 73 bytes in 3 blocks
+==5018==         suppressed: 0 bytes in 0 blocks
+==5018== 
+==5018== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5018== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5002== 
+==5002== HEAP SUMMARY:
+==5002==     in use at exit: 73 bytes in 3 blocks
+==5002==   total heap usage: 6,450 allocs, 6,447 frees, 408,646 bytes allocated
+==5002== 
+==5002== Searching for pointers to 3 not-freed blocks
+==5002== Checked 122,432 bytes
+==5002== 
+==5002== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5002==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5002==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5002==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5002== 
+==5002== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5002==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5002==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5002== 
+==5002== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5002==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5002==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5002==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5002==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5002== 
+==5002== LEAK SUMMARY:
+==5002==    definitely lost: 0 bytes in 0 blocks
+==5002==    indirectly lost: 0 bytes in 0 blocks
+==5002==      possibly lost: 0 bytes in 0 blocks
+==5002==    still reachable: 73 bytes in 3 blocks
+==5002==         suppressed: 0 bytes in 0 blocks
+==5002== 
+==5002== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5002== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5013== 
+==5013== HEAP SUMMARY:
+==5013==     in use at exit: 73 bytes in 3 blocks
+==5013==   total heap usage: 8,644 allocs, 8,641 frees, 461,277 bytes allocated
+==5013== 
+==5013== Searching for pointers to 3 not-freed blocks
+==5013== Checked 122,432 bytes
+==5013== 
+==5013== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5013==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5013==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5013==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5013== 
+==5013== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5013==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5013==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5013== 
+==5013== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5013==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5013==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5013==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5013==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5013== 
+==5013== LEAK SUMMARY:
+==5013==    definitely lost: 0 bytes in 0 blocks
+==5013==    indirectly lost: 0 bytes in 0 blocks
+==5013==      possibly lost: 0 bytes in 0 blocks
+==5013==    still reachable: 73 bytes in 3 blocks
+==5013==         suppressed: 0 bytes in 0 blocks
+==5013== 
+==5013== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5013== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5017== 
+==5017== HEAP SUMMARY:
+==5017==     in use at exit: 73 bytes in 3 blocks
+==5017==   total heap usage: 6,719 allocs, 6,716 frees, 420,563 bytes allocated
+==5017== 
+==5017== Searching for pointers to 3 not-freed blocks
+==5017== Checked 122,432 bytes
+==5017== 
+==5017== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5017==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5017==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5017==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5017== 
+==5017== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5017==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5017==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5017== 
+==5017== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5017==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5017==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5017==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5017==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5017== 
+==5017== LEAK SUMMARY:
+==5017==    definitely lost: 0 bytes in 0 blocks
+==5017==    indirectly lost: 0 bytes in 0 blocks
+==5017==      possibly lost: 0 bytes in 0 blocks
+==5017==    still reachable: 73 bytes in 3 blocks
+==5017==         suppressed: 0 bytes in 0 blocks
+==5017== 
+==5017== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5017== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5019== 
+==5019== HEAP SUMMARY:
+==5019==     in use at exit: 73 bytes in 3 blocks
+==5019==   total heap usage: 6,389 allocs, 6,386 frees, 404,060 bytes allocated
+==5019== 
+==5019== Searching for pointers to 3 not-freed blocks
+==5019== Checked 122,432 bytes
+==5019== 
+==5019== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5019==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5019==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5019==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5019== 
+==5019== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5019==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5019==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5019== 
+==5019== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5019==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5019==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5019==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5019==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5019== 
+==5019== LEAK SUMMARY:
+==5019==    definitely lost: 0 bytes in 0 blocks
+==5019==    indirectly lost: 0 bytes in 0 blocks
+==5019==      possibly lost: 0 bytes in 0 blocks
+==5019==    still reachable: 73 bytes in 3 blocks
+==5019==         suppressed: 0 bytes in 0 blocks
+==5019== 
+==5019== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5019== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5020== 
+==5020== HEAP SUMMARY:
+==5020==     in use at exit: 73 bytes in 3 blocks
+==5020==   total heap usage: 6,740 allocs, 6,737 frees, 419,018 bytes allocated
+==5020== 
+==5020== Searching for pointers to 3 not-freed blocks
+==5020== Checked 122,432 bytes
+==5020== 
+==5020== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5020==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5020==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5020==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5020== 
+==5020== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5020==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5020==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5020== 
+==5020== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5020==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5020==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5020==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5020==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5020== 
+==5020== LEAK SUMMARY:
+==5020==    definitely lost: 0 bytes in 0 blocks
+==5020==    indirectly lost: 0 bytes in 0 blocks
+==5020==      possibly lost: 0 bytes in 0 blocks
+==5020==    still reachable: 73 bytes in 3 blocks
+==5020==         suppressed: 0 bytes in 0 blocks
+==5020== 
+==5020== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5020== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5015== 
+==5015== HEAP SUMMARY:
+==5015==     in use at exit: 73 bytes in 3 blocks
+==5015==   total heap usage: 8,107 allocs, 8,104 frees, 447,322 bytes allocated
+==5015== 
+==5015== Searching for pointers to 3 not-freed blocks
+==5015== Checked 122,432 bytes
+==5015== 
+==5015== 19 bytes in 1 blocks are still reachable in loss record 1 of 3
+==5015==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5015==    by 0x138871: Params::Params(Params const&) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5015==    by 0x10CBBE: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5015== 
+==5015== 23 bytes in 1 blocks are still reachable in loss record 2 of 3
+==5015==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5015==    by 0x10CEA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5015== 
+==5015== 31 bytes in 1 blocks are still reachable in loss record 3 of 3
+==5015==    at 0x4C3217F: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5015==    by 0x10F557: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5015==    by 0x10E5E8: params_loader::load_cfg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5015==    by 0x10CAA4: main (in /home/adam/monte-carlo-security-games/cpp-games/run/release/run_games)
+==5015== 
+==5015== LEAK SUMMARY:
+==5015==    definitely lost: 0 bytes in 0 blocks
+==5015==    indirectly lost: 0 bytes in 0 blocks
+==5015==      possibly lost: 0 bytes in 0 blocks
+==5015==    still reachable: 73 bytes in 3 blocks
+==5015==         suppressed: 0 bytes in 0 blocks
+==5015== 
+==5015== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==5015== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==4998== 
+==4998== HEAP SUMMARY:
+==4998==     in use at exit: 0 bytes in 0 blocks
+==4998==   total heap usage: 633 allocs, 633 frees, 137,130 bytes allocated
+==4998== 
+==4998== All heap blocks were freed -- no leaks are possible
+==4998== 
+==4998== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==4998== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

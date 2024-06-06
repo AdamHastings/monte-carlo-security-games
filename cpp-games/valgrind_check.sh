@@ -1,2 +1,2 @@
-valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out-debug.txt ./run/debug/run_games_debug configs/test_tiny.json 
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out-debug.txt ./run/debug/run_games configs/test_tiny.json 
 valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out-release.txt ./run/release/run_games configs/test_tiny.json 
