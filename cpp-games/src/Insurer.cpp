@@ -12,27 +12,28 @@ int64_t Insurer::current_sum_assets = 0;
 int64_t Insurer::insurer_iter_sum = 0;
 int64_t Insurer::sum_premiums_collected = 0;
 unsigned long long Insurer::operating_expenses = 0;
-
+unsigned long long Insurer::paid_claims = 0;
 
 double Insurer::estimated_current_attacker_wealth_mean = 0;
 double Insurer::estimated_current_attacker_wealth_stdddev = 0;
-
 double Insurer::loss_ratio = 0;
 double Insurer::retention_regression_factor = 0;
+
+double Insurer::p_attack = 0;
+
+// Game Insurer::g;
 
 unsigned int* Insurer::ATTACKS_PER_EPOCH;
 
 std::vector<unsigned long long> Insurer::cumulative_assets; 
-std::vector<Defender>* Insurer::defenders;
+
 std::vector<Attacker>* Insurer::attackers;
 
-unsigned long long Insurer::paid_claims = 0;
 
-Insurer::Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers) : Player(p) {
+Insurer::Insurer(int id_in, Params &p, std::vector<Attacker>& _attackers) : Player(p) {
     id = id_in;
     assert(id >= 0);
 
-    defenders = &_defenders;
     attackers = &_attackers;
 
     double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of billions. 
@@ -69,36 +70,12 @@ int64_t Insurer::issue_payment(int64_t claim) {
     return amount_covered;
 }
 
-// returns the id of the seller
 void Insurer::sell_policy(PolicyType policy) {
     Insurer::sum_premiums_collected += policy.premium;
     this->gain(policy.premium); 
 }
 
-PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {    
-    
-    // Makes the assumption that defenders will only be attacked once per epoch
-    // A reasonable assumption first of all
-    // And second, it makes the math orders of magnitude easier 
-    double p_getting_paired_with_attacker_a = std::min(1.0, (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (defenders->size() * 1.0));
-    assert(p_getting_paired_with_attacker_a >= 0);
-    assert(p_getting_paired_with_attacker_a <= 1);
-
-    double p_getting_attacked;
-    if (p_getting_paired_with_attacker_a == 1.0) {
-        p_getting_attacked = 1.0;
-    } else {
-       p_getting_attacked = 1 - pow((1 - p_getting_paired_with_attacker_a), (double) attackers->size());      
-    } 
-    assert(p_getting_attacked >= 0);
-    assert(p_getting_attacked <= 1);
-
-    double expected_cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->mean();
-    bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + expected_cta_scaling_factor)));
-    // TODO output to log if this condition occurs
-    // if (!attacking_expected_gains_outweigh_expected_costs) {
-    //     std::cout << "Attacking no longer worth it!" << std::endl;
-    // }
+PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) { 
 
     long long ransom = Defender::ransom(assets);
     long long recovery_cost = Defender::recovery_cost(assets);
@@ -119,7 +96,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     assert(p_at_least_one_attacker_has_enough_to_attack >= 0);
     assert(p_at_least_one_attacker_has_enough_to_attack <= 1);
 
-    double p_loss = p_getting_attacked * p_at_least_one_attacker_has_enough_to_attack * attacking_expected_gains_outweigh_expected_costs * (1 - estimated_posture);
+    double p_loss = p_attack * p_at_least_one_attacker_has_enough_to_attack * (1 - estimated_posture);
     assert(p_loss >= 0);
     assert(p_loss <= 1);
 
@@ -138,7 +115,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
 
 // Insurers use their overhead to conduct operations and perform risk analysis
 // which informs current defender risks before writing policies.
-void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
+void Insurer::perform_market_analysis(std::vector<Insurer> &insurers, int current_num_defenders){
     
     // Insurers spend previous round's earnings on operating expenses 
     for (uint j=0; j < insurers.size(); j++) {
@@ -164,6 +141,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
 
     std::vector<double> attacker_assets;
 
+    // This can be optimized by passing in alive_attackers_indices instead
     for (auto a = attackers->begin(); a != attackers->end(); ++a) {
         if (a->is_alive()) {
             attacker_assets.push_back(a->assets);
@@ -181,15 +159,44 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers){
     estimated_current_attacker_wealth_stdddev = sqrt(utils::compute_var_mom(attacker_assets)); // Note!! This is the log of actual lognormal stddev!!
     assert(std::isnan(estimated_current_attacker_wealth_stdddev) ? attacker_assets.size() == 1 : true);
     assert(estimated_current_attacker_wealth_stdddev == 0 ? attacker_assets.size() == 1 : true);
+
+    
+    // Makes the assumption that defenders will only be attacked once per epoch
+    // A reasonable assumption first of all
+    // And second, it makes the math orders of magnitude easier 
+    double p_getting_paired_with_attacker_a = std::min(1.0, (*Insurer::ATTACKS_PER_EPOCH * 1.0) / (current_num_defenders * 1.0));
+    assert(p_getting_paired_with_attacker_a >= 0);
+    assert(p_getting_paired_with_attacker_a <= 1);
+
+    double p_getting_attacked;
+    if (p_getting_paired_with_attacker_a == 1.0) {
+        p_getting_attacked = 1.0;
+    } else {
+       p_getting_attacked = 1 - pow((1 - p_getting_paired_with_attacker_a), (double) attacker_assets.size());
+    } 
+    assert(p_getting_attacked >= 0);
+    assert(p_getting_attacked <= 1);
+
+    double expected_cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->mean();
+    bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + expected_cta_scaling_factor)));
+
+    p_attack = p_getting_attacked * attacking_expected_gains_outweigh_expected_costs;
 }
 
 void Insurer::reset(){
     i_init = 0;
     insurer_iter_sum = 0;
     current_sum_assets = 0;
+    sum_premiums_collected = 0;
+    operating_expenses = 0;
     paid_claims = 0;
-    defenders = nullptr;
+    estimated_current_attacker_wealth_mean = 0;
+    estimated_current_attacker_wealth_stdddev = 0;
+    loss_ratio = 0;
+    retention_regression_factor = 0;
     attackers = nullptr;
+    ATTACKS_PER_EPOCH = nullptr;
     operating_expenses = 0;
     cumulative_assets.clear();
+    p_attack = 0;
 }

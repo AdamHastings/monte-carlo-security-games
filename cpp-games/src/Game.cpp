@@ -33,7 +33,7 @@ Game::Game(Params prm, unsigned int game_number) {
 
     uint num_insurers = p.NUM_INSURERS_distribution->draw();
     for (uint j=0; j < num_insurers; j++) {
-        Insurer i = Insurer(j, p, defenders, attackers);
+        Insurer i = Insurer(j, p, attackers);
         insurers.push_back(i);
     }
     
@@ -352,7 +352,7 @@ void Game::init_round() {
     Insurer::insurer_iter_sum = 0;
     roundAttacks = 0;
 
-    Insurer::perform_market_analysis(insurers);
+    Insurer::perform_market_analysis(insurers, alive_defenders_indices.size());
     Defender::perform_market_analysis(prevRoundAttacks, alive_defenders_indices.size());
     Attacker::perform_market_analysis(defenders);
 

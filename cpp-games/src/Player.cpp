@@ -6,7 +6,7 @@
 #include <vector>
 #include "Insurer.h"
 
-
+Params Player::p;
 
 Player::Player(Params &p_in) {
     assets = 0;

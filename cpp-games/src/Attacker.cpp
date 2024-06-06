@@ -2,7 +2,6 @@
 #include "Defender.h"
 #include "utils.h"
 
-double Attacker::inequality_ratio = 0;
 
 long long Attacker::a_init = 0; 
 int64_t Attacker::attacker_iter_sum = 0;
@@ -10,6 +9,7 @@ int64_t Attacker::current_sum_assets = 0;
 std::vector<unsigned long long> Attacker::cumulative_assets; 
 
 double Attacker::estimated_current_defender_posture_mean = 0; 
+double Attacker::inequality_ratio = 0;
 
 long long Attacker::attacksAttempted = 0;
 long long Attacker::attacksSucceeded = 0;
@@ -37,7 +37,6 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
 // and this doesn't mean that the estimated posture should be super high.
 // So we do Method of Moments
 void Attacker::perform_market_analysis(std::vector<Defender> &defenders) {
-    // TODO consider using alive_defenders?
     std::vector<double> defender_postures;
     for (uint i=0; i<defenders.size(); i++) {
         if (defenders[i].is_alive()) {
@@ -66,9 +65,13 @@ void Attacker::reset() {
     a_init = 0;
     attacker_iter_sum = 0; // how much the attackers have cumulatively gained or lost this round
     current_sum_assets = 0; // sum total of all class instances
+    cumulative_assets.clear(); // running total of all attackers' assets
+
+    estimated_current_defender_posture_mean = 0; 
+    inequality_ratio = 0;
+    
     attacksAttempted = 0;
     attacksSucceeded = 0;
     attackerExpenditures = 0;
     attackerLoots = 0;
-    cumulative_assets.clear(); // running total of all attackers' assets
 }

@@ -319,7 +319,6 @@ void Defender::perform_market_analysis(int prevRoundAttacks, int num_current_def
     assert(Defender::estimated_probability_of_attack <= 1);
 }
 
-
 void Defender::lose(int64_t loss) {
     Player::lose(loss);
     defender_iter_sum -= loss;
@@ -342,6 +341,14 @@ void Defender::reset() {
     defensesPurchased = 0;
     sum_recovery_costs = 0;
     cumulative_assets.clear();
+
+    ransom_b0 = 0;
+    ransom_b1 = 0;
+    recovery_base = 0;
+    recovery_exp = 0;
+
+    NUM_QUOTES = 0;
+    gen = nullptr;
 }
 
 

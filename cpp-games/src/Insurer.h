@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "Attacker.h"
 #include "Defender.h"
-
+#include "Game.h"
 
 
 class Insurer : public Player {
@@ -22,13 +22,12 @@ class Insurer : public Player {
 
         static double retention_regression_factor;
 
-
         static unsigned long long paid_claims;
         static unsigned long long operating_expenses;
-        static int64_t sum_premiums_collected ;
+        static int64_t sum_premiums_collected;
 
+        static double p_attack;
 
-        static std::vector<Defender>* defenders;
         static std::vector<Attacker>* attackers;
 
         static void reset();
@@ -37,7 +36,7 @@ class Insurer : public Player {
         uint64_t id;
         int64_t round_losses = 0;
 
-        Insurer(int id_in, Params &p, std::vector<Defender>& _defenders, std::vector<Attacker>& _attackers);
+        Insurer(int id_in, Params &p, std::vector<Attacker>& _attackers);
         void gain(int64_t gain) override;
         void lose(int64_t loss) override;
 
@@ -45,5 +44,5 @@ class Insurer : public Player {
         int64_t issue_payment(int64_t claim);
         void sell_policy(PolicyType policy);
         
-        static void perform_market_analysis(std::vector<Insurer> &insurers);
+        static void perform_market_analysis(std::vector<Insurer> &insurers, int current_num_defenders);
 };

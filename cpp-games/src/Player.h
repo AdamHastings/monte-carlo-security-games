@@ -16,7 +16,7 @@ struct PolicyType {
 class Player {
     public:
         int64_t assets;
-        Params p; // Could this be static? Shared by all players?
+        static Params p; // Could this be static? Shared by all players?
 
         Player(Params &p_in);
         virtual void gain(int64_t gain);
