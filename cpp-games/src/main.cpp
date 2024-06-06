@@ -131,7 +131,7 @@ void init_logs(std::string basename, Params p) {
         header += ",d_cumulative_assets,";
         header += "a_cumulative_assets,";
         header += "i_cumulative_assets";
-    } else 
+    }
 
     header += "\n";
 

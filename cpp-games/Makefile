@@ -26,13 +26,13 @@ OBJECTS_RELEASE = $(SOURCES:src/%.cpp=$(OBJDIR_RELEASE)/%.o)
 BINDIR_DEBUG = run/debug
 BINDIR_RELEASE = run/release
 EXECUTABLE_DEBUG = $(BINDIR_DEBUG)/$(TARGET)_debug
-EXECUTABLE_RELEASE = $(BINDIR_RELEASE)/$(TARGET)_release
+EXECUTABLE_RELEASE = $(BINDIR_RELEASE)/$(TARGET)
+
+all: debug release
 
 # Build rules for debug and release versions
 debug: $(EXECUTABLE_DEBUG)
 release: $(EXECUTABLE_RELEASE)
-
-all: debug release
 
 $(EXECUTABLE_DEBUG): $(OBJECTS_DEBUG) | $(BINDIR_DEBUG)
 	$(CXX) $(DEBUG_FLAGS) $^ -o $@
