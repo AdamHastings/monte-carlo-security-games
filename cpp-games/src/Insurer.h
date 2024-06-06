@@ -36,7 +36,7 @@ class Insurer : public Player {
         uint64_t id;
         int64_t round_losses = 0;
 
-        Insurer(int id_in, Params &p, std::vector<Attacker>& _attackers);
+        Insurer(int id_in, Params &p);
         void gain(int64_t gain) override;
         void lose(int64_t loss) override;
 

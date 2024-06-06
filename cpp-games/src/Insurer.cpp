@@ -30,11 +30,9 @@ std::vector<unsigned long long> Insurer::cumulative_assets;
 std::vector<Attacker>* Insurer::attackers;
 
 
-Insurer::Insurer(int id_in, Params &p, std::vector<Attacker>& _attackers) : Player(p) {
+Insurer::Insurer(int id_in, Params &p) : Player(p) {
     id = id_in;
     assert(id >= 0);
-
-    attackers = &_attackers;
 
     double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of billions. 
     assert(fp_assets < __UINT32_MAX__);

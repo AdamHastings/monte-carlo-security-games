@@ -24,11 +24,11 @@ double Defender::ransom_b1 = 0;
 double Defender::recovery_base = 0;
 double Defender::recovery_exp = 0;
 
-Defender::Defender(int id_in, Params &p, std::vector<Insurer>& _insurers) : Player(p) {
+std::vector<Insurer>* Defender::insurers;
+
+Defender::Defender(int id_in, Params &p) : Player(p) {
     id = id_in;
     assert(id >= 0);
-
-    insurers = &_insurers;
 
     double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of billions. 
     assert(fp_assets < __UINT32_MAX__);

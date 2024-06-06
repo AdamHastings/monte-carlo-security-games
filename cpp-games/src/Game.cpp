@@ -33,19 +33,21 @@ Game::Game(Params prm, unsigned int game_number) {
 
     uint num_insurers = p.NUM_INSURERS_distribution->draw();
     for (uint j=0; j < num_insurers; j++) {
-        Insurer i = Insurer(j, p, attackers);
+        Insurer i = Insurer(j, p);
         insurers.push_back(i);
     }
+    Insurer::attackers = &attackers;
     
     Insurer::loss_ratio = p.LOSS_RATIO_distribution->draw();
     Insurer::retention_regression_factor = p.RETENTION_REGRESSION_FACTOR_distribution->draw();
 
     uint num_blue_players = p.NUM_DEFENDERS_distribution->draw();
     for (uint i=0; i < num_blue_players; i++) {
-        Defender d = Defender(i, p, insurers);
+        Defender d = Defender(i, p);
         defenders.push_back(d);
         alive_defenders_indices.push_back(i);
     }
+    Defender::insurers = &insurers;
     Defender::ransom_b0 = p.RANSOM_B0_distribution->mean();
     Defender::ransom_b1 = p.RANSOM_B1_distribution->mean();
     Defender::recovery_base = p.RECOVERY_COST_BASE_distribution->mean();

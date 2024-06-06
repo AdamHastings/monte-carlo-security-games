@@ -31,10 +31,12 @@ class Defender : public Player {
         static long long ransom(int _assets); 
         static long long recovery_cost(int _assets);
 
+        static std::vector<Insurer>* insurers; 
+
         static void reset();
 
     public: 
-        Defender(int id_in, Params &p, std::vector<Insurer> &insurers);
+        Defender(int id_in, Params &p);
         void gain(int64_t gain) override;
         void lose(int64_t loss) override;
 
@@ -44,8 +46,7 @@ class Defender : public Player {
 
         bool attacked = false; // Has this defender been attacked yet this round?
        
-        std::vector<Insurer>* insurers; // TODO should this be static?
-        std::vector<Defender>* defenders; // TODO use if you want to move choose_security_strategy into perform_market_analysis
+        
         bool insured = false;
         int ins_idx = -1;
         PolicyType policy;
