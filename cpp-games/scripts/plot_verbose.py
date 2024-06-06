@@ -28,6 +28,7 @@ def plot_verbose(df):
         cumulative_assets_median = []
         cumulative_assets_95th_pct = []
 
+        # consider shorest run instead?
         longest_run = df[frame].map(lambda x : len(x)).max()
 
 
