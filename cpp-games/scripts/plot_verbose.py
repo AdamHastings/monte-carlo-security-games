@@ -60,5 +60,5 @@ def plot_verbose(df):
 
 
 if __name__=="__main__":
-    df = pd.read_csv("../logs/fullsize_short_verbose.csv", header=0)
+    df = pd.read_csv("../logs/fullsize_short.csv", header=0)
     plot_verbose(df)
