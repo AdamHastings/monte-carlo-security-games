@@ -75,7 +75,7 @@ void Insurer::sell_policy(PolicyType policy) {
 
 PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) { 
 
-    long long ransom = Defender::ransom(assets);
+    long long ransom = Defender::ransom_cost(assets);
     long long recovery_cost = Defender::recovery_cost(assets);
     long long total_losses = ransom + recovery_cost;
     

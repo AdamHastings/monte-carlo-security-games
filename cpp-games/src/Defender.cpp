@@ -101,7 +101,7 @@ void Defender::make_security_investment(uint32_t amount) {
 
 // Assumes that ransom payments are linear with organization size
 // TODO rename to ransom_cost
-long long Defender::ransom(int _assets) {
+long long Defender::ransom_cost(int _assets) {
     return ransom_b0 + (_assets * ransom_b1);
 }
 
@@ -139,7 +139,7 @@ double Defender::d_d_posture_if_investment(int64_t investment) {
 }
 
 int64_t Defender::cost_if_attacked(int64_t investment) {
-    double rans = ransom(this->assets - investment);
+    double rans = ransom_cost(this->assets - investment);
     double recovery = recovery_cost(this->assets - investment);
     assert(rans > 0);
     assert(recovery >= 0);
@@ -292,7 +292,7 @@ void Defender::choose_security_strategy() {
     assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
     
-    int64_t expected_cost_if_attacked_at_optimal_investment = ransom(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
+    int64_t expected_cost_if_attacked_at_optimal_investment = ransom_cost(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
     assert(expected_cost_if_attacked_at_optimal_investment >= 0);
         
     double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(optimal_investment));

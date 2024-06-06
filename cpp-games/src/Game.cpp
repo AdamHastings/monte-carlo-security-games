@@ -276,7 +276,7 @@ void Game::fight(Attacker &a, Defender &d) {
     assert(d.assets > 0);
     assert(a.assets > 0);
 
-    uint32_t ransom = Defender::ransom(d.assets);
+    uint32_t ransom = Defender::ransom_cost(d.assets);
     uint32_t recovery_cost = Defender::recovery_cost(d.assets);
 
     if (ransom > d.assets) {
