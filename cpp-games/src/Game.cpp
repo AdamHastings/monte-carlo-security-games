@@ -35,6 +35,7 @@ Game::Game(Params prm, unsigned int game_number) {
     for (uint j=0; j < num_insurers; j++) {
         Insurer i = Insurer(j, p);
         insurers.push_back(i);
+        alive_insurers_indices.push_back(j);
     }
     Insurer::attackers = &attackers;
     
@@ -48,6 +49,7 @@ Game::Game(Params prm, unsigned int game_number) {
         alive_defenders_indices.push_back(i);
     }
     Defender::insurers = &insurers;
+    Defender::alive_insurers_indices = &alive_insurers_indices;
     Defender::ransom_b0 = p.RANSOM_B0_distribution->mean();
     Defender::ransom_b1 = p.RANSOM_B1_distribution->mean();
     Defender::recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
@@ -81,6 +83,10 @@ Game::Game(Params prm, unsigned int game_number) {
         Defender::cumulative_assets.push_back(Defender::d_init);
         Attacker::cumulative_assets.push_back(Attacker::Attacker::a_init);
         Insurer::cumulative_assets.push_back(Insurer::i_init);
+
+        cumulative_num_alive_defenders.push_back(alive_defenders_indices.size());
+        cumulative_num_alive_attackers.push_back(alive_attackers_indices.size());
+        cumulative_num_alive_insurers.push_back(alive_insurers_indices.size());
     }
 
     // Make sure everything got set up correctly
@@ -148,7 +154,33 @@ std::string Game::to_string() {
                 ss << ",";
             }
         }
+        ss << "]\",";
+        ///////////////////////////////////////////////////
+        ss << "\"[";
+        for (auto & d : cumulative_num_alive_defenders) {
+            ss << std::scientific << std::setprecision(2) << d;
+            if (&d != &cumulative_num_alive_defenders.back()) {
+                ss << ",";
+            }
+        }
+        ss << "]\",";
+        ss << "\"[";
+        for (auto & a : cumulative_num_alive_attackers) {
+            ss << std::scientific << std::setprecision(2) << a;
+            if (&a != &cumulative_num_alive_attackers.back()) {
+                ss << ",";
+            }
+        }
+        ss << "]\",";
+        ss << "\"[";
+        for (auto & i : cumulative_num_alive_insurers) {
+            ss << std::scientific << std::setprecision(2) << i;
+            if (&i != &cumulative_num_alive_insurers.back()) {
+                ss << ",";
+            }
+        }
         ss << "]\"";
+
     }
 
     
@@ -379,6 +411,13 @@ void Game::conclude_round() {
     prevRoundAttacks = roundAttacks;
 
     // this could be faster if you iterated through the alive players instead 
+    alive_defenders_indices.clear();
+    for (Defender &d : defenders) {
+        if (d.is_alive()) {
+            alive_defenders_indices.push_back(d.id);
+        }
+    }
+    
     alive_attackers_indices.clear();
     for (Attacker &a : attackers) {
         if (a.is_alive()) {
@@ -393,17 +432,14 @@ void Game::conclude_round() {
         }
     }
 
-    alive_defenders_indices.clear();
-    for (Defender &d : defenders) {
-        if (d.is_alive()) {
-            alive_defenders_indices.push_back(d.id);
-        }
-    }
-
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::current_sum_assets);
         Attacker::cumulative_assets.push_back(Attacker::current_sum_assets);
         Insurer::cumulative_assets.push_back(Insurer::current_sum_assets);
+
+        cumulative_num_alive_defenders.push_back(alive_defenders_indices.size());
+        cumulative_num_alive_attackers.push_back(alive_attackers_indices.size());
+        cumulative_num_alive_insurers.push_back(alive_insurers_indices.size());
     }
 }
 
@@ -424,8 +460,7 @@ void Game::run_iterations() {
 
         init_round();
 
-        unsigned int num_alive_defenders = alive_defenders_indices.size();
-        std::uniform_int_distribution<> alive_defender_indices_dist(0, num_alive_defenders-1);
+        std::uniform_int_distribution<> alive_defender_indices_dist(0, alive_defenders_indices.size()-1);
 
         for (auto& a_i : alive_attackers_indices) {
             assert(a_i < attackers.size());
@@ -434,7 +469,7 @@ void Game::run_iterations() {
             
             // pick victims
             std::unordered_set<unsigned int> victim_indices;
-            while (victim_indices.size() < std::min(ATTACKS_PER_EPOCH, num_alive_defenders)) {
+            while (victim_indices.size() < std::min(ATTACKS_PER_EPOCH,  (uint32_t) alive_defenders_indices.size())) {
                 // This quick-and-dirty approach has the potential to become very slow in degenerate cases
                 // Check here if performance becomes an issue
                 int candidate_victim = alive_defender_indices_dist(gen);

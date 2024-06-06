@@ -32,6 +32,7 @@ class Defender : public Player {
         static long long recovery_cost(int _assets);
 
         static std::vector<Insurer>* insurers; 
+        static std::vector<uint32_t>* alive_insurers_indices; 
 
         static void reset();
 

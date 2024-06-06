@@ -132,7 +132,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers, int curren
             if (allowed_spending > i->assets) {
                 allowed_spending = i->assets;
             }
-            i->lose(allowed_spending);
+            // i->lose(allowed_spending); // Commented out. I decided that we can just let the insurer's pool grow.
             operating_expenses += allowed_spending;  
         }
     }

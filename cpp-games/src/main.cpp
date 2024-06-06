@@ -130,7 +130,11 @@ void init_logs(std::string basename, Params p) {
     if (p.verbose) {
         header += ",d_cumulative_assets,";
         header += "a_cumulative_assets,";
-        header += "i_cumulative_assets";
+        header += "i_cumulative_assets,";
+        
+        header += "num_alive_defenders,";
+        header += "num_alive_attackers,";
+        header += "num_alive_insurers";
     }
 
     header += "\n";

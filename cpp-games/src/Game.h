@@ -59,6 +59,14 @@ class Game {
 
         Outcomes final_outcome = Outcomes::INIT;
 
+    private:
+        std::vector<int> cumulative_num_alive_defenders;
+        std::vector<int> cumulative_num_alive_attackers;
+        std::vector<int> cumulative_num_alive_insurers;
+
+
+    private:
+
         void fight(Attacker &a, Defender &d);
         bool equilibrium_reached();
         bool game_over();

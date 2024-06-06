@@ -25,6 +25,7 @@ double Defender::recovery_base = 0;
 double Defender::recovery_exp = 0;
 
 std::vector<Insurer>* Defender::insurers;
+std::vector<uint32_t>* Defender::alive_insurers_indices;
 
 Defender::Defender(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -100,7 +101,6 @@ void Defender::make_security_investment(uint32_t amount) {
 }
 
 // Assumes that ransom payments are linear with organization size
-// TODO rename to ransom_cost
 long long Defender::ransom_cost(int _assets) {
     return ransom_b0 + (_assets * ransom_b1);
 }
@@ -234,13 +234,15 @@ void Defender::choose_security_strategy() {
     // 1. Get insurance policy from insurer
     // TODO what if this is picking dead insurers...?
     // TODO TODO TODO 
-    std::uniform_int_distribution<> insurer_indices_dist(0, insurers->size()-1);
+    std::uniform_int_distribution<> alive_insurers_indices_dist(0, alive_insurers_indices->size() -1);
     
     // pick insurers for quotes
     // Probably a more performant way of doing this 
     std::unordered_set<unsigned int> insurer_indices;
-    while (insurer_indices.size() < NUM_QUOTES && insurer_indices.size() < insurers->size()) {
-        insurer_indices.insert(insurer_indices_dist(*gen));
+    while (insurer_indices.size() < NUM_QUOTES && insurer_indices.size() < alive_insurers_indices->size()) {
+        int alive_insurer_index = alive_insurers_indices_dist(*gen);
+        int insurer_index = alive_insurers_indices->at(alive_insurer_index);
+        insurer_indices.insert(insurer_index);
     }
 
     Insurer* best_insurer = nullptr;
@@ -349,6 +351,9 @@ void Defender::reset() {
 
     NUM_QUOTES = 0;
     gen = nullptr;
+
+    insurers = nullptr;
+    alive_insurers_indices = nullptr;
 }
 
 
