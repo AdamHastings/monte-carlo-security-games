@@ -26,6 +26,8 @@ g0 = 'rgba(136, 136, 136, {})'.format(opaque)
 
 def asset_flow_sankey(df):
 
+  df = df.drop(columns=['outcome', 'd_cumulative_assets', 'a_cumulative_assets', 'i_cumulative_assets'])
+  meandf = df.mean()
 
   nodes = {
       "Defenders' initial wealth" : b0,
@@ -53,126 +55,126 @@ def asset_flow_sankey(df):
   f = flow(
     source  = nm["Defenders' initial wealth"],
     sink    = nm["Security spending"],
-    val     = 5466269888,
+    val     = meandf['d_sum_security_investments'],
     color   = b)  
   flows.append(f)
 
   f = flow(
     source  = nm["Security spending"],
     sink    = nm["Expenses"],
-    val     = 5466269888,
+    val     = meandf['d_sum_security_investments'],
     color   = g)  
   flows.append(f)
 
   f = flow(
     source  = nm["Defenders' initial wealth"],
     sink    = nm["Ransom payments"],
-    val     = 52736553959,
+    val     = meandf['attackerLoots'],
     color   = b)  
   flows.append(f)
 
   f = flow(
     source  = nm["Ransom payments"],
     sink    = nm["Attackers' final wealth"],
-    val     = 44175509863,
+    val     = meandf['a_end'],
     color   = r)  
   flows.append(f)
 
   f = flow(
     source  = nm["Defenders' initial wealth"],
     sink    = nm["Recovery costs"],
-    val     = 794751212,
+    val     = meandf['d_sum_recovery_costs'],
     color   = b)  
   flows.append(f)
 
   f = flow(
     source  = nm["Recovery costs"],
     sink    = nm["Expenses"],
-    val     = 794751212,
+    val     = meandf['d_sum_recovery_costs'],
     color   = g)  
   flows.append(f)
 
   f = flow(
     source  = nm["Defenders' initial wealth"],
     sink    = nm["Insurance premiums"],
-    val     = 306234183,
+    val     = meandf['sum_premiums_collected'],
     color   = b)  
   flows.append(f)
 
   f = flow(
     source  = nm["Insurance premiums"],
     sink    = nm["Premium pool"],
-    val     = 306234183,
-    color   = b)  
+    val     = meandf['sum_premiums_collected'],
+    color   = y)  
   flows.append(f)
 
   f = flow(
     source  = nm["Defenders' initial wealth"],
     sink    = nm["Defenders' final wealth"],
-    val     = 135567126,
+    val     = meandf['d_end'],
     color   = b)  
   flows.append(f)
 
   f = flow(
     source  = nm["Attackers' initial wealth"],
     sink    = nm["Ransom payments"],
-    val     = 288620,
+    val     = meandf['a_init'],
     color   = r)  
   flows.append(f)
 
   f = flow(
     source  = nm["Ransom payments"],
     sink    = nm["Attacker spending"],
-    val     = 8561332716,
+    val     = meandf['attackerExpenditures'],
     color   = r)  
   flows.append(f)
 
   f = flow(
     source  = nm["Attacker spending"],
     sink    = nm["Expenses"],
-    val     = 8561332716,
+    val     = meandf['attackerExpenditures'],
     color   = g)  
   flows.append(f)
 
   f = flow(
     source  = nm["Insurers' initial wealth"],
     sink    = nm["Premium pool"],
-    val     = 2641561568,
+    val     = meandf['i_init'],
     color   = y)  
   flows.append(f)
 
   f = flow(
     source  = nm["Premium pool"],
     sink    = nm["Claims"],
-    val     = 311355971,
+    val     = meandf['paid_claims'],
     color   = y)  
   flows.append(f)
 
   f = flow(
     source  = nm["Claims"],
     sink    = nm["Defenders' final wealth"],
-    val     = 311355971,
+    val     = meandf['paid_claims'],
     color   = b)  
   flows.append(f)
 
   f = flow(
     source  = nm["Premium pool"],
     sink    = nm["Insurers' final wealth"],
-    val     = 2569925532,
+    val     = meandf['i_end'],
     color   = y)  
   flows.append(f)
 
   f = flow(
     source  = nm["Premium pool"],
     sink    = nm["Insurer spending"],
-    val     = 66514248,
+    val     = meandf['insurer_expenditures'],
     color   = y)  
   flows.append(f)
 
   f = flow(
     source  = nm["Insurer spending"],
     sink    = nm["Expenses"],
-    val     = 66514248,
+    val     = meandf['insurer_expenditures'],
     color   = g)  
   flows.append(f)
 
@@ -182,7 +184,7 @@ def asset_flow_sankey(df):
   fig = go.Figure(go.Sankey(
       arrangement='snap',
       node = dict(
-        pad = 15,
+        pad = 50,
         thickness = 20,
         line = dict(color = "black", width = 0.5),
         label = list(nm.keys()),
