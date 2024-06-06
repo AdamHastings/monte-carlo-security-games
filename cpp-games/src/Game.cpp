@@ -111,6 +111,7 @@ std::string Game::to_string() {
     ss << std::scientific << std::setprecision(2) << Attacker::attackerExpenditures <<  ",";
     ss << std::scientific << std::setprecision(2) << Defender::policiesPurchased << ",";   
     ss << std::scientific << std::setprecision(2) << Defender::defensesPurchased <<  ",";
+    ss << std::scientific << std::setprecision(2) << Defender::do_nothing <<  ",";
     ss << std::scientific << std::setprecision(2) << Defender::sum_security_investments <<  ",";
 
     ss << Defender::NUM_QUOTES << ",";
@@ -179,8 +180,32 @@ std::string Game::to_string() {
                 ss << ",";
             }
         }
+        ss << "]\",";
+        ///////////////////////////////////////////////////
+        ss << "\"[";
+        for (auto & d : Defender::cumulative_round_policies_purchased) {
+            ss << std::scientific << std::setprecision(2) << d;
+            if (&d != &Defender::cumulative_round_policies_purchased.back()) {
+                ss << ",";
+            }
+        }
+        ss << "]\",";
+        ss << "\"[";
+        for (auto & a : Defender::cumulative_round_defenses_purchased) {
+            ss << std::scientific << std::setprecision(2) << a;
+            if (&a != &Defender::cumulative_round_defenses_purchased.back()) {
+                ss << ",";
+            }
+        }
+        ss << "]\",";
+        ss << "\"[";
+        for (auto & i : Defender::cumulative_round_do_nothing) {
+            ss << std::scientific << std::setprecision(2) << i;
+            if (&i != &Defender::cumulative_round_do_nothing.back()) {
+                ss << ",";
+            }
+        }
         ss << "]\"";
-
     }
 
     
@@ -386,6 +411,10 @@ void Game::init_round() {
     Insurer::insurer_iter_sum = 0;
     roundAttacks = 0;
 
+    Defender::round_policies_purchased = 0;
+    Defender::round_defenses_purchased = 0;
+    Defender::round_do_nothing = 0;
+
     Insurer::perform_market_analysis(insurers, alive_defenders_indices.size());
     Defender::perform_market_analysis(prevRoundAttacks, alive_defenders_indices.size());
     Attacker::perform_market_analysis(defenders);
@@ -440,6 +469,10 @@ void Game::conclude_round() {
         cumulative_num_alive_defenders.push_back(alive_defenders_indices.size());
         cumulative_num_alive_attackers.push_back(alive_attackers_indices.size());
         cumulative_num_alive_insurers.push_back(alive_insurers_indices.size());
+
+        Defender::cumulative_round_policies_purchased.push_back(Defender::round_policies_purchased);
+        Defender::cumulative_round_defenses_purchased.push_back(Defender::round_defenses_purchased);
+        Defender::cumulative_round_do_nothing.push_back(Defender::round_do_nothing);
     }
 }
 

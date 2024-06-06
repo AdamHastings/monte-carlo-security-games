@@ -11,11 +11,11 @@ class Defender : public Player {
 
         static int64_t d_init;
         static int64_t defender_iter_sum;
-        static std::vector<unsigned long long> cumulative_assets; // running total of all defenders' assets
         static int64_t current_sum_assets; // sum total of all class instances
         static int64_t sum_recovery_costs;
         static int64_t policiesPurchased;
         static int64_t defensesPurchased;
+        static int64_t do_nothing; // keep track of the times that the player chooses to make an "investment" of 0, i.e. do nothing
         static int64_t sum_security_investments;
         
         static std::mt19937* gen;
@@ -35,6 +35,18 @@ class Defender : public Player {
         static std::vector<uint32_t>* alive_insurers_indices; 
 
         static void reset();
+
+    public:
+        // verbose bookkeeping variables 
+        static std::vector<unsigned long long> cumulative_assets; // running total of all defenders' assets
+        static std::vector<int> cumulative_round_policies_purchased;
+        static std::vector<int> cumulative_round_defenses_purchased;
+        static std::vector<int> cumulative_round_do_nothing;
+        
+        static int round_policies_purchased;
+        static int round_defenses_purchased;
+        static int round_do_nothing;
+
 
     public: 
         Defender(int id_in, Params &p);

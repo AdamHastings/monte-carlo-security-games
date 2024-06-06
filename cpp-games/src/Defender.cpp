@@ -12,8 +12,9 @@ int64_t Defender::current_sum_assets = 0;
 int64_t Defender::sum_recovery_costs = 0;
 int64_t Defender::policiesPurchased = 0;
 int64_t Defender::defensesPurchased = 0;
+int64_t Defender::do_nothing = 0;
+
 int64_t Defender::sum_security_investments = 0;
-std::vector<unsigned long long> Defender::cumulative_assets;
 
 uint32_t Defender::NUM_QUOTES = 0;
 
@@ -26,6 +27,15 @@ double Defender::recovery_exp = 0;
 
 std::vector<Insurer>* Defender::insurers;
 std::vector<uint32_t>* Defender::alive_insurers_indices;
+
+// Verbose bookkeeping vars
+std::vector<unsigned long long> Defender::cumulative_assets;
+std::vector<int> Defender::cumulative_round_policies_purchased;
+std::vector<int> Defender::cumulative_round_defenses_purchased;
+std::vector<int> Defender::cumulative_round_do_nothing;
+int Defender::round_policies_purchased = 0;
+int Defender::round_defenses_purchased = 0;
+int Defender::round_do_nothing = 0;
 
 Defender::Defender(int id_in, Params &p) : Player(p) {
     id = id_in;
@@ -58,6 +68,7 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
 void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     assert(assets > p.premium);
     policiesPurchased += 1;
+    round_policies_purchased++;
     insured = true;
     policy = p;
     this->lose(policy.premium);
@@ -91,6 +102,7 @@ void Defender::make_security_investment(uint32_t amount) {
     assert(posture >= 0);
     assert(posture <= 1);
     defensesPurchased += 1;
+    round_defenses_purchased++;
     sum_security_investments += amount;
     this->lose(amount);
 
@@ -309,8 +321,12 @@ void Defender::choose_security_strategy() {
     // TODO consider cases where insurer tells defender how much to invest 
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(best_insurer, best_policy);
-    } else {
+    } else if (optimal_investment > 0) {
         make_security_investment(optimal_investment);
+    } else {
+        assert(optimal_investment == 0);
+        do_nothing++;
+        round_do_nothing++;
     }
 }
 
@@ -341,8 +357,16 @@ void Defender::reset() {
     sum_security_investments = 0;
     policiesPurchased = 0;
     defensesPurchased = 0;
+    do_nothing = 0;
     sum_recovery_costs = 0;
     cumulative_assets.clear();
+
+    cumulative_round_policies_purchased.clear();
+    cumulative_round_defenses_purchased.clear();
+    cumulative_round_do_nothing.clear();
+    round_policies_purchased = 0;
+    round_defenses_purchased = 0;
+    round_do_nothing = 0;
 
     ransom_b0 = 0;
     ransom_b1 = 0;

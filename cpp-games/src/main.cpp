@@ -119,6 +119,7 @@ void init_logs(std::string basename, Params p) {
     header += "attackerExpenditures,";
     header += "policiesPurchased,";
     header += "defensesPurchased,";
+    header += "do_nothing,";
     header += "d_sum_security_investments,";
     header += "NUM_QUOTES,";
     header += "sum_premiums_collected,";
@@ -134,7 +135,11 @@ void init_logs(std::string basename, Params p) {
         
         header += "num_alive_defenders,";
         header += "num_alive_attackers,";
-        header += "num_alive_insurers";
+        header += "num_alive_insurers,";
+
+        header += "cumulative_round_policies_purchased,";
+        header += "cumulative_round_defenses_purchased,";
+        header += "cumulative_round_do_nothing";
     }
 
     header += "\n";
