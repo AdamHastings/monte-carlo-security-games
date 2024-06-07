@@ -26,7 +26,18 @@ g0 = 'rgba(136, 136, 136, {})'.format(opaque)
 
 def asset_flow_sankey(df):
 
-  df = df.drop(columns=['outcome', 'd_cumulative_assets', 'a_cumulative_assets', 'i_cumulative_assets'])
+  df = df.drop(columns=[
+    'outcome', 
+    'd_cumulative_assets', 
+    'a_cumulative_assets', 
+    'i_cumulative_assets',
+    'num_alive_defenders',
+    'num_alive_attackers',
+    'num_alive_insurers',
+    'cumulative_round_policies_purchased',
+    'cumulative_round_defenses_purchased',
+    'cumulative_round_do_nothing'
+  ])
   meandf = df.mean()
 
   nodes = {
@@ -164,19 +175,19 @@ def asset_flow_sankey(df):
     color   = y)  
   flows.append(f)
 
-  f = flow(
-    source  = nm["Premium pool"],
-    sink    = nm["Insurer spending"],
-    val     = meandf['insurer_expenditures'],
-    color   = y)  
-  flows.append(f)
+  # f = flow(
+  #   source  = nm["Premium pool"],
+  #   sink    = nm["Insurer spending"],
+  #   val     = meandf['insurer_expenditures'],
+  #   color   = y)  
+  # flows.append(f)
 
-  f = flow(
-    source  = nm["Insurer spending"],
-    sink    = nm["Expenses"],
-    val     = meandf['insurer_expenditures'],
-    color   = g)  
-  flows.append(f)
+  # f = flow(
+  #   source  = nm["Insurer spending"],
+  #   sink    = nm["Expenses"],
+  #   val     = meandf['insurer_expenditures'],
+  #   color   = g)  
+  # flows.append(f)
 
 
 
@@ -199,7 +210,7 @@ def asset_flow_sankey(df):
       )
   ))
 
-  fig.show()
+  # fig.show()
 
   # fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
   fig.write_image("figures/asset_flow_sankey.pdf")

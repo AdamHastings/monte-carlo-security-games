@@ -2,12 +2,14 @@
 import pandas as pd
 import numpy as np
 import argparse
+import copy
 import sys
 from plot_verbose import plot_verbose
 from asset_flow_sankey import asset_flow_sankey
+from plot_canary_vars import plot_canary_vars
 
 
-
+# default 
 filename = "../logs/fullsize_short.csv"
 
 if (len(sys.argv) == 2):
@@ -19,8 +21,10 @@ elif (len(sys.argv) > 2):
 df = pd.read_csv(filename, header=0)
 
 print("plot_verbose")
-plot_verbose(df)
+plot_verbose(copy.deepcopy(df))
 
 print("asset_flow_sankey")
-asset_flow_sankey(df)
+asset_flow_sankey(copy.deepcopy(df))
 
+print("plot_canary_vars")
+plot_canary_vars(copy.deepcopy(df))

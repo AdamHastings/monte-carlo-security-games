@@ -9,6 +9,8 @@ def trillion_formatter(x, pos):
 
 
 def plot_verbose(df):
+
+    plt.clf()
     
 
     df['d_cumulative_assets'] = df['d_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))

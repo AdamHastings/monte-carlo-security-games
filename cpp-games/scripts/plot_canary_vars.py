@@ -11,31 +11,16 @@ y = '#FECB52'
 r = '#EF553B' 
 
 def plot_canary_vars(df):
-    # # create data
-    # rng = np.random.default_rng(0)
-    # offsets = [1.0, 1.50, 1.60]
-    # labels = ["no balancing", "CRV-27", "CRV-27*"]
-    # x0 = np.linspace(0.0, 3.0, 100)
-    # y = [offset * x0 / (x0 + 1) + 0.1 * rng.random(len(x0)) for offset in offsets]
 
-    # # plot
-    # with plt.style.context(matplotx.styles.dufte):
-    #     for yy, label in zip(y, labels):
-    #         plt.plot(x0, yy, label=label)
-    #     plt.xlabel("distance [m]")
-    #     matplotx.ylabel_top("voltage [V]")  # move ylabel to the top, rotate
-    #     matplotx.line_labels()  # line labels to the right
-    #     plt.tight_layout()
-    #     plt.savefig('figures/canary_vars.png')
-    #     plt.savefig('figures/canary_vars.pdf')
+    plt.clf()
 
     cumulative_outputs = [
-        ('d_cumulative_assets', 'defender assets', b, '-'),
-        ('a_cumulative_assets', 'attacker assets', r, '-.'),
-        ('i_cumulative_assets', 'insurer assets',  y, '-'),
-        ('num_alive_defenders', 'num defenders',   b, '-.'),
-        ('num_alive_attackers', 'num attackers',   r, '-'),
-        ('num_alive_insurers',  'num insurers',    y, '-.')
+        ('d_cumulative_assets', 'defenders $', b, '-'),
+        ('a_cumulative_assets', 'attackers $', r, '-.'),
+        ('i_cumulative_assets', 'insurers $',  y, '-'),
+        ('num_alive_defenders', '# defenders',   b, '-.'),
+        ('num_alive_attackers', '# attackers',   r, '-'),
+        ('num_alive_insurers',  '# insurers',    y, '-.')
     ]
 
     def normalize(arr):
