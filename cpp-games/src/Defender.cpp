@@ -250,10 +250,10 @@ void Defender::choose_security_strategy() {
     
     // pick insurers for quotes
     // Probably a more performant way of doing this 
-    std::unordered_set<unsigned int> insurer_indices;
+    std::unordered_set<uint32_t> insurer_indices;
     while (insurer_indices.size() < NUM_QUOTES && insurer_indices.size() < alive_insurers_indices->size()) {
-        int alive_insurer_index = alive_insurers_indices_dist(*gen);
-        int insurer_index = alive_insurers_indices->at(alive_insurer_index);
+        uint32_t alive_insurer_index = alive_insurers_indices_dist(*gen);
+        uint32_t insurer_index = alive_insurers_indices->at(alive_insurer_index);
         insurer_indices.insert(insurer_index);
     }
 
@@ -264,6 +264,7 @@ void Defender::choose_security_strategy() {
     
     for (const auto& j : insurer_indices) {
         Insurer* i = &insurers->at(j);
+        assert(i->is_alive());
         
         double noise = p.POSTURE_NOISE_distribution->draw();
         double estimated_posture = posture + noise;

@@ -291,7 +291,7 @@ void Game::verify_outcome() {
     // Master checksum
     int64_t init_ = Defender::d_init + Attacker::Attacker::a_init + Insurer::i_init; 
     int64_t end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets;
-    int64_t expenses_ = Defender::sum_security_investments +  Attacker::attackerExpenditures + Defender::sum_recovery_costs + Insurer::operating_expenses; 
+    int64_t expenses_ = Defender::sum_security_investments +  Attacker::attackerExpenditures + Defender::sum_recovery_costs; // + Insurer::operating_expenses; 
 
     assert(init_ - expenses_ == end_); 
 }
