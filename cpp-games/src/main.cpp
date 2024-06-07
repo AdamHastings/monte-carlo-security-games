@@ -139,7 +139,11 @@ void init_logs(std::string basename, Params p) {
 
         header += "cumulative_round_policies_purchased,";
         header += "cumulative_round_defenses_purchased,";
-        header += "cumulative_round_do_nothing";
+        header += "cumulative_round_do_nothing,";
+
+        header += "p_pairing,";
+        header += "insurer_estimate_p_pairing,";
+        header += "estimated_probability_of_attack"; 
     }
 
     header += "\n";

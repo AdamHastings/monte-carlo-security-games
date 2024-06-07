@@ -21,10 +21,9 @@ double Insurer::retention_regression_factor = 0;
 
 double Insurer::p_attack = 0;
 
-// Game Insurer::g;
-
 unsigned int* Insurer::ATTACKS_PER_EPOCH;
 
+// TODO Maybe this kind of cumulative tracking should happen in the Game class?
 std::vector<unsigned long long> Insurer::cumulative_assets; 
 
 std::vector<Attacker>* Insurer::attackers;
@@ -178,7 +177,10 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers, int curren
     double expected_cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->mean();
     bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + expected_cta_scaling_factor)));
 
+    // maybe better described as p_pairing
     p_attack = p_getting_attacked * attacking_expected_gains_outweigh_expected_costs;
+    assert(p_attack >= 0);
+    assert(p_attack <= 1);
 }
 
 void Insurer::reset(){

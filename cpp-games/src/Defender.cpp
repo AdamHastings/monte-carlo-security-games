@@ -244,8 +244,6 @@ void Defender::choose_security_strategy() {
     assert(p_L_hat <= 1);
 
     // 1. Get insurance policy from insurer
-    // TODO what if this is picking dead insurers...?
-    // TODO TODO TODO 
     std::uniform_int_distribution<> alive_insurers_indices_dist(0, alive_insurers_indices->size() -1);
     
     // pick insurers for quotes

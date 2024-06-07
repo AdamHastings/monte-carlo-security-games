@@ -95,6 +95,19 @@ Game::Game(Params prm, unsigned int game_number) {
     }   
 }
 
+template <typename T>
+std::string vec2str(const std::vector<T>& vec)
+{
+    std::ostringstream out;
+    if (!vec.empty())
+    {
+        std::copy(std::begin(vec), std::end(vec) - 1, std::ostream_iterator<T>(out, ","));
+        out << vec.back();
+    }
+
+    return out.str();
+}
+
 std::string Game::to_string() {
     std::stringstream ss;
 
@@ -132,80 +145,21 @@ std::string Game::to_string() {
     }
 
     if (p.verbose) {
-        ss << ",\"[";
-        for (auto & d : Defender::cumulative_assets) {
-            ss << std::scientific << std::setprecision(2) << d;
-            if (&d != &Defender::cumulative_assets.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ss << "\"[";
-        for (auto & a : Attacker::cumulative_assets) {
-            ss << std::scientific << std::setprecision(2) << a;
-            if (&a != &Attacker::cumulative_assets.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ss << "\"[";
-        for (auto & i : Insurer::cumulative_assets) {
-            ss << std::scientific << std::setprecision(2) << i;
-            if (&i != &Insurer::cumulative_assets.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ///////////////////////////////////////////////////
-        ss << "\"[";
-        for (auto & d : cumulative_num_alive_defenders) {
-            ss << std::scientific << std::setprecision(2) << d;
-            if (&d != &cumulative_num_alive_defenders.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ss << "\"[";
-        for (auto & a : cumulative_num_alive_attackers) {
-            ss << std::scientific << std::setprecision(2) << a;
-            if (&a != &cumulative_num_alive_attackers.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ss << "\"[";
-        for (auto & i : cumulative_num_alive_insurers) {
-            ss << std::scientific << std::setprecision(2) << i;
-            if (&i != &cumulative_num_alive_insurers.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ///////////////////////////////////////////////////
-        ss << "\"[";
-        for (auto & d : Defender::cumulative_round_policies_purchased) {
-            ss << std::scientific << std::setprecision(2) << d;
-            if (&d != &Defender::cumulative_round_policies_purchased.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ss << "\"[";
-        for (auto & a : Defender::cumulative_round_defenses_purchased) {
-            ss << std::scientific << std::setprecision(2) << a;
-            if (&a != &Defender::cumulative_round_defenses_purchased.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\",";
-        ss << "\"[";
-        for (auto & i : Defender::cumulative_round_do_nothing) {
-            ss << std::scientific << std::setprecision(2) << i;
-            if (&i != &Defender::cumulative_round_do_nothing.back()) {
-                ss << ",";
-            }
-        }
-        ss << "]\"";
+        ss << ",\"[" << vec2str(Defender::cumulative_assets) << "]\"";
+        ss << ",\"[" << vec2str(Attacker::cumulative_assets) << "]\"";
+        ss << ",\"[" << vec2str(Insurer::cumulative_assets) << "]\"";
+        
+        ss << ",\"[" << vec2str(cumulative_num_alive_defenders) << "]\"";
+        ss << ",\"[" << vec2str(cumulative_num_alive_attackers) << "]\"";
+        ss << ",\"[" << vec2str(cumulative_num_alive_insurers) << "]\"";
+
+        ss << ",\"[" << vec2str(Defender::cumulative_round_policies_purchased) << "]\"";
+        ss << ",\"[" << vec2str(Defender::cumulative_round_defenses_purchased) << "]\"";
+        ss << ",\"[" << vec2str(Defender::cumulative_round_do_nothing) << "]\"";
+
+        ss << ",\"[" << vec2str(cumulative_p_pairing) << "]\"";
+        ss << ",\"[" << vec2str(cumulative_insurer_estimate_p_pairing) << "]\"";
+        ss << ",\"[" << vec2str(cumulative_defender_estimate_p_attack) << "]\"";
     }
 
     
@@ -330,6 +284,8 @@ bool Game::game_over() {
 void Game::fight(Attacker &a, Defender &d) {
 
     assert(d.attacked == false);
+    d.attacked = true; // small model change---even getting paired counts as an attack now 
+
     assert(d.assets > 0);
     assert(a.assets > 0);
 
@@ -349,6 +305,8 @@ void Game::fight(Attacker &a, Defender &d) {
 
     uint32_t expected_payoff = ransom * estimated_probability_of_attack_success;
     assert(expected_payoff >= 0);
+
+    round_pairings++;
 
     uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
@@ -370,7 +328,6 @@ void Game::fight(Attacker &a, Defender &d) {
         Attacker::attackerExpenditures += cost_to_attack;
         roundAttacks += 1;
         a.lose(cost_to_attack);
-        d.attacked = true;
 
         if (RandUniformDist.draw() > d.posture) {
 
@@ -410,6 +367,7 @@ void Game::init_round() {
     Attacker::attacker_iter_sum = 0;
     Insurer::insurer_iter_sum = 0;
     roundAttacks = 0;
+    round_pairings = 0;
 
     Defender::round_policies_purchased = 0;
     Defender::round_defenses_purchased = 0;
@@ -439,6 +397,23 @@ void Game::conclude_round() {
     assert(roundAttacks <= alive_defenders_indices.size());
     prevRoundAttacks = roundAttacks;
 
+    if (p.verbose) {
+        Defender::cumulative_assets.push_back(Defender::current_sum_assets);
+        Attacker::cumulative_assets.push_back(Attacker::current_sum_assets);
+        Insurer::cumulative_assets.push_back(Insurer::current_sum_assets);
+
+        Defender::cumulative_round_policies_purchased.push_back(Defender::round_policies_purchased);
+        Defender::cumulative_round_defenses_purchased.push_back(Defender::round_defenses_purchased);
+        Defender::cumulative_round_do_nothing.push_back(Defender::round_do_nothing);
+
+        float p_paired = round_pairings / ((double) alive_defenders_indices.size());
+        assert (p_paired >= 0);
+        assert (p_paired <= 1);
+        cumulative_p_pairing.push_back(p_paired);
+        cumulative_insurer_estimate_p_pairing.push_back(Insurer::p_attack);
+        cumulative_defender_estimate_p_attack.push_back(Defender::estimated_probability_of_attack);
+    }
+
     // this could be faster if you iterated through the alive players instead 
     alive_defenders_indices.clear();
     for (Defender &d : defenders) {
@@ -462,17 +437,9 @@ void Game::conclude_round() {
     }
 
     if (p.verbose) {
-        Defender::cumulative_assets.push_back(Defender::current_sum_assets);
-        Attacker::cumulative_assets.push_back(Attacker::current_sum_assets);
-        Insurer::cumulative_assets.push_back(Insurer::current_sum_assets);
-
         cumulative_num_alive_defenders.push_back(alive_defenders_indices.size());
         cumulative_num_alive_attackers.push_back(alive_attackers_indices.size());
         cumulative_num_alive_insurers.push_back(alive_insurers_indices.size());
-
-        Defender::cumulative_round_policies_purchased.push_back(Defender::round_policies_purchased);
-        Defender::cumulative_round_defenses_purchased.push_back(Defender::round_defenses_purchased);
-        Defender::cumulative_round_do_nothing.push_back(Defender::round_do_nothing);
     }
 }
 
