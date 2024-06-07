@@ -20,6 +20,12 @@ elif (len(sys.argv) > 2):
 
 df = pd.read_csv(filename, header=0)
 
+df['cumulative_round_policies_purchased'] = df['cumulative_round_policies_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+df['cumulative_round_defenses_purchased'] = df['cumulative_round_defenses_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+df['cumulative_round_do_nothing'] = df['cumulative_round_do_nothing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+
+
+
 print("plot_verbose")
 plot_verbose(copy.deepcopy(df))
 

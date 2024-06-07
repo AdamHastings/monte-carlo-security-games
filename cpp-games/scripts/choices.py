@@ -22,15 +22,6 @@ def choices(df):
     # for label, c, l in zip(['cumulative_round_policies_purchased','cumulative_round_defenses_purchased','cumulative_round_do_nothing'], ['b', 'r', 'y'], ['--', '-', '-.']):
 
     # frame = label
-
-    # TODO remove deepcopy, do this in run_all?
-    df['cumulative_round_policies_purchased'] = df['cumulative_round_policies_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-    df['cumulative_round_defenses_purchased'] = df['cumulative_round_defenses_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-    df['cumulative_round_do_nothing'] = df['cumulative_round_do_nothing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-
-
-
-
         
 
     # consider shorest run instead?
@@ -74,4 +65,11 @@ def choices(df):
 
 if __name__=="__main__":
     df = pd.read_csv("../logs/fullsize_short.csv", header=0)
+
+     # TODO remove deepcopy, do this in run_all?
+    df['cumulative_round_policies_purchased'] = df['cumulative_round_policies_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['cumulative_round_defenses_purchased'] = df['cumulative_round_defenses_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['cumulative_round_do_nothing'] = df['cumulative_round_do_nothing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+
+
     choices(df)    
