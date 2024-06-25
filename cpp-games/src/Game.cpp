@@ -374,7 +374,7 @@ void Game::init_round() {
     Defender::round_do_nothing = 0;
 
     Insurer::perform_market_analysis(insurers, alive_defenders_indices.size());
-    Defender::perform_market_analysis(prevRoundAttacks, alive_defenders_indices.size());
+    Defender::perform_market_analysis(p_paired);
     Attacker::perform_market_analysis(defenders);
 
     // this could be faster if you iterated through the alive players instead 
@@ -406,12 +406,12 @@ void Game::conclude_round() {
         Defender::cumulative_round_defenses_purchased.push_back(Defender::round_defenses_purchased);
         Defender::cumulative_round_do_nothing.push_back(Defender::round_do_nothing);
 
-        float p_paired = round_pairings / ((double) alive_defenders_indices.size());
+        p_paired = round_pairings / ((double) alive_defenders_indices.size());
         assert (p_paired >= 0);
         assert (p_paired <= 1);
         cumulative_p_pairing.push_back(p_paired);
-        cumulative_insurer_estimate_p_pairing.push_back(Insurer::p_attack);
-        cumulative_defender_estimate_p_attack.push_back(Defender::estimated_probability_of_attack);
+        cumulative_insurer_estimate_p_pairing.push_back((float) Insurer::p_attack);
+        cumulative_defender_estimate_p_attack.push_back((float) Defender::estimated_probability_of_attack);
     }
 
     // this could be faster if you iterated through the alive players instead 

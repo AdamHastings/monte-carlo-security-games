@@ -65,6 +65,7 @@ class Game {
         std::vector<int> cumulative_num_alive_insurers;
 
         int round_pairings = 0;
+        double p_paired = 0;
         std::vector<float> cumulative_p_pairing;
         std::vector<float> cumulative_insurer_estimate_p_pairing;
         std::vector<float> cumulative_defender_estimate_p_attack;

@@ -1,16 +1,11 @@
 Verify above in Mathematica (2 hrs)
 Figure out what the distribution of posture noise should be
 Find out reasonable number of policies to be quoted. 
-Figure out reasonable security depreciation schedule
 
 Optional:
-Add a "sweep" distribution that sweeps across a space 
-Fix makefile re-linking problem
 Figure out better way of determining game convergence using new parameters (3 hrs)
-Compute optimal investment using Newton-Raphson method
 Figure out more efficient way for Attackers to choose ATTACKS_PER_EPOCH victims (1 hr)
 Use pointers to Game object instead of implementing redundant static class variables (1 hr)
 Figure out and implement better naming convention for param vs game variables (1 hr)
 Implement game-ending conditions as an enum type (1 hr)
 Implement game logging in its own class (1 hr)
-Implement timestamped runs/figure out if this is a good idea (1 hr)

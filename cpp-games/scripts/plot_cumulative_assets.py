@@ -2,13 +2,18 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 
 def trillion_formatter(x, pos):
     return "$%.0fT" % (x * 1E3 / 1E12)
 
 
-def plot_verbose(df):
+def plot_cumulative_assets(df):
+
+    df['d_cumulative_assets'] = df['d_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['a_cumulative_assets'] = df['a_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['i_cumulative_assets'] = df['i_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
 
     plt.clf()
     
@@ -53,16 +58,15 @@ def plot_verbose(df):
 
     basetitle = "cumulative_assets"
 
-    plt.savefig("figures/verbose/" + basetitle + ".png")
-    plt.savefig("figures/verbose/" + basetitle + ".pdf")
+    plt.savefig("figures/" + basetitle + ".png")
+    plt.savefig("figures/" + basetitle + ".pdf")
 
 
 
 if __name__=="__main__":
-    df = pd.read_csv("../logs/fullsize_short.csv", header=0)
-
-    df['d_cumulative_assets'] = df['d_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-    df['a_cumulative_assets'] = df['a_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-    df['i_cumulative_assets'] = df['i_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    if len(sys.argv) == 1:
+        df = pd.read_csv("../logs/fullsize_short.csv", header=0)
+    else:
+        df = pd.read_csv(sys.argv[1], header=0)
 
     plot_verbose(df)

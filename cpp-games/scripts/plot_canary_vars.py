@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import matplotx
 import numpy as np
 import pandas as pd
+import sys
+import copy
 
 
 opacity=0.6
@@ -27,11 +29,15 @@ def plot_canary_vars(df):
     def normalize(arr):
         max_val = max(arr)
         return [x /max_val for x in arr]
-        # return [x / arr[0] for x in arr]
 
+    df['d_cumulative_assets'] = df['d_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['a_cumulative_assets'] = df['a_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['i_cumulative_assets'] = df['i_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['num_alive_defenders'] = df['num_alive_defenders'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['num_alive_attackers'] = df['num_alive_attackers'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
+    df['num_alive_insurers'] = df['num_alive_insurers'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
 
     for c in list(zip(*cumulative_outputs))[0]:
-        # df[c] = df[c].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
         df[c] = df[c].apply(normalize)
 
     # plot
@@ -68,6 +74,13 @@ def plot_canary_vars(df):
 
 
 def plot_p_attacks(df):
+
+
+    df['p_pairing']                       = df['p_pairing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
+    df['insurer_estimate_p_pairing']      = df['insurer_estimate_p_pairing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
+    df['estimated_probability_of_attack'] = df['estimated_probability_of_attack'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
+    
+
     # plot p_parings/p_attacks
     plt.clf()
 
@@ -107,35 +120,14 @@ def plot_p_attacks(df):
         plt.tight_layout()
         plt.savefig('figures/canary_vars_p_attack.png')
         plt.savefig('figures/canary_vars_p_attack.pdf')
-
-    
-    
-    
-
-
     
 
 if __name__=="__main__":
-    df = pd.read_csv("../logs/fullsize_short.csv", header=0)
 
-    
-    # cumulative_outputs = [
-    #     ('d_cumulative_assets', 'defenders $', b, '-'),
-    #     ('a_cumulative_assets', 'attackers $', r, '-.'),
-    #     ('i_cumulative_assets', 'insurers $',  y, '-'),
-    #     ('num_alive_defenders', '# defenders',   b, '-.'),
-    #     ('num_alive_attackers', '# attackers',   r, '-'),
-    #     ('num_alive_insurers',  '# insurers',    y, '-.')
-    # ]
+    if len(sys.argv) == 1:
+        df = pd.read_csv("../logs/fullsize_short.csv", header=0)
+    else:
+        df = pd.read_csv(sys.argv[1], header=0)
 
-    # for c in list(zip(*cumulative_outputs))[0]:
-    #     df[c] = df[c].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-
-    df['p_pairing']                       = df['p_pairing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
-    df['insurer_estimate_p_pairing']      = df['insurer_estimate_p_pairing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
-    df['estimated_probability_of_attack'] = df['estimated_probability_of_attack'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
-
-    
-    
-    plot_p_attacks(df)
-    # plot_canary_vars(df)
+    plot_p_attacks(copy.deepcopy(df))
+    plot_canary_vars(copy.deepcopy(df))

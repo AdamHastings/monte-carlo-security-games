@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 import pandas as pd
+import sys
 
 
 
@@ -26,18 +27,19 @@ g0 = 'rgba(136, 136, 136, {})'.format(opaque)
 
 def asset_flow_sankey(df):
 
-  df = df.drop(columns=[
-    'outcome', 
-    'd_cumulative_assets', 
-    'a_cumulative_assets', 
-    'i_cumulative_assets',
-    'num_alive_defenders',
-    'num_alive_attackers',
-    'num_alive_insurers',
-    'cumulative_round_policies_purchased',
-    'cumulative_round_defenses_purchased',
-    'cumulative_round_do_nothing'
-  ])
+  df = df[['d_sum_security_investments',
+            'attackerLoots',
+            'a_end',
+            'd_sum_recovery_costs',
+            'sum_premiums_collected',
+            'd_end',
+            'a_init',
+            'attackerExpenditures',
+            'i_init',
+            'paid_claims',
+            'i_end'
+          ]]
+
   meandf = df.mean()
 
   nodes = {
@@ -218,5 +220,14 @@ def asset_flow_sankey(df):
 
 
 if __name__=="__main__":
-    df = pd.read_csv("../logs/fullsize_short.csv", header=0)
-    asset_flow_sankey(df)
+  # default 
+  filename = "../logs/fullsize_short.csv"
+
+  if (len(sys.argv) == 2):
+      filename = sys.argv[1]
+  elif (len(sys.argv) > 2):
+      print("Too many arguments!")
+      sys.exit(1)
+
+  df = pd.read_csv(filename, header=0)
+  asset_flow_sankey(df)

@@ -4,9 +4,10 @@ import numpy as np
 import argparse
 import copy
 import sys
-from plot_verbose import plot_verbose
+from plot_cumulative_assets import plot_cumulative_assets
 from asset_flow_sankey import asset_flow_sankey
 from plot_canary_vars import plot_canary_vars
+from choices import choices
 
 
 # default 
@@ -20,17 +21,14 @@ elif (len(sys.argv) > 2):
 
 df = pd.read_csv(filename, header=0)
 
-df['cumulative_round_policies_purchased'] = df['cumulative_round_policies_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-df['cumulative_round_defenses_purchased'] = df['cumulative_round_defenses_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-df['cumulative_round_do_nothing'] = df['cumulative_round_do_nothing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
-
-
-
-print("plot_verbose")
-plot_verbose(copy.deepcopy(df))
+print("plot_cumulative_assets")
+plot_cumulative_assets(copy.deepcopy(df))
 
 print("asset_flow_sankey")
 asset_flow_sankey(copy.deepcopy(df))
 
 print("plot_canary_vars")
 plot_canary_vars(copy.deepcopy(df))
+
+print("choices")
+choices(copy.deepcopy(df))
