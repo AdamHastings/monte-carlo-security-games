@@ -2,6 +2,8 @@ import plotly.graph_objects as go
 import pandas as pd
 import sys
 
+## TODO this is wrong
+## shows insurance claims as ending up in defenders' final wealth even when defenders are entirely looted...
 
 
 class flow:

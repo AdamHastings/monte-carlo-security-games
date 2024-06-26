@@ -332,7 +332,13 @@ void Defender::choose_security_strategy() {
 void Defender::perform_market_analysis(double last_round_attack_pct) {
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
     // Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(num_current_defenders * 1.0));
-    Defender::estimated_probability_of_attack = last_round_attack_pct;
+    if (last_round_attack_pct == 0) {
+        // don't let down your guard!
+        Defender::estimated_probability_of_attack = Defender::estimated_probability_of_attack;
+    } else {
+        Defender::estimated_probability_of_attack = last_round_attack_pct;
+    }
+    
     assert(Defender::estimated_probability_of_attack >= 0);
     assert(Defender::estimated_probability_of_attack <= 1);
 }
