@@ -53,9 +53,7 @@ class Game {
         std::vector<uint32_t> alive_attackers_indices;
         std::vector<uint32_t> alive_defenders_indices;
         std::vector<uint32_t> alive_insurers_indices;
-        
-        uint32_t roundAttacks = 0;
-        uint32_t prevRoundAttacks = 0;
+    
 
         Outcomes final_outcome = Outcomes::INIT;
 
@@ -64,9 +62,17 @@ class Game {
         std::vector<int> cumulative_num_alive_attackers;
         std::vector<int> cumulative_num_alive_insurers;
 
-        int round_pairings = 0;
+        uint32_t round_pairings = 0;
+        uint32_t round_attacks = 0;
+        uint32_t prev_round_attacks = 0;
+        uint32_t round_loots = 0;
+
         double p_paired = 0;
+        double p_attacked = 0;
+        double p_looted = 0;
         std::vector<float> cumulative_p_pairing;
+        std::vector<float> cumulative_p_attacked;
+        std::vector<float> cumulative_p_looted;
         std::vector<float> cumulative_insurer_estimate_p_pairing;
         std::vector<float> cumulative_defender_estimate_p_attack;
 

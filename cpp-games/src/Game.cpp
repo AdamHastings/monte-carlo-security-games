@@ -158,6 +158,9 @@ std::string Game::to_string() {
         ss << ",\"[" << vec2str(Defender::cumulative_round_do_nothing) << "]\"";
 
         ss << ",\"[" << vec2str(cumulative_p_pairing) << "]\"";
+        ss << ",\"[" << vec2str(cumulative_p_attacked) << "]\"";
+        ss << ",\"[" << vec2str(cumulative_p_looted) << "]\"";    
+        
         ss << ",\"[" << vec2str(cumulative_insurer_estimate_p_pairing) << "]\"";
         ss << ",\"[" << vec2str(cumulative_defender_estimate_p_attack) << "]\"";
     }
@@ -251,7 +254,7 @@ void Game::verify_outcome() {
 }
 
 bool Game::equilibrium_reached() {
-    if (roundAttacks == 0) {
+    if (round_attacks == 0) {
         consecutiveNoAttacks++;
     } else {
         consecutiveNoAttacks = 0;
@@ -324,14 +327,17 @@ void Game::fight(Attacker &a, Defender &d) {
         }
 
         // bookkeeping
-        Attacker::attacksAttempted += 1;
         Attacker::attackerExpenditures += cost_to_attack;
-        roundAttacks += 1;
+        Attacker::attacksAttempted++;
+        round_attacks++;
+
         a.lose(cost_to_attack);
 
         if (RandUniformDist.draw() > d.posture) {
 
-            Attacker::attacksSucceeded += 1;
+            Attacker::attacksSucceeded++;
+            round_loots++;
+
             a.gain(ransom);
 
             if (debt > 0) {
@@ -366,15 +372,17 @@ void Game::init_round() {
     Defender::defender_iter_sum = 0;
     Attacker::attacker_iter_sum = 0;
     Insurer::insurer_iter_sum = 0;
-    roundAttacks = 0;
+    
     round_pairings = 0;
+    round_attacks = 0;
+    round_loots = 0;
 
     Defender::round_policies_purchased = 0;
     Defender::round_defenses_purchased = 0;
     Defender::round_do_nothing = 0;
 
     Insurer::perform_market_analysis(insurers, alive_defenders_indices.size());
-    Defender::perform_market_analysis(p_paired);
+    Defender::perform_market_analysis(p_looted);
     Attacker::perform_market_analysis(defenders);
 
     // this could be faster if you iterated through the alive players instead 
@@ -394,8 +402,8 @@ void Game::init_round() {
 }
 
 void Game::conclude_round() {
-    assert(roundAttacks <= alive_defenders_indices.size());
-    prevRoundAttacks = roundAttacks;
+    assert(round_attacks <= alive_defenders_indices.size());
+    prev_round_attacks = round_attacks;
 
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::current_sum_assets);
@@ -407,9 +415,20 @@ void Game::conclude_round() {
         Defender::cumulative_round_do_nothing.push_back(Defender::round_do_nothing);
 
         p_paired = round_pairings / ((double) alive_defenders_indices.size());
+        p_attacked = round_attacks / ((double) alive_defenders_indices.size());
+        p_looted = round_loots / ((double) alive_defenders_indices.size());
+        
         assert (p_paired >= 0);
         assert (p_paired <= 1);
+        assert (p_attacked >= 0);
+        assert (p_attacked <= 1);
+        assert (p_looted >= 0);
+        assert (p_looted <= 1);    
+
         cumulative_p_pairing.push_back(p_paired);
+        cumulative_p_attacked.push_back(p_attacked);
+        cumulative_p_looted.push_back(p_looted);
+
         cumulative_insurer_estimate_p_pairing.push_back((float) Insurer::p_attack);
         cumulative_defender_estimate_p_attack.push_back((float) Defender::estimated_probability_of_attack);
     }

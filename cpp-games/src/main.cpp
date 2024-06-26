@@ -129,7 +129,8 @@ void init_logs(std::string basename, Params p) {
     header += "outcome";
 
     if (p.verbose) {
-        header += ",d_cumulative_assets,";
+        header += ",";
+        header += "d_cumulative_assets,";
         header += "a_cumulative_assets,";
         header += "i_cumulative_assets,";
         
@@ -142,6 +143,8 @@ void init_logs(std::string basename, Params p) {
         header += "cumulative_round_do_nothing,";
 
         header += "p_pairing,";
+        header += "p_attacked,";
+        header += "p_looted,";
         header += "insurer_estimate_p_pairing,";
         header += "estimated_probability_of_attack"; 
     }
