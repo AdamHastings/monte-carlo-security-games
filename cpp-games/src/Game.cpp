@@ -385,18 +385,18 @@ void Game::init_round() {
     Defender::perform_market_analysis(p_looted);
     Attacker::perform_market_analysis(defenders);
 
-    // this could be faster if you iterated through the alive players instead 
-    for (Defender &d : defenders) {
-        if (d.is_alive()) {            
+    for (auto d_i : alive_defenders_indices) {
+        Defender *d = &defenders[d_i];
+        if (d->is_alive()) {            
             // Insurance policy expires
-            d.ins_idx = -1;
-            d.insured = false; 
+            d->ins_idx = -1;
+            d->insured = false; 
             
             // reset attacked status
-            d.attacked = false;
+            d->attacked = false;
             
-            d.security_depreciation();
-            d.choose_security_strategy(); 
+            d->security_depreciation();
+            d->choose_security_strategy(); 
         }
     }
 }
@@ -418,12 +418,12 @@ void Game::conclude_round() {
         p_attacked = round_attacks / ((double) alive_defenders_indices.size());
         p_looted = round_loots / ((double) alive_defenders_indices.size());
         
-        assert (p_paired >= 0);
-        assert (p_paired <= 1);
-        assert (p_attacked >= 0);
-        assert (p_attacked <= 1);
-        assert (p_looted >= 0);
-        assert (p_looted <= 1);    
+        assert(p_paired >= 0);
+        assert(p_paired <= 1);
+        assert(p_attacked >= 0);
+        assert(p_attacked <= 1);
+        assert(p_looted >= 0);
+        assert(p_looted <= 1);    
 
         cumulative_p_pairing.push_back(p_paired);
         cumulative_p_attacked.push_back(p_attacked);
@@ -479,28 +479,33 @@ void Game::run_iterations() {
 
         init_round();
 
-        std::uniform_int_distribution<> alive_defender_indices_dist(0, alive_defenders_indices.size()-1);
+        uint32_t num_current_alive_defenders = alive_defenders_indices.size();
+        std::uniform_int_distribution<uint32_t> alive_defender_indices_dist(0, num_current_alive_defenders - 1);
 
         for (auto& a_i : alive_attackers_indices) {
             assert(a_i < attackers.size());
             Attacker *a = &attackers[a_i];
+            assert(a->is_alive());
 
             
             // pick victims
-            std::unordered_set<unsigned int> victim_indices;
-            while (victim_indices.size() < std::min(ATTACKS_PER_EPOCH,  (uint32_t) alive_defenders_indices.size())) {
+            // std::unordered_set<unsigned int> victim_indices;
+            int attempts = 0;
+            int num_trials = std::min(ATTACKS_PER_EPOCH,  (uint32_t) alive_defenders_indices.size());
+            while (attempts < num_trials) {
                 // This quick-and-dirty approach has the potential to become very slow in degenerate cases
                 // Check here if performance becomes an issue
-                int candidate_victim = alive_defender_indices_dist(gen);
-                victim_indices.insert(candidate_victim);
-            }
+                uint32_t candidate_victim = alive_defender_indices_dist(gen);
+                // victim_indices.insert(candidate_victim);
+            // }
             // May be more cache friendly if victims are sorted here? May or may not be worth the overhead
 
 
             // fight all chosen victims 
-            for (const auto& d_i : victim_indices) {
-                assert(d_i < defenders.size());
-                Defender *d = &defenders[d_i];
+            // for (const auto& d_i : victim_indices) {
+                assert(candidate_victim < defenders.size());
+                Defender *d = &defenders[alive_defenders_indices[candidate_victim]];
+                assert(alive_defenders_indices[candidate_victim] == d->id);
                 
                 if (!d->attacked) {
                     fight(*a, *d);
@@ -509,6 +514,8 @@ void Game::run_iterations() {
                 if (!a->is_alive()) {
                     break;
                 }
+                
+                attempts++;
             }
         }
         conclude_round();

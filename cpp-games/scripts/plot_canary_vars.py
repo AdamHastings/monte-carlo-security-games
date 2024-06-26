@@ -88,11 +88,11 @@ def plot_p_attacks(df):
     plt.clf()
 
     attack_ps = [
+        ('insurer_estimate_p_pairing', 'I\'s est. p_attacked', y, '-'),
         ('p_pairing', 'p_pairing', g, '-'),
         ('p_attacked', 'p_attacked', r, '-'),
         ('p_looted', 'p_looted', k, '-'),
-        ('insurer_estimate_p_pairing', 'insurer_estimate_p_pairing', y, '-'),
-        ('estimated_probability_of_attack', 'estimated_probability_of_attack', b, '-')
+        ('estimated_probability_of_attack', 'D\'s est. p_looted', b, '-')
     ]
 
     with plt.style.context(matplotx.styles.dufte):
@@ -120,8 +120,8 @@ def plot_p_attacks(df):
         plt.xlabel("timestep")
         matplotx.ylabel_top("")  # move ylabel to the top, rotate
         matplotx.line_labels()  # line labels to the right
-        plt.xlim(0, 300)
-        plt.ylim(-0.1, 1.1)
+        # plt.xlim(0, 300)
+        # plt.ylim(-0.1, 1.1)
         plt.tight_layout()
         plt.savefig('figures/canary_vars_p_attack.png')
         plt.savefig('figures/canary_vars_p_attack.pdf')

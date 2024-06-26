@@ -6,7 +6,7 @@ import copy
 import sys
 from plot_cumulative_assets import plot_cumulative_assets
 from asset_flow_sankey import asset_flow_sankey
-from plot_canary_vars import plot_canary_vars
+from plot_canary_vars import plot_canary_vars, plot_p_attacks
 from choices import choices
 
 
@@ -29,6 +29,9 @@ asset_flow_sankey(copy.deepcopy(df))
 
 print("plot_canary_vars")
 plot_canary_vars(copy.deepcopy(df))
+
+print("plot_p_attacks")
+plot_p_attacks(copy.deepcopy(df))
 
 print("choices")
 choices(copy.deepcopy(df))

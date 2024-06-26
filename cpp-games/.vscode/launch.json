@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/run/debug/run_games", // Path to your compiled executable
-      "args": ["configs/test_fullsize.json"],
+      "args": ["configs/fullsize_tiny.json"],
       "cwd": "${workspaceFolder}",
       "environment": [{ "name": "config", "value": "Debug" }],
       "MIMode": "gdb",
