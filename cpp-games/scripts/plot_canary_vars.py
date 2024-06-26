@@ -12,6 +12,7 @@ b = '#636EFA'
 y = '#FECB52'
 r = '#EF553B' 
 g = '#00CC96'
+k = '#000000'
 
 def plot_canary_vars(df):
 
@@ -77,6 +78,8 @@ def plot_p_attacks(df):
 
 
     df['p_pairing']                       = df['p_pairing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
+    df['p_attacked']                      = df['p_attacked'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
+    df['p_looted']                        = df['p_looted'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
     df['insurer_estimate_p_pairing']      = df['insurer_estimate_p_pairing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
     df['estimated_probability_of_attack'] = df['estimated_probability_of_attack'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
     
@@ -86,6 +89,8 @@ def plot_p_attacks(df):
 
     attack_ps = [
         ('p_pairing', 'p_pairing', g, '-'),
+        ('p_attacked', 'p_attacked', r, '-'),
+        ('p_looted', 'p_looted', k, '-'),
         ('insurer_estimate_p_pairing', 'insurer_estimate_p_pairing', y, '-'),
         ('estimated_probability_of_attack', 'estimated_probability_of_attack', b, '-')
     ]

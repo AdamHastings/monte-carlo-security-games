@@ -64,9 +64,16 @@ def plot_cumulative_assets(df):
 
 
 if __name__=="__main__":
-    if len(sys.argv) == 1:
-        df = pd.read_csv("../logs/fullsize_short.csv", header=0)
-    else:
-        df = pd.read_csv(sys.argv[1], header=0)
+    
+    # default 
+    filename = "../logs/fullsize_short.csv"
 
-    plot_verbose(df)
+    if (len(sys.argv) == 2):
+        filename = sys.argv[1]
+    elif (len(sys.argv) > 2):
+        print("Too many arguments!")
+        sys.exit(1)
+
+    df = pd.read_csv(filename, header=0)
+
+    plot_cumulative_assets(df)
