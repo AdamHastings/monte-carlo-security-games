@@ -381,9 +381,9 @@ void Game::init_round() {
     Defender::round_defenses_purchased = 0;
     Defender::round_do_nothing = 0;
 
-    Insurer::perform_market_analysis(insurers, alive_defenders_indices.size());
-    Defender::perform_market_analysis(p_looted);
     Attacker::perform_market_analysis(defenders);
+    Insurer::perform_market_analysis(insurers, alive_defenders_indices.size());
+    Defender::perform_market_analysis(p_attacked);
 
     for (auto d_i : alive_defenders_indices) {
         Defender *d = &defenders[d_i];

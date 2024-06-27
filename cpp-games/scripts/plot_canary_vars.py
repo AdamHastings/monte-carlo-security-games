@@ -67,8 +67,8 @@ def plot_canary_vars(df):
         plt.xlabel("timestep")
         matplotx.ylabel_top("percentage")  # move ylabel to the top, rotate
         matplotx.line_labels()  # line labels to the right
-        plt.xlim(0, 300)
-        plt.ylim(-0.1, 1.1)
+        # plt.xlim(0, 300)
+        # plt.ylim(-0.1, 1.1)
         plt.tight_layout()
         plt.savefig('figures/canary_vars.png')
         plt.savefig('figures/canary_vars.pdf')
@@ -84,20 +84,19 @@ def plot_p_attacks(df):
     df['estimated_probability_of_attack'] = df['estimated_probability_of_attack'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
     
 
-    # plot p_parings/p_attacks
-    plt.clf()
-
     attack_ps = [
-        ('insurer_estimate_p_pairing', 'I\'s est. p_attacked', y, '-'),
         ('p_pairing', 'p_pairing', g, '-'),
         ('p_attacked', 'p_attacked', r, '-'),
         ('p_looted', 'p_looted', k, '-'),
-        ('estimated_probability_of_attack', 'D\'s est. p_looted', b, '-')
+        ('insurer_estimate_p_pairing', 'I\'s est. p_attacked', y, '-'),
+        ('estimated_probability_of_attack', 'D\'s est. p_attack', b, '-')
     ]
 
     with plt.style.context(matplotx.styles.dufte):
 
-        for key, label, color, linestyle in attack_ps:
+        plt.clf()
+
+        for key, label, color, linestyle in attack_ps[0:3]:
 
             # consider shorest run instead?
             length = df[key].map(lambda x : len(x)).min()
@@ -125,6 +124,37 @@ def plot_p_attacks(df):
         plt.tight_layout()
         plt.savefig('figures/canary_vars_p_attack.png')
         plt.savefig('figures/canary_vars_p_attack.pdf')
+
+        plt.clf()
+
+        for key, label, color, linestyle in attack_ps[3:5]:
+
+            # consider shorest run instead?
+            length = df[key].map(lambda x : len(x)).min()
+            # length = df[key].map(lambda x : len(x)).max()
+
+            x0 = np.arange(length)
+
+
+            means = np.empty([length])
+            for i in range(length):
+                col = np.array([x[i] for x in df[key] if i < len(x)])
+                # means[i] = np.percentile(col, 50) # technically this is the median now, not the mean...
+                means[i] = col.mean()
+
+            # print(label, means)
+
+
+            plt.plot(x0, means, label=label, color=color, linestyle=linestyle)
+
+        plt.xlabel("timestep")
+        matplotx.ylabel_top("")  # move ylabel to the top, rotate
+        matplotx.line_labels()  # line labels to the right
+        # plt.xlim(0, 300)
+        # plt.ylim(-0.1, 1.1)
+        plt.tight_layout()
+        plt.savefig('figures/canary_vars_player_views.png')
+        plt.savefig('figures/canary_vars_player_views.pdf')
     
 
 if __name__=="__main__":

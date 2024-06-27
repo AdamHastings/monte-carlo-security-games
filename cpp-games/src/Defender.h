@@ -9,6 +9,9 @@ class Defender : public Player {
     public:
         // TODO this is perhaps better called estimated_p_loot
         static double estimated_probability_of_attack;
+        static double l_p_attack;
+        static double l_l_p_attack;
+        static double l_l_l_p_attack;
 
         static int64_t d_init;
         static int64_t defender_iter_sum;

@@ -93,7 +93,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     assert(p_at_least_one_attacker_has_enough_to_attack >= 0);
     assert(p_at_least_one_attacker_has_enough_to_attack <= 1);
 
-    double p_loss = p_attack * p_at_least_one_attacker_has_enough_to_attack * (1 - estimated_posture);
+    double p_loss = Insurer::p_attack * p_at_least_one_attacker_has_enough_to_attack * (1 - estimated_posture);
     assert(p_loss >= 0);
     assert(p_loss <= 1);
 
