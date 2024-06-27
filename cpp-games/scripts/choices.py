@@ -32,7 +32,7 @@ def choices(df):
         
 
     # consider shorest run instead?
-    length = df['cumulative_round_policies_purchased'].map(lambda x : len(x)).min()
+    length = int(df['cumulative_round_policies_purchased'].map(lambda x : len(x)).median())
 
 
     for i in range(length):

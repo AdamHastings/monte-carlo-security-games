@@ -47,22 +47,25 @@ def plot_canary_vars(df):
         for key, label, color, linestyle in cumulative_outputs:
 
             # consider shorest run instead?
-            length = df[key].map(lambda x : len(x)).min()
+            length = int(df[key].map(lambda x : len(x)).median())
             # length = df[key].map(lambda x : len(x)).max()
 
-            x0 = np.arange(length)
 
 
             means = np.empty([length])
+            fifthpct = np.empty([length])
+            ninetyfifthpct = np.empty([length])
             for i in range(length):
                 col = np.array([x[i] for x in df[key] if i < len(x)])
-                # means[i] = np.percentile(col, 50) # technically this is the median now, not the mean...
-                means[i] = col.mean()
+                
+                means[i] = np.percentile(col, 50) # technically this is the median now, not the mean...
+                fifthpct[i] = np.percentile(col, 5)
+                ninetyfifthpct[i] = np.percentile(col, 95)
 
-            # print(label, means)
+            x = np.arange(length)
 
-
-            plt.plot(x0, means, label=label, color=color, linestyle=linestyle)
+            plt.fill_between(x, fifthpct, ninetyfifthpct, color=color, alpha=0.5, edgecolor='none')
+            plt.plot(x, means, label=label, color=color, linestyle=linestyle)
 
         plt.xlabel("timestep")
         matplotx.ylabel_top("percentage")  # move ylabel to the top, rotate
@@ -89,10 +92,10 @@ def plot_p_attacks(df):
     plt.clf()
 
     attack_ps = [
-        ('insurer_estimate_p_pairing', 'I\'s est. p_attack', y, '-'),
         ('p_pairing', 'p_pairing', g, '-'),
         ('p_attacked', 'p_attack', r, '-'),
         ('p_looted', 'p_looted', k, '-'),
+        ('insurer_estimate_p_pairing', 'I\'s est. p_attack', y, '-'),
         ('estimated_probability_of_attack', 'D\'s est. p_attack', b, '-'),
         ('cumulative_defender_avg_posture', 'avg D posture', '#0000FF', '-')
     ]
@@ -101,23 +104,23 @@ def plot_p_attacks(df):
 
         for key, label, color, linestyle in attack_ps:
 
-            # consider shorest run instead?
-            length = df[key].map(lambda x : len(x)).min()
-            # length = df[key].map(lambda x : len(x)).max()
-
-            x0 = np.arange(length)
-
+            length = int(df[key].map(lambda x : len(x)).median())
 
             means = np.empty([length])
+            fifthpct = np.empty([length])
+            ninetyfifthpct = np.empty([length])
             for i in range(length):
                 col = np.array([x[i] for x in df[key] if i < len(x)])
-                # means[i] = np.percentile(col, 50) # technically this is the median now, not the mean...
                 means[i] = col.mean()
+                fifthpct[i] = np.percentile(col, 5)
+                ninetyfifthpct[i] = np.percentile(col, 95)
 
             # print(label, means)
 
-
-            plt.plot(x0, means, label=label, color=color, linestyle=linestyle)
+            x = np.arange(length)
+            # too confusing to look at 
+            # plt.fill_between(x, fifthpct, ninetyfifthpct, color=color, alpha=0.5, edgecolor='none')
+            plt.plot(x, means, label=label, color=color, linestyle=linestyle)
 
         plt.xlabel("timestep")
         matplotx.ylabel_top("")  # move ylabel to the top, rotate

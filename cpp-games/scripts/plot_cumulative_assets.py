@@ -31,18 +31,19 @@ def plot_cumulative_assets(df):
         cumulative_assets_median = []
         cumulative_assets_95th_pct = []
 
-        # consider shorest run instead?
-        longest_run = df[frame].map(lambda x : len(x)).max()
+        # consider shortest run instead?
+        # or perhaps even median run?
+        length = int(df[frame].map(lambda x : len(x)).median())
 
 
-        for i in range(longest_run):
+        for i in range(length):
             col = [x[i] for x in df[frame] if i < len(x)]
 
             cumulative_assets_5th_pct.append(np.percentile(col, 5))
             cumulative_assets_median.append(np.percentile(col, 50))
             cumulative_assets_95th_pct.append(np.percentile(col, 95))
 
-        x = range(longest_run)
+        x = range(length)
         
 
 
