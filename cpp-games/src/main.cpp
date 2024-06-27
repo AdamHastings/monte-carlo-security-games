@@ -106,47 +106,44 @@ void init_logs(std::string basename, Params p) {
     std::cout << "Creating " << fpath << std::endl;
 
     std::string header = "";
-    header += "d_init,";
-    header += "d_end,";
-    header += "a_init,";
-    header += "a_end,";
-    header += "i_init,";
-    header += "i_end,";
-    header += "attacksAttempted,";
-    header += "attacksSucceeded,";
-    header += "attackerLoots,";
-    header += "d_sum_recovery_costs,";
-    header += "attackerExpenditures,";
-    header += "policiesPurchased,";
-    header += "defensesPurchased,";
-    header += "do_nothing,";
-    header += "d_sum_security_investments,";
-    header += "NUM_QUOTES,";
-    header += "sum_premiums_collected,";
-    header += "paid_claims,";
-    header += "insurer_expenditures,";
-    header += "final_iter,";
-    header += "outcome";
+    header += "d_init";
+    header += ",d_end";
+    header += ",a_init";
+    header += ",a_end";
+    header += ",i_init";
+    header += ",i_end";
+    header += ",attacksAttempted";
+    header += ",attacksSucceeded";
+    header += ",attackerLoots";
+    header += ",d_sum_recovery_costs";
+    header += ",attackerExpenditures";
+    header += ",policiesPurchased";
+    header += ",defensesPurchased";
+    header += ",do_nothing";
+    header += ",d_sum_security_investments";
+    header += ",NUM_QUOTES";
+    header += ",sum_premiums_collected";
+    header += ",paid_claims";
+    header += ",insurer_expenditures";
+    header += ",final_iter";
+    header += ",outcome";
 
     if (p.verbose) {
-        header += ",";
-        header += "d_cumulative_assets,";
-        header += "a_cumulative_assets,";
-        header += "i_cumulative_assets,";
-        
-        header += "num_alive_defenders,";
-        header += "num_alive_attackers,";
-        header += "num_alive_insurers,";
-
-        header += "cumulative_round_policies_purchased,";
-        header += "cumulative_round_defenses_purchased,";
-        header += "cumulative_round_do_nothing,";
-
-        header += "p_pairing,";
-        header += "p_attacked,";
-        header += "p_looted,";
-        header += "insurer_estimate_p_pairing,";
-        header += "estimated_probability_of_attack"; 
+        header += ",d_cumulative_assets";
+        header += ",a_cumulative_assets";
+        header += ",i_cumulative_assets";
+        header += ",num_alive_defenders";
+        header += ",num_alive_attackers";
+        header += ",num_alive_insurers";
+        header += ",cumulative_round_policies_purchased";
+        header += ",cumulative_round_defenses_purchased";
+        header += ",cumulative_round_do_nothing";
+        header += ",p_pairing";
+        header += ",p_attacked";
+        header += ",p_looted";
+        header += ",insurer_estimate_p_pairing";
+        header += ",estimated_probability_of_attack";
+        header += ",cumulative_defender_avg_posture";
     }
 
     header += "\n";

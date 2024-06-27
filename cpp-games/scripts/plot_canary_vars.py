@@ -82,17 +82,19 @@ def plot_p_attacks(df):
     df['p_looted']                        = df['p_looted'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
     df['insurer_estimate_p_pairing']      = df['insurer_estimate_p_pairing'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
     df['estimated_probability_of_attack'] = df['estimated_probability_of_attack'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
-    
+    df['cumulative_defender_avg_posture'] = df['cumulative_defender_avg_posture'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=float, sep=','))
+
 
     # plot p_parings/p_attacks
     plt.clf()
 
     attack_ps = [
-        ('insurer_estimate_p_pairing', 'I\'s est. p_attacked', y, '-'),
+        ('insurer_estimate_p_pairing', 'I\'s est. p_attack', y, '-'),
         ('p_pairing', 'p_pairing', g, '-'),
-        ('p_attacked', 'p_attacked', r, '-'),
+        ('p_attacked', 'p_attack', r, '-'),
         ('p_looted', 'p_looted', k, '-'),
-        ('estimated_probability_of_attack', 'D\'s est. p_looted', b, '-')
+        ('estimated_probability_of_attack', 'D\'s est. p_attack', b, '-'),
+        ('cumulative_defender_avg_posture', 'avg D posture', '#0000FF', '-')
     ]
 
     with plt.style.context(matplotx.styles.dufte):

@@ -75,6 +75,7 @@ class Game {
         std::vector<float> cumulative_p_looted;
         std::vector<float> cumulative_insurer_estimate_p_pairing;
         std::vector<float> cumulative_defender_estimate_p_attack;
+        std::vector<float> cumulative_defender_avg_posture;
 
 
     private:
