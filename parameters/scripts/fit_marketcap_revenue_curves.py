@@ -24,6 +24,7 @@ data = df['revenue'].to_numpy()
 
 
 # in terms of millions, for the sake of not overflowing computationally when generating 
+# shouldn't this be Billions, not millions?
 data = data / 10**9
 
 # # Define the negative log likelihood function for Poisson distribution
@@ -94,6 +95,7 @@ plt.savefig("../figures/wealthfitting/lognormal.png")
 plt.savefig("../figures/wealthfitting/lognormal.pdf")
 
 # Perform Kolmogorov-Smirnov test
+# what are considered good scores here?
 ks_statistic, p_value = kstest(data, 'lognorm', params)
 
 print("Kolmogorov-Smirnov test:")
@@ -116,6 +118,7 @@ plt.savefig('../figures/wealthfitting/lognormal-qq.pdf')
 plt.clf()
 
 # # Fit the power law distribution
+# # Power law is no good---not considering any more.
 # fit = powerlaw.Fit(data)
 
 # # Generate synthetic data from the fitted distribution
