@@ -336,9 +336,11 @@ void Defender::perform_market_analysis(double last_round_attack_pct) {
     //     // don't let down your guard prematurely!
     //     Defender::estimated_probability_of_attack = Defender::estimated_probability_of_attack;
     // } else {
-        Defender::estimated_probability_of_attack = last_round_attack_pct;
+    //    Defender::estimated_probability_of_attack = last_round_attack_pct;
     // }
     
+    Defender::estimated_probability_of_attack = (Defender::estimated_probability_of_attack + last_round_attack_pct) / 2;
+
     assert(Defender::estimated_probability_of_attack >= 0);
     assert(Defender::estimated_probability_of_attack <= 1);
 }
