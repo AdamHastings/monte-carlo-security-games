@@ -12,7 +12,7 @@
     "RANSOM_B1" :
     {
         "distribution" : "fixed",
-        "val" : 0.125
+        "val" : 0.00125
     },
     "RECOVERY_COST_BASE" :
     {
