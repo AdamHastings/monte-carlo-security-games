@@ -37,7 +37,7 @@ class Game {
         uint32_t ATTACKS_PER_EPOCH; 
 
         int32_t iter_num;
-        int32_t MAX_ITERATIONS = -1; // TODO make this a game parameter // TODO need to set this in Game construction
+        int32_t MAX_ITERATIONS = -1;
 
         int32_t DELTA;
         int32_t consecutiveNoAttacks=0;

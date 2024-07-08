@@ -14,8 +14,8 @@ int64_t Insurer::sum_premiums_collected = 0;
 unsigned long long Insurer::operating_expenses = 0;
 unsigned long long Insurer::paid_claims = 0;
 
-double Insurer::estimated_current_attacker_wealth_mean = 0;
-double Insurer::estimated_current_attacker_wealth_stdddev = 0;
+double Insurer::estimated_current_attacker_wealth_mu = 0;
+double Insurer::estimated_current_attacker_wealth_sigma = 0;
 double Insurer::loss_ratio = 0;
 double Insurer::retention_regression_factor = 0;
 
@@ -23,7 +23,6 @@ double Insurer::p_attack = 0;
 
 unsigned int* Insurer::ATTACKS_PER_EPOCH;
 
-// TODO Maybe this kind of cumulative tracking should happen in the Game class?
 std::vector<unsigned long long> Insurer::cumulative_assets; 
 
 std::vector<Attacker>* Insurer::attackers;
@@ -81,10 +80,10 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     int64_t expected_cost_to_attack = (int64_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
 
     double p_one_attacker_has_enough_to_attack;
-    if (std::isnan(estimated_current_attacker_wealth_stdddev) || estimated_current_attacker_wealth_stdddev == 0) { // There is only one attacker, so using CDF doesn't make sense 
-        p_one_attacker_has_enough_to_attack = (estimated_current_attacker_wealth_mean > expected_cost_to_attack) ? true : false;
+    if (std::isnan(estimated_current_attacker_wealth_sigma) || estimated_current_attacker_wealth_sigma == 0) { // There is only one attacker, so using CDF doesn't make sense 
+        p_one_attacker_has_enough_to_attack = (estimated_current_attacker_wealth_mu > expected_cost_to_attack) ? true : false;
     } else {
-        p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mean) / (estimated_current_attacker_wealth_stdddev * sqrt(2)))); // CDF of lognormal distribution
+        p_one_attacker_has_enough_to_attack =  1 -  0.5 * (1 + erf((log(expected_cost_to_attack) - estimated_current_attacker_wealth_mu) / (estimated_current_attacker_wealth_sigma * sqrt(2)))); // 1 - CDF of lognormal distribution
     }
     assert(p_one_attacker_has_enough_to_attack >= 0);
     assert(p_one_attacker_has_enough_to_attack <= 1);
@@ -138,27 +137,26 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers, int curren
 
     std::vector<double> scaled_attacker_assets;
 
+    int SCALE_FACTOR = pow(10,6);
+
     // This can be optimized by passing in alive_attackers_indices instead
     for (auto a = attackers->begin(); a != attackers->end(); ++a) {
         if (a->is_alive()) {
-            scaled_attacker_assets.push_back(a->assets / pow(10,6));
+            scaled_attacker_assets.push_back(a->assets / (SCALE_FACTOR * 1.0));
         }
     }
     assert(scaled_attacker_assets.size() > 0);
 
     // Compute parameters using method of moments
-    // https://web.archive.org/web/20180423000433id_/https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2927&context=etd
-    // TODO: cite this!
-    estimated_current_attacker_wealth_mean    = pow(10,6) * exp(utils::compute_mu_mom(scaled_attacker_assets)); // Note!! This is (no longer) the log of actual lognormal mean!!
-    assert(estimated_current_attacker_wealth_mean >= 0);
+    double scaled_mu =  utils::compute_mu_mom_lognormal(scaled_attacker_assets); // Note!! This is the log of the median, and mean  is exp(mu + (sigma^2)/2)!! Staying in terms of paramters mu and sigma
+    estimated_current_attacker_wealth_mu = SCALE_FACTOR * scaled_mu;
+    assert(estimated_current_attacker_wealth_mu >= 0);
 
     // Can return nan. Need to check against this condition elsewhere.
-    // TODO since shifting to real (non-scaled) wealth values, this is giving odd results...
-
-
-    estimated_current_attacker_wealth_stdddev = pow(10,6) * sqrt(utils::compute_var_mom(scaled_attacker_assets)); // Note!! This is the log of actual lognormal stddev!!
-    assert(std::isnan(estimated_current_attacker_wealth_stdddev) ? scaled_attacker_assets.size() == 1 : true);
-    assert(estimated_current_attacker_wealth_stdddev == 0 ? scaled_attacker_assets.size() == 1 : true);
+    double scaled_variance = utils::compute_var_mom_lognormal(scaled_attacker_assets);
+    estimated_current_attacker_wealth_sigma = SCALE_FACTOR * sqrt(scaled_variance);
+    assert(std::isnan(estimated_current_attacker_wealth_sigma) ? scaled_attacker_assets.size() == 1 : true);
+    assert(estimated_current_attacker_wealth_sigma == 0 ? scaled_attacker_assets.size() == 1 : true);
 
     
     // Makes the assumption that defenders will only be attacked once per epoch
@@ -172,7 +170,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers, int curren
     if (p_getting_paired_with_attacker_a == 1.0) {
         p_getting_attacked = 1.0;
     } else {
-       p_getting_attacked = 1 - pow((1 - p_getting_paired_with_attacker_a), (double) scaled_attacker_assets.size());
+        p_getting_attacked = 1 - pow((1 - p_getting_paired_with_attacker_a), (double) scaled_attacker_assets.size());
     } 
     assert(p_getting_attacked >= 0);
     assert(p_getting_attacked <= 1);
@@ -193,8 +191,8 @@ void Insurer::reset(){
     sum_premiums_collected = 0;
     operating_expenses = 0;
     paid_claims = 0;
-    estimated_current_attacker_wealth_mean = 0;
-    estimated_current_attacker_wealth_stdddev = 0;
+    estimated_current_attacker_wealth_mu = 0;
+    estimated_current_attacker_wealth_sigma = 0;
     loss_ratio = 0;
     retention_regression_factor = 0;
     attackers = nullptr;

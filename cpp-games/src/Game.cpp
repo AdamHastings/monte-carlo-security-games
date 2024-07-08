@@ -484,8 +484,7 @@ void Game::run_iterations() {
         uint32_t num_current_alive_defenders = alive_defenders_indices.size();
         std::uniform_int_distribution<uint32_t> alive_defender_indices_dist(0, num_current_alive_defenders - 1);
 
-        // TODO fix!
-        // early attacker get priority and grow faster
+        // TODO fix! early attacker get priority and grow faster
         // the indices ought to be shuffled
         for (auto& a_i : alive_attackers_indices) {
             assert(a_i < attackers.size());
