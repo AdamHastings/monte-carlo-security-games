@@ -7,17 +7,17 @@
     "RANSOM_B0" :
     {
         "distribution" : "fixed",
-        "val" : 641
+        "val" : 792145
     },
     "RANSOM_B1" :
     {
         "distribution" : "fixed",
-        "val" : 0.00125
+        "val" : 0.00121
     },
     "RECOVERY_COST_BASE" :
     {
         "distribution" : "fixed",
-        "val" : 544
+        "val" : 230123
     },
     "RECOVERY_COST_EXP" :
     {
