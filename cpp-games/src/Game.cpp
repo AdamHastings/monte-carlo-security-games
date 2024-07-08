@@ -18,12 +18,13 @@
 Game::Game(Params prm, unsigned int game_number) {
     
     game_num = game_number;
-
     Distribution::seed(game_num);
     gen.seed(game_num);
+
     // Uncomment if you want to seed with true randomness
     // std::random_device rd;  
-    // gen.seed(rd)
+    // Distribution::generator.seed(rd());
+    // gen.seed(rd());
      
     Attacker::reset();
     Defender::reset();

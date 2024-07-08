@@ -197,7 +197,6 @@ void Insurer::reset(){
     retention_regression_factor = 0;
     attackers = nullptr;
     ATTACKS_PER_EPOCH = nullptr;
-    operating_expenses = 0;
     cumulative_assets.clear();
     p_attack = 0;
 }
