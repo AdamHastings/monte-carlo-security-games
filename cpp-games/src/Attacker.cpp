@@ -24,9 +24,9 @@ Attacker::Attacker(int id_in, Params &p) : Player(p) {
     assert(inequality_ratio > 0);
     assert(inequality_ratio <= 1);
     
-    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6) * inequality_ratio; // In terms of thousands. Baseline params in terms of billions. 
-    assert(fp_assets < __UINT32_MAX__);
-    assets = (uint32_t) fp_assets;
+    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 9) * inequality_ratio; // Baseline params in terms of billions, so we undo here 
+    assert(fp_assets < __UINT64_MAX__);
+    assets = (int64_t) fp_assets;
 
     a_init += assets; 
     current_sum_assets += assets;

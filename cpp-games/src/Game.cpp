@@ -293,8 +293,8 @@ void Game::fight(Attacker &a, Defender &d) {
     assert(d.assets > 0);
     assert(a.assets > 0);
 
-    uint32_t ransom = Defender::ransom_cost(d.assets);
-    uint32_t recovery_cost = Defender::recovery_cost(d.assets);
+    int64_t ransom = Defender::ransom_cost(d.assets);
+    int64_t recovery_cost = Defender::recovery_cost(d.assets);
 
     if (ransom > d.assets) {
         ransom = d.assets;  // Mercy kill the defender if the ransom is low
@@ -484,6 +484,9 @@ void Game::run_iterations() {
         uint32_t num_current_alive_defenders = alive_defenders_indices.size();
         std::uniform_int_distribution<uint32_t> alive_defender_indices_dist(0, num_current_alive_defenders - 1);
 
+        // TODO fix!
+        // early attacker get priority and grow faster
+        // the indices ought to be shuffled
         for (auto& a_i : alive_attackers_indices) {
             assert(a_i < attackers.size());
             Attacker *a = &attackers[a_i];

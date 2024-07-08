@@ -9,3 +9,8 @@ Use pointers to Game object instead of implementing redundant static class varia
 Figure out and implement better naming convention for param vs game variables (1 hr)
 Implement game-ending conditions as an enum type (1 hr)
 Implement game logging in its own class (1 hr)
+
+
+
+update all player counts
+check if depreciation should be 1 - depreciation 

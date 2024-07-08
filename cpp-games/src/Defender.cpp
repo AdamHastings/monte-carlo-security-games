@@ -41,9 +41,9 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
     id = id_in;
     assert(id >= 0);
 
-    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 6); // In terms of thousands. Baseline params in terms of billions. 
-    assert(fp_assets < __UINT32_MAX__);
-    assets = (uint32_t) fp_assets;
+    double fp_assets = p.WEALTH_distribution->draw() * pow(10, 9); // Baseline params in terms of billions, so we undo here 
+    assert(fp_assets < __UINT64_MAX__);
+    assets = (int64_t) fp_assets;
 
     // initialize defenders with initial capex that will yield average posture 
     capex = (int64_t) fp_assets * p.TARGET_SECURITY_SPENDING_distribution->draw(); 
@@ -113,25 +113,46 @@ void Defender::make_security_investment(uint32_t amount) {
 }
 
 // Assumes that ransom payments are linear with organization size
-long long Defender::ransom_cost(int _assets) {
-    return ransom_b0 + (_assets * ransom_b1);
+int64_t Defender::ransom_cost(int64_t _assets) {
+    double dransom = ransom_b0 + (_assets * ransom_b1);
+    int64_t ransom = (int64_t) dransom;
+    ransom = std::min(ransom, _assets);
+    assert(ransom >= 0);
+    assert(ransom <= _assets);
+    return ransom;
 }
 
 // Assumes that recovery costs are a power law function of organization size
-long long Defender::recovery_cost(int _assets) {
-    return recovery_base * pow(_assets, recovery_exp);
+int64_t Defender::recovery_cost(int64_t _assets) {
+    double drec = recovery_base * pow(_assets, recovery_exp);
+    int64_t rec = (int64_t) drec;
+    rec = std::min(rec, _assets);
+    assert(rec >= 0);
+    assert(rec <= _assets);
+    return rec;
 }
 
 // yields the expected posture if a defender were to invest investment into security
 // TODO add default value for expected value vs random draw?
 double Defender::posture_if_investment(int64_t investment) {
     double investment_pct = (double) investment / (double) this->assets;
+    assert(investment_pct >= 0);
+    assert(investment_pct <= 1);
+    
     double investment_scaling_factor = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
     
     double capex_pct = (double) capex / (double) this->assets;
+    assert(capex_pct >= 0);
+    assert(capex_pct <= 1);
+
+    // note: this can exceed 1 because of prior capex! 
     double total_investment_pct = investment_pct + capex_pct;
 
-    return erf(total_investment_pct * investment_scaling_factor);
+    double new_posture = erf(total_investment_pct * investment_scaling_factor);
+    assert(new_posture >= 0);
+    assert(new_posture <= 1);
+
+    return new_posture;
 }
 
 // derivative of posture_if_investment with respect to amount
@@ -151,8 +172,8 @@ double Defender::d_d_posture_if_investment(int64_t investment) {
 }
 
 int64_t Defender::cost_if_attacked(int64_t investment) {
-    double rans = ransom_cost(this->assets - investment);
-    double recovery = recovery_cost(this->assets - investment);
+    int64_t rans = ransom_cost(this->assets - investment);
+    int64_t recovery = recovery_cost(this->assets - investment);
     assert(rans > 0);
     assert(recovery >= 0);
     return rans + recovery;
@@ -209,6 +230,9 @@ double Defender::find_optimal_investment(){
         last_last_guess = last_guess;
         last_guess = guess;
 
+        // Shouldn't this be cost_if_attacked(assets - investment) and not cost_if_attacked(investment)?
+        // No. cost_if_attacked already does this subtraction for you.
+        // Somewhat confusing, I know.
         double d_fx = 1 + (d_probability_of_loss(investment) * cost_if_attacked(investment)) + (probability_of_loss(investment) * d_cost_if_attacked(investment)); // multiplication rule
         
         double t1 = d_d_probability_of_loss(investment) * cost_if_attacked(investment);

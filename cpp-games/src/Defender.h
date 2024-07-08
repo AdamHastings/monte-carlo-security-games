@@ -29,8 +29,8 @@ class Defender : public Player {
         static uint32_t NUM_QUOTES;
 
         static void perform_market_analysis(double last_round_attack_pct);
-        static long long ransom_cost(int _assets); 
-        static long long recovery_cost(int _assets);
+        static int64_t ransom_cost(int64_t _assets); 
+        static int64_t recovery_cost(int64_t _assets);
 
         static std::vector<Insurer>* insurers; 
         static std::vector<uint32_t>* alive_insurers_indices; 

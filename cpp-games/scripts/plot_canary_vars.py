@@ -70,8 +70,8 @@ def plot_canary_vars(df):
         plt.xlabel("timestep")
         matplotx.ylabel_top("percentage")  # move ylabel to the top, rotate
         matplotx.line_labels()  # line labels to the right
-        plt.xlim(0, 300)
-        plt.ylim(-0.1, 1.1)
+        # plt.xlim(0, 300)
+        # plt.ylim(-0.1, 1.1)
         plt.tight_layout()
         plt.savefig('figures/canary_vars.png')
         plt.savefig('figures/canary_vars.pdf')
