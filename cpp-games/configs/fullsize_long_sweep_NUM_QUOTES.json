@@ -63,12 +63,12 @@
     "NUM_DEFENDERS":
     {
         "distribution" : "fixed",
-        "val" : 10000
+        "val" : 5000
     },
     "NUM_INSURERS":
     {
         "distribution" : "fixed",
-        "val" : 400
+        "val" : 200
     },
     "NUM_ATTACKERS" :
     {
