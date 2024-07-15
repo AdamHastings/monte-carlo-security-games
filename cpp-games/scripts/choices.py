@@ -71,6 +71,12 @@ def choices(df):
 
 
 if __name__=="__main__":
-    df = pd.read_csv("../logs/fullsize_short.csv", header=0)
+    
+    if (len(sys.argv) == 2):
+        filename = sys.argv[1]
+    else:
+        print("Incorrect number of args! Example:")
+        print("$ python3 run_all.py <path_to_log_file.csv>")
+        sys.exit(1)
 
     choices(df)    

@@ -134,10 +134,12 @@ def plot_p_attacks(df):
 
 if __name__=="__main__":
 
-    if len(sys.argv) == 1:
-        df = pd.read_csv("../logs/fullsize_short.csv", header=0)
+    if (len(sys.argv) == 2):
+        filename = sys.argv[1]
     else:
-        df = pd.read_csv(sys.argv[1], header=0)
+        print("Incorrect number of args! Example:")
+        print("$ python3 run_all.py <path_to_log_file.csv>")
+        sys.exit(1)
 
     plot_p_attacks(copy.deepcopy(df))
     plot_canary_vars(copy.deepcopy(df))

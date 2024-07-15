@@ -222,14 +222,13 @@ def asset_flow_sankey(df):
 
 
 if __name__=="__main__":
-  # default 
-  filename = "../logs/fullsize_short.csv"
 
   if (len(sys.argv) == 2):
-      filename = sys.argv[1]
-  elif (len(sys.argv) > 2):
-      print("Too many arguments!")
-      sys.exit(1)
+    filename = sys.argv[1]
+  else:
+    print("Incorrect number of args! Example:")
+    print("$ python3 run_all.py <path_to_log_file.csv>")
+    sys.exit(1)
 
   df = pd.read_csv(filename, header=0)
   asset_flow_sankey(df)
