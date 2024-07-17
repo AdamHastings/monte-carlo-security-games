@@ -3,7 +3,86 @@
 #include <limits>
 #include <unordered_set>
 #include <algorithm>
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_min.h>
 #include "Defender.h"
+
+
+
+
+
+
+///////////////////////
+
+
+
+
+
+double fn1 (double x, void * params)
+{
+  (void)(params); /* avoid unused parameter warning */
+  return cos(x) + 1.0;
+}
+
+int foo (void)
+{
+  int status;
+  int iter = 0, max_iter = 100;
+  const gsl_min_fminimizer_type *T;
+  gsl_min_fminimizer *s;
+  double m = 2.0, m_expected = M_PI;
+  double a = 0.0, b = 6.0;
+  gsl_function F;
+
+  F.function = &fn1;
+  F.params = 0;
+
+  T = gsl_min_fminimizer_brent;
+  s = gsl_min_fminimizer_alloc (T);
+  gsl_min_fminimizer_set (s, &F, m, a, b);
+
+  printf ("using %s method\n",
+          gsl_min_fminimizer_name (s));
+
+  printf ("%5s [%9s, %9s] %9s %10s %9s\n",
+          "iter", "lower", "upper", "min",
+          "err", "err(est)");
+
+  printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
+          iter, a, b,
+          m, m - m_expected, b - a);
+
+  do
+    {
+      iter++;
+      status = gsl_min_fminimizer_iterate (s);
+
+      m = gsl_min_fminimizer_x_minimum (s);
+      a = gsl_min_fminimizer_x_lower (s);
+      b = gsl_min_fminimizer_x_upper (s);
+
+      status
+        = gsl_min_test_interval (a, b, 0.001, 0.0);
+
+      if (status == GSL_SUCCESS)
+        printf ("Converged:\n");
+
+      printf ("%5d [%.7f, %.7f] "
+              "%.7f %+.7f %.7f\n",
+              iter, a, b,
+              m, m - m_expected, b - a);
+    }
+  while (status == GSL_CONTINUE && iter < max_iter);
+
+  gsl_min_fminimizer_free (s);
+
+  return status;
+}
+
+////////////
+
+
 
 double Defender::estimated_probability_of_attack = 0;
 int64_t Defender::d_init = 0; 
@@ -143,7 +222,7 @@ double Defender::posture_if_investment(int64_t investment) {
     
     double capex_pct = (double) capex / (double) this->assets;
     assert(capex_pct >= 0);
-    assert(capex_pct <= 1);
+    // assert(capex_pct <= 1); // this isn't necessarily true, since capex accumulates
 
     // note: this can exceed 1 because of prior capex! 
     double total_investment_pct = investment_pct + capex_pct;
@@ -162,6 +241,7 @@ double Defender::d_posture_if_investment(int64_t investment) {
     return (2 * s * exp(power)) / ((double) assets * sqrt(M_PI));
 }
 
+// second derivative of posture_if_investment with respect to amount
 double Defender::d_d_posture_if_investment(int64_t investment) {
     double s = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
     double power = -1 * (pow((double) s, 2) * pow((double) capex + investment, 2)) / pow((double) this->assets, 2);
@@ -172,6 +252,7 @@ double Defender::d_d_posture_if_investment(int64_t investment) {
 }
 
 int64_t Defender::cost_if_attacked(int64_t investment) {
+    assert(investment <= assets);
     int64_t rans = ransom_cost(this->assets - investment);
     int64_t recovery = recovery_cost(this->assets - investment);
     assert(rans > 0);
@@ -179,14 +260,14 @@ int64_t Defender::cost_if_attacked(int64_t investment) {
     return rans + recovery;
 }
 
-// derivative of posture_if_investment with respect to investment
+// derivative of cost_if_attacked with respect to investment
 double Defender::d_cost_if_attacked(int64_t investment) {
    double d_ransom = -1 * ransom_b1;
    double d_recovery = -1 * recovery_base * recovery_exp * pow(this->assets - investment, recovery_exp - 1);
    return d_ransom + d_recovery;
 }
 
-// second derivative of posture_if_investment with respect to investment
+// second derivative of cost_if_attacked with respect to investment
 double Defender::d_d_cost_if_attacked(int64_t investment) {
    return recovery_base * (recovery_exp - 1) * (recovery_base) * pow(this->assets - investment, recovery_exp - 2);
 }
@@ -198,26 +279,44 @@ double Defender::probability_of_loss(int64_t investment) {
     return prob_loss;
 }
 
+// derivative of probability_of_loss with respect to investment
 double Defender::d_probability_of_loss(int64_t investment) {
     double d_prob_loss = -1 * Defender::estimated_probability_of_attack *  d_posture_if_investment(investment);
     return d_prob_loss;
 }
 
+// second derivative of probability_of_loss with respect to investment
 double Defender::d_d_probability_of_loss(int64_t investment) {
     double d_d_prob_loss = -1 * Defender::estimated_probability_of_attack *  d_d_posture_if_investment(investment);
     return d_d_prob_loss;
 }
 
+// Newton-Raphson method for finding the root of the derivative of expected loss
 double Defender::find_optimal_investment(){
 
-    // Newton-Raphson method for finding the root of the derivative
-    int64_t guess = std::max((int64_t) 1, (int64_t) ((double) assets * 0.05)); // Provide an initial guess
-    assert(guess > 0);
-    int64_t last_guess = -INT32_MAX, last_last_guess = -INT32_MAX; 
+    // provide an initial guess
+    // Start with guess=0 so that successively better guesses always increment *if* there is an optimum
+    // so that we can catch cases that will not converge (guess < 0) before they cause problems
+    int64_t guess = assets / 100; 
+    int64_t last_guess = assets / 100;
     do {
         
         int64_t investment = guess;
-        if (investment < 0 || investment > this->assets) {
+        last_guess = guess;
+
+        // Shouldn't this be cost_if_attacked(assets - investment) and not cost_if_attacked(investment)?
+        // No. cost_if_attacked already does this subtraction for you.
+        // Somewhat confusing, I know.
+        // FYI: f(x) = investment + probability_of_loss(investment) * cost_if_attacked(investment)
+        double d_fx = 1 + (d_probability_of_loss(investment) * cost_if_attacked(investment)) + (probability_of_loss(investment) * d_cost_if_attacked(investment)); // derivative product rule
+        
+        double t1 = d_d_probability_of_loss(investment) * cost_if_attacked(investment);
+        double t2 = 2 * d_probability_of_loss(investment) * d_cost_if_attacked(investment);
+        double t3 = probability_of_loss(investment) * d_d_cost_if_attacked(investment);
+        double d_d_fx = t1 + t2 + t3;
+        guess = (int64_t) (last_guess - (d_fx / d_d_fx));
+
+        if (guess < 0 || guess > this->assets) {
             // It is possible that the expected loss function does not have a minimum 
             // meaning that Newton-Raphson does not converge.
             // In this case, the optimal investment is either none or all of assets
@@ -226,23 +325,10 @@ double Defender::find_optimal_investment(){
             guess = 0; 
             break;
         }
-
-        last_last_guess = last_guess;
-        last_guess = guess;
-
-        // Shouldn't this be cost_if_attacked(assets - investment) and not cost_if_attacked(investment)?
-        // No. cost_if_attacked already does this subtraction for you.
-        // Somewhat confusing, I know.
-        double d_fx = 1 + (d_probability_of_loss(investment) * cost_if_attacked(investment)) + (probability_of_loss(investment) * d_cost_if_attacked(investment)); // multiplication rule
-        
-        double t1 = d_d_probability_of_loss(investment) * cost_if_attacked(investment);
-        double t2 = 2 * d_probability_of_loss(investment) * d_cost_if_attacked(investment);
-        double t3 = probability_of_loss(investment) * d_d_cost_if_attacked(investment);
-        double d_d_fx = t1 + t2 + t3;
-        guess = (int64_t) (last_guess - (d_fx / d_d_fx));
     
     // Compare against the last *two* guesses to avoid getting stuck in oscillatory loops
-    }  while (guess != last_guess && guess != last_last_guess);
+    // }  while (guess != last_guess && guess != last_last_guess);
+    } while (abs(guess - last_guess) > 1);
 
     int64_t optimal_investment = guess;
     assert(optimal_investment >= 0);
@@ -332,7 +418,7 @@ void Defender::choose_security_strategy() {
     int64_t expected_cost_if_attacked_at_optimal_investment = ransom_cost(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
     assert(expected_cost_if_attacked_at_optimal_investment >= 0);
         
-    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 -posture_if_investment(optimal_investment));
+    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 - posture_if_investment(optimal_investment));
     assert(p_loss_with_optimal_investment <= 1);
     assert(p_loss_with_optimal_investment >= 0);
     
@@ -355,16 +441,7 @@ void Defender::choose_security_strategy() {
 
 void Defender::perform_market_analysis(double last_round_attack_pct) {
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
-    // Defender::estimated_probability_of_attack = std::min(1.0, (prevRoundAttacks * 1.0)/(num_current_defenders * 1.0));
-    // if (last_round_attack_pct == 0) { // && Defender::estimated_probability_of_attack == 0) {
-    //     // don't let down your guard prematurely!
-    //     Defender::estimated_probability_of_attack = Defender::estimated_probability_of_attack;
-    // } else {
-    //    Defender::estimated_probability_of_attack = last_round_attack_pct;
-    // }
-    
-    Defender::estimated_probability_of_attack = (Defender::estimated_probability_of_attack + last_round_attack_pct) / 2;
-
+    Defender::estimated_probability_of_attack = last_round_attack_pct;
     assert(Defender::estimated_probability_of_attack >= 0);
     assert(Defender::estimated_probability_of_attack <= 1);
 }
