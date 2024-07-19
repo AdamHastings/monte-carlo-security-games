@@ -14,72 +14,11 @@
 
 
 ///////////////////////
-
-
-
-
-
-double fn1 (double x, void * params)
-{
-  (void)(params); /* avoid unused parameter warning */
-  return cos(x) + 1.0;
-}
-
-int foo (void)
-{
-  int status;
-  int iter = 0, max_iter = 100;
-  const gsl_min_fminimizer_type *T;
-  gsl_min_fminimizer *s;
-  double m = 2.0, m_expected = M_PI;
-  double a = 0.0, b = 6.0;
-  gsl_function F;
-
-  F.function = &fn1;
-  F.params = 0;
-
-  T = gsl_min_fminimizer_brent;
-  s = gsl_min_fminimizer_alloc (T);
-  gsl_min_fminimizer_set (s, &F, m, a, b);
-
-  printf ("using %s method\n",
-          gsl_min_fminimizer_name (s));
-
-  printf ("%5s [%9s, %9s] %9s %10s %9s\n",
-          "iter", "lower", "upper", "min",
-          "err", "err(est)");
-
-  printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
-          iter, a, b,
-          m, m - m_expected, b - a);
-
-  do
-    {
-      iter++;
-      status = gsl_min_fminimizer_iterate (s);
-
-      m = gsl_min_fminimizer_x_minimum (s);
-      a = gsl_min_fminimizer_x_lower (s);
-      b = gsl_min_fminimizer_x_upper (s);
-
-      status
-        = gsl_min_test_interval (a, b, 0.001, 0.0);
-
-      if (status == GSL_SUCCESS)
-        printf ("Converged:\n");
-
-      printf ("%5d [%.7f, %.7f] "
-              "%.7f %+.7f %.7f\n",
-              iter, a, b,
-              m, m - m_expected, b - a);
-    }
-  while (status == GSL_CONTINUE && iter < max_iter);
-
-  gsl_min_fminimizer_free (s);
-
-  return status;
-}
-
+// double fn1 (double x, void * params)
+// {
+//   (void)(params); /* avoid unused parameter warning */
+//   return cos(x) + 1.0;
+// }
 ////////////
 
 
@@ -211,6 +150,38 @@ int64_t Defender::recovery_cost(int64_t _assets) {
     return rec;
 }
 
+// The loss that Defender d expects to incur with investment
+int64_t Defender::expected_loss(int64_t investment) {
+    int64_t expected_cost = (int64_t) (probability_of_loss(investment) * cost_if_attacked(investment));
+    assert(expected_cost >= 0);
+    assert(expected_cost <= assets);
+    assert(expected_cost < INT64_MAX / 2); // protect against any possible overflow
+    
+    assert(investment <= assets);
+    assert(investment >= 0);
+    assert(investment < INT64_MAX / 2); // protect against any possible overflow
+
+    int64_t loss = investment + expected_cost;
+    assert(loss >= 0);
+    assert(loss <= assets);
+
+    return loss;
+}
+
+// same as expected_loss but formatted using double data types for gsl
+double gsl_expected_loss(double x, void * params) {
+    // (void)(params); /* avoid unused parameter warning */
+    Defender* self = static_cast<Defender*>(params);
+    int64_t investment = x;
+    return (double) self->expected_loss(investment);
+    // return (double) investment * investment + investment; // TODO delete...just for testing 
+}
+
+// double gsl_expected_loss_wrapper(double x, void* params) {
+//     //     Defender* self = static_cast<Defender*>(params);
+//     //     return self->gsl_expected_loss(x);
+//     // }
+
 // yields the expected posture if a defender were to invest investment into security
 // TODO add default value for expected value vs random draw?
 double Defender::posture_if_investment(int64_t investment) {
@@ -336,6 +307,64 @@ double Defender::find_optimal_investment(){
     return optimal_investment;
 }
 
+
+double Defender::gsl_find_minium() {
+    int status;
+    int iter = 0, max_iter = 100;
+    const gsl_min_fminimizer_type *T;
+    gsl_min_fminimizer *s;
+    double m = assets / 100.0; // initial guess
+    double a = 0.0; // lower bound
+    //   double m_expected = assets / 100.0; // from gsl tutorial // just for testing demonstration purposes
+    double b = assets; // upper bound
+    gsl_function F;
+
+    // F.function = &fn1;
+    F.function = &gsl_expected_loss;
+    F.params = 0;
+
+    T = gsl_min_fminimizer_brent;
+    s = gsl_min_fminimizer_alloc (T);
+    gsl_min_fminimizer_set (s, &F, m, a, b);
+
+    printf ("using %s method\n",
+            gsl_min_fminimizer_name (s));
+
+    printf ("%5s [%9s, %9s] %9s %10s %9s\n",
+            "iter", "lower", "upper", "min",
+            "err", "err(est)");
+
+    //   printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
+    //           iter, a, b,
+    //           m, m - m_expected, b - a);
+
+    do
+    {
+        iter++;
+        status = gsl_min_fminimizer_iterate (s);
+
+        m = gsl_min_fminimizer_x_minimum (s);
+        a = gsl_min_fminimizer_x_lower (s);
+        b = gsl_min_fminimizer_x_upper (s);
+
+        status
+        = gsl_min_test_interval (a, b, 0.001, 0.0);
+
+        if (status == GSL_SUCCESS)
+        printf ("Converged:\n");
+
+    //   printf ("%5d [%.7f, %.7f] "
+    //           "%.7f %+.7f %.7f\n",
+    //           iter, a, b,
+    //           m, m - m_expected, b - a);
+    }
+    while (status == GSL_CONTINUE && iter < max_iter);
+
+    gsl_min_fminimizer_free (s);
+
+    return status;
+}
+
 void Defender::security_depreciation() {
     // the value of previous opex spending depreciates to zero after it is spent (by definition)
     double DEPRECIATION = p.DEPRECIATION_distribution->draw();
@@ -401,29 +430,32 @@ void Defender::choose_security_strategy() {
         }
     }
 
-    double expected_loss_with_insurance = std::numeric_limits<double>::infinity();
+    int64_t expected_loss_with_insurance = INT64_MAX;
     if (insurable) {
         assert(best_policy.premium > 0 ); 
         assert(best_policy.retention > 0);
         assert(best_insurer != nullptr);
-        expected_loss_with_insurance = best_policy.premium + (p_L_hat * best_policy.retention);
+        expected_loss_with_insurance = best_policy.premium + (int64_t) (p_L_hat * best_policy.retention);
         assert(expected_loss_with_insurance >= 0);
     }
     
     // 2. Find optimum security investment
-    int64_t  optimal_investment = find_optimal_investment();
+    int64_t optimal_investment = find_optimal_investment();
     assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
     
-    int64_t expected_cost_if_attacked_at_optimal_investment = ransom_cost(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
-    assert(expected_cost_if_attacked_at_optimal_investment >= 0);
-        
-    double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 - posture_if_investment(optimal_investment));
-    assert(p_loss_with_optimal_investment <= 1);
-    assert(p_loss_with_optimal_investment >= 0);
+    int64_t expected_loss_with_optimal_investment = expected_loss(optimal_investment);
+
     
-    double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;
-    assert(expected_loss_with_optimal_investment >= 0);
+    // int64_t expected_cost_if_attacked_at_optimal_investment = ransom_cost(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
+    // assert(expected_cost_if_attacked_at_optimal_investment >= 0);
+        
+    // double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 - posture_if_investment(optimal_investment));
+    // assert(p_loss_with_optimal_investment <= 1);
+    // assert(p_loss_with_optimal_investment >= 0);
+    
+    // double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;
+    // assert(expected_loss_with_optimal_investment >= 0);
 
     // TODO consider possibility that players can choose both
     // TODO consider case where insurer requires 1% investment 

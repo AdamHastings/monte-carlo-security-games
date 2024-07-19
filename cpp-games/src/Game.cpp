@@ -389,17 +389,16 @@ void Game::init_round() {
 
     for (auto d_i : alive_defenders_indices) {
         Defender *d = &defenders[d_i];
-        if (d->is_alive()) {            
-            // Insurance policy expires
-            d->ins_idx = -1;
-            d->insured = false; 
-            
-            // reset attacked status
-            d->attacked = false;
-            
-            d->security_depreciation();
-            d->choose_security_strategy(); 
-        }
+        assert(d->is_alive());
+        // Insurance policy expires
+        d->ins_idx = -1;
+        d->insured = false; 
+        
+        // reset attacked status
+        d->attacked = false;
+        
+        d->security_depreciation();
+        d->choose_security_strategy(); 
     }
 }
 
