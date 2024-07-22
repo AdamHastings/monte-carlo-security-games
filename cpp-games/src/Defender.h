@@ -70,6 +70,8 @@ class Defender : public Player {
         void submit_claim(uint32_t loss);
 
         int64_t expected_loss(int64_t investment);
+        double gsl_find_minimum();
+
 
 
 
@@ -81,7 +83,6 @@ class Defender : public Player {
         double d_d_cost_if_attacked(int64_t investment);
 
         double find_optimal_investment();
-        double gsl_find_minium();
         static double gsl_expected_loss_wrapper(double x, void * params);
 
         

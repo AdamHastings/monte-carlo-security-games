@@ -70,7 +70,8 @@ void ParallelRunGames(Params p) {
 }
 
 void SerialRunGames(std::string basename) {
-    Params p = params_loader::load_cfg(basename);
+    string config_filename = "configs/" + basename + ".json";
+    Params p = params_loader::load_cfg(config_filename);
         
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
@@ -95,7 +96,7 @@ void SerialRunGames(std::string basename) {
     delete p.MAX_ITERATIONS_distribution;
 
     for (uint i=0; i < p.NUM_GAMES; i++) {
-        p = params_loader::load_cfg(basename);
+        p = params_loader::load_cfg(config_filename);
         RunGame(p, i);
     }
 }
@@ -184,12 +185,12 @@ int main(int argc, char** argv) {
         std::cerr << "\n     $ ./run/debug/run_games configs/test_medium.json\n\n";
         std::exit(1);
     }
-
+    
+    Params p = params_loader::load_cfg(argv[1]);
+    
     std::string basename(argv[1]);
     basename.erase(0, strlen("configs/"));
     basename.erase(basename.find_last_of("."));
-    
-    Params p = params_loader::load_cfg(basename);
     init_logs(basename, p);
 
 

@@ -228,7 +228,12 @@ int64_t Defender::cost_if_attacked(int64_t investment) {
     int64_t recovery = recovery_cost(this->assets - investment);
     assert(rans > 0);
     assert(recovery >= 0);
-    return rans + recovery;
+    int64_t cost = rans + recovery;
+    assert(cost > 0);
+    if (cost > assets) {
+        cost = assets;
+    }
+    return cost;
 }
 
 // derivative of cost_if_attacked with respect to investment
@@ -308,7 +313,7 @@ double Defender::find_optimal_investment(){
 }
 
 
-double Defender::gsl_find_minium() {
+double Defender::gsl_find_minimum() {
     int status;
     int iter = 0, max_iter = 100;
     const gsl_min_fminimizer_type *T;
@@ -338,6 +343,9 @@ double Defender::gsl_find_minium() {
     //           iter, a, b,
     //           m, m - m_expected, b - a);
 
+    double absolute_error_tolerance = 1; // we convert to int type anyway, so no need to optimize beyond 1
+    double relative_error_tolerance = 0; // we only care about absolute error so we set this term to 0
+
     do
     {
         iter++;
@@ -347,8 +355,7 @@ double Defender::gsl_find_minium() {
         a = gsl_min_fminimizer_x_lower (s);
         b = gsl_min_fminimizer_x_upper (s);
 
-        status
-        = gsl_min_test_interval (a, b, 0.001, 0.0);
+        status = gsl_min_test_interval (a, b, absolute_error_tolerance, relative_error_tolerance);
 
         if (status == GSL_SUCCESS)
         printf ("Converged:\n");
@@ -362,7 +369,7 @@ double Defender::gsl_find_minium() {
 
     gsl_min_fminimizer_free (s);
 
-    return status;
+    return m;
 }
 
 void Defender::security_depreciation() {
@@ -440,7 +447,8 @@ void Defender::choose_security_strategy() {
     }
     
     // 2. Find optimum security investment
-    int64_t optimal_investment = find_optimal_investment();
+    // int64_t optimal_investment = gsl_find_minimum();
+    int64_t optimal_investment = (int64_t) find_optimal_investment();
     assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
     

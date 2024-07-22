@@ -5,17 +5,15 @@
 
 
 
-Params params_loader::load_cfg(std::string basename) {
-    std::string fpath = "configs/" + basename + ".json";
+Params params_loader::load_cfg(std::string config_filename) {
     
-    std::ifstream file(fpath);
+    std::ifstream file(config_filename);
 
     Json::Reader reader;
     Json::Value jsonData;
     reader.parse(file, jsonData);
 
     Params p;
-    
     
     p.NUM_ATTACKERS_distribution = Distribution::createDistribution(jsonData["NUM_ATTACKERS"]);
     p.INEQUALITY_distribution = Distribution::createDistribution(jsonData["INEQUALITY"]);
@@ -63,6 +61,10 @@ Params params_loader::load_cfg(std::string basename) {
 
     p.verbose       = jsonData["verbose"].asBool();
     p.assertions_on = jsonData["assertions_on"].asBool();
+
+    std::string basename(config_filename);
+    basename.erase(0, strlen("configs/"));
+    basename.erase(basename.find_last_of("."));
     p.logname       = "logs/" + basename + ".csv";
 
     return p;

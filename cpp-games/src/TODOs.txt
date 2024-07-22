@@ -14,3 +14,5 @@ Implement game logging in its own class (1 hr)
 
 update all player counts
 check if depreciation should be 1 - depreciation 
+
+See if getting rid of -fno-builtin-memset improves performance
