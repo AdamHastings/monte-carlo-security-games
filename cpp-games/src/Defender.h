@@ -37,6 +37,8 @@ class Defender : public Player {
 
         static void reset();
 
+        double test_optimize(); // TODO remove
+
     public:
         // verbose bookkeeping variables 
         static std::vector<unsigned long long> cumulative_assets; // running total of all defenders' assets
