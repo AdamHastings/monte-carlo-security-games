@@ -52,7 +52,7 @@
     "LOSS_RATIO" : 
     {
         "distribution" : "fixed",
-        "val" : 0.85
+        "val" : 0.80
     },
     "RETENTION_REGRESSION_FACTOR" : 
     {
