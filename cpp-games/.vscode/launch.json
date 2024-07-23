@@ -19,6 +19,24 @@
         }
       ],
       "miDebuggerArgs": "-exec run"
+    },
+    {
+      "name": "Unit Test Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/test/test", // Path to your compiled executable
+      "cwd": "${workspaceFolder}/test",
+      "environment": [{ "name": "config", "value": "Debug" }],
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "setupCommands": [
+        {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+        }
+      ],
+      "miDebuggerArgs": "-exec run"
     }
   ]
 }
