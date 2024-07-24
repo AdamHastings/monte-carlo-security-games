@@ -370,11 +370,9 @@ double Defender::gsl_find_minimum() {
 
     std::cout << "using" <<  gsl_min_fminimizer_name(s) << " method" << std::endl;
 
-    printf("%5s [%9s, %9s] %9s %10s %9s\n", "iter", "lower", "upper", "min", "err", "err(est)");
+    printf("%5s [%9s, %9s] %9s %9s\n", "iter", "lower", "upper", "min", "err(est)");
 
-    //   printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
-    //           iter, a, b,
-    //           m, m - m_expected, b - a);
+    printf("%5d [%.7f, %.7f] %.7f %.7f\n", iter, a, b, m, b - a);
 
     double absolute_error_tolerance = 1; // we convert to int type anyway, so no need to optimize beyond 1
     double relative_error_tolerance = 0; // we only care about absolute error so we set this term to 0
@@ -391,12 +389,10 @@ double Defender::gsl_find_minimum() {
         status = gsl_min_test_interval (a, b, absolute_error_tolerance, relative_error_tolerance);
 
         if (status == GSL_SUCCESS)
-        printf("Converged:\n");
+            printf("Converged:\n");
 
-    //   printf ("%5d [%.7f, %.7f] "
-    //           "%.7f %+.7f %.7f\n",
-    //           iter, a, b,
-    //           m, m - m_expected, b - a);
+        printf("%5d [%.7f, %.7f] %.7f %.7f\n", iter, a, b, m, b - a);
+    
     }
     while (status == GSL_CONTINUE && iter < max_iter);
 

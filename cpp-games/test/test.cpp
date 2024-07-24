@@ -18,6 +18,7 @@ TEST(MCSGtest, FindInvestmentMinimumTest) {
     Params p = params_loader::load_cfg(filename);
     Defender d = Defender(id, p);
     
+    // Test cases from Mathematic (secinvestments.nb)
     d.assets = 3600000;
     Defender::estimated_probability_of_attack = 0.01;
     Defender::ransom_b0 = p.RANSOM_B0_distribution->mean();
@@ -27,6 +28,27 @@ TEST(MCSGtest, FindInvestmentMinimumTest) {
     d.capex = 0;
     int min = (int) d.gsl_find_minimum();
     ASSERT_EQ(min, 0);
+
+    d.assets = 1 * pow(10,7);
+    Defender::estimated_probability_of_attack = 1;
+    d.capex = 0;
+    d.posture = 0;
+    min = std::round(d.gsl_find_minimum());
+    cout << "x = 0: " << Defender::expected_loss(0, d.assets, d.capex) << endl;
+    cout << "x = 160155: " << Defender::expected_loss(160155, d.assets, d.capex) << endl;
+    cout << "x = 360155: " << Defender::expected_loss(360155, d.assets, d.capex) << endl;
+    cout << "x = 560155: " << Defender::expected_loss(560155, d.assets, d.capex) << endl;
+    cout << "x = 560165: " << Defender::expected_loss(560165, d.assets, d.capex) << endl;
+    cout << "x = 560175: " << Defender::expected_loss(560175, d.assets, d.capex) << endl;
+    cout << "x = 560185: " << Defender::expected_loss(560185, d.assets, d.capex) << endl;
+    cout << "x = 560195: " << Defender::expected_loss(560195, d.assets, d.capex) << endl;
+    cout << "x = 560205: " << Defender::expected_loss(560205, d.assets, d.capex) << endl;
+    cout << "x = 760175: " << Defender::expected_loss(760175, d.assets, d.capex) << endl;
+    cout << "x = 1000000: " << Defender::expected_loss(1000000, d.assets, d.capex) << endl;
+    cout << "x = assets: " << Defender::expected_loss(d.assets, d.assets, d.capex) << endl;
+
+
+    ASSERT_EQ(Defender::expected_loss(min, d.assets, d.capex),  Defender::expected_loss(560175, d.assets, d.capex));
 }
 
 int main(int argc, char **argv) {
