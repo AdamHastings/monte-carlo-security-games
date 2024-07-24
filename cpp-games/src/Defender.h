@@ -72,27 +72,28 @@ class Defender : public Player {
 
         static int64_t expected_loss(int64_t investment, int64_t assets_, int64_t capex_);
         static double gsl_expected_loss_wrapper(double x, void* params);
-        static double fn1(double x, void* params);
-
+        // static double fn1(double x, void* params);
+        static bool expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_);
         
         double gsl_find_minimum();
         double test_optimize(); // TODO remove
 
-
         static double posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_);
-        // double d_posture_if_investment(int64_t investment);
+        static double d_posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_);
         // double d_d_posture_if_investment(int64_t investment);
 
         static double probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_);
-        // double d_probability_of_loss(int64_t investment);
+        static double d_probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_);
         // double d_d_probability_of_loss(int64_t investment);
+
+        static int64_t cost_if_attacked(int64_t investment, int64_t assets_);
+        static double d_cost_if_attacked(int64_t investment, int64_t assets_);
 
 
     private:   
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
-        static int64_t cost_if_attacked(int64_t investment, int64_t assets_);
-        // double d_cost_if_attacked(int64_t investment);
+        
         // double d_d_cost_if_attacked(int64_t investment);
 
         // double find_optimal_investment();

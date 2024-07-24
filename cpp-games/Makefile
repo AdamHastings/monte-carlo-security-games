@@ -50,14 +50,14 @@ $(OBJDIR_RELEASE)/%.o: src/%.cpp | $(OBJDIR_RELEASE)
 $(OBJDIR_DEBUG) $(BINDIR_DEBUG) $(OBJDIR_RELEASE) $(BINDIR_RELEASE):
 	mkdir -p $@
 
-TESTDIR = test
-TESTSRC = $(TESTDIR)/test.cpp
+# TESTDIR = test
+# TESTSRC = $(TESTDIR)/test.cpp
 
-test: $(TESTSRC)
-	$(CXX) $(TESTSRC) -c  $(OBJECTS_DEBUG) $< -o $@
+# test: $(TESTSRC)
+# 	$(CXX) $(TESTSRC) -c  $(OBJECTS_DEBUG) $< -o $@
 
-test.o: $(TESTSRC)
-	$(CXX) $(CXXFLAGS) -c $< -o $@ 
+# test.o: $(TESTSRC)
+# 	$(CXX) $(CXXFLAGS) -c $< -o $@ 
 
 clean:
 	rm -rf obj run

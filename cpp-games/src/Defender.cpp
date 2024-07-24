@@ -118,19 +118,23 @@ void Defender::make_security_investment(uint32_t amount) {
 
 // Assumes that ransom payments are linear with organization size
 int64_t Defender::ransom_cost(int64_t _assets) {
+    assert(_assets >= 0);
     double dransom = ransom_b0 + (_assets * ransom_b1);
     int64_t ransom = (int64_t) dransom;
-    ransom = std::min(ransom, _assets);
-    assert(ransom >= 0);
-    assert(ransom <= _assets);
+    // ransom = std::min(ransom, _assets);
+    // ransom = std::max(ransom, (int64_t) 0);
+    assert(ransom >= ransom_b0);
+    // assert(ransom <= _assets); // Not necessarily true! In linear ransom price, even assets = 0 will cause a ransom_b0 ransom
     return ransom;
 }
 
 // Assumes that recovery costs are a power law function of organization size
 int64_t Defender::recovery_cost(int64_t _assets) {
+    assert(_assets >= 0);
     double drec = recovery_base * pow(_assets, recovery_exp);
     int64_t rec = (int64_t) drec;
-    rec = std::min(rec, _assets);
+    // rec = std::min(rec, _assets);
+    // rec = std::max(rec, (int64_t) 0);
     assert(rec >= 0);
     assert(rec <= _assets);
     return rec;
@@ -206,12 +210,12 @@ double Defender::posture_if_investment(int64_t investment, int64_t assets_, int6
     return new_posture;
 }
 
-// // derivative of posture_if_investment with respect to amount
-// double Defender::d_posture_if_investment(int64_t investment) {
-//     double s = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
-//     double power = -1 * (pow((double) s, 2) * pow((double) capex + investment, 2)) / pow((double) this->assets, 2);
-//     return (2 * s * exp(power)) / ((double) assets * sqrt(M_PI));
-// }
+// derivative of posture_if_investment with respect to amount
+double Defender::d_posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_) {
+    double s = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
+    double power = -1 * (pow((double) s, 2) * pow((double) capex_ + investment, 2)) / pow((double) assets_, 2);
+    return (2 * s * exp(power)) / ((double) assets_ * sqrt(M_PI));
+}
 
 // // second derivative of posture_if_investment with respect to amount
 // double Defender::d_d_posture_if_investment(int64_t investment) {
@@ -237,12 +241,12 @@ int64_t Defender::cost_if_attacked(int64_t investment, int64_t assets_) {
     return cost;
 }
 
-// // derivative of cost_if_attacked with respect to investment
-// double Defender::d_cost_if_attacked(int64_t investment) {
-//    double d_ransom = -1 * ransom_b1;
-//    double d_recovery = -1 * recovery_base * recovery_exp * pow(this->assets - investment, recovery_exp - 1);
-//    return d_ransom + d_recovery;
-// }
+// derivative of cost_if_attacked with respect to investment
+double Defender::d_cost_if_attacked(int64_t investment, int64_t assets_) {
+   double d_ransom = -1 * Defender::ransom_b1;
+   double d_recovery = -1 * Defender::recovery_base * Defender::recovery_exp * pow(assets_ - investment, Defender::recovery_exp - 1);
+   return d_ransom + d_recovery;
+}
 
 // // second derivative of cost_if_attacked with respect to investment
 // double Defender::d_d_cost_if_attacked(int64_t investment) {
@@ -256,11 +260,11 @@ double Defender::probability_of_loss(int64_t investment, int64_t assets_, int64_
     return prob_loss;
 }
 
-// // derivative of probability_of_loss with respect to investment
-// double Defender::d_probability_of_loss(int64_t investment) {
-//     double d_prob_loss = -1 * Defender::estimated_probability_of_attack *  d_posture_if_investment(investment);
-//     return d_prob_loss;
-// }
+// derivative of probability_of_loss with respect to investment
+double Defender::d_probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_) {
+    double d_prob_loss = -1 * Defender::estimated_probability_of_attack *  d_posture_if_investment(investment, assets_, capex_);
+    return d_prob_loss;
+}
 
 // // second derivative of probability_of_loss with respect to investment
 // double Defender::d_d_probability_of_loss(int64_t investment) {
@@ -314,7 +318,35 @@ double Defender::probability_of_loss(int64_t investment, int64_t assets_, int64_
 // }
 
 
+// Returns a boolean stating if expected_loss has a minimum in the range [0, assets]
+bool Defender::expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_) {
+    // expected_loss can be either convex unimodal, or monotonic
+    // if it is convex unimodal, there is a minimum, and the gsl_find_minimum will find it
+    // else if it is monotonic, then the slope of expected_cost will be greater than or equal to zero
+    // I.e. we find the derivative of expected_cost with respect to investment
+    // f(x) = investment + probability_of_loss(investment) * cost_if_attacked(investment) // investment = x
+    double d_expected_loss_wrt_investment = 1 + (d_probability_of_loss(investment, assets_, capex_) * cost_if_attacked(investment, assets_)) + (probability_of_loss(investment, assets_, capex_) * d_cost_if_attacked(investment, assets_)); // derivative product rule
+    bool test1 = d_expected_loss_wrt_investment < 0? true : false;
+    
+    // do another test where epsilon=1 just to confirm above results
+    int64_t loss_if_0_investment = expected_loss(0, assets_, capex_);
+    int64_t loss_if_1_investment = expected_loss(1, assets_, capex_);
+    bool test2 = loss_if_1_investment < loss_if_0_investment ? true : false;
+
+    assert(test1 == test2);
+    return test1;
+}
+
+
+
 double Defender::gsl_find_minimum() {
+
+    // Detect if expected_cost is monotonic instead of convex unimodal
+    if (!expected_loss_contains_minimum(0, assets, capex)) {
+        // expected_cost is monotonic, so the minimum is when investment=0
+        return 0;
+    }
+
     int status;
     int iter = 0, max_iter = 100;
     const gsl_min_fminimizer_type *T;
@@ -329,14 +361,12 @@ double Defender::gsl_find_minimum() {
     p.assets = assets;
     p.capex = capex;
 
-    // F.function = &fn1;
     F.function = &gsl_expected_loss_wrapper; // TODO reinstate
-    // F.function =  &fn1; // TODO remove
     F.params = &p;
 
     T = gsl_min_fminimizer_brent;
     s = gsl_min_fminimizer_alloc (T);
-    gsl_min_fminimizer_set (s, &F, m, a, b); // segfaultsS
+    gsl_min_fminimizer_set (s, &F, m, a, b); 
 
     std::cout << "using" <<  gsl_min_fminimizer_name(s) << " method" << std::endl;
 
@@ -456,6 +486,8 @@ void Defender::choose_security_strategy() {
     assert(optimal_investment <= assets);
     
     int64_t expected_loss_with_optimal_investment = expected_loss(optimal_investment, assets, capex);
+    assert(expected_loss_with_optimal_investment >= 0);
+    assert(expected_loss_with_optimal_investment <= assets);
 
     
     // int64_t expected_cost_if_attacked_at_optimal_investment = ransom_cost(assets - optimal_investment) + recovery_cost(assets - optimal_investment);

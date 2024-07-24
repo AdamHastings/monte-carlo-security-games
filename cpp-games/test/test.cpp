@@ -20,12 +20,13 @@ TEST(MCSGtest, FindInvestmentMinimumTest) {
     
     d.assets = 3600000;
     Defender::estimated_probability_of_attack = 0.01;
+    Defender::ransom_b0 = p.RANSOM_B0_distribution->mean();
+    Defender::ransom_b1 = p.RANSOM_B1_distribution->mean();
+    Defender::recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
+    Defender::recovery_exp  = p.RECOVERY_COST_EXP_distribution->mean();
     d.capex = 0;
-    // int min = (int) d.gsl_find_minimum();
-    // ASSERT_EQ(min, 0);
-
-    double m = d.test_optimize();
-    ASSERT_FLOAT_EQ(m, M_PI);
+    int min = (int) d.gsl_find_minimum();
+    ASSERT_EQ(min, 0);
 }
 
 int main(int argc, char **argv) {
