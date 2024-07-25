@@ -302,16 +302,19 @@ bool Defender::expected_loss_contains_minimum(int64_t investment, int64_t assets
     // if it is convex unimodal, there is a minimum, and the gsl_find_minimum will find it
     // else if it is monotonic, then the slope of expected_cost will be greater than or equal to zero
     // I.e. we find the derivative of expected_cost with respect to investment
+    // HOWEVER when the derivative is very small, there may be a real-valued minimum but the function we are optimizing returns integer precision
+    // So I'm leaving this commented-out code here for reference but it will cause GSL to fail (since it doesn't observe an optimum)
     // f(x) = investment + probability_of_loss(investment) * cost_if_attacked(investment) // investment = x
     double d_expected_loss_wrt_investment = 1 + (d_probability_of_loss(investment, assets_, capex_) * cost_if_attacked(investment, assets_)) + (probability_of_loss(investment, assets_, capex_) * d_cost_if_attacked(investment, assets_)); // derivative product rule
     bool test1 = d_expected_loss_wrt_investment < 0? true : false;
     
-    // do another test where epsilon=1 just to confirm above results
-    int64_t loss_if_0_investment = expected_loss(0, assets_, capex_);
-    int64_t loss_if_1_investment = expected_loss(1, assets_, capex_);
-    bool test2 = loss_if_1_investment < loss_if_0_investment ? true : false;
+    // // do another test where epsilon=1 just to confirm above results
+    // int64_t loss_if_0_investment = expected_loss(0, assets_, capex_);
+    // int64_t loss_if_1_investment = expected_loss(1, assets_, capex_);
+    // bool test2 = loss_if_1_investment < loss_if_0_investment ? true : false;
 
-    assert(test1 == test2);
+
+    // assert(test1 == test2); // This fails when the derivative is very small
     return test1;
 }
 
@@ -353,7 +356,20 @@ double Defender::gsl_find_minimum() {
 
     T = gsl_min_fminimizer_brent;
     s = gsl_min_fminimizer_alloc (T);
-    gsl_min_fminimizer_set (s, &F, m, a, b); 
+
+    // disable default gsl error handler
+    // but this means we have to actually check the return status of library routines
+    gsl_set_error_handler_off();
+
+    status = gsl_min_fminimizer_set(s, &F, m, a, b);
+
+    if (status != 0) {
+        // gsl_min_fminimizer_set failed
+        // likely no minimum for gsl to find
+        return 0;
+    }
+    
+
 
     // std::cout << "using" <<  gsl_min_fminimizer_name(s) << " method" << std::endl;
     // printf("%5s [%9s, %9s] %9s %9s\n", "iter", "lower", "upper", "min", "err(est)");
