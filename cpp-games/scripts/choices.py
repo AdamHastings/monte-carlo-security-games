@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotx
 import numpy as np
 import pandas as pd
+import sys
 
 
 opacity=0.6
@@ -78,5 +79,7 @@ if __name__=="__main__":
         print("Incorrect number of args! Example:")
         print("$ python3 run_all.py <path_to_log_file.csv>")
         sys.exit(1)
+    
+    df = pd.read_csv(filename, header=0)
 
     choices(df)    

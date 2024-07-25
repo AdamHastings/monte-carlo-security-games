@@ -128,6 +128,7 @@ def plot_p_attacks(df):
         # plt.xlim(0, 300)
         # plt.ylim(-0.1, 1.1)
         plt.tight_layout()
+        # plt.show()
         plt.savefig('figures/canary_vars_p_attack.png')
         plt.savefig('figures/canary_vars_p_attack.pdf')
     
@@ -140,6 +141,8 @@ if __name__=="__main__":
         print("Incorrect number of args! Example:")
         print("$ python3 run_all.py <path_to_log_file.csv>")
         sys.exit(1)
+
+    df = pd.read_csv(filename, header=0)
 
     plot_p_attacks(copy.deepcopy(df))
     plot_canary_vars(copy.deepcopy(df))
