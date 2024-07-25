@@ -49,6 +49,14 @@ TEST(MCSGtest, FindInvestmentMinimumTest) {
 
 
     ASSERT_EQ(Defender::expected_loss(min, d.assets, d.capex),  Defender::expected_loss(560175, d.assets, d.capex));
+
+    d.assets = 1 * pow(10,6);
+    Defender::estimated_probability_of_attack = 0.8;
+    d.capex = 1000;
+    d.posture = 0.3;
+    min = std::round(d.gsl_find_minimum());
+    ASSERT_EQ(Defender::expected_loss(min, d.assets, d.capex),  Defender::expected_loss(69615, d.assets, d.capex));
+
 }
 
 int main(int argc, char **argv) {
