@@ -53,7 +53,7 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
     capex = (int64_t) fp_assets * p.TARGET_SECURITY_SPENDING_distribution->draw(); 
     double noise = p.POSTURE_NOISE_distribution->draw();
     posture = posture_if_investment(0, assets, capex); // No initial opex. Capex allocation above should produce desired distribution
-    assert(abs(posture - 0.28) < 0.01); // TODO make sure setup is correct using params
+    assert(abs(posture - p.POSTURE_distribution->mean()) < 0.01); // The posture_if_investment function should produce average posture given the target security spending
     posture += noise;
 
 
@@ -158,14 +158,6 @@ int64_t Defender::expected_loss(int64_t investment, int64_t assets_, int64_t cap
     return loss;
 }
 
-// // same as expected_loss but formatted using double data types for gsl
-// double gsl_expected_loss(double x, void * params) {
-//     // (void)(params); /* avoid unused parameter warning */
-//     Defender* self = static_cast<Defender*>(params);
-//     return (double) self->expected_loss(x);
-//     // return (double) investment * investment + investment; // TODO delete...just for testing 
-// }
-
 // yields the expected posture if a defender were to invest investment into security
 // TODO add default value for expected value vs random draw?
 double Defender::posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_) {
@@ -250,71 +242,16 @@ double Defender::d_probability_of_loss(int64_t investment, int64_t assets_, int6
 //     return d_d_prob_loss;
 // }
 
-// // Newton-Raphson method for finding the root of the derivative of expected loss
-// double Defender::find_optimal_investment(){
-
-//     // provide an initial guess
-//     // Start with guess=0 so that successively better guesses always increment *if* there is an optimum
-//     // so that we can catch cases that will not converge (guess < 0) before they cause problems
-//     int64_t guess = assets / 100; 
-//     int64_t last_guess = assets / 100;
-//     do {
-        
-//         int64_t investment = guess;
-//         last_guess = guess;
-
-//         // Shouldn't this be cost_if_attacked(assets - investment) and not cost_if_attacked(investment)?
-//         // No. cost_if_attacked already does this subtraction for you.
-//         // Somewhat confusing, I know.
-//         // FYI: f(x) = investment + probability_of_loss(investment) * cost_if_attacked(investment)
-//         double d_fx = 1 + (d_probability_of_loss(investment) * cost_if_attacked(investment)) + (probability_of_loss(investment) * d_cost_if_attacked(investment)); // derivative product rule
-        
-//         double t1 = d_d_probability_of_loss(investment) * cost_if_attacked(investment);
-//         double t2 = 2 * d_probability_of_loss(investment) * d_cost_if_attacked(investment);
-//         double t3 = probability_of_loss(investment) * d_d_cost_if_attacked(investment);
-//         double d_d_fx = t1 + t2 + t3;
-//         guess = (int64_t) (last_guess - (d_fx / d_d_fx));
-
-//         if (guess < 0 || guess > this->assets) {
-//             // It is possible that the expected loss function does not have a minimum 
-//             // meaning that Newton-Raphson does not converge.
-//             // In this case, the optimal investment is either none or all of assets
-//             // In these situations it is better to invest nothing and hope for the best 
-//             // rather than investing all of one's assets into security
-//             guess = 0; 
-//             break;
-//         }
-    
-//     // Compare against the last *two* guesses to avoid getting stuck in oscillatory loops
-//     // }  while (guess != last_guess && guess != last_last_guess);
-//     } while (abs(guess - last_guess) > 1);
-
-//     int64_t optimal_investment = guess;
-//     assert(optimal_investment >= 0);
-//     assert(optimal_investment <= assets);
-//     return optimal_investment;
-// }
-
-
 // Returns a boolean stating if expected_loss has a minimum in the range [0, assets]
 bool Defender::expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_) {
     // expected_loss can be either convex unimodal, or monotonic
     // if it is convex unimodal, there is a minimum, and the gsl_find_minimum will find it
     // else if it is monotonic, then the slope of expected_cost will be greater than or equal to zero
     // I.e. we find the derivative of expected_cost with respect to investment
-    // HOWEVER when the derivative is very small, there may be a real-valued minimum but the function we are optimizing returns integer precision
-    // So I'm leaving this commented-out code here for reference but it will cause GSL to fail (since it doesn't observe an optimum)
     // f(x) = investment + probability_of_loss(investment) * cost_if_attacked(investment) // investment = x
     double d_expected_loss_wrt_investment = 1 + (d_probability_of_loss(investment, assets_, capex_) * cost_if_attacked(investment, assets_)) + (probability_of_loss(investment, assets_, capex_) * d_cost_if_attacked(investment, assets_)); // derivative product rule
     bool test1 = d_expected_loss_wrt_investment < 0? true : false;
     
-    // // do another test where epsilon=1 just to confirm above results
-    // int64_t loss_if_0_investment = expected_loss(0, assets_, capex_);
-    // int64_t loss_if_1_investment = expected_loss(1, assets_, capex_);
-    // bool test2 = loss_if_1_investment < loss_if_0_investment ? true : false;
-
-
-    // assert(test1 == test2); // This fails when the derivative is very small
     return test1;
 }
 
