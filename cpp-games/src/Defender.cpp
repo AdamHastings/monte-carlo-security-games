@@ -120,7 +120,7 @@ void Defender::make_security_investment(uint32_t amount) {
 int64_t Defender::ransom_cost(int64_t _assets) {
     assert(_assets >= 0);
     double dransom = ransom_b0 + (_assets * ransom_b1);
-    int64_t ransom = (int64_t) dransom;
+    int64_t ransom = std::round(dransom);
     // ransom = std::min(ransom, _assets);
     // ransom = std::max(ransom, (int64_t) 0);
     assert(ransom >= ransom_b0);
@@ -132,11 +132,11 @@ int64_t Defender::ransom_cost(int64_t _assets) {
 int64_t Defender::recovery_cost(int64_t _assets) {
     assert(_assets >= 0);
     double drec = recovery_base * pow(_assets, recovery_exp);
-    int64_t rec = (int64_t) drec;
-    // rec = std::min(rec, _assets);
+    int64_t rec = std::round(drec);
+    rec = std::min(rec, _assets);
     // rec = std::max(rec, (int64_t) 0);
     assert(rec >= 0);
-    assert(rec <= _assets);
+    // assert(rec <= _assets);
     return rec;
 }
 
