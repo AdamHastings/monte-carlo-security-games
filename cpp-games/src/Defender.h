@@ -6,6 +6,8 @@
 
 
 class Defender : public Player {
+
+    // static class variables
     public:
         // TODO this is perhaps better called estimated_p_loot
         static double estimated_probability_of_attack;
@@ -28,17 +30,6 @@ class Defender : public Player {
 
         static uint32_t NUM_QUOTES;
 
-        static void perform_market_analysis(double last_round_attack_pct);
-        static int64_t ransom_cost(int64_t _assets); 
-        static int64_t recovery_cost(int64_t _assets);
-
-        static std::vector<Insurer>* insurers; 
-        static std::vector<uint32_t>* alive_insurers_indices; 
-
-        static void reset();
-
-
-    public:
         // verbose bookkeeping variables 
         static std::vector<unsigned long long> cumulative_assets; // running total of all defenders' assets
         static std::vector<int> cumulative_round_policies_purchased;
@@ -49,7 +40,34 @@ class Defender : public Player {
         static int round_defenses_purchased;
         static int round_do_nothing;
 
+    // static class functions
+    public:
+        static void perform_market_analysis(double last_round_attack_pct);
+        static int64_t ransom_cost(int64_t _assets); 
+        static int64_t recovery_cost(int64_t _assets);
 
+        static int64_t expected_loss(int64_t investment, int64_t assets_, int64_t capex_);
+        static double gsl_expected_loss_wrapper(double x, void* params);
+        static bool expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_);
+
+        static double posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_);
+        static double d_posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_);
+        // double d_d_posture_if_investment(int64_t investment);
+
+        static double probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_);
+        static double d_probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_);
+        // double d_d_probability_of_loss(int64_t investment);
+
+        static int64_t cost_if_attacked(int64_t investment, int64_t assets_);
+        static double d_cost_if_attacked(int64_t investment, int64_t assets_);
+        // double d_d_cost_if_attacked(int64_t investment);
+
+        static std::vector<Insurer>* insurers; 
+        static std::vector<uint32_t>* alive_insurers_indices; 
+
+        static void reset();
+
+    // non-static public definitions
     public: 
         Defender(int id_in, Params &p);
         void gain(int64_t gain) override;
@@ -69,36 +87,11 @@ class Defender : public Player {
         void security_depreciation();
         void choose_security_strategy();
         void submit_claim(uint32_t loss);
-
-        static int64_t expected_loss(int64_t investment, int64_t assets_, int64_t capex_);
-        static double gsl_expected_loss_wrapper(double x, void* params);
-        // static double fn1(double x, void* params);
-        static bool expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_);
-        
+    
         double gsl_find_minimum();
-        double test_optimize(); // TODO remove
 
-        static double posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_);
-        static double d_posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_);
-        // double d_d_posture_if_investment(int64_t investment);
-
-        static double probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_);
-        static double d_probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_);
-        // double d_d_probability_of_loss(int64_t investment);
-
-        static int64_t cost_if_attacked(int64_t investment, int64_t assets_);
-        static double d_cost_if_attacked(int64_t investment, int64_t assets_);
-
-
+    // non-static private definitions
     private:   
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
-        
-        // double d_d_cost_if_attacked(int64_t investment);
-
-        // double find_optimal_investment();
-        // static double gsl_expected_loss_wrapper(double x, void * params);
-
-        
-
 };

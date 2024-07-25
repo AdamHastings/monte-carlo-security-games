@@ -166,28 +166,6 @@ int64_t Defender::expected_loss(int64_t investment, int64_t assets_, int64_t cap
 //     // return (double) investment * investment + investment; // TODO delete...just for testing 
 // }
 
-struct opt_params{
-    int64_t assets;
-    int64_t capex;
-};
-
-
-double Defender::gsl_expected_loss_wrapper(double x, void * params) {
-    struct opt_params * p = (struct opt_params *)params;
-    int64_t assets_ = (p->assets);
-    int64_t capex_ = (p->capex);
-    return (double) Defender::expected_loss(x, assets_, capex_);
-}
-
-// /////////////////////
-// double Defender::fn1(double x, void * params) {
-//     struct opt_params * p = (struct opt_params *)params;
-//     int64_t assets_ = (p->assets);
-//     int64_t capex_ = (p->capex);
-//     return (double) Defender::expected_loss(x, assets_, capex_);
-// }
-// //////////
-
 // yields the expected posture if a defender were to invest investment into security
 // TODO add default value for expected value vs random draw?
 double Defender::posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_) {
@@ -337,7 +315,17 @@ bool Defender::expected_loss_contains_minimum(int64_t investment, int64_t assets
     return test1;
 }
 
+struct opt_params{
+    int64_t assets;
+    int64_t capex;
+};
 
+double Defender::gsl_expected_loss_wrapper(double x, void * params) {
+    struct opt_params * p = (struct opt_params *)params;
+    int64_t assets_ = (p->assets);
+    int64_t capex_ = (p->capex);
+    return (double) Defender::expected_loss(x, assets_, capex_);
+}
 
 double Defender::gsl_find_minimum() {
 
@@ -353,7 +341,6 @@ double Defender::gsl_find_minimum() {
     gsl_min_fminimizer *s;
     double m = assets / 100.0; // initial guess
     double a = 0.0; // lower bound
-    //   double m_expected = assets / 100.0; // from gsl tutorial // just for testing demonstration purposes
     double b = assets; // upper bound
     gsl_function F;
 
@@ -361,24 +348,21 @@ double Defender::gsl_find_minimum() {
     p.assets = assets;
     p.capex = capex;
 
-    F.function = &gsl_expected_loss_wrapper; // TODO reinstate
+    F.function = &gsl_expected_loss_wrapper; 
     F.params = &p;
 
     T = gsl_min_fminimizer_brent;
     s = gsl_min_fminimizer_alloc (T);
     gsl_min_fminimizer_set (s, &F, m, a, b); 
 
-    std::cout << "using" <<  gsl_min_fminimizer_name(s) << " method" << std::endl;
-
-    printf("%5s [%9s, %9s] %9s %9s\n", "iter", "lower", "upper", "min", "err(est)");
-
-    printf("%5d [%.7f, %.7f] %.7f %.7f\n", iter, a, b, m, b - a);
+    // std::cout << "using" <<  gsl_min_fminimizer_name(s) << " method" << std::endl;
+    // printf("%5s [%9s, %9s] %9s %9s\n", "iter", "lower", "upper", "min", "err(est)");
+    // printf("%5d [%.7f, %.7f] %.7f %.7f\n", iter, a, b, m, b - a);
 
     double absolute_error_tolerance = 1; // we convert to int type anyway, so no need to optimize beyond 1
     double relative_error_tolerance = 0; // we only care about absolute error so we set this term to 0
 
-    do
-    {
+    do {
         iter++;
         status = gsl_min_fminimizer_iterate (s);
 
@@ -388,24 +372,15 @@ double Defender::gsl_find_minimum() {
 
         status = gsl_min_test_interval (a, b, absolute_error_tolerance, relative_error_tolerance);
 
-        if (status == GSL_SUCCESS)
-            printf("Converged:\n");
-
-        printf("%5d [%.7f, %.7f] %.7f %.7f\n", iter, a, b, m, b - a);
+        // if (status == GSL_SUCCESS)
+        //     printf("Converged:\n");
+        // printf("%5d [%.7f, %.7f] %.7f %.7f\n", iter, a, b, m, b - a);
     
-    }
-    while (status == GSL_CONTINUE && iter < max_iter);
+    } while(status == GSL_CONTINUE && iter < max_iter);
 
-    gsl_min_fminimizer_free (s);
+    gsl_min_fminimizer_free(s);
 
     return m;
-}
-
-void Defender::security_depreciation() {
-    // the value of previous opex spending depreciates to zero after it is spent (by definition)
-    double DEPRECIATION = p.DEPRECIATION_distribution->draw();
-    capex = capex * (1 - DEPRECIATION);
-    posture = posture_if_investment(0, assets, capex); // 0 invested in opex (for now)
 }
 
 void Defender::choose_security_strategy() {
@@ -508,6 +483,13 @@ void Defender::choose_security_strategy() {
         do_nothing++;
         round_do_nothing++;
     }
+}
+
+void Defender::security_depreciation() {
+    // the value of previous opex spending depreciates to zero after it is spent (by definition)
+    double DEPRECIATION = p.DEPRECIATION_distribution->draw();
+    capex = capex * (1 - DEPRECIATION);
+    posture = posture_if_investment(0, assets, capex); // 0 invested in opex (for now)
 }
 
 void Defender::perform_market_analysis(double last_round_attack_pct) {
