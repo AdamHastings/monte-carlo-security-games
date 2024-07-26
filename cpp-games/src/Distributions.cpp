@@ -85,27 +85,28 @@ double FixedDistribution::mean() {
     return val;
 }
 
-// SweepDistribution::SweepDistribution(double _min, double _max, double _step) {
-//     min = _min;
-//     max = _max;
-//     step = _step;
-//     next_val = min;
-// }
+// Note: This only works when you run games serially! 
+SweepDistribution::SweepDistribution(double _min, double _max, double _step) {
+    min = _min;
+    max = _max;
+    step = _step;
+    next_val = min;
+}
 
-// double SweepDistribution::draw() {
-//     double ret = next_val;
-//     assert(ret <= max);
-//     assert(ret >= min);
+// You need to set NUM_GAMES accordingly to avoid assertion failure
+double SweepDistribution::draw() {
+    double ret = next_val;
+    assert(ret <= max);
+    assert(ret >= min);
 
-//     next_val += step;
+    next_val += step;
 
-//     return ret;
-// }
+    return ret;
+}
 
-// double SweepDistribution::mean() {
-//     return (min + max) / 2;
-// }
-
+double SweepDistribution::mean() {
+    return (min + max) / 2;
+}
 
 Distribution* Distribution::createDistribution(Json::Value d) {
     Distribution* dist;
@@ -166,6 +167,11 @@ Distribution* Distribution::createDistribution(Json::Value d) {
     } else if (d["distribution"] == "fixed") {
         double val = d["val"].asDouble();
         dist = new FixedDistribution(val);
+    } else if (d["distribution"] == "sweep") { // Note: Only works when you run games serailly!
+        double min = d["min"].asDouble();
+        double max = d["max"].asDouble();
+        double step = d["step"].asDouble();
+        dist = new SweepDistribution(min, max, step);
     } else {
         std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
         std::cerr << "Offending parameter: " << d << endl;
