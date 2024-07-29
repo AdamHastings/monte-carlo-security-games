@@ -28,6 +28,7 @@ struct Params {
     Distribution* TARGET_SECURITY_SPENDING_distribution;
     Distribution* INVESTMENT_SCALING_FACTOR_distribution;
     Distribution* MAX_ITERATIONS_distribution;
+    Distribution* MANDATORY_INVESTMENT_distribution;
 
     
     Distribution* DELTA_distribution;

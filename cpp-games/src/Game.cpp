@@ -552,4 +552,5 @@ Game::~Game() {
     delete p.TARGET_SECURITY_SPENDING_distribution;
     delete p.INVESTMENT_SCALING_FACTOR_distribution;
     delete p.MAX_ITERATIONS_distribution;
+    delete p.MANDATORY_INVESTMENT_distribution;
 }

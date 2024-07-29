@@ -35,8 +35,8 @@ Params params_loader::load_cfg(std::string config_filename) {
     p.TARGET_SECURITY_SPENDING_distribution = Distribution::createDistribution(jsonData["TARGET_SECURITY_SPENDING"]); 
     p.INVESTMENT_SCALING_FACTOR_distribution = Distribution::createDistribution(jsonData["INVESTMENT_SCALING_FACTOR"]);
     p.MAX_ITERATIONS_distribution = Distribution::createDistribution(jsonData["MAX_ITERATIONS"]); 
-
-    
+    p.MANDATORY_INVESTMENT_distribution = Distribution::createDistribution(jsonData["MANDATORY_INVESTMENT"]); 
+ 
     Json::Value num_insurers_json = jsonData["NUM_INSURERS"];
     assert(num_insurers_json["distribution"] == "fixed");
     p.NUM_INSURERS_distribution = Distribution::createDistribution(num_insurers_json);

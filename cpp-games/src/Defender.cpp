@@ -338,6 +338,14 @@ double Defender::gsl_find_minimum() {
 
 void Defender::choose_security_strategy() {
 
+    // Some games will require Defenders to make a mandatory security investment
+    // If this is the case, do it before calculating remaining optimal strategies or requesting insurance policies
+    int64_t mandatory_investment = assets * p.MANDATORY_INVESTMENT_distribution->draw();
+    if (mandatory_investment > 0) {
+        assert(mandatory_investment <= assets);
+        make_security_investment(mandatory_investment);
+    }
+
     double p_A_hat = estimated_probability_of_attack;
     assert(p_A_hat >= 0);
     assert(p_A_hat <= 1);
@@ -363,6 +371,7 @@ void Defender::choose_security_strategy() {
     best_policy.premium = std::numeric_limits<int64_t>::max();
     bool insurable = false;
     
+    // Iterate through random insurers and request quotes
     for (const auto& j : insurer_indices) {
         Insurer* i = &insurers->at(j);
         assert(i->is_alive());
@@ -425,7 +434,6 @@ void Defender::choose_security_strategy() {
     // assert(expected_loss_with_optimal_investment >= 0);
 
     // TODO consider possibility that players can choose both
-    // TODO consider case where insurer requires 1% investment 
     // TODO consider cases where insurer tells defender how much to invest 
     if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
         purchase_insurance_policy(best_insurer, best_policy);
