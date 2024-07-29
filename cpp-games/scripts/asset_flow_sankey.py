@@ -1,6 +1,8 @@
 import plotly.graph_objects as go
 import pandas as pd
 import sys
+import os
+import os.path
 
 ## TODO this is wrong
 ## shows insurance claims as ending up in defenders' final wealth even when defenders are entirely looted...
@@ -29,6 +31,10 @@ g0 = 'rgba(136, 136, 136, {})'.format(opaque)
 
 def asset_flow_sankey(df):
 
+  basetitle = 'asset_flow_sankey'
+  dirname = 'figures'
+  subdirname = df['folder'][0]
+
   df = df[['d_sum_security_investments',
             'attackerLoots',
             'a_end',
@@ -39,7 +45,7 @@ def asset_flow_sankey(df):
             'attackerExpenditures',
             'i_init',
             'paid_claims',
-            'i_end'
+            'i_end',
           ]]
 
   meandf = df.mean()
@@ -215,10 +221,16 @@ def asset_flow_sankey(df):
   ))
 
   # fig.show()
+  path = dirname + '/' + subdirname 
+  
+  if not os.path.isdir(path):
+      os.mkdir(path)
 
   # fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
-  fig.write_image("figures/asset_flow_sankey.pdf")
-  fig.write_image("figures/asset_flow_sankey.png")
+  fig.write_image(path + '/' + basetitle + '.png')
+  fig.write_image(path + '/' + basetitle + '.pdf')
+
+  
 
 
 if __name__=="__main__":

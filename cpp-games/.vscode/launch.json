@@ -37,6 +37,25 @@
         }
       ],
       "miDebuggerArgs": "-exec run"
+    },
+    {
+      "name": "NUM_QUOTES debug Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/run/debug/run_games", // Path to your compiled executable
+      "args": ["configs/fullsize_sweep_NUM_QUOTES.json"],
+      "cwd": "${workspaceFolder}",
+      "environment": [{ "name": "config", "value": "Debug" }],
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "setupCommands": [
+        {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+        }
+      ],
+      "miDebuggerArgs": "-exec run"
     }
   ]
 }

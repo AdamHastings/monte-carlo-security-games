@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import sys
 import copy
+import os
+import os.path
 
 
 opacity=0.6
@@ -73,8 +75,17 @@ def plot_canary_vars(df):
         # plt.xlim(0, 300)
         # plt.ylim(-0.1, 1.1)
         plt.tight_layout()
-        plt.savefig('figures/canary_vars.png')
-        plt.savefig('figures/canary_vars.pdf')
+
+        basetitle = 'canary_vars'
+        dirname = 'figures'
+        subdirname = df['folder'][0]
+        path = dirname + '/' + subdirname 
+        
+        if not os.path.isdir(path):
+            os.mkdir(path)
+
+        plt.savefig(path + '/' + basetitle + '.png')
+        plt.savefig(path + '/' + basetitle + '.pdf')
 
 
 def plot_p_attacks(df):
@@ -129,8 +140,20 @@ def plot_p_attacks(df):
         # plt.ylim(-0.1, 1.1)
         plt.tight_layout()
         # plt.show()
-        plt.savefig('figures/canary_vars_p_attack.png')
-        plt.savefig('figures/canary_vars_p_attack.pdf')
+
+        basetitle = 'canary_vars_p_attack'
+        dirname = 'figures'
+        subdirname = df['folder'][0]
+        path = dirname + '/' + subdirname 
+        
+        if not os.path.isdir(path):
+            os.mkdir(path)
+
+        plt.savefig(path + '/' + basetitle + '.png')
+        plt.savefig(path + '/' + basetitle + '.pdf')
+        
+
+
     
 
 if __name__=="__main__":

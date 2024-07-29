@@ -19,6 +19,10 @@ else:
 
 df = pd.read_csv(filename, header=0)
 
+filename = filename.replace("../logs/", "")
+filename = filename.replace(".csv", "")
+df['folder'] = filename
+
 print("plot_cumulative_assets")
 plot_cumulative_assets(copy.deepcopy(df))
 

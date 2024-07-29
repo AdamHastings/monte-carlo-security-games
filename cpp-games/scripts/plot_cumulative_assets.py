@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import os
+import os.path
 
 
 def trillion_formatter(x, pos):
@@ -57,10 +59,17 @@ def plot_cumulative_assets(df):
     plt.xlabel("time")
     plt.legend()
 
-    basetitle = "cumulative_assets"
 
-    plt.savefig("figures/" + basetitle + ".png")
-    plt.savefig("figures/" + basetitle + ".pdf")
+    basetitle = "cumulative_assets"
+    dirname = "figures"
+    subdirname = df['folder'][0]
+    path = dirname + '/' + subdirname 
+    
+    if not os.path.isdir(path):
+        os.mkdir(path)
+
+    plt.savefig(path + '/' + basetitle + '.png')
+    plt.savefig(path + '/' + basetitle + '.pdf')
 
 
 

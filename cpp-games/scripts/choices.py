@@ -3,7 +3,8 @@ import matplotx
 import numpy as np
 import pandas as pd
 import sys
-
+import os
+import os.path
 
 opacity=0.6
 
@@ -65,9 +66,16 @@ def choices(df):
     plt.ylabel("count")
     plt.tight_layout()
 
+    basetitle = 'choices'
+    dirname = 'figures'
+    subdirname = df['folder'][0]
+    path = dirname + '/' + subdirname 
+    
+    if not os.path.isdir(path):
+        os.mkdir(path)
 
-    plt.savefig('figures/choices.png')
-    plt.savefig('figures/choices.pdf')
+    plt.savefig(path + '/' + basetitle + '.png')
+    plt.savefig(path + '/' + basetitle + '.pdf')
 
 
 
