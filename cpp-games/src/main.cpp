@@ -124,6 +124,7 @@ void init_logs(std::string basename, Params p) {
     header += ",do_nothing";
     header += ",d_sum_security_investments";
     header += ",NUM_QUOTES";
+    header += ",MANDATORY_INVESTMENT";
     header += ",sum_premiums_collected";
     header += ",paid_claims";
     header += ",insurer_expenditures";

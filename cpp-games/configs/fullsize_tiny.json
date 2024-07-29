@@ -112,6 +112,11 @@
         "distribution" : "fixed",
         "val": 5000
     },
+    "MANDATORY_INVESTMENT" :
+    {
+        "distribution" : "fixed",
+        "val" : 0.00
+    },
     "NUM_GAMES": 1,
     "verbose":true,
     "assertions_on":true

@@ -21,6 +21,8 @@ int64_t Defender::do_nothing = 0;
 int64_t Defender::sum_security_investments = 0;
 
 uint32_t Defender::NUM_QUOTES = 0;
+double Defender::MANDATORY_INVESTMENT = 0;
+
 
 std::mt19937* Defender::gen = 0;
 

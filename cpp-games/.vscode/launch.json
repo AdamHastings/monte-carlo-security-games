@@ -56,6 +56,25 @@
         }
       ],
       "miDebuggerArgs": "-exec run"
+    },
+    {
+      "name": "MANDATORY_INVESTMENT debug Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/run/debug/run_games", // Path to your compiled executable
+      "args": ["configs/fullsize_tiny_MANDATORY_INVESTMENT=0.02.json"],
+      "cwd": "${workspaceFolder}",
+      "environment": [{ "name": "config", "value": "Debug" }],
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "setupCommands": [
+        {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+        }
+      ],
+      "miDebuggerArgs": "-exec run"
     }
   ]
 }

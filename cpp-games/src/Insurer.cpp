@@ -150,7 +150,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers, int curren
     // Compute parameters using method of moments
     double scaled_mu =  utils::compute_mu_mom_lognormal(scaled_attacker_assets); // Note!! This is the log of the median, and mean  is exp(mu + (sigma^2)/2)!! Staying in terms of paramters mu and sigma
     estimated_current_attacker_wealth_mu = SCALE_FACTOR * scaled_mu;
-    assert(estimated_current_attacker_wealth_mu >= 0);
+    // Note that scaled_mu can be negative!
 
     // Can return nan. Need to check against this condition elsewhere.
     double scaled_variance = utils::compute_var_mom_lognormal(scaled_attacker_assets);

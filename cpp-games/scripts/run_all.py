@@ -12,6 +12,7 @@ from choices import choices
 
 if (len(sys.argv) == 2):
     filename = sys.argv[1]
+    print(filename)
 else:
     print("Incorrect number of args! Example:")
     print("$ python3 run_all.py <path_to_log_file.csv>")
@@ -23,17 +24,17 @@ filename = filename.replace("../logs/", "")
 filename = filename.replace(".csv", "")
 df['folder'] = filename
 
-print("plot_cumulative_assets")
+print("  plot_cumulative_assets")
 plot_cumulative_assets(copy.deepcopy(df))
 
-print("asset_flow_sankey")
+print("  asset_flow_sankey")
 asset_flow_sankey(copy.deepcopy(df))
 
-print("plot_canary_vars")
+print("  plot_canary_vars")
 plot_canary_vars(copy.deepcopy(df))
 
-print("plot_p_attacks")
+print("  plot_p_attacks")
 plot_p_attacks(copy.deepcopy(df))
 
-print("choices")
+print("  choices")
 choices(copy.deepcopy(df))

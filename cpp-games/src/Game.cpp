@@ -58,6 +58,7 @@ Game::Game(Params prm, unsigned int game_number) {
 
     NUM_ATTACKERS = p.NUM_ATTACKERS_distribution->draw();
     Defender::NUM_QUOTES = p.NUM_QUOTES_distribution->draw();
+    Defender::MANDATORY_INVESTMENT = p.MANDATORY_INVESTMENT_distribution->draw();
     
     ATTACKS_PER_EPOCH = p.ATTACKS_PER_EPOCH_distribution->draw();
     Insurer::ATTACKS_PER_EPOCH = &ATTACKS_PER_EPOCH;
@@ -129,6 +130,7 @@ std::string Game::to_string() {
     ss << std::scientific << std::setprecision(2) << Defender::sum_security_investments <<  ",";
 
     ss << Defender::NUM_QUOTES << ",";
+    ss << Defender::MANDATORY_INVESTMENT << ",";
     ss << std::scientific << std::setprecision(2) << Insurer::sum_premiums_collected <<  ",";
     ss << std::scientific << std::setprecision(2) << Insurer::paid_claims <<  ",";
     ss << std::scientific << std::setprecision(2) << Insurer::operating_expenses <<  ",";

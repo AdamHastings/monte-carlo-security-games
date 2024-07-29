@@ -29,6 +29,7 @@ class Defender : public Player {
         static double recovery_exp;
 
         static uint32_t NUM_QUOTES;
+        static double MANDATORY_INVESTMENT;
 
         // verbose bookkeeping variables 
         static std::vector<unsigned long long> cumulative_assets; // running total of all defenders' assets
