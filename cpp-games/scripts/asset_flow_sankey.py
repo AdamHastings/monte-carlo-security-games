@@ -35,7 +35,9 @@ def asset_flow_sankey(df):
   dirname = 'figures'
   subdirname = df['folder'][0]
 
-  df = df[['d_sum_security_investments',
+  df = df[[
+            'd_init',
+            'd_sum_security_investments',
             'attackerLoots',
             'a_end',
             'd_sum_recovery_costs',
@@ -52,7 +54,9 @@ def asset_flow_sankey(df):
 
   nodes = {
       "Defenders' initial wealth" : b0,
+      "Defenders' post-spending wealth" : b0,
       "Attackers' initial wealth" : r0,
+      "Attackers' post-ransom wealth" : r0,
       "Insurers' initial wealth" : y0,
       "Security spending" : b0,
       "Ransom payments" : b0,
@@ -88,7 +92,7 @@ def asset_flow_sankey(df):
   flows.append(f)
 
   f = flow(
-    source  = nm["Defenders' initial wealth"],
+    source  = nm["Defenders' post-spending wealth"],
     sink    = nm["Ransom payments"],
     val     = meandf['attackerLoots'],
     color   = b)  
@@ -96,13 +100,13 @@ def asset_flow_sankey(df):
 
   f = flow(
     source  = nm["Ransom payments"],
-    sink    = nm["Attackers' final wealth"],
+    sink    = nm["Attackers' post-ransom wealth"],
     val     = meandf['a_end'],
     color   = r)  
   flows.append(f)
 
   f = flow(
-    source  = nm["Defenders' initial wealth"],
+    source  = nm["Defenders' post-spending wealth"],
     sink    = nm["Recovery costs"],
     val     = meandf['d_sum_recovery_costs'],
     color   = b)  
@@ -123,6 +127,27 @@ def asset_flow_sankey(df):
   flows.append(f)
 
   f = flow(
+    source  = nm["Defenders' initial wealth"],
+    sink    = nm["Defenders' post-spending wealth"],
+    val     = (meandf['d_init'] - (meandf['sum_premiums_collected'] + meandf['d_sum_security_investments'])),
+    color   = b)
+  flows.append(f)
+
+  f = flow(
+    source  = nm["Attackers' initial wealth"],
+    sink    = nm["Attackers' post-ransom wealth"],
+    val     = meandf["a_init"],
+    color   = r)
+  flows.append(f)
+
+  f = flow(
+    source  = nm["Attackers' post-ransom wealth"],
+    sink    = nm["Attackers' final wealth"],
+    val     = meandf["a_end"],
+    color   = r)
+  flows.append(f)
+
+  f = flow(
     source  = nm["Insurance premiums"],
     sink    = nm["Premium pool"],
     val     = meandf['sum_premiums_collected'],
@@ -137,19 +162,13 @@ def asset_flow_sankey(df):
   flows.append(f)
 
   f = flow(
-    source  = nm["Attackers' initial wealth"],
-    sink    = nm["Ransom payments"],
-    val     = meandf['a_init'],
-    color   = r)  
-  flows.append(f)
-
-  f = flow(
     source  = nm["Ransom payments"],
     sink    = nm["Attacker spending"],
     val     = meandf['attackerExpenditures'],
     color   = r)  
   flows.append(f)
 
+  # I worked on trying to split Attacker spending into splits from ransom and a_init. However, writing this out as a system of equations is underdetermined and so it can't be done.
   f = flow(
     source  = nm["Attacker spending"],
     sink    = nm["Expenses"],
@@ -173,8 +192,15 @@ def asset_flow_sankey(df):
 
   f = flow(
     source  = nm["Claims"],
-    sink    = nm["Defenders' final wealth"],
+    sink    = nm["Defenders' post-spending wealth"],
     val     = meandf['paid_claims'],
+    color   = b)  
+  flows.append(f)
+
+  f = flow(
+    source  = nm["Defenders' post-spending wealth"],
+    sink    = nm["Defenders' final wealth"],
+    val     = meandf['d_end'],
     color   = b)  
   flows.append(f)
 
@@ -246,5 +272,5 @@ if __name__=="__main__":
   filename = filename.replace("../logs/", "")
   filename = filename.replace(".csv", "")
   df['folder'] = filename
-  
+
   asset_flow_sankey(df)
