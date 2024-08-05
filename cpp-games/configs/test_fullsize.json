@@ -82,11 +82,6 @@
         "distribution" : "fixed",
         "val" : 100
     },
-    "DELTA":
-    {
-        "distribution" : "fixed",
-        "val" : 50
-    },
     "CTA_SCALING_FACTOR":
     {
         "distribution" : "fixed",
@@ -111,6 +106,11 @@
     {
         "distribution" : "fixed",
         "val": 5000
+    },
+    "MANDATORY_INVESTMENT" :
+    {
+        "distribution" : "fixed",
+        "val" : 0.00
     },
     "NUM_GAMES": 100,
     "verbose":true,

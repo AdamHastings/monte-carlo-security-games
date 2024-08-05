@@ -7,17 +7,17 @@
     "RANSOM_B0" :
     {
         "distribution" : "fixed",
-        "val" : 641
+        "val" : 792145
     },
     "RANSOM_B1" :
     {
         "distribution" : "fixed",
-        "val" : 0.125
+        "val" : 0.00121
     },
     "RECOVERY_COST_BASE" :
     {
         "distribution" : "fixed",
-        "val" : 544
+        "val" : 230123
     },
     "RECOVERY_COST_EXP" :
     {
@@ -47,7 +47,7 @@
     "NUM_QUOTES" :
     {
         "distribution" : "fixed",
-        "val" : 1
+        "val" : 10
     },
     "LOSS_RATIO" : 
     {
@@ -62,17 +62,17 @@
     "NUM_DEFENDERS":
     {
         "distribution" : "fixed",
-        "val" : 10
+        "val" : 5000
     },
     "NUM_INSURERS":
     {
         "distribution" : "fixed",
-        "val" : 1
+        "val" : 200
     },
     "NUM_ATTACKERS" :
     {
         "distribution" : "fixed",
-        "val" : 3
+        "val" : 50
     },
     "ATTACKS_PER_EPOCH" :
     {
@@ -109,7 +109,7 @@
         "distribution" : "fixed",
         "val" : 0.00
     },
-    "NUM_GAMES": 10,
-    "verbose":false,
+    "NUM_GAMES": 100,
+    "verbose":true,
     "assertions_on":true
 }
