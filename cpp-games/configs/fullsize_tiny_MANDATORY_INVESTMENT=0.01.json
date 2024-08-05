@@ -82,11 +82,6 @@
         "distribution" : "fixed",
         "val" : 100
     },
-    "DELTA":
-    {
-        "distribution" : "fixed",
-        "val" : 50
-    },
     "CTA_SCALING_FACTOR":
     {
         "distribution" : "fixed",
