@@ -149,6 +149,8 @@ def plot_p_attacks(df):
         if not os.path.isdir(path):
             os.mkdir(path)
 
+        plt.show() # uncomment for zoom in
+
         plt.savefig(path + '/' + basetitle + '.png')
         plt.savefig(path + '/' + basetitle + '.pdf')
         
@@ -166,6 +168,9 @@ if __name__=="__main__":
         sys.exit(1)
 
     df = pd.read_csv(filename, header=0)
+    filename = filename.replace("../logs/", "")
+    filename = filename.replace(".csv", "")
+    df['folder'] = filename
 
     plot_p_attacks(copy.deepcopy(df))
     plot_canary_vars(copy.deepcopy(df))

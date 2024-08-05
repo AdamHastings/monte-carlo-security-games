@@ -243,4 +243,8 @@ if __name__=="__main__":
     sys.exit(1)
 
   df = pd.read_csv(filename, header=0)
+  filename = filename.replace("../logs/", "")
+  filename = filename.replace(".csv", "")
+  df['folder'] = filename
+  
   asset_flow_sankey(df)
