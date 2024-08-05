@@ -89,7 +89,6 @@ void SerialRunGames(std::string basename) {
     delete p.NUM_INSURERS_distribution;
     delete p.CTA_SCALING_FACTOR_distribution;
     delete p.ATTACKS_PER_EPOCH_distribution;
-    delete p.DELTA_distribution;
     delete p.DEPRECIATION_distribution;
     delete p.TARGET_SECURITY_SPENDING_distribution;
     delete p.INVESTMENT_SCALING_FACTOR_distribution;
@@ -222,7 +221,6 @@ int main(int argc, char** argv) {
     delete p.NUM_INSURERS_distribution;
     delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.CTA_SCALING_FACTOR_distribution;
-    delete p.DELTA_distribution;
     delete p.DEPRECIATION_distribution;
     delete p.TARGET_SECURITY_SPENDING_distribution;
     delete p.INVESTMENT_SCALING_FACTOR_distribution;

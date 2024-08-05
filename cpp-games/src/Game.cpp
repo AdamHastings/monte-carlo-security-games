@@ -78,7 +78,7 @@ Game::Game(Params prm, unsigned int game_number) {
         alive_attackers_indices.push_back(i);
     }
     
-    DELTA = (int32_t) p.DELTA_distribution->draw();
+    DELTA = (int32_t) NUM_ATTACKERS; // No more separate DELTA distribution of questionable provenance. Just use NUM_ATTACKERS!
     MAX_ITERATIONS = (int32_t) p.MAX_ITERATIONS_distribution->draw();
 
     if (p.verbose) {
@@ -549,7 +549,6 @@ Game::~Game() {
     delete p.NUM_INSURERS_distribution;
     delete p.ATTACKS_PER_EPOCH_distribution;
     delete p.CTA_SCALING_FACTOR_distribution;
-    delete p.DELTA_distribution;
     delete p.DEPRECIATION_distribution;
     delete p.TARGET_SECURITY_SPENDING_distribution;
     delete p.INVESTMENT_SCALING_FACTOR_distribution;

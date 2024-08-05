@@ -30,9 +30,6 @@ struct Params {
     Distribution* MAX_ITERATIONS_distribution;
     Distribution* MANDATORY_INVESTMENT_distribution;
 
-    
-    Distribution* DELTA_distribution;
-
     unsigned int NUM_GAMES;
 
     bool verbose;
