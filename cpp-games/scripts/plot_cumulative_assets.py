@@ -8,7 +8,7 @@ import os.path
 
 
 def trillion_formatter(x, pos):
-    return "$%.0fT" % (x * 1E3 / 1E12)
+    return "$%.0fT" % (x / 1E12)
 
 
 def plot_cumulative_assets(df):
