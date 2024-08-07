@@ -4,7 +4,7 @@ CXX = g++
 LDLIBS=-lgtest -lgtest_main -pthread -lgsl -lgslcblas -lm
 
 # Compiler flags
-CXXFLAGS = -Wall -std=c++17
+CXXFLAGS = -Wall -std=c++17 -g3 -ggdb3 
 
 # Name of your executable
 TARGET = test
