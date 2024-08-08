@@ -50,14 +50,19 @@ def choices(df):
 
     x = range(length)
     
+    # fig, ax = plt.subplots(facecolor=(0,0,0))
+    # ax.set_facecolor('#ffffff')
+
     # with plt.style.context(matplotx.styles.dufte):
-    plt.style.use("fivethirtyeight")    
+    # plt.style.use("bmh")
+    # fig.patch.set_facecolor('white')
+    
 
         
     stacks = plt.stackplot(x,cumulative_nothings_medians,cumulative_policies_medians, cumulative_defenses_medians, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
 
 
-    hatches=["xxx", "ooo", "+++"]
+    hatches=["", "---", "..."]
     for stack, hatch in zip(stacks, hatches):
         stack.set_hatch(hatch)
 
@@ -76,6 +81,43 @@ def choices(df):
 
     plt.savefig(path + '/' + basetitle + '.png')
     plt.savefig(path + '/' + basetitle + '.pdf')
+
+    plt.clf()
+
+    cumulative_policies_medians_pcts = []
+    cumulative_defenses_medians_pcts = []
+    cumulative_nothings_medians_pcts = []
+    
+    for i in range(length):
+        col = [x[i] for x in df['cumulative_round_policies_purchased'] if i < len(x)]
+        insurance = np.percentile(col, 50)
+
+        col = [x[i] for x in df['cumulative_round_defenses_purchased'] if i < len(x)]
+        defense = np.percentile(col, 50)
+
+        col = [x[i] for x in df['cumulative_round_do_nothing'] if i < len(x)]
+        neither = np.percentile(col, 50)
+
+        tsum = insurance + defense + neither
+        cumulative_policies_medians_pcts.append( insurance / tsum)
+        cumulative_defenses_medians_pcts.append( defense / tsum)
+        cumulative_nothings_medians_pcts.append( neither / tsum)
+
+    stacks = plt.stackplot(x,cumulative_nothings_medians_pcts,cumulative_policies_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
+
+    hatches=["", "---", "..."]
+    for stack, hatch in zip(stacks, hatches):
+        stack.set_hatch(hatch)
+
+    plt.legend()
+    plt.xlabel("timestep")
+    plt.ylabel("percentage")
+    plt.tight_layout()
+
+    plt.savefig(path + '/' + basetitle + '_pcts.png')
+    plt.savefig(path + '/' + basetitle + '_pcts.pdf')
+
+
 
 
 
