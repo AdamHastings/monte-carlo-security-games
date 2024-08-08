@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 import os.path
+from matplotlib.lines import Line2D
 
 
 def trillion_formatter(x, pos):
@@ -29,35 +30,51 @@ def plot_cumulative_assets(df):
 
         frame = label[0] + "_cumulative_assets"
 
-        cumulative_assets_5th_pct = []
-        cumulative_assets_median = []
-        cumulative_assets_95th_pct = []
-
-        # consider shortest run instead?
-        # or perhaps even median run?
-        length = int(df[frame].map(lambda x : len(x)).median())
+        for i in range(len(df[frame])):
+            plt.plot(df[frame][i], color=c, label=label, alpha=0.05)
 
 
-        for i in range(length):
-            col = [x[i] for x in df[frame] if i < len(x)]
 
-            cumulative_assets_5th_pct.append(np.percentile(col, 5))
-            cumulative_assets_median.append(np.percentile(col, 50))
-            cumulative_assets_95th_pct.append(np.percentile(col, 95))
 
-        x = range(length)
+        # cumulative_assets_5th_pct = []
+        # cumulative_assets_median = []
+        # cumulative_assets_95th_pct = []
+
+        # # consider shortest run instead?
+        # # or perhaps even median run?
+        # length = int(df[frame].map(lambda x : len(x)).median())
+
+
+        # for i in range(length):
+        #     col = [x[i] for x in df[frame] if i < len(x)]
+
+        #     cumulative_assets_5th_pct.append(np.percentile(col, 5))
+        #     cumulative_assets_median.append(np.percentile(col, 50))
+        #     cumulative_assets_95th_pct.append(np.percentile(col, 95))
+
+        # x = range(length)
         
 
 
-        plt.fill_between(x, cumulative_assets_5th_pct, cumulative_assets_95th_pct, color=c, alpha=0.5, edgecolor='none')
-        plt.plot(cumulative_assets_median, color=c, label=label, linestyle=l)
+        # plt.fill_between(x, cumulative_assets_5th_pct, cumulative_assets_95th_pct, color=c, alpha=0.5, edgecolor='none')
+        # plt.plot(cumulative_assets_median, color=c, label=label, linestyle=l)
 
 
     ax.yaxis.set_major_formatter(trillion_formatter)
+    
 
     plt.ylabel("cumulative wealth")
-    plt.xlabel("time")
-    plt.legend()
+    plt.xlabel("timestep")
+    # plt.legend()
+    # Creating custom legend handles
+    custom_handles = [
+        Line2D([0], [0], color='b', lw=2),
+        Line2D([0], [0], color='r', lw=2),
+        Line2D([0], [0], color='y', lw=2)
+    ]
+
+    # Creating custom legend labels
+    plt.legend(custom_handles, ['Defenders', 'Attackers', 'Insurers'], loc='best')
 
 
     basetitle = "cumulative_assets"
