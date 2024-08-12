@@ -154,12 +154,12 @@ def asset_flow_sankey(df):
     color   = y)  
   flows.append(f)
 
-  f = flow(
-    source  = nm["Defenders' initial wealth"],
-    sink    = nm["Defenders' final wealth"],
-    val     = meandf['d_end'],
-    color   = b)  
-  flows.append(f)
+  # f = flow(
+  #   source  = nm["Defenders' initial wealth"],
+  #   sink    = nm["Defenders' final wealth"],
+  #   val     = meandf['d_end'],
+  #   color   = b)  
+  # flows.append(f)
 
   f = flow(
     source  = nm["Ransom payments"],

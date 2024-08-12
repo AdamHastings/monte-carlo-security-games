@@ -21,6 +21,7 @@ def choices(df):
 
 
     plt.clf()
+    plt.figure(figsize=(4,3))
 
     # df = df['cumulative_round_policies_purchased','cumulative_round_defenses_purchased','cumulative_round_do_nothing']
 
@@ -83,6 +84,7 @@ def choices(df):
     plt.savefig(path + '/' + basetitle + '.pdf')
 
     plt.clf()
+    plt.figure(figsize=(4,3))
 
     cumulative_policies_medians_pcts = []
     cumulative_defenses_medians_pcts = []
