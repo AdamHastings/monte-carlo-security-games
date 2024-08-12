@@ -143,8 +143,8 @@ void init_logs(std::string basename, Params p) {
         header += ",p_pairing";
         header += ",p_attacked";
         header += ",p_looted";
-        header += ",insurer_estimate_p_pairing";
-        header += ",estimated_probability_of_attack";
+        // header += ",insurer_estimate_p_pairing";
+        // header += ",estimated_probability_of_attack";
         header += ",cumulative_defender_avg_posture";
     }
 

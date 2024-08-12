@@ -9,7 +9,7 @@
 #include "Defender.h"
 
 
-double Defender::estimated_probability_of_attack = 0;
+double Defender::estimated_p_loot = 0;
 int64_t Defender::d_init = 0; 
 int64_t Defender::defender_iter_sum = 0;
 int64_t Defender::current_sum_assets = 0;
@@ -143,8 +143,8 @@ int64_t Defender::recovery_cost(int64_t _assets) {
 }
 
 // The loss that Defender d expects to incur with investment
-int64_t Defender::expected_loss(int64_t investment, int64_t assets_, int64_t capex_) {
-    int64_t expected_cost = (int64_t) (probability_of_loss(investment, assets_, capex_) * cost_if_attacked(investment, assets_));
+int64_t Defender::expected_loss(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack) {
+    int64_t expected_cost = (int64_t) (probability_of_loss(investment, assets_, capex_, est_p_attack) * cost_if_attacked(investment, assets_));
     assert(expected_cost >= 0);
     assert(expected_cost <= assets_);
     assert(expected_cost < INT64_MAX / 2); // protect against any possible overflow
@@ -225,16 +225,16 @@ double Defender::d_cost_if_attacked(int64_t investment, int64_t assets_) {
 //    return recovery_base * (recovery_exp - 1) * (recovery_base) * pow(this->assets - investment, recovery_exp - 2);
 // }
 
-double Defender::probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_) {
-    double prob_loss = Defender::estimated_probability_of_attack * (1 - posture_if_investment(investment, assets_, capex_));
+double Defender::probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack) {
+    double prob_loss = est_p_attack * (1 - posture_if_investment(investment, assets_, capex_));
     assert(prob_loss >= 0);
     assert(prob_loss <= 1);
     return prob_loss;
 }
 
 // derivative of probability_of_loss with respect to investment
-double Defender::d_probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_) {
-    double d_prob_loss = -1 * Defender::estimated_probability_of_attack *  d_posture_if_investment(investment, assets_, capex_);
+double Defender::d_probability_of_loss(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack) {
+    double d_prob_loss = -1 * est_p_attack *  d_posture_if_investment(investment, assets_, capex_);
     return d_prob_loss;
 }
 
@@ -245,13 +245,13 @@ double Defender::d_probability_of_loss(int64_t investment, int64_t assets_, int6
 // }
 
 // Returns a boolean stating if expected_loss has a minimum in the range [0, assets]
-bool Defender::expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_) {
+bool Defender::expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack) {
     // expected_loss can be either convex unimodal, or monotonic
     // if it is convex unimodal, there is a minimum, and the gsl_find_minimum will find it
     // else if it is monotonic, then the slope of expected_cost will be greater than or equal to zero
     // I.e. we find the derivative of expected_cost with respect to investment
     // f(x) = investment + probability_of_loss(investment) * cost_if_attacked(investment) // investment = x
-    double d_expected_loss_wrt_investment = 1 + (d_probability_of_loss(investment, assets_, capex_) * cost_if_attacked(investment, assets_)) + (probability_of_loss(investment, assets_, capex_) * d_cost_if_attacked(investment, assets_)); // derivative product rule
+    double d_expected_loss_wrt_investment = 1 + (d_probability_of_loss(investment, assets_, capex_, est_p_attack) * cost_if_attacked(investment, assets_)) + (probability_of_loss(investment, assets_, capex_, est_p_attack) * d_cost_if_attacked(investment, assets_)); // derivative product rule
     bool test1 = d_expected_loss_wrt_investment < 0? true : false;
     
     return test1;
@@ -260,19 +260,21 @@ bool Defender::expected_loss_contains_minimum(int64_t investment, int64_t assets
 struct opt_params{
     int64_t assets;
     int64_t capex;
+    double est_p_attack;
 };
 
 double Defender::gsl_expected_loss_wrapper(double x, void * params) {
     struct opt_params * p = (struct opt_params *)params;
     int64_t assets_ = (p->assets);
     int64_t capex_ = (p->capex);
-    return (double) Defender::expected_loss(x, assets_, capex_);
+    double est_p_attack = (p->est_p_attack);
+    return (double) Defender::expected_loss(x, assets_, capex_, est_p_attack);
 }
 
 double Defender::gsl_find_minimum() {
 
     // Detect if expected_cost is monotonic instead of convex unimodal
-    if (!expected_loss_contains_minimum(0, assets, capex)) {
+    if (!expected_loss_contains_minimum(0, assets, capex, defender_specific_estimated_p_attack)) {
         // expected_cost is monotonic, so the minimum is when investment=0
         return 0;
     }
@@ -289,6 +291,7 @@ double Defender::gsl_find_minimum() {
     opt_params p;
     p.assets = assets;
     p.capex = capex;
+    p.est_p_attack = defender_specific_estimated_p_attack;
 
     F.function = &gsl_expected_loss_wrapper; 
     F.params = &p;
@@ -348,7 +351,7 @@ void Defender::choose_security_strategy() {
         make_security_investment(mandatory_investment);
     }
 
-    double p_A_hat = estimated_probability_of_attack;
+    double p_A_hat = defender_specific_estimated_p_attack;
     assert(p_A_hat >= 0);
     assert(p_A_hat <= 1);
 
@@ -420,7 +423,7 @@ void Defender::choose_security_strategy() {
     assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
     
-    int64_t expected_loss_with_optimal_investment = expected_loss(optimal_investment, assets, capex);
+    int64_t expected_loss_with_optimal_investment = expected_loss(optimal_investment, assets, capex, defender_specific_estimated_p_attack);
     assert(expected_loss_with_optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment <= assets);
 
@@ -455,11 +458,21 @@ void Defender::security_depreciation() {
     posture = posture_if_investment(0, assets, capex); // 0 invested in opex (for now)
 }
 
-void Defender::perform_market_analysis(double last_round_attack_pct) {
+void Defender::perform_market_analysis(std::vector<Defender> &defenders, double last_round_p_loot) {
     // Defenders don't have the same visibility as the insurers but still can make some predictions about risk.
-    Defender::estimated_probability_of_attack = last_round_attack_pct;
-    assert(Defender::estimated_probability_of_attack >= 0);
-    assert(Defender::estimated_probability_of_attack <= 1);
+    
+    Defender::estimated_p_loot = last_round_p_loot;
+    assert(Defender::estimated_p_loot >= 0);
+    assert(Defender::estimated_p_loot <= 1);
+
+    for (uint i=0; i<defenders.size(); i++) {
+        if (defenders[i].is_alive()) {
+            double dsepa = Defender::estimated_p_loot / (1 - defenders[i].posture);
+            dsepa = std::min(dsepa, 1.0);
+            dsepa = std::max(dsepa, 0.0);
+            defenders[i].defender_specific_estimated_p_attack = dsepa;
+        }
+    }
 }
 
 void Defender::lose(int64_t loss) {
@@ -475,7 +488,7 @@ void Defender::gain(int64_t gain) {
 }
 
 void Defender::reset() {
-    estimated_probability_of_attack = 0;
+    estimated_p_loot = 0;
     d_init = 0;
     defender_iter_sum = 0;
     current_sum_assets = 0; 

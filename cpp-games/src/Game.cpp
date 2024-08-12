@@ -164,8 +164,8 @@ std::string Game::to_string() {
         ss << ",\"[" << vec2str(cumulative_p_attacked) << "]\"";
         ss << ",\"[" << vec2str(cumulative_p_looted) << "]\"";    
         
-        ss << ",\"[" << vec2str(cumulative_insurer_estimate_p_pairing) << "]\"";
-        ss << ",\"[" << vec2str(cumulative_defender_estimate_p_attack) << "]\"";
+        // ss << ",\"[" << vec2str(cumulative_insurer_estimate_p_pairing) << "]\"";
+        // ss << ",\"[" << vec2str(cumulative_defender_estimate_p_attack) << "]\"";
         ss << ",\"[" << vec2str(cumulative_defender_avg_posture) << "]\"";
     }
 
@@ -386,7 +386,7 @@ void Game::init_round() {
     Defender::round_do_nothing = 0;
 
     Insurer::perform_market_analysis(insurers, alive_defenders_indices.size());
-    Defender::perform_market_analysis(p_attacked);
+    Defender::perform_market_analysis(defenders, p_looted);
     Attacker::perform_market_analysis(defenders);
 
     for (auto d_i : alive_defenders_indices) {
@@ -432,8 +432,8 @@ void Game::conclude_round() {
         cumulative_p_attacked.push_back(p_attacked);
         cumulative_p_looted.push_back(p_looted);
 
-        cumulative_insurer_estimate_p_pairing.push_back((float) Insurer::p_attack);
-        cumulative_defender_estimate_p_attack.push_back((float) Defender::estimated_probability_of_attack);
+        // cumulative_insurer_estimate_p_pairing.push_back((float) Insurer::p_attack);
+        // cumulative_defender_estimate_p_attack.push_back((float) Defender::estimated_probability_of_attack);
         cumulative_defender_avg_posture.push_back((float) Attacker::estimated_current_defender_posture_mean);
     }
 
