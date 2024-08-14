@@ -105,7 +105,7 @@ def plot_p_attacks(df):
     attack_ps = [
         ('p_pairing', '% paired', g, '-'),
         ('p_attacked', '% attacked', r, '-'),
-        ('p_looted', '% looted', k, '-'),
+        ('p_looted', '% ransomed', k, '-'),
         # ('insurer_estimate_p_pairing', 'I\'s est. p_attack', y, '-'),
         # ('estimated_probability_of_attack', 'D\'s est. p_attack', b, '-'),
         ('cumulative_defender_avg_posture', 'average\nsecurity\nposture', '#0000FF', '-')
