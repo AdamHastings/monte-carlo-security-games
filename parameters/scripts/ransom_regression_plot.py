@@ -49,7 +49,7 @@ with plt.style.context(matplotx.styles.dufte):
     ax.legend()
     plt.xlabel("annual revenue (billions)")
     plt.ylabel("cost (millions)")
-    plt.xlim(-5e8,5.5e9)
+    plt.xlim(-1e8,5.5e9)
     plt.ylim(-5e5, 7e6)
     
     plt.tight_layout()
