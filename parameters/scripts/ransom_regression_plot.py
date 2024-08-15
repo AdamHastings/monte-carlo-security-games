@@ -35,16 +35,16 @@ ransom_payments = [
 with plt.style.context(matplotx.styles.dufte):
     fig, ax = plt.subplots()
 
-    ax.scatter(revenues[1:], ransom_payments, label="median ransom payment", color='red')
+    ax.scatter(revenues[1:], ransom_payments, label="median ransom payment", color='red', marker="o")
 
     x = np.arange(0,5e9, 10000)
     rans_reg = [1.21e-3 * a + 792145 for a in x]
     ax.plot(x, rans_reg, color='red', alpha = 0.5, label=("${{{}}}x + {{{}}}$").format(1.21e-3, 792145) )
 
-    ax.scatter(revenues, recovery_costs, label="median recovery cost", color='blue')
+    ax.scatter(revenues, recovery_costs, label="median recovery cost", color='blue', marker="s")
 
     rec_reg = [230123 * pow(a, .125) for a in x]
-    ax.plot(x, rec_reg, color='blue', alpha = 0.5, label=("${{{}}}x^{{{}}}$").format(230123, 0.125) )
+    ax.plot(x, rec_reg, color='blue', alpha = 0.5, label=("${{{}}}x^{{{}}}$").format(230123, 0.125), linestyle='--' )
 
     ax.legend()
     plt.xlabel("annual revenue (billions)")
