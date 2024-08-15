@@ -39,12 +39,12 @@ with plt.style.context(matplotx.styles.dufte):
 
     x = np.arange(0,5e9, 10000)
     rans_reg = [1.21e-3 * a + 792145 for a in x]
-    ax.plot(x, rans_reg, color='red', alpha = 0.5, label=("${{{}}}x + {{{}}}$").format(1.21e-3, 792145) )
+    ax.plot(x, rans_reg, color='red', alpha = 0.5, label=("${{{}}}x + {{{}}}$ ($R^2 = 0.928$)").format(1.21e-3, 792145) )
 
     ax.scatter(revenues, recovery_costs, label="median recovery cost", color='blue', marker="s")
 
     rec_reg = [230123 * pow(a, .125) for a in x]
-    ax.plot(x, rec_reg, color='blue', alpha = 0.5, label=("${{{}}}x^{{{}}}$").format(230123, 0.125), linestyle='--' )
+    ax.plot(x, rec_reg, color='blue', alpha = 0.5, label=("${{{}}}x^{{{}}}$ ($R^2 = 0.865$)").format(230123, 0.125), linestyle='--' )
 
     ax.legend()
     plt.xlabel("annual revenue (billions)")
