@@ -57,10 +57,13 @@ def choices(df):
     # with plt.style.context(matplotx.styles.dufte):
     # plt.style.use("bmh")
     # fig.patch.set_facecolor('white')
-    
 
-        
-    stacks = plt.stackplot(x,cumulative_nothings_medians,cumulative_policies_medians, cumulative_defenses_medians, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
+    if "mandatory_insurance" in df['folder'][0]:
+        print(" --- skipping insurance choices (mandatory)")
+        # cumulative_policies_medians = [0 for _ in range(length)]
+        stacks = plt.stackplot(x,cumulative_nothings_medians, cumulative_defenses_medians, labels=['neither','security'], colors=[r, b], edgecolor='#00000044', lw=.1)
+    else:  
+        stacks = plt.stackplot(x,cumulative_nothings_medians,cumulative_policies_medians, cumulative_defenses_medians, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
 
 
     hatches=["", "---", "..."]
@@ -94,18 +97,26 @@ def choices(df):
         col = [x[i] for x in df['cumulative_round_policies_purchased'] if i < len(x)]
         insurance = np.percentile(col, 50)
 
+        if "mandatory_insurance" in df['folder'][0]:
+            insurance = 0
+
         col = [x[i] for x in df['cumulative_round_defenses_purchased'] if i < len(x)]
         defense = np.percentile(col, 50)
 
         col = [x[i] for x in df['cumulative_round_do_nothing'] if i < len(x)]
         neither = np.percentile(col, 50)
 
+
         tsum = insurance + defense + neither
         cumulative_policies_medians_pcts.append( insurance / tsum)
         cumulative_defenses_medians_pcts.append( defense / tsum)
         cumulative_nothings_medians_pcts.append( neither / tsum)
 
-    stacks = plt.stackplot(x,cumulative_nothings_medians_pcts,cumulative_policies_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
+    if "mandatory_insurance" in df['folder'][0]:
+        print(" --- skipping insurance choices (mandatory)")
+        stacks = plt.stackplot(x,cumulative_nothings_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','security'], colors=[r, b], edgecolor='#00000044', lw=.1)
+    else:
+        stacks = plt.stackplot(x,cumulative_nothings_medians_pcts,cumulative_policies_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
 
     hatches=["", "---", "..."]
     for stack, hatch in zip(stacks, hatches):
@@ -118,9 +129,6 @@ def choices(df):
 
     plt.savefig(path + '/' + basetitle + '_pcts.png')
     plt.savefig(path + '/' + basetitle + '_pcts.pdf')
-
-
-
 
 
 if __name__=="__main__":
@@ -136,5 +144,8 @@ if __name__=="__main__":
     filename = filename.replace("../logs/", "")
     filename = filename.replace(".csv", "")
     df['folder'] = filename
+
+    # print(df['folder'])
+    # print(df['folder'][0])
 
     choices(df)    
