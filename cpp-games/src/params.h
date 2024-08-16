@@ -29,7 +29,9 @@ struct Params {
     Distribution* INVESTMENT_SCALING_FACTOR_distribution;
     Distribution* MAX_ITERATIONS_distribution;
     Distribution* MANDATORY_INVESTMENT_distribution;
-
+    
+    bool mandatory_insurance;
+    
     unsigned int NUM_GAMES;
 
     bool verbose;

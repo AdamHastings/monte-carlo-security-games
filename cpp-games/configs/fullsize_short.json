@@ -112,6 +112,7 @@
         "distribution" : "fixed",
         "val" : 0.00
     },
+    "mandatory_insurance": false,
     "NUM_GAMES": 100,
     "verbose":true,
     "assertions_on":true

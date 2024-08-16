@@ -53,6 +53,8 @@ Params params_loader::load_cfg(std::string config_filename) {
     p.ATTACKS_PER_EPOCH_distribution           = Distribution::createDistribution(jsonData["ATTACKS_PER_EPOCH"]);
     p.CTA_SCALING_FACTOR_distribution          = Distribution::createDistribution(jsonData["CTA_SCALING_FACTOR"]);
 
+    p.mandatory_insurance = jsonData["mandatory_insurance"].asBool();
+
     p.NUM_GAMES = jsonData["NUM_GAMES"].asInt();    
 
 

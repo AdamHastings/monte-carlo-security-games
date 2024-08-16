@@ -432,6 +432,10 @@ void Defender::choose_security_strategy() {
         expected_loss_with_insurance = expected_loss_given_insurance(best_policy, posture, defender_specific_estimated_p_attack);
     }
 
+    if (p.mandatory_insurance && insurable) {
+        purchase_insurance_policy(best_insurer, best_policy);
+    }
+
     // 2. Find optimum security investment
     int64_t optimal_investment = (int64_t) gsl_find_minimum();
     // int64_t optimal_investment = (int64_t) find_optimal_investment();
@@ -445,7 +449,7 @@ void Defender::choose_security_strategy() {
     // TODO consider possibility that players can choose both
     // TODO consider cases where insurer tells defender how much to invest 
 
-    if (insurable && ((expected_loss_with_insurance < expected_loss_with_optimal_investment) || p.mandatory_insurance) ) {
+    if (!(p.mandatory_insurance) && insurable && (expected_loss_with_insurance < expected_loss_with_optimal_investment) ) {
         purchase_insurance_policy(best_insurer, best_policy);
         // TODO this is where players could decide to invest in more security
 
