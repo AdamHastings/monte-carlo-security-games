@@ -47,7 +47,8 @@ class Defender : public Player {
         static int64_t ransom_cost(int64_t _assets); 
         static int64_t recovery_cost(int64_t _assets);
 
-        static int64_t expected_loss(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack);
+        static int64_t expected_loss_given_investment(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack);
+        static int64_t expected_loss_given_insurance(PolicyType &policy, double posture, double est_p_attack);
         static double gsl_expected_loss_wrapper(double x, void* params);
         static bool expected_loss_contains_minimum(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack);
 
@@ -97,4 +98,5 @@ class Defender : public Player {
     private:   
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
+        void shop_around_for_insurance_policies(Insurer** best_insurer, PolicyType &best_policy, bool &insurable);
 };

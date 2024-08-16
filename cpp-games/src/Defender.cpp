@@ -143,7 +143,7 @@ int64_t Defender::recovery_cost(int64_t _assets) {
 }
 
 // The loss that Defender d expects to incur with investment
-int64_t Defender::expected_loss(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack) {
+int64_t Defender::expected_loss_given_investment(int64_t investment, int64_t assets_, int64_t capex_, double est_p_attack) {
     int64_t expected_cost = (int64_t) (probability_of_loss(investment, assets_, capex_, est_p_attack) * cost_if_attacked(investment, assets_));
     assert(expected_cost >= 0);
     assert(expected_cost <= assets_);
@@ -268,7 +268,7 @@ double Defender::gsl_expected_loss_wrapper(double x, void * params) {
     int64_t assets_ = (p->assets);
     int64_t capex_ = (p->capex);
     double est_p_attack = (p->est_p_attack);
-    return (double) Defender::expected_loss(x, assets_, capex_, est_p_attack);
+    return (double) Defender::expected_loss_given_investment(x, assets_, capex_, est_p_attack);
 }
 
 double Defender::gsl_find_minimum() {
@@ -341,25 +341,8 @@ double Defender::gsl_find_minimum() {
     return m;
 }
 
-void Defender::choose_security_strategy() {
+void Defender::shop_around_for_insurance_policies(Insurer** best_insurer, PolicyType &best_policy, bool &insurable) {
 
-    // Some games will require Defenders to make a mandatory security investment
-    // If this is the case, do it before calculating remaining optimal strategies or requesting insurance policies
-    int64_t mandatory_investment = assets * p.MANDATORY_INVESTMENT_distribution->draw();
-    if (mandatory_investment > 0) {
-        assert(mandatory_investment <= assets);
-        make_security_investment(mandatory_investment);
-    }
-
-    double p_A_hat = defender_specific_estimated_p_attack;
-    assert(p_A_hat >= 0);
-    assert(p_A_hat <= 1);
-
-    double p_L_hat = p_A_hat * (1 - posture);
-    assert(p_L_hat >= 0);
-    assert(p_L_hat <= 1);
-
-    // 1. Get insurance policy from insurer
     std::uniform_int_distribution<> alive_insurers_indices_dist(0, alive_insurers_indices->size() -1);
     
     // pick insurers for quotes
@@ -370,11 +353,6 @@ void Defender::choose_security_strategy() {
         uint32_t insurer_index = alive_insurers_indices->at(alive_insurer_index);
         insurer_indices.insert(insurer_index);
     }
-
-    Insurer* best_insurer = nullptr;
-    PolicyType best_policy;
-    best_policy.premium = std::numeric_limits<int64_t>::max();
-    bool insurable = false;
     
     // Iterate through random insurers and request quotes
     for (const auto& j : insurer_indices) {
@@ -403,45 +381,74 @@ void Defender::choose_security_strategy() {
             if (policy.premium < best_policy.premium) { // works because retention is a scaled version of premium. So best premium = best policy
                 insurable = true;
                 best_policy = policy;
-                best_insurer = i;
+                *best_insurer = i;
             }      
         }
     }
+}
+
+int64_t Defender::expected_loss_given_insurance(PolicyType &policy, double posture, double est_p_attack) {
+
+    double p_L_hat = est_p_attack * (1 - posture);
+    assert(p_L_hat >= 0);
+    assert(p_L_hat <= 1);
+
+    // int64_t expected_loss_with_insurance = INT64_MAX;
+    
+    // if (insurable) {
+        assert(policy.premium > 0 ); 
+        assert(policy.retention > 0);
+        int64_t expected_loss_with_insurance = policy.premium + (int64_t) (p_L_hat * policy.retention);
+        assert(expected_loss_with_insurance >= 0);
+    // }
+
+    return expected_loss_with_insurance;
+}
+
+
+void Defender::choose_security_strategy() {
+
+    // Some games will require Defenders to make a mandatory security investment
+    // If this is the case, do it before calculating remaining optimal strategies or requesting insurance policies
+    int64_t mandatory_investment = assets * p.MANDATORY_INVESTMENT_distribution->draw();
+    if (mandatory_investment > 0) {
+        assert(mandatory_investment <= assets);
+        make_security_investment(mandatory_investment);
+    }
+
+
+    // 1. Get insurance policy from insurer
+    Insurer* best_insurer = nullptr;
+    PolicyType best_policy;
+    best_policy.premium = std::numeric_limits<int64_t>::max();
+    bool insurable = false;
+
+    // TODO test this 
+    shop_around_for_insurance_policies(&best_insurer, best_policy, insurable);
 
     int64_t expected_loss_with_insurance = INT64_MAX;
     if (insurable) {
-        assert(best_policy.premium > 0 ); 
-        assert(best_policy.retention > 0);
         assert(best_insurer != nullptr);
-        expected_loss_with_insurance = best_policy.premium + (int64_t) (p_L_hat * best_policy.retention);
-        assert(expected_loss_with_insurance >= 0);
+        expected_loss_with_insurance = expected_loss_given_insurance(best_policy, posture, defender_specific_estimated_p_attack);
     }
-    
+
     // 2. Find optimum security investment
     int64_t optimal_investment = (int64_t) gsl_find_minimum();
     // int64_t optimal_investment = (int64_t) find_optimal_investment();
     assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
     
-    int64_t expected_loss_with_optimal_investment = expected_loss(optimal_investment, assets, capex, defender_specific_estimated_p_attack);
+    int64_t expected_loss_with_optimal_investment = expected_loss_given_investment(optimal_investment, assets, capex, defender_specific_estimated_p_attack);
     assert(expected_loss_with_optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment <= assets);
 
-    
-    // int64_t expected_cost_if_attacked_at_optimal_investment = ransom_cost(assets - optimal_investment) + recovery_cost(assets - optimal_investment);
-    // assert(expected_cost_if_attacked_at_optimal_investment >= 0);
-        
-    // double p_loss_with_optimal_investment = estimated_probability_of_attack * (1 - posture_if_investment(optimal_investment));
-    // assert(p_loss_with_optimal_investment <= 1);
-    // assert(p_loss_with_optimal_investment >= 0);
-    
-    // double expected_loss_with_optimal_investment = optimal_investment +  p_loss_with_optimal_investment * expected_cost_if_attacked_at_optimal_investment;
-    // assert(expected_loss_with_optimal_investment >= 0);
-
     // TODO consider possibility that players can choose both
     // TODO consider cases where insurer tells defender how much to invest 
-    if (insurable && expected_loss_with_insurance < expected_loss_with_optimal_investment) {
+
+    if (insurable && ((expected_loss_with_insurance < expected_loss_with_optimal_investment) || p.mandatory_insurance) ) {
         purchase_insurance_policy(best_insurer, best_policy);
+        // TODO this is where players could decide to invest in more security
+
     } else if (optimal_investment > 0) {
         make_security_investment(optimal_investment);
     } else {
