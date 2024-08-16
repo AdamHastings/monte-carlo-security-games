@@ -46,9 +46,17 @@ with plt.style.context(matplotx.styles.dufte):
     rec_reg = [230123 * pow(a, .125) for a in x]
     ax.plot(x, rec_reg, color='blue', alpha = 0.5, label=("${{{}}}x^{{{}}}$ ($R^2 = 0.865$)").format(230123, 0.125), linestyle='--' )
 
+    xticks = np.arange(0,6,1) * 1e9
+    xlabels = ["$" + str(round(a / 1e9)) + "B" for a in xticks]
+    ax.set_xticks(xticks, xlabels)
+
+    yticks = np.arange(0,7,1) * 1e6
+    ylabels = ["$" + str(round(a / 1e6)) + "M" for a in yticks]
+    ax.set_yticks(yticks, ylabels)
+
     ax.legend()
-    plt.xlabel("annual revenue (billions)")
-    plt.ylabel("cost (millions)")
+    plt.xlabel("annual revenue")
+    plt.ylabel("cost per incident")
     plt.xlim(-1e8,5.5e9)
     plt.ylim(-5e5, 7e6)
     
