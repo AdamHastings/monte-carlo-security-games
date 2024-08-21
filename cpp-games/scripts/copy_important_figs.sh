@@ -10,6 +10,7 @@ important_figs=(
     "figures/fullsize_short_MANDATORY_INVESTMENT=0.03/"
     "figures/fullsize_short_MANDATORY_INVESTMENT=0.04/"
     "figures/fullsize_short_MANDATORY_INVESTMENT=0.05/"
+    "figures/fullsize_short_selfless_insurers/"
 )
 
 for i in ${important_figs[@]}; do
