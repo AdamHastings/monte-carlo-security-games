@@ -18,12 +18,17 @@ def plot_cumulative_assets(df):
     df['a_cumulative_assets'] = df['a_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
     df['i_cumulative_assets'] = df['i_cumulative_assets'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
 
-    plt.clf()
+    # plt.clf()
+    # plt.figure(figsize=(1,1))
     
+    fig, ax = plt.subplots()
+    # plt.figure(figsize=(4,3))
+    fig.set_size_inches(4,3)
+    ax.yaxis.set_major_formatter(trillion_formatter)
 
     df.final_iter = df.final_iter.astype(int)
 
-    fig, ax = plt.subplots()
+
 
 
     for label, c, l in zip(['defenders', 'attackers', 'insurers'], ['b', 'r', 'y'], ['--', '-', '-.']):
@@ -60,7 +65,6 @@ def plot_cumulative_assets(df):
         # plt.plot(cumulative_assets_median, color=c, label=label, linestyle=l)
 
 
-    ax.yaxis.set_major_formatter(trillion_formatter)
     
 
     plt.ylabel("cumulative wealth")
@@ -84,6 +88,10 @@ def plot_cumulative_assets(df):
     
     if not os.path.isdir(path):
         os.mkdir(path)
+
+    # plt.figure(figsize=(1,1))
+    plt.tight_layout()
+    # plt.figure(figsize=(1,1))
 
     plt.savefig(path + '/' + basetitle + '.png')
     plt.savefig(path + '/' + basetitle + '.pdf')
