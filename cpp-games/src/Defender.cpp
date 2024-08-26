@@ -406,24 +406,53 @@ int64_t Defender::expected_loss_given_insurance(PolicyType &policy, double postu
 }
 
 
-void Defender::choose_security_strategy() {
-
+void Defender::mandatory_security_experiment() {
     // Some games will require Defenders to make a mandatory security investment
     // If this is the case, do it before calculating remaining optimal strategies or requesting insurance policies
     int64_t mandatory_investment = assets * p.MANDATORY_INVESTMENT_distribution->draw();
-    if (mandatory_investment > 0) {
-        assert(mandatory_investment <= assets);
-        make_security_investment(mandatory_investment);
-    }
+    assert(mandatory_investment > 0);
+    assert(mandatory_investment <= assets);
+    make_security_investment(mandatory_investment); // TODO remove/decrement compelled sec investments?
+    defensesPurchased--;
+    round_defenses_purchased--;
 
+    default_experiment();
+}
 
+void Defender::mandatory_insurance_experiment() {
     // 1. Get insurance policy from insurer
     Insurer* best_insurer = nullptr;
     PolicyType best_policy;
     best_policy.premium = std::numeric_limits<int64_t>::max();
     bool insurable = false;
 
-    // TODO test this 
+    shop_around_for_insurance_policies(&best_insurer, best_policy, insurable);
+    if (insurable) {
+        assert(best_insurer != nullptr);
+        purchase_insurance_policy(best_insurer, best_policy);
+    }
+
+    // 2. Find optimum security investment
+    int64_t optimal_investment = (int64_t) gsl_find_minimum();
+    assert(optimal_investment >= 0);
+    assert(optimal_investment <= assets);
+
+    if (optimal_investment > 0) {
+        make_security_investment(optimal_investment);
+    } else {
+        assert(optimal_investment == 0);
+        do_nothing++;
+        round_do_nothing++;
+    }
+}
+
+void Defender::default_experiment() {
+
+    // 1. Get insurance policy from insurer
+    Insurer* best_insurer = nullptr;
+    PolicyType best_policy;
+    best_policy.premium = std::numeric_limits<int64_t>::max();
+    bool insurable = false;
     shop_around_for_insurance_policies(&best_insurer, best_policy, insurable);
 
     int64_t expected_loss_with_insurance = INT64_MAX;
@@ -432,13 +461,8 @@ void Defender::choose_security_strategy() {
         expected_loss_with_insurance = expected_loss_given_insurance(best_policy, posture, defender_specific_estimated_p_attack);
     }
 
-    if (p.mandatory_insurance && insurable) {
-        purchase_insurance_policy(best_insurer, best_policy);
-    }
-
     // 2. Find optimum security investment
     int64_t optimal_investment = (int64_t) gsl_find_minimum();
-    // int64_t optimal_investment = (int64_t) find_optimal_investment();
     assert(optimal_investment >= 0);
     assert(optimal_investment <= assets);
     
@@ -449,16 +473,29 @@ void Defender::choose_security_strategy() {
     // TODO consider possibility that players can choose both
     // TODO consider cases where insurer tells defender how much to invest 
 
-    if (!(p.mandatory_insurance) && insurable && (expected_loss_with_insurance < expected_loss_with_optimal_investment) ) {
+    if (insurable && (expected_loss_with_insurance < expected_loss_with_optimal_investment) ) {
         purchase_insurance_policy(best_insurer, best_policy);
-        // TODO this is where players could decide to invest in more security
-
     } else if (optimal_investment > 0) {
         make_security_investment(optimal_investment);
     } else {
         assert(optimal_investment == 0);
         do_nothing++;
         round_do_nothing++;
+    }
+}
+
+void Defender::choose_security_strategy() {
+
+    if (p.MANDATORY_INVESTMENT_distribution->mean() > 0 ) {
+        assert(p.mandatory_insurance == false); // Let's make sure we don't try to run two expreiments at once
+        mandatory_security_experiment();
+    } else if (p.mandatory_insurance) {
+        assert(p.MANDATORY_INVESTMENT_distribution->mean() == 0); // Let's make sure we don't try to run two expreiments at once
+        mandatory_insurance_experiment();
+    } else {
+        assert(p.mandatory_insurance == false); 
+        assert(p.MANDATORY_INVESTMENT_distribution->mean() == 0);
+        default_experiment(); 
     }
 }
 
@@ -504,6 +541,7 @@ void Defender::reset() {
     defender_iter_sum = 0;
     current_sum_assets = 0; 
     sum_security_investments = 0;
+
     policiesPurchased = 0;
     defensesPurchased = 0;
     do_nothing = 0;

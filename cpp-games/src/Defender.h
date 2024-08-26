@@ -9,27 +9,34 @@ class Defender : public Player {
 
     // static class variables
     public:
-        // TODO this is perhaps better called estimated_p_loot
+
+        static std::mt19937* gen;
+
+        // Game params
+        static double ransom_b0;
+        static double ransom_b1;
+        static double recovery_base;
+        static double recovery_exp;
+        static uint32_t NUM_QUOTES;
+        static double MANDATORY_INVESTMENT;
+
         static double estimated_p_loot;
 
         static int64_t d_init;
         static int64_t defender_iter_sum;
         static int64_t current_sum_assets; // sum total of all class instances
-        static int64_t sum_recovery_costs;
+
+        // total counts (compared to round counts)
         static int64_t policiesPurchased;
         static int64_t defensesPurchased;
         static int64_t do_nothing; // keep track of the times that the player chooses to make an "investment" of 0, i.e. do nothing
         static int64_t sum_security_investments;
-        
-        static std::mt19937* gen;
+        static int64_t sum_recovery_costs;
 
-        static double ransom_b0;
-        static double ransom_b1;
-        static double recovery_base;
-        static double recovery_exp;
-
-        static uint32_t NUM_QUOTES;
-        static double MANDATORY_INVESTMENT;
+        // round counts
+        static int round_policies_purchased;
+        static int round_defenses_purchased;
+        static int round_do_nothing;    
 
         // verbose bookkeeping variables 
         static std::vector<unsigned long long> cumulative_assets; // running total of all defenders' assets
@@ -37,9 +44,6 @@ class Defender : public Player {
         static std::vector<int> cumulative_round_defenses_purchased;
         static std::vector<int> cumulative_round_do_nothing;
         
-        static int round_policies_purchased;
-        static int round_defenses_purchased;
-        static int round_do_nothing;
 
     // static class functions
     public:
@@ -99,4 +103,8 @@ class Defender : public Player {
         void purchase_insurance_policy(Insurer* i, PolicyType p);
         void make_security_investment(uint32_t x);
         void shop_around_for_insurance_policies(Insurer** best_insurer, PolicyType &best_policy, bool &insurable);
+
+        void mandatory_security_experiment();
+        void mandatory_insurance_experiment();
+        void default_experiment();
 };

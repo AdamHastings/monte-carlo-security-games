@@ -2,6 +2,8 @@ Verify above in Mathematica (2 hrs)
 Figure out what the distribution of posture noise should be
 Find out reasonable number of policies to be quoted. 
 
+Re-implement POSTURE and POSTURE_NOISE to be POSTURE_MEAN and POSTURE_STDDEV so that I can independently sweep them. Make sure this works.
+
 Optional:
 Figure out better way of determining game convergence using new parameters (3 hrs)
 Figure out more efficient way for Attackers to choose ATTACKS_PER_EPOCH victims (1 hr)
@@ -12,7 +14,4 @@ Implement game logging in its own class (1 hr)
 
 
 
-update all player counts
-check if depreciation should be 1 - depreciation 
 
-See if getting rid of -fno-builtin-memset improves performance
