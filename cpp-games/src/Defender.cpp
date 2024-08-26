@@ -393,14 +393,10 @@ int64_t Defender::expected_loss_given_insurance(PolicyType &policy, double postu
     assert(p_L_hat >= 0);
     assert(p_L_hat <= 1);
 
-    // int64_t expected_loss_with_insurance = INT64_MAX;
-    
-    // if (insurable) {
-        assert(policy.premium > 0 ); 
-        assert(policy.retention > 0);
-        int64_t expected_loss_with_insurance = policy.premium + (int64_t) (p_L_hat * policy.retention);
-        assert(expected_loss_with_insurance >= 0);
-    // }
+    assert(policy.premium > 0 ); 
+    assert(policy.retention > 0);
+    int64_t expected_loss_with_insurance = policy.premium + (int64_t) (p_L_hat * policy.retention);
+    assert(expected_loss_with_insurance >= 0);
 
     return expected_loss_with_insurance;
 }
@@ -409,10 +405,13 @@ int64_t Defender::expected_loss_given_insurance(PolicyType &policy, double postu
 void Defender::mandatory_security_experiment() {
     // Some games will require Defenders to make a mandatory security investment
     // If this is the case, do it before calculating remaining optimal strategies or requesting insurance policies
-    int64_t mandatory_investment = assets * p.MANDATORY_INVESTMENT_distribution->draw();
-    assert(mandatory_investment > 0);
+    double inv_pct = p.MANDATORY_INVESTMENT_distribution->draw();
+    assert(inv_pct >= 0);
+    assert(inv_pct <= 1);
+    int64_t mandatory_investment = assets * inv_pct;
+    // assert(mandatory_investment > 0); // commented out. What if assets=94 and inv_pct = 0.01?
     assert(mandatory_investment <= assets);
-    make_security_investment(mandatory_investment); // TODO remove/decrement compelled sec investments?
+    make_security_investment(mandatory_investment);
     defensesPurchased--;
     round_defenses_purchased--;
 

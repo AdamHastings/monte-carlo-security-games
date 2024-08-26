@@ -62,7 +62,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/run/debug/run_games", // Path to your compiled executable
-      "args": ["configs/fullsize_tiny_MANDATORY_INVESTMENT=0.02.json"],
+      "args": ["configs/fullsize_tiny_MANDATORY_INVESTMENT=0.01.json"],
       "cwd": "${workspaceFolder}",
       "environment": [{ "name": "config", "value": "Debug" }],
       "MIMode": "gdb",
