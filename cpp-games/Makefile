@@ -1,5 +1,5 @@
-CXX=g++
-CPPFLAGS=-Wall -Werror -std=c++17 -fno-builtin-memset
+CXX=/usr/bin/g++-10
+CPPFLAGS=-Wall -Werror -std=c++20 -fno-builtin-memset
 INCLUDES=
 LDLIBS=-lgsl -lgslcblas -lm
 LDFLAGS= 
