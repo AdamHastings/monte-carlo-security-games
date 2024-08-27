@@ -24,10 +24,29 @@ baseline_vals = {
     "INVESTMENT_SCALING_FACTOR" : 25,
 }
 
+
+labels = {
+    "INEQUALITY" :r'$s_I$',
+    "RANSOM_B0" :r'$\beta_{0,ransom}$',
+    "RANSOM_B1" :r'$\beta_{1,ransom}$',
+    "RECOVERY_COST_BASE" :r'$c_{recovery}$',
+    "RECOVERY_COST_EXP" :r'$n_{recovery}$',
+    "POSTURE" :r'$\mu_p$',
+    "POSTURE_NOISE" :r'$\sigma_p$',
+    "NUM_QUOTES" :r'$Q$',
+    "RETENTION_REGRESSION_FACTOR" :r'$\beta_{1,retention}$',
+    "ATTACKS_PER_EPOCH" :r'$K$',
+    "CTA_SCALING_FACTOR" :r'$s_c$',
+    "DEPRECIATION" :r'$\lambda$',
+    "INVESTMENT_SCALING_FACTOR" :r'$s_p$',
+}
+
 def plot_sensitivity_analysis():
     with plt.style.context(matplotx.styles.dufte):
 
         plt.clf()
+        plt.rcParams['text.usetex'] = True
+
     
         reldir = "../logs/sweeps/MAX_ITERATIONS=100/"
         for filename in os.listdir(reldir): # consider doing MAX_ITERATIONS=5000 as well
@@ -58,7 +77,7 @@ def plot_sensitivity_analysis():
             assert(df[var].min() >= 0)
 
 
-            plt.plot(df[var], df['loss'], label=var)
+            plt.plot(df[var], df['loss'], label=labels[var])
 
 
         ax = plt.gca()
