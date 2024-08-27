@@ -97,7 +97,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     assert(p_loss <= 1);
 
     PolicyType policy;
-    policy.premium = (int64_t) (p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio);
+    policy.premium = (int64_t) ((p_loss * total_losses) / (retention_regression_factor * p_loss + loss_ratio));
     policy.retention = (int64_t) (retention_regression_factor * policy.premium);
 
     if (policy.premium != 0) {
