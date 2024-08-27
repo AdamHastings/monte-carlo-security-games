@@ -81,6 +81,9 @@ Game::Game(Params prm, unsigned int game_number) {
     DELTA = (int32_t) NUM_ATTACKERS; // No more separate DELTA distribution of questionable provenance. Just use NUM_ATTACKERS!
     MAX_ITERATIONS = (int32_t) p.MAX_ITERATIONS_distribution->draw();
 
+    CTA_SCALING_FACTOR = p.CTA_SCALING_FACTOR_distribution->draw();
+    Insurer::CTA_SCALING_FACTOR = &CTA_SCALING_FACTOR;
+
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::d_init);
         Attacker::cumulative_assets.push_back(Attacker::Attacker::a_init);
@@ -112,7 +115,7 @@ std::string vec2str(const std::vector<T>& vec)
 
 std::string Game::get_sweepval(std::string sweepvar) {
     if (sweepvar == "INEQUALITY") {
-        return std::to_string(p.INEQUALITY_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(Attacker::inequality_ratio);
     } else if (sweepvar == "RANSOM_B0") {
         return std::to_string(Defender::ransom_b0);
     } else if (sweepvar == "RANSOM_B1") {
@@ -127,14 +130,14 @@ std::string Game::get_sweepval(std::string sweepvar) {
         return std::to_string(p.POSTURE_NOISE_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
     } else if (sweepvar == "NUM_QUOTES") {
         return std::to_string(Defender::NUM_QUOTES);
-    // } else if (sweepvar == "LOSS_RATIO") { // loss ratio not considered since it is treated separately (and cannot have a 2x value since it is a percentage!)
-    //     return std::to_string(Insurer::loss_ratio);
+    } else if (sweepvar == "LOSS_RATIO") {
+        return std::to_string(Insurer::loss_ratio);
     } else if (sweepvar == "RETENTION_REGRESSION_FACTOR") {
         return std::to_string(Insurer::retention_regression_factor);
     } else if (sweepvar == "ATTACKS_PER_EPOCH") {
         return std::to_string(ATTACKS_PER_EPOCH);
     } else if (sweepvar == "CTA_SCALING_FACTOR") {
-        return std::to_string(p.CTA_SCALING_FACTOR_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(CTA_SCALING_FACTOR);
     } else if (sweepvar == "DEPRECIATION") {
         return std::to_string(p.DEPRECIATION_distribution->draw()); // TODO needs to be game variable so that it can be consistent across games
     } else if (sweepvar == "INVESTMENT_SCALING_FACTOR") {
@@ -353,12 +356,12 @@ void Game::fight(Attacker &a, Defender &d) {
 
     round_pairings++;
 
-    uint32_t expected_cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
+    uint32_t expected_cost_to_attack = (uint32_t) (CTA_SCALING_FACTOR * Attacker::estimated_current_defender_posture_mean * ransom); 
 
     if (expected_payoff > expected_cost_to_attack && expected_cost_to_attack <= a.assets) { 
         // Attacking  appears to be financially worth it
 
-        uint32_t cost_to_attack = (uint32_t) (p.CTA_SCALING_FACTOR_distribution->draw() * d.posture * ransom);
+        uint32_t cost_to_attack = (uint32_t) (CTA_SCALING_FACTOR * d.posture * ransom);
         
 
         // This is to model that attackers can go "all in" but they can't get away with paying less than the full cost of an attack

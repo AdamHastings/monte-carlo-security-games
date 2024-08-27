@@ -22,6 +22,7 @@ double Insurer::retention_regression_factor = 0;
 double Insurer::p_attack = 0;
 
 unsigned int* Insurer::ATTACKS_PER_EPOCH;
+double* Insurer::CTA_SCALING_FACTOR;
 
 std::vector<unsigned long long> Insurer::cumulative_assets; 
 
@@ -77,7 +78,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     int64_t recovery_cost = Defender::recovery_cost(assets);
     int64_t total_losses = ransom + recovery_cost;
     
-    int64_t expected_cost_to_attack = (int64_t) (p.CTA_SCALING_FACTOR_distribution->mean() * Attacker::estimated_current_defender_posture_mean * ransom); 
+    int64_t expected_cost_to_attack = (int64_t) (*Insurer::CTA_SCALING_FACTOR * Attacker::estimated_current_defender_posture_mean * ransom); 
 
     double p_one_attacker_has_enough_to_attack;
     if (std::isnan(estimated_current_attacker_wealth_sigma) || estimated_current_attacker_wealth_sigma == 0) { // There is only one attacker, so using CDF doesn't make sense 
@@ -175,7 +176,7 @@ void Insurer::perform_market_analysis(std::vector<Insurer> &insurers, int curren
     assert(p_getting_attacked >= 0);
     assert(p_getting_attacked <= 1);
 
-    double expected_cta_scaling_factor = p.CTA_SCALING_FACTOR_distribution->mean();
+    double expected_cta_scaling_factor = *Insurer::CTA_SCALING_FACTOR;
     bool attacking_expected_gains_outweigh_expected_costs = (Attacker::estimated_current_defender_posture_mean < (1.0/(1 + expected_cta_scaling_factor)));
 
     // maybe better described as p_pairing

@@ -81,7 +81,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/run/debug/run_games", // Path to your compiled executable
-      "args": ["configs/sweeps/MAX_ITERATIONS=100/sweep_RETENTION_REGRESSION_FACTOR.json"],
+      "args": ["configs/sweeps/MAX_ITERATIONS=100/sweep_CTA_SCALING_FACTOR.json"],
       "cwd": "${workspaceFolder}",
       "environment": [{ "name": "config", "value": "Debug" }],
       "MIMode": "gdb",

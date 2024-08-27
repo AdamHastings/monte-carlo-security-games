@@ -35,6 +35,7 @@ class Game {
         std::mt19937 gen;
         uint32_t NUM_ATTACKERS;
         uint32_t ATTACKS_PER_EPOCH; 
+        double CTA_SCALING_FACTOR;
 
         int32_t iter_num;
         int32_t MAX_ITERATIONS = -1;

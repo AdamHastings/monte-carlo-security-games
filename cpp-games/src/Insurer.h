@@ -19,6 +19,7 @@ class Insurer : public Player {
 
         static double loss_ratio;
         static unsigned int* ATTACKS_PER_EPOCH;
+        static double* CTA_SCALING_FACTOR;
 
         static double retention_regression_factor;
 
