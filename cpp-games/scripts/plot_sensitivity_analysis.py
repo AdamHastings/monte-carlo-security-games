@@ -29,12 +29,14 @@ def plot_sensitivity_analysis():
 
         plt.clf()
     
-        for filename in os.listdir("../logs/sweeps/"):
+        reldir = "../logs/sweeps/MAX_ITERATIONS=100/"
+        for filename in os.listdir(reldir): # consider doing MAX_ITERATIONS=5000 as well
             
-            path = "../logs/sweeps/"
-            df = pd.read_csv(path + filename)
+            # path = "../logs/sweeps/"
+            df = pd.read_csv(reldir + filename)
 
             var = filename[6:-4] # trim off sweep_ and .csv
+            print(var)
 
 
             if len(df) < 100:
@@ -47,12 +49,13 @@ def plot_sensitivity_analysis():
 
 
             # sort by value
-            df.sort_values(by=[var])
+            df = df.sort_values(by=[var])
+            print(df)
             
             df['loss'] = 1 - df['d_end'] / df['d_init'] # == (d_init - d_end) / d_init
-            df[val] = df[val] / baseline_vals[val] # Should normalize df[val] to be within range [0,2]
-            assert(df[val].max <= 2)
-            assert(df[val].min >= 0)
+            df[var] = df[var] / baseline_vals[var] # Should normalize df[val] to be within range [0,2]
+            assert(df[var].max() <= 2)
+            assert(df[var].min() >= 0)
 
 
             plt.plot(df[var], df['loss'], label=var)
@@ -63,7 +66,10 @@ def plot_sensitivity_analysis():
         plt.xticks((0,1,2), ("0x", "1x\n(baseline value)", "2x"))
         plt.xlabel("parameter value")
         plt.ylabel("loss (lower is better)")
-        plt.legend()
+        plt.ylim(0,1)
+        # plt.legend()
+        matplotx.line_labels()  # line labels to the right
+
         plt.tight_layout()
         plt.savefig("figures/sensitivity_analysis/sensitivity_analysis.pdf")
         plt.savefig("figures/sensitivity_analysis/sensitivity_analysis.png")

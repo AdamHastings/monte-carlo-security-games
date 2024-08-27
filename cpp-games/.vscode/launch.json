@@ -75,6 +75,25 @@
         }
       ],
       "miDebuggerArgs": "-exec run"
+    },
+    {
+      "name": "sweep debug Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/run/debug/run_games", // Path to your compiled executable
+      "args": ["configs/sweeps/MAX_ITERATIONS=100/sweep_RANSOM_B0.json"],
+      "cwd": "${workspaceFolder}",
+      "environment": [{ "name": "config", "value": "Debug" }],
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "setupCommands": [
+        {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+        }
+      ],
+      "miDebuggerArgs": "-exec run"
     }
   ]
 }
