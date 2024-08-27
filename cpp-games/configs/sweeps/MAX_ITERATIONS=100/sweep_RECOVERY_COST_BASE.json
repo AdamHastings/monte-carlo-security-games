@@ -18,7 +18,7 @@
     {
         "distribution" : "uniform",
         "min" : 0,
-        "max" : 230123
+        "max" : 460246
     },
     "RECOVERY_COST_EXP" :
     {
