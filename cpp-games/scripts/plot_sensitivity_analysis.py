@@ -50,7 +50,7 @@ def plot_sensitivity_analysis():
 
             # sort by value
             df = df.sort_values(by=[var])
-            print(df)
+            # print(df)
             
             df['loss'] = 1 - df['d_end'] / df['d_init'] # == (d_init - d_end) / d_init
             df[var] = df[var] / baseline_vals[var] # Should normalize df[val] to be within range [0,2]
