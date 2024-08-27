@@ -51,10 +51,10 @@ Game::Game(Params prm, unsigned int game_number) {
     }
     Defender::insurers = &insurers;
     Defender::alive_insurers_indices = &alive_insurers_indices;
-    Defender::ransom_b0 = p.RANSOM_B0_distribution->mean();
-    Defender::ransom_b1 = p.RANSOM_B1_distribution->mean();
-    Defender::recovery_base = p.RECOVERY_COST_BASE_distribution->mean();
-    Defender::recovery_exp  = p.RECOVERY_COST_EXP_distribution->mean();
+    Defender::ransom_b0 = p.RANSOM_B0_distribution->draw();
+    Defender::ransom_b1 = p.RANSOM_B1_distribution->draw();
+    Defender::recovery_base = p.RECOVERY_COST_BASE_distribution->draw();
+    Defender::recovery_exp  = p.RECOVERY_COST_EXP_distribution->draw();
 
     NUM_ATTACKERS = p.NUM_ATTACKERS_distribution->draw();
     Defender::NUM_QUOTES = p.NUM_QUOTES_distribution->draw();
@@ -110,8 +110,46 @@ std::string vec2str(const std::vector<T>& vec)
     return out.str();
 }
 
-std::string Game::to_string() {
-    std::stringstream ss;
+std::string Game::get_sweepval(std::string sweepvar) {
+    if (sweepvar == "INEQUALITY") {
+        return std::to_string(p.INEQUALITY_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+    } else if (sweepvar == "RANSOM_B0") {
+        return std::to_string(Defender::ransom_b0);
+    } else if (sweepvar == "RANSOM_B1") {
+        return std::to_string(Defender::ransom_b1);
+    } else if (sweepvar == "RECOVERY_COST_BASE") {
+        return std::to_string(Defender::recovery_base);
+    } else if (sweepvar == "RECOVERY_COST_EXP" ) {
+        return std::to_string(Defender::recovery_exp);
+    } else if (sweepvar == "POSTURE") {
+        return std::to_string(p.POSTURE_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+    } else if (sweepvar == "POSTURE_NOISE") {
+        return std::to_string(p.POSTURE_NOISE_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+    } else if (sweepvar == "NUM_QUOTES") {
+        return std::to_string(Defender::NUM_QUOTES);
+    } else if (sweepvar == "LOSS_RATIO") {
+        return std::to_string(Insurer::loss_ratio);
+    } else if (sweepvar == "RETENTION_REGRESSION_FACTOR") {
+        return std::to_string(Insurer::retention_regression_factor);
+    } else if (sweepvar == "ATTACKS_PER_EPOCH") {
+        return std::to_string(ATTACKS_PER_EPOCH);
+    } else if (sweepvar == "CTA_SCALING_FACTOR") {
+        return std::to_string(p.CTA_SCALING_FACTOR_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+    } else if (sweepvar == "DEPRECIATION") {
+        return std::to_string(p.DEPRECIATION_distribution->draw()); // TODO needs to be game variable so that it can be consistent across games
+    } else if (sweepvar == "INVESTMENT_SCALING_FACTOR") {
+        return std::to_string(p.INVESTMENT_SCALING_FACTOR_distribution->draw()); // TODO needs to be game variable so that it can be consistent across games
+    } else {
+        assert(false); // shouldn't reach this point
+        return "error";
+    }
+}
+
+std::string Game::to_string() { std::stringstream ss;
+
+    if (p.sweep) {
+        ss << get_sweepval(p.sweepvar) << ",";
+    }
 
     ss << std::scientific << std::setprecision(2) << Defender::d_init <<  ",";
     ss << std::scientific << std::setprecision(2) << Defender::current_sum_assets <<  ",";

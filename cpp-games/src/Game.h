@@ -92,4 +92,8 @@ class Game {
 
         void init_round();
         void conclude_round();
+
+    private:
+        std::string get_sweepval(std::string sweepvar);
+
 };

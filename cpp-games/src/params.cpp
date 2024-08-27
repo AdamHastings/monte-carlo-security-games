@@ -1,5 +1,6 @@
 #include <fstream>
 #include <cassert>
+#include <string_view>
 #include "params.h"
 
 
@@ -69,6 +70,13 @@ Params params_loader::load_cfg(std::string config_filename) {
     basename.erase(0, strlen("configs/"));
     basename.erase(basename.find_last_of("."));
     p.logname       = "logs/" + basename + ".csv";
+
+    if (basename.starts_with("sweeps/")) {
+        p.sweep = true; 
+        basename.erase(0, basename.find_last_of("/")+1);
+        basename.erase(0, strlen("sweep_"));
+        p.sweepvar = basename;
+    }    
 
     return p;
 }

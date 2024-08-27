@@ -32,6 +32,9 @@ struct Params {
     
     bool mandatory_insurance;
     
+    bool sweep = false; // is this a sweep experiment?
+    std::string sweepvar = "";
+    
     unsigned int NUM_GAMES;
 
     bool verbose;

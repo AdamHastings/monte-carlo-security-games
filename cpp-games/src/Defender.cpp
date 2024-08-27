@@ -125,7 +125,7 @@ int64_t Defender::ransom_cost(int64_t _assets) {
     int64_t ransom = std::round(dransom);
     // ransom = std::min(ransom, _assets);
     // ransom = std::max(ransom, (int64_t) 0);
-    assert(ransom >= ransom_b0);
+    assert(std::round(ransom) >= std::round(ransom_b0));
     // assert(ransom <= _assets); // Not necessarily true! In linear ransom price, even assets = 0 will cause a ransom_b0 ransom
     return ransom;
 }

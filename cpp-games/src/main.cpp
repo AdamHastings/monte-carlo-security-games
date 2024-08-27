@@ -107,6 +107,12 @@ void init_logs(std::string basename, Params p) {
     std::cout << "Creating " << fpath << std::endl;
 
     std::string header = "";
+
+    if (p.sweep) {
+        header += p.sweepvar;
+        header += ",";
+    }
+
     header += "d_init";
     header += ",d_end";
     header += ",a_init";
