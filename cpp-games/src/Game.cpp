@@ -127,8 +127,8 @@ std::string Game::get_sweepval(std::string sweepvar) {
         return std::to_string(p.POSTURE_NOISE_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
     } else if (sweepvar == "NUM_QUOTES") {
         return std::to_string(Defender::NUM_QUOTES);
-    } else if (sweepvar == "LOSS_RATIO") {
-        return std::to_string(Insurer::loss_ratio);
+    // } else if (sweepvar == "LOSS_RATIO") { // loss ratio not considered since it is treated separately (and cannot have a 2x value since it is a percentage!)
+    //     return std::to_string(Insurer::loss_ratio);
     } else if (sweepvar == "RETENTION_REGRESSION_FACTOR") {
         return std::to_string(Insurer::retention_regression_factor);
     } else if (sweepvar == "ATTACKS_PER_EPOCH") {
