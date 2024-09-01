@@ -21,7 +21,7 @@ def choices(df):
 
 
     plt.clf()
-    plt.figure(figsize=(4,3))
+    # plt.figure(figsize=(4,3))
 
     # df = df['cumulative_round_policies_purchased','cumulative_round_defenses_purchased','cumulative_round_do_nothing']
 
@@ -58,77 +58,80 @@ def choices(df):
     # plt.style.use("bmh")
     # fig.patch.set_facecolor('white')
 
-    if "mandatory_insurance" in df['folder'][0]:
-        print(" --- skipping insurance choices (mandatory)")
-        # cumulative_policies_medians = [0 for _ in range(length)]
-        stacks = plt.stackplot(x,cumulative_nothings_medians, cumulative_defenses_medians, labels=['neither','security'], colors=[r, b], edgecolor='#00000044', lw=.1)
-    else:  
-        stacks = plt.stackplot(x,cumulative_nothings_medians,cumulative_policies_medians, cumulative_defenses_medians, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
+    with plt.style.context(matplotx.styles.dufte):
 
-
-    hatches=["", "---", "..."]
-    for stack, hatch in zip(stacks, hatches):
-        stack.set_hatch(hatch)
-
-    plt.legend()
-    plt.xlabel("timestep")
-    plt.ylabel("count")
-    plt.tight_layout()
-
-    basetitle = 'choices'
-    dirname = 'figures'
-    subdirname = df['folder'][0]
-    path = dirname + '/' + subdirname 
-    
-    if not os.path.isdir(path):
-        os.mkdir(path)
-
-    plt.savefig(path + '/' + basetitle + '.png')
-    plt.savefig(path + '/' + basetitle + '.pdf')
-
-    plt.clf()
-    plt.figure(figsize=(4,3))
-
-    cumulative_policies_medians_pcts = []
-    cumulative_defenses_medians_pcts = []
-    cumulative_nothings_medians_pcts = []
-    
-    for i in range(length):
-        col = [x[i] for x in df['cumulative_round_policies_purchased'] if i < len(x)]
-        insurance = np.percentile(col, 50)
 
         if "mandatory_insurance" in df['folder'][0]:
-            insurance = 0
-
-        col = [x[i] for x in df['cumulative_round_defenses_purchased'] if i < len(x)]
-        defense = np.percentile(col, 50)
-
-        col = [x[i] for x in df['cumulative_round_do_nothing'] if i < len(x)]
-        neither = np.percentile(col, 50)
+            print(" --- skipping insurance choices (mandatory)")
+            # cumulative_policies_medians = [0 for _ in range(length)]
+            stacks = plt.stackplot(x,cumulative_nothings_medians, cumulative_defenses_medians, labels=['neither','security'], colors=[r, b], edgecolor='#00000044', lw=.1)
+        else:  
+            stacks = plt.stackplot(x,cumulative_nothings_medians,cumulative_policies_medians, cumulative_defenses_medians, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
 
 
-        tsum = insurance + defense + neither
-        cumulative_policies_medians_pcts.append( insurance / tsum)
-        cumulative_defenses_medians_pcts.append( defense / tsum)
-        cumulative_nothings_medians_pcts.append( neither / tsum)
+        hatches=["", "---", "..."]
+        for stack, hatch in zip(stacks, hatches):
+            stack.set_hatch(hatch)
 
-    if "mandatory_insurance" in df['folder'][0]:
-        print(" --- skipping insurance choices (mandatory)")
-        stacks = plt.stackplot(x,cumulative_nothings_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','security'], colors=[r, b], edgecolor='#00000044', lw=.1)
-    else:
-        stacks = plt.stackplot(x,cumulative_nothings_medians_pcts,cumulative_policies_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
+        plt.legend()
+        plt.xlabel("timestep")
+        plt.ylabel("count")
+        plt.tight_layout()
 
-    hatches=["", "---", "..."]
-    for stack, hatch in zip(stacks, hatches):
-        stack.set_hatch(hatch)
+        basetitle = 'choices'
+        dirname = 'figures'
+        subdirname = df['folder'][0]
+        path = dirname + '/' + subdirname 
+        
+        if not os.path.isdir(path):
+            os.mkdir(path)
 
-    plt.legend()
-    plt.xlabel("timestep")
-    plt.ylabel("percentage")
-    plt.tight_layout()
+        plt.savefig(path + '/' + basetitle + '.png')
+        plt.savefig(path + '/' + basetitle + '.pdf')
 
-    plt.savefig(path + '/' + basetitle + '_pcts.png')
-    plt.savefig(path + '/' + basetitle + '_pcts.pdf')
+        plt.clf()
+        # plt.figure(figsize=(4,3))
+
+        cumulative_policies_medians_pcts = []
+        cumulative_defenses_medians_pcts = []
+        cumulative_nothings_medians_pcts = []
+        
+        for i in range(length):
+            col = [x[i] for x in df['cumulative_round_policies_purchased'] if i < len(x)]
+            insurance = np.percentile(col, 50)
+
+            if "mandatory_insurance" in df['folder'][0]:
+                insurance = 0
+
+            col = [x[i] for x in df['cumulative_round_defenses_purchased'] if i < len(x)]
+            defense = np.percentile(col, 50)
+
+            col = [x[i] for x in df['cumulative_round_do_nothing'] if i < len(x)]
+            neither = np.percentile(col, 50)
+
+
+            tsum = insurance + defense + neither
+            cumulative_policies_medians_pcts.append( insurance / tsum)
+            cumulative_defenses_medians_pcts.append( defense / tsum)
+            cumulative_nothings_medians_pcts.append( neither / tsum)
+
+        if "mandatory_insurance" in df['folder'][0]:
+            print(" --- skipping insurance choices (mandatory)")
+            stacks = plt.stackplot(x,cumulative_nothings_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','security'], colors=[r, b], edgecolor='#00000044', lw=.1)
+        else:
+            stacks = plt.stackplot(x,cumulative_nothings_medians_pcts,cumulative_policies_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
+
+        hatches=["", "---", "..."]
+        for stack, hatch in zip(stacks, hatches):
+            stack.set_hatch(hatch)
+
+        plt.legend()
+        plt.xlabel("timestep")
+        plt.ylabel("percentage")
+        plt.tight_layout()
+
+        plt.savefig(path + '/' + basetitle + '_pcts.png')
+        plt.savefig(path + '/' + basetitle + '_pcts.pdf')
 
 
 if __name__=="__main__":

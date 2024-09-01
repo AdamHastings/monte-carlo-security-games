@@ -53,7 +53,7 @@ labels = {
     "POSTURE" :r'$\mu_p$',
     "POSTURE_NOISE" :r'$\sigma_p$',
     "NUM_QUOTES" :r'$Q$',
-    "LOSS_RATIO" : r'$\mathcal{L}$',
+    "LOSS_RATIO" : r'$LR$',
     "RETENTION_REGRESSION_FACTOR" :r'$\beta_{1,retention}$',
     "ATTACKS_PER_EPOCH" :r'$K$',
     "CTA_SCALING_FACTOR" :r'$s_c$',
