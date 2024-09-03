@@ -33,7 +33,9 @@ ransom_payments = [
 ]
 
 with plt.style.context(matplotx.styles.dufte):
+    plt.figure(figsize=(7,3.5))
     fig, ax = plt.subplots()
+    
 
     ax.scatter(revenues[1:], ransom_payments, label="median ransom payment", color='red', marker="o")
 
@@ -54,12 +56,12 @@ with plt.style.context(matplotx.styles.dufte):
     ylabels = ["$" + str(round(a / 1e6)) + "M" for a in yticks]
     ax.set_yticks(yticks, ylabels)
 
-    ax.legend()
+    ax.legend(framealpha=1.0)
     plt.xlabel("annual revenue")
     plt.ylabel("cost per incident")
     plt.xlim(-1e8,5.5e9)
     plt.ylim(-5e5, 7e6)
-    
+    plt.gca().xaxis.grid(True)
     plt.tight_layout()
     plt.savefig("../figures/ransom_regression/ransom_regression.png")
     plt.savefig("../figures/ransom_regression/ransom_regression.pdf")
