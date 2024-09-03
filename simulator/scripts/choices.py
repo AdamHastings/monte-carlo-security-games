@@ -14,6 +14,7 @@ r = '#EF553B'
 
 def choices(df):
 
+    plt.figure(figsize=(7,4))
     # TODO remove deepcopy, do this in run_all?
     df['cumulative_round_policies_purchased'] = df['cumulative_round_policies_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
     df['cumulative_round_defenses_purchased'] = df['cumulative_round_defenses_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
@@ -69,13 +70,16 @@ def choices(df):
             stacks = plt.stackplot(x,cumulative_nothings_medians,cumulative_policies_medians, cumulative_defenses_medians, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
 
 
-        hatches=["", "---", "..."]
+        # hatches=["", "---", "..."]
+        hatches=["","",""]
+        # hatches = ["", "+++", "..."]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
 
-        plt.legend()
+        plt.legend(framealpha=1.0)
         plt.xlabel("timestep")
         plt.ylabel("count")
+        plt.gca().xaxis.grid(True)
         plt.tight_layout()
 
         basetitle = 'choices'
@@ -121,15 +125,17 @@ def choices(df):
         else:
             stacks = plt.stackplot(x,cumulative_nothings_medians_pcts,cumulative_policies_medians_pcts, cumulative_defenses_medians_pcts, labels=['neither','insurance','security'], colors=[r, y, b], edgecolor='#00000044', lw=.1)
 
-        hatches=["", "---", "..."]
+        # hatches=["", "---", "..."]
+        # hatches = ["", "+++", "..."]
+        hatches = ["","",""]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
 
-        plt.legend()
+        plt.legend(framealpha=1.0)
         plt.xlabel("timestep")
         plt.ylabel("percentage")
         plt.tight_layout()
-
+        plt.gca().xaxis.grid(True)
         plt.savefig(path + '/' + basetitle + '_pcts.png')
         plt.savefig(path + '/' + basetitle + '_pcts.pdf')
 

@@ -45,6 +45,7 @@ def plot_canary_vars(df):
 
     # plot
     with plt.style.context(matplotx.styles.dufte):
+        plt.figure(figsize=(7,3))
 
         for key, label, color, linestyle in cumulative_outputs:
 
@@ -73,7 +74,8 @@ def plot_canary_vars(df):
         matplotx.ylabel_top("percentage")  # move ylabel to the top, rotate
         matplotx.line_labels()  # line labels to the right
         # plt.xlim(0, 300)
-        plt.ylim(-0.1, 1.1)
+        plt.ylim(0, 1.0)
+        plt.gca().xaxis.grid(True)
         plt.tight_layout()
 
         basetitle = 'canary_vars'
@@ -112,7 +114,7 @@ def plot_p_attacks(df):
     ]
 
     with plt.style.context(matplotx.styles.dufte):
-
+        plt.figure(figsize=(7,4))
         for key, label, color, linestyle in attack_ps:
 
             length = int(df[key].map(lambda x : len(x)).median())
@@ -137,7 +139,10 @@ def plot_p_attacks(df):
         matplotx.ylabel_top("")  # move ylabel to the top, rotate
         matplotx.line_labels()  # line labels to the right
         # plt.xlim(0, 300)
-        plt.ylim(-0.1, 1.1)
+        plt.ylim(0, 1.0)
+        # fig.set_size_inches(7,3.5)
+        # plt.figure(figsize=(7,3))
+        plt.gca().xaxis.grid(True)
         plt.tight_layout()
         # plt.show()
 
@@ -145,6 +150,8 @@ def plot_p_attacks(df):
         dirname = 'figures'
         subdirname = df['folder'][0]
         path = dirname + '/' + subdirname 
+        # plt.set_xticks(np.arange(0,5000,1000))
+        # plt.xticks(np.arange(0,4000,1000))
         
         if not os.path.isdir(path):
             os.mkdir(path)
