@@ -19,6 +19,8 @@ class Defender : public Player {
         static double recovery_exp;
         static uint32_t NUM_QUOTES;
         static double MANDATORY_INVESTMENT;
+        static double DEPRECIATION;
+        static double INVESTMENT_SCALING_FACTOR;
 
         static double estimated_p_loot;
 

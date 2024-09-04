@@ -84,6 +84,10 @@ Game::Game(Params prm, unsigned int game_number) {
     CTA_SCALING_FACTOR = p.CTA_SCALING_FACTOR_distribution->draw();
     Insurer::CTA_SCALING_FACTOR = &CTA_SCALING_FACTOR;
 
+    Defender::DEPRECIATION = p.DEPRECIATION_distribution->draw();
+    Defender::INVESTMENT_SCALING_FACTOR = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
+
+
     if (p.verbose) {
         Defender::cumulative_assets.push_back(Defender::d_init);
         Attacker::cumulative_assets.push_back(Attacker::Attacker::a_init);
@@ -139,9 +143,9 @@ std::string Game::get_sweepval(std::string sweepvar) {
     } else if (sweepvar == "CTA_SCALING_FACTOR") {
         return std::to_string(CTA_SCALING_FACTOR);
     } else if (sweepvar == "DEPRECIATION") {
-        return std::to_string(p.DEPRECIATION_distribution->draw()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(Defender::DEPRECIATION);
     } else if (sweepvar == "INVESTMENT_SCALING_FACTOR") {
-        return std::to_string(p.INVESTMENT_SCALING_FACTOR_distribution->draw()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(Defender::INVESTMENT_SCALING_FACTOR);
     } else {
         assert(false); // shouldn't reach this point
         return "error";

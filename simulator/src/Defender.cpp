@@ -22,6 +22,8 @@ int64_t Defender::sum_security_investments = 0;
 
 uint32_t Defender::NUM_QUOTES = 0;
 double Defender::MANDATORY_INVESTMENT = 0;
+double Defender::DEPRECIATION = 0;
+double Defender::INVESTMENT_SCALING_FACTOR = 0;
 
 
 std::mt19937* Defender::gen = 0;
@@ -55,7 +57,9 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
     capex = (int64_t) fp_assets * p.TARGET_SECURITY_SPENDING_distribution->draw(); 
     double noise = p.POSTURE_NOISE_distribution->draw();
     posture = posture_if_investment(0, assets, capex); // No initial opex. Capex allocation above should produce desired distribution
-    assert(abs(posture - p.POSTURE_distribution->mean()) < 0.01); // The posture_if_investment function should produce average posture given the target security spending
+    if (!p.sweep) { // ignore this assertion in sweep experiments
+        assert(abs(posture - p.POSTURE_distribution->mean()) < 0.01); // The posture_if_investment function should produce average posture given the target security spending
+    }
     posture += noise;
 
 
@@ -154,6 +158,7 @@ int64_t Defender::expected_loss_given_investment(int64_t investment, int64_t ass
     assert(investment < INT64_MAX / 2); // protect against any possible overflow
 
     int64_t loss = investment + expected_cost;
+    loss = std::min(loss, assets_);
     assert(loss >= 0);
     assert(loss <= assets_);
 
@@ -166,16 +171,14 @@ double Defender::posture_if_investment(int64_t investment, int64_t assets_, int6
     double investment_pct = (double) investment / (double) assets_;
     assert(investment_pct >= 0);
     assert(investment_pct <= 1);
-    
-    double investment_scaling_factor = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
-    
+        
     double capex_pct = (double) capex_ / (double) assets_;
     // assert(capex_pct <= 1); // this isn't necessarily true, since capex accumulates
 
     // note: this can exceed 1 because of prior capex! 
     double total_investment_pct = investment_pct + capex_pct;
 
-    double new_posture = erf(total_investment_pct * investment_scaling_factor);
+    double new_posture = erf(total_investment_pct * Defender::INVESTMENT_SCALING_FACTOR);
     assert(new_posture >= 0);
     assert(new_posture <= 1);
 
@@ -184,7 +187,7 @@ double Defender::posture_if_investment(int64_t investment, int64_t assets_, int6
 
 // derivative of posture_if_investment with respect to amount
 double Defender::d_posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_) {
-    double s = p.INVESTMENT_SCALING_FACTOR_distribution->draw();
+    double s = Defender::INVESTMENT_SCALING_FACTOR;
     double power = -1 * (pow((double) s, 2) * pow((double) capex_ + investment, 2)) / pow((double) assets_, 2);
     return (2 * s * exp(power)) / ((double) assets_ * sqrt(M_PI));
 }
@@ -500,8 +503,7 @@ void Defender::choose_security_strategy() {
 
 void Defender::security_depreciation() {
     // the value of previous opex spending depreciates to zero after it is spent (by definition)
-    double DEPRECIATION = p.DEPRECIATION_distribution->draw();
-    capex = capex * (1 - DEPRECIATION);
+    capex = capex * (1 - Defender::DEPRECIATION);
     posture = posture_if_investment(0, assets, capex); // 0 invested in opex (for now)
 }
 
@@ -560,6 +562,9 @@ void Defender::reset() {
     recovery_exp = 0;
 
     NUM_QUOTES = 0;
+    MANDATORY_INVESTMENT = 0;
+    DEPRECIATION = 0;
+    INVESTMENT_SCALING_FACTOR = 0;
     gen = nullptr;
 
     insurers = nullptr;
