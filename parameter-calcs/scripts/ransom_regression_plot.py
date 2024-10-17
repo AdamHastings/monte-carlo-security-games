@@ -33,8 +33,8 @@ ransom_payments = [
 ]
 
 with plt.style.context(matplotx.styles.dufte):
-    plt.figure(figsize=(7,3.5))
     fig, ax = plt.subplots()
+    fig.set_size_inches(6,3)
     
 
     ax.scatter(revenues[1:], ransom_payments, label="median ransom payment", color='red', marker="o")
