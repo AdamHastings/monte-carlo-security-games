@@ -495,6 +495,9 @@ void Game::conclude_round() {
             }
         }
     }
+    if (p.GROWTH_RATE_distribution != nullptr) {
+        p.GROWTH_RATE_distribution->step();
+    }
     
     alive_attackers_indices.clear();
     for (Attacker &a : attackers) {

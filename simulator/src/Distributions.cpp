@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <random>
+#include <cmath>
 #include "Distributions.h"
 
 using namespace std;
@@ -108,6 +109,47 @@ double SweepDistribution::mean() {
     return (min + max) / 2;
 }
 
+Sinusoid::Sinusoid(double _amplitude, double _period, double _phase, double _vertical_offset) {
+    amplitude = _amplitude;
+    period = _period;
+    phase = _phase;
+    vertical_offset = _vertical_offset;
+}
+
+double Sinusoid::mean() {
+    return vertical_offset;
+}
+
+double Sinusoid::draw() {
+    double angular_frequency = 2 * M_PI * period; // figure this out
+    double draw =  amplitude * sin(iter * angular_frequency + phase) + vertical_offset;
+    return draw;
+}
+
+void Sinusoid::step() {
+    iter++;
+}
+
+Sawtooth::Sawtooth(double _amplitude, double _period, double _phase, double _vertical_offset) {
+    amplitude = _amplitude;
+    period = _period;
+    phase = _phase;
+    vertical_offset = _vertical_offset;
+}
+
+double Sawtooth::mean() {
+    return vertical_offset + amplitude / 2;
+}
+
+double Sawtooth::draw() {
+    double draw = amplitude / period * (iter % period) + vertical_offset;
+    return draw;
+} 
+
+void Sawtooth::step() {
+    iter++;
+}
+
 Distribution* Distribution::createDistribution(Json::Value d) {
     Distribution* dist;
 
@@ -172,6 +214,22 @@ Distribution* Distribution::createDistribution(Json::Value d) {
         double max = d["max"].asDouble();
         double step = d["step"].asDouble();
         dist = new SweepDistribution(min, max, step);
+    } else if (d["distribution"] == "sinusoidal") {
+        double amplitude = d["amplitude"].asDouble();
+        double phase = d["phase"].asDouble();
+        double vertical_offset = d["vertical_offset"].asDouble();
+        int period = d["period"].asInt();
+        assert(amplitude >= 0);
+        assert(period > 0);
+        dist = new Sinusoid(amplitude, period, phase, vertical_offset);
+    } else if (d["distribution"] == "sawtooth") {
+        double amplitude = d["amplitude"].asDouble();
+        double phase = d["phase"].asDouble();
+        double vertical_offset = d["vertical_offset"].asDouble();
+        int period = d["period"].asInt();
+        assert(amplitude >= 0);
+        assert(period > 0);
+        dist = new Sawtooth(amplitude, period, phase, vertical_offset);
     } else {
         std::cerr << "unknown distribution type specified. Terminating..." << std::endl;
         std::cerr << "Offending parameter: " << d << endl;
@@ -187,6 +245,13 @@ double Distribution::mean() {
     // So we crash here if the parent function is ever called
     assert(false);
     return 0;
+}
+
+void Distribution::step() {
+    // Some child classes do not have means so this cannot be a pure virtual function
+    // But only the child function should ever be called, if it has a mean function
+    // So we crash here if the parent function is ever called
+    assert(false);
 }
 
 Distribution::~Distribution(){}

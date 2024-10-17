@@ -14,12 +14,14 @@
 
 class Distribution {
     public:
-        virtual double draw() =0;
+        virtual double draw() =0; // pure virtual function must be implemented
         static Distribution* createDistribution(Json::Value d);
         virtual double mean();
         virtual ~Distribution();
 
         static void seed(unsigned int seed);
+
+        virtual void step(); // virtual function may optionally be implemented
 
         static std::mt19937 generator; // Standard mersenne_twister_engine
 };
@@ -81,4 +83,34 @@ class SweepDistribution : public Distribution {
         SweepDistribution(double _min, double _max, double _step);
         double draw();
         double mean() override;
+};
+
+class Sinusoid : public Distribution {
+    public:
+        double amplitude;
+        double phase;
+        double vertical_offset;
+        int period; // how many epochs is one cycle?
+        Sinusoid(double _amplitude, double _period, double _phase, double _vertical_offset);
+        double draw();
+        double mean() override;
+        void step() override;
+    
+    private:
+        int iter;
+};
+
+class Sawtooth : public Distribution {
+    public:
+        double amplitude;
+        double phase;
+        double vertical_offset;
+        int period; // how many epochs is one cycle?
+        Sawtooth(double _amplitude, double _period, double _phase, double _vertical_offset);
+        double draw();
+        double mean() override;
+        void step() override;
+
+    private:
+        int iter;
 };
