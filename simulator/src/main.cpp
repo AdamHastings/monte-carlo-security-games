@@ -94,6 +94,7 @@ void SerialRunGames(std::string basename) {
     delete p.INVESTMENT_SCALING_FACTOR_distribution;
     delete p.MAX_ITERATIONS_distribution;
     delete p.MANDATORY_INVESTMENT_distribution;
+    delete p.GROWTH_RATE_distribution;
 
     for (uint i=0; i < p.NUM_GAMES; i++) {
         p = params_loader::load_cfg(config_filename);
@@ -232,6 +233,7 @@ int main(int argc, char** argv) {
     delete p.INVESTMENT_SCALING_FACTOR_distribution;
     delete p.MAX_ITERATIONS_distribution;
     delete p.MANDATORY_INVESTMENT_distribution;
+    delete p.GROWTH_RATE_distribution;
 
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;

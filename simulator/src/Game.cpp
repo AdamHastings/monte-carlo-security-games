@@ -255,14 +255,14 @@ void Game::verify_outcome() {
     assert(Attacker::current_sum_assets >= 0);
     assert(Insurer::current_sum_assets  >= 0);
 
-    double checksum_attacker_sum_assets = 0;
+    int64_t checksum_attacker_sum_assets = 0;
     for (uint i=0; i<attackers.size(); i++) {
         assert(attackers[i].assets >= 0);
         checksum_attacker_sum_assets += attackers[i].assets;
     }
     assert(Attacker::current_sum_assets - checksum_attacker_sum_assets == 0); 
 
-    double checksum_defender_sum_assets = 0;
+    int64_t checksum_defender_sum_assets = 0;
     for (uint i=0; i<defenders.size(); i++) {
         Defender d = defenders[i];
         assert(d.assets >= 0);
@@ -270,7 +270,7 @@ void Game::verify_outcome() {
     }
     assert(Defender::current_sum_assets - checksum_defender_sum_assets == 0);
 
-    double checksum_insurer_sum_assets = 0;
+    int64_t checksum_insurer_sum_assets = 0;
     for (uint i=0; i<insurers.size(); i++) {
         Insurer ins = insurers[i];
         assert(ins.assets >= 0);
@@ -295,7 +295,9 @@ void Game::verify_outcome() {
     int64_t end_  = Defender::current_sum_assets + Attacker::current_sum_assets + Insurer::current_sum_assets;
     int64_t expenses_ = Defender::sum_security_investments +  Attacker::attackerExpenditures + Defender::sum_recovery_costs; // + Insurer::operating_expenses; 
 
-    assert(init_ - expenses_ == end_); 
+    if (p.GROWTH_RATE_distribution == nullptr) {
+        assert(init_ - expenses_ == end_); 
+    }
 }
 
 bool Game::equilibrium_reached() {
@@ -439,7 +441,7 @@ void Game::init_round() {
         
         // reset attacked status
         d->attacked = false;
-        
+
         d->security_depreciation();
         d->choose_security_strategy(); 
     }
@@ -482,7 +484,15 @@ void Game::conclude_round() {
     alive_defenders_indices.clear();
     for (Defender &d : defenders) {
         if (d.is_alive()) {
-            alive_defenders_indices.push_back(d.id);
+            // do the growth at the end of each round (instead of the beginning) so we can catch instances where defenders go out of business on their own.
+            if (p.GROWTH_RATE_distribution != nullptr) {
+                d.earn_assets();
+            }
+            // theoretically possible that horrible negative "growth" could have killed the defender...
+            // so we must check again
+            if (d.is_alive()) {   
+                alive_defenders_indices.push_back(d.id);
+            }
         }
     }
     
@@ -595,4 +605,5 @@ Game::~Game() {
     delete p.INVESTMENT_SCALING_FACTOR_distribution;
     delete p.MAX_ITERATIONS_distribution;
     delete p.MANDATORY_INVESTMENT_distribution;
+    delete p.GROWTH_RATE_distribution;
 }

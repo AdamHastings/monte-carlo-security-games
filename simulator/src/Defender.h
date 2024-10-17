@@ -94,7 +94,8 @@ class Defender : public Player {
 
         void security_depreciation();
         void choose_security_strategy();
-        void submit_claim(uint32_t loss);
+        void earn_assets();
+        void submit_claim(int64_t loss);
     
         double gsl_find_minimum();
 

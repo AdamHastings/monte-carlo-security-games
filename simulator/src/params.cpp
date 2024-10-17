@@ -63,6 +63,13 @@ Params params_loader::load_cfg(std::string config_filename) {
     p.NUM_GAMES = jsonData["NUM_GAMES"].asInt();    
 
 
+    if (jsonData.isMember("GROWTH_RATE")) {
+        p.GROWTH_RATE_distribution = Distribution::createDistribution(jsonData["GROWTH_RATE"]);
+    } else {
+        p.GROWTH_RATE_distribution = nullptr;
+    }
+
+
     p.verbose       = jsonData["verbose"].asBool();
     p.assertions_on = jsonData["assertions_on"].asBool();
 

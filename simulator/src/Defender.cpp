@@ -82,12 +82,12 @@ void Defender::purchase_insurance_policy(Insurer* i, PolicyType p) {
     ins_idx = i->id;
 }
 
-void Defender::submit_claim(uint32_t loss) {
+void Defender::submit_claim(int64_t loss) {
     
     assert(insured); // you should only call this function if you have an active insurance policy
     assert(ins_idx >= 0); 
 
-    uint32_t claim_after_retention = std::max(0, ((int32_t)loss - (int32_t)policy.retention));
+    int64_t claim_after_retention = std::max((int64_t)0, (loss - policy.retention));
     assert(claim_after_retention >= 0);
     if (claim_after_retention > 0){
         if (insurers->at(ins_idx).is_alive()) {
@@ -520,6 +520,22 @@ void Defender::perform_market_analysis(std::vector<Defender> &defenders, double 
             defenders[i].defender_specific_estimated_p_attack = dsepa;
         }
     }
+}
+
+void Defender::earn_assets() {
+    double growth_rate = p.GROWTH_RATE_distribution->draw();
+    int64_t growth_amt = (int64_t) (assets * growth_rate);
+    if (growth_amt > 0) {
+        this->gain(growth_amt);
+    } else {
+        int64_t loss_amt = -1 * growth_amt;
+        if (loss_amt > assets) {
+            this->lose(assets);
+        } else {
+            this->lose(loss_amt);
+        }
+    }
+    assert(assets >= 0);
 }
 
 void Defender::lose(int64_t loss) {

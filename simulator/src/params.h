@@ -29,6 +29,7 @@ struct Params {
     Distribution* INVESTMENT_SCALING_FACTOR_distribution;
     Distribution* MAX_ITERATIONS_distribution;
     Distribution* MANDATORY_INVESTMENT_distribution;
+    Distribution* GROWTH_RATE_distribution;
     
     bool mandatory_insurance;
     
