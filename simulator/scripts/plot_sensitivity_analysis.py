@@ -67,6 +67,7 @@ def plot_sensitivity_analysis():
     assert(len(baseline_vals) == len(percentage_vars) + len(non_percentage_vars))
 
     with plt.style.context(matplotx.styles.dufte):
+        plt.figure(figsize=(5,3))
 
         plt.rcParams['text.usetex'] = True
 
@@ -123,7 +124,7 @@ def plot_sensitivity_analysis():
             plt.xlim(0,1)
             # plt.legend()
             matplotx.line_labels()  # line labels to the right
-
+            plt.gca().xaxis.grid(True)
             plt.tight_layout()
             plt.savefig("figures/sensitivity_analysis/sensitivity_analysis_" + foldername + "_percentage_vars.pdf")
             plt.savefig("figures/sensitivity_analysis/sensitivity_analysis_" + foldername + "_percentage_vars.png")
@@ -131,6 +132,7 @@ def plot_sensitivity_analysis():
 
             ## Now do non-percentage vars
             plt.clf()
+            plt.figure(figsize=(5,3))
             for var in non_percentage_vars:
                 filename = "sweep_" + var + ".csv"
                 # path = "../logs/sweeps/"
@@ -168,7 +170,6 @@ def plot_sensitivity_analysis():
 
                 plt.plot(df[var], df['loss'], label=labels[var])
 
-
             ax = plt.gca()
             ax.grid(which='major', axis='x')
             plt.xticks((0,1,2), ("0x", "1x\n(baseline value)", "2x"))
@@ -177,7 +178,7 @@ def plot_sensitivity_analysis():
             plt.ylim(0,1)
             # plt.legend()
             matplotx.line_labels()  # line labels to the right
-
+            plt.gca().xaxis.grid(True)
             plt.tight_layout()
             plt.savefig("figures/sensitivity_analysis/sensitivity_analysis_" + foldername + "_non_percentage_vars.pdf")
             plt.savefig("figures/sensitivity_analysis/sensitivity_analysis_" + foldername + "_non_percentage_vars.png")

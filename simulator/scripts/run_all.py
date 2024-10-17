@@ -22,8 +22,8 @@ def run_all(filename):
     print("  plot_cumulative_assets")
     plot_cumulative_assets(copy.deepcopy(df))
 
-    # print("  asset_flow_sankey")
-    # asset_flow_sankey(copy.deepcopy(df))
+    print("  asset_flow_sankey")
+    asset_flow_sankey(copy.deepcopy(df))
 
     print("  plot_canary_vars")
     plot_canary_vars(copy.deepcopy(df))

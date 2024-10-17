@@ -27,7 +27,7 @@ def plot_cumulative_assets(df):
         # plt.figure(figsize=(7,2))
         fig, ax = plt.subplots()
         # plt.figure(figsize=(4,3))
-        fig.set_size_inches(7,3.5)
+        fig.set_size_inches(5,3.5)
         ax.yaxis.set_major_formatter(trillion_formatter)
 
         df.final_iter = df.final_iter.astype(int)
@@ -78,7 +78,7 @@ def plot_cumulative_assets(df):
         ]
 
         # Creating custom legend labels
-        plt.legend(custom_handles, ['Defenders', 'Attackers', 'Insurers'], loc='upper right', framealpha=1.0, ncols=3)
+        plt.legend(custom_handles, ['Defenders', 'Attackers', 'Insurers'], loc='upper left', framealpha=1.0)
         # ax.set_xticks(np.arange(0,5000,1000))
 
         basetitle = "cumulative_assets"
@@ -92,6 +92,9 @@ def plot_cumulative_assets(df):
         plt.gca().xaxis.grid(True)
         plt.tight_layout()
 
+        plt.axhline(1 * 10**11, 0, 3000)
+
+        # plt.show()
         plt.savefig(path + '/' + basetitle + '.png')
         plt.savefig(path + '/' + basetitle + '.pdf')
 

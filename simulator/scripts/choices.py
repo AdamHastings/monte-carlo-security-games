@@ -14,7 +14,7 @@ r = '#EF553B'
 
 def choices(df):
 
-    plt.figure(figsize=(7,4))
+    plt.figure(figsize=(6,2.75))
     # TODO remove deepcopy, do this in run_all?
     df['cumulative_round_policies_purchased'] = df['cumulative_round_policies_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))
     df['cumulative_round_defenses_purchased'] = df['cumulative_round_defenses_purchased'].apply(lambda x: np.fromstring(x.replace('[','').replace(']',''), dtype=int, sep=','))

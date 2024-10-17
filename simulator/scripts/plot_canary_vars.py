@@ -22,10 +22,10 @@ def plot_canary_vars(df):
 
     cumulative_outputs = [
         ('d_cumulative_assets', 'defenders $', b, '-'),
-        ('a_cumulative_assets', 'attackers $', r, '-.'),
+        ('a_cumulative_assets', 'attackers $', r, '-'),
         ('i_cumulative_assets', 'insurers $',  y, '-'),
         ('num_alive_defenders', '# defenders',   b, '-.'),
-        ('num_alive_attackers', '# attackers',   r, '-'),
+        ('num_alive_attackers', '# attackers',   r, '-.'),
         ('num_alive_insurers',  '# insurers',    y, '-.')
     ]
 
@@ -44,50 +44,51 @@ def plot_canary_vars(df):
         df[c] = df[c].apply(normalize)
 
     # plot
-    with plt.style.context(matplotx.styles.dufte):
-        plt.figure(figsize=(7,3))
+    # with plt.style.context(matplotx.styles.dufte):
+    plt.figure(figsize=(6,4))
 
-        for key, label, color, linestyle in cumulative_outputs:
+    for key, label, color, linestyle in cumulative_outputs:
 
-            # consider shorest run instead?
-            length = int(df[key].map(lambda x : len(x)).median())
-            # length = df[key].map(lambda x : len(x)).max()
+        # consider shorest run instead?
+        length = int(df[key].map(lambda x : len(x)).median())
+        # length = df[key].map(lambda x : len(x)).max()
 
 
 
-            means = np.empty([length])
-            fifthpct = np.empty([length])
-            ninetyfifthpct = np.empty([length])
-            for i in range(length):
-                col = np.array([x[i] for x in df[key] if i < len(x)])
-                
-                means[i] = np.percentile(col, 50) # technically this is the median now, not the mean...
-                fifthpct[i] = np.percentile(col, 5)
-                ninetyfifthpct[i] = np.percentile(col, 95)
+        means = np.empty([length])
+        fifthpct = np.empty([length])
+        ninetyfifthpct = np.empty([length])
+        for i in range(length):
+            col = np.array([x[i] for x in df[key] if i < len(x)])
+            
+            means[i] = np.percentile(col, 50) # technically this is the median now, not the mean...
+            fifthpct[i] = np.percentile(col, 5)
+            ninetyfifthpct[i] = np.percentile(col, 95)
 
-            x = np.arange(length)
+        x = np.arange(length)
 
-            plt.fill_between(x, fifthpct, ninetyfifthpct, color=color, alpha=0.5, edgecolor='none')
-            plt.plot(x, means, label=label, color=color, linestyle=linestyle)
+        plt.fill_between(x, fifthpct, ninetyfifthpct, color=color, alpha=0.5, edgecolor='none')
+        plt.plot(x, means, label=label, color=color, linestyle=linestyle)
 
-        plt.xlabel("timestep")
-        matplotx.ylabel_top("percentage")  # move ylabel to the top, rotate
-        matplotx.line_labels()  # line labels to the right
-        # plt.xlim(0, 300)
-        plt.ylim(0, 1.0)
-        plt.gca().xaxis.grid(True)
-        plt.tight_layout()
+    plt.xlabel("timestep")
+    matplotx.ylabel_top("percentage")  # move ylabel to the top, rotate
+    # matplotx.line_labels()  # line labels to the right
+    plt.legend()
+    # plt.xlim(0, 300)
+    # plt.ylim(0, 1.0)
+    plt.gca().xaxis.grid(True)
+    plt.tight_layout()
 
-        basetitle = 'canary_vars'
-        dirname = 'figures'
-        subdirname = df['folder'][0]
-        path = dirname + '/' + subdirname 
-        
-        if not os.path.isdir(path):
-            os.mkdir(path)
+    basetitle = 'canary_vars'
+    dirname = 'figures'
+    subdirname = df['folder'][0]
+    path = dirname + '/' + subdirname 
+    
+    if not os.path.isdir(path):
+        os.mkdir(path)
 
-        plt.savefig(path + '/' + basetitle + '.png')
-        plt.savefig(path + '/' + basetitle + '.pdf')
+    plt.savefig(path + '/' + basetitle + '.png')
+    plt.savefig(path + '/' + basetitle + '.pdf')
 
 
 def plot_p_attacks(df):
@@ -114,7 +115,7 @@ def plot_p_attacks(df):
     ]
 
     with plt.style.context(matplotx.styles.dufte):
-        plt.figure(figsize=(7,4))
+        plt.figure(figsize=(6,4))
         for key, label, color, linestyle in attack_ps:
 
             length = int(df[key].map(lambda x : len(x)).median())

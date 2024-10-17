@@ -54,9 +54,9 @@ def asset_flow_sankey(df):
 
   nodes = {
       "Defenders' initial wealth" : b0,
-      "Defenders' post-spending wealth" : b0,
+      "Defenders' post-spending wealth" : b0, 
       "Attackers' initial wealth" : r0,
-      "Attackers' post-ransom wealth" : r0,
+      # "Attackers' post-ransom wealth" : r0,
       "Insurers' initial wealth" : y0,
       "Security spending" : b0,
       "Ransom payments" : b0,
@@ -100,7 +100,8 @@ def asset_flow_sankey(df):
 
   f = flow(
     source  = nm["Ransom payments"],
-    sink    = nm["Attackers' post-ransom wealth"],
+    # sink    = nm["Attackers' post-ransom wealth"],
+    sink    = nm["Attackers' final wealth"],
     val     = meandf['a_end'],
     color   = r)  
   flows.append(f)
@@ -135,17 +136,18 @@ def asset_flow_sankey(df):
 
   f = flow(
     source  = nm["Attackers' initial wealth"],
-    sink    = nm["Attackers' post-ransom wealth"],
+    # sink    = nm["Attackers' post-ransom wealth"],
+    sink    = nm["Attackers' final wealth"],
     val     = meandf["a_init"],
     color   = r)
   flows.append(f)
 
-  f = flow(
-    source  = nm["Attackers' post-ransom wealth"],
-    sink    = nm["Attackers' final wealth"],
-    val     = meandf["a_end"],
-    color   = r)
-  flows.append(f)
+  # f = flow(
+  #   source  = nm["Attackers' post-ransom wealth"],
+  #   sink    = nm["Attackers' final wealth"],
+  #   val     = meandf["a_end"],
+  #   color   = r)
+  # flows.append(f)
 
   f = flow(
     source  = nm["Insurance premiums"],
@@ -226,7 +228,23 @@ def asset_flow_sankey(df):
   # flows.append(f)
 
 
+  # nm[" "] = nm.pop("Defenders' post-spending wealth")
 
+  labels = list(nm.keys())
+  labels = [l.replace("Defenders' post-spending wealth", " ") for l in labels]
+  labels = [l.replace("Attackers' post-ransom wealth", " ") for l in labels]
+  labels = [l.replace("Defenders' initial wealth", 'Defenders\'<br>initial wealth') for l in labels]
+  labels = [l.replace("Insurers' initial wealth", 'Insurers\'<br>initial wealth') for l in labels]
+  labels = [l.replace("Attackers' final wealth", 'Attackers\'<br>final wealth') for l in labels]
+  # labels = [l.replace(" ", '<br>') for l in labels]
+  # labels = [l.replace("<br>wealth", ' wealth') for l in labels]
+  # labels = [l.replace("<br>initial", ' initial') for l in labels]
+  # labels = [l.replace("Security<br>spending", 'Security spending') for l in labels]
+  labels = [l.replace("Insurance premiums", 'Insurance<br>premiums') for l in labels]
+  # labels = [l.replace("Premium<br>pool", 'Premium pool') for l in labels]
+  labels = [l.replace("Attacker spending", 'Attacker<br>spending') for l in labels]
+  labels = [l.replace("Ransom payments", 'Ransom<br>payments') for l in labels]
+  labels = [l.replace("Recovery costs", 'Recovery<br>costs') for l in labels]
   
   fig = go.Figure(go.Sankey(
       arrangement='snap',
@@ -234,7 +252,7 @@ def asset_flow_sankey(df):
         pad = 50,
         thickness = 20,
         line = dict(color = "black", width = 0.5),
-        label = list(nm.keys()),
+        label = labels,
         color = list(nodes.values())
       ),
       link = dict(
@@ -246,6 +264,7 @@ def asset_flow_sankey(df):
       )
   ))
 
+  # fig.update_layout(font_size=42)
   # fig.show()
   path = dirname + '/' + subdirname 
   
