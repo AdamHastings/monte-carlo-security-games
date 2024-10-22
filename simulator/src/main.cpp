@@ -69,9 +69,9 @@ void ParallelRunGames(Params p) {
     assert(processesRunning == 0);
 }
 
-void SerialRunGames(std::string basename) {
+void SerialRunGames(std::string basename, std::string logname) {
     string config_filename = "configs/" + basename + ".json";
-    Params p = params_loader::load_cfg(config_filename);
+    Params p = params_loader::load_cfg(config_filename, logname);
         
     delete p.NUM_ATTACKERS_distribution;
     delete p.INEQUALITY_distribution;
@@ -97,14 +97,14 @@ void SerialRunGames(std::string basename) {
     delete p.GROWTH_RATE_distribution;
 
     for (uint i=0; i < p.NUM_GAMES; i++) {
-        p = params_loader::load_cfg(config_filename);
+        p = params_loader::load_cfg(config_filename, logname);
         RunGame(p, i);
     }
 }
 
-void init_logs(std::string basename, Params p) {
+void init_logs(Params p) {
 
-    std::string fpath = "logs/" + basename + ".csv";
+    std::string fpath = p.logname;
     std::cout << "Creating " << fpath << std::endl;
 
     std::string header = "";
@@ -161,7 +161,7 @@ void init_logs(std::string basename, Params p) {
 
     // Check if log file already exists so that we don't accidentally write over it
     ifstream f(fpath.c_str());
-    if (f.good() && !basename.compare(0, 4, "test") == 0) {
+    if (f.good() && !p.logname.compare(0, 4, "test") == 0) {
         std::cout << "\nThis file already exists: " << fpath << "\nDo you want to replace it (Y)? Or append to it (A)? Y/A/n\n >> ";
         std::string response;
         std::cin >> response;
@@ -187,19 +187,20 @@ void init_logs(std::string basename, Params p) {
 int main(int argc, char** argv) {
 
     // Validate the inputs
-    if (argc != 2) {
+    if (argc != 3) {
         std::cerr << "\nERROR: Incorrect number of args!";
-        std::cerr << "\nExample of how to run config test_medium (located in configs/):";
-        std::cerr << "\n     $ ./run/debug/run_games configs/test_medium.json\n\n";
+        std::cerr << "\nExample of how to run config server_config.json (located in configs/) with logname asGCIASEviASEFIs.csv:";
+        std::cerr << "\n     $ ./run/release/run_games configs/server_config.json asGCIASEviASEFIs.csv \n\n";
         std::exit(1);
     }
     
-    Params p = params_loader::load_cfg(argv[1]);
+    Params p = params_loader::load_cfg(argv[1], argv[2]);
     
     std::string basename(argv[1]);
     basename.erase(0, strlen("configs/"));
     basename.erase(basename.find_last_of("."));
-    init_logs(basename, p);
+
+    init_logs(p);
 
 
     auto start = std::chrono::system_clock::now();
@@ -209,7 +210,7 @@ int main(int argc, char** argv) {
     #ifdef RELEASE
         ParallelRunGames(p); // run fast 
     #else
-        SerialRunGames(basename); // run for easy debug
+        SerialRunGames(basename, p.logname); // run for easy debug
     #endif
 
     delete p.NUM_ATTACKERS_distribution;

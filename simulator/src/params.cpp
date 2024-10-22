@@ -6,7 +6,7 @@
 
 
 
-Params params_loader::load_cfg(std::string config_filename) {
+Params params_loader::load_cfg(std::string config_filename, std::string logname) {
     
     std::ifstream file(config_filename);
 
@@ -73,10 +73,11 @@ Params params_loader::load_cfg(std::string config_filename) {
     p.verbose       = jsonData["verbose"].asBool();
     p.assertions_on = jsonData["assertions_on"].asBool();
 
-    std::string basename(config_filename);
-    basename.erase(0, strlen("configs/"));
-    basename.erase(basename.find_last_of("."));
-    p.logname       = "logs/" + basename + ".csv";
+    // std::string logname(config_filename);
+    // logname.erase(0, strlen("configs/"));
+    // logname.erase(basename.find_last_of("."));
+    // p.logname       = "logs/" + logname + ".csv";
+    p.logname = logname;
 
     // if (basename.starts_with("sweeps/")) {
     //     p.sweep = true; 

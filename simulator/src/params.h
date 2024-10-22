@@ -45,5 +45,5 @@ struct Params {
 
 class params_loader {
     public:
-        static Params load_cfg(std::string config_filename);
+        static Params load_cfg(std::string config_filename, std::string logname);
 };
