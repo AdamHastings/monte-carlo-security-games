@@ -33,8 +33,20 @@ ransom_payments = [
 ]
 
 with plt.style.context(matplotx.styles.dufte):
+
+    # Override gridline and label colors to black
+    plt.rcParams.update({
+        'grid.color': 'black',  # Set gridlines to black
+        'xtick.color': 'black',  # Set x-axis tick labels to black
+        'ytick.color': 'black',  # Set y-axis tick labels to black
+        'axes.labelcolor': 'black',  # Set axis labels to black
+        'axes.edgecolor': 'black',  # Set the axis edge color to black
+        'text.color': 'black'  # Default text color
+    })
+
     fig, ax = plt.subplots()
-    fig.set_size_inches(6,3)
+
+    fig.set_size_inches(6,5)
     
 
     ax.scatter(revenues[1:], ransom_payments, label="median ransom payment", color='red', marker="o")

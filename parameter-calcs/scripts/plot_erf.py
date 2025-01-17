@@ -6,6 +6,16 @@ import matplotx
 
 
 with plt.style.context(matplotx.styles.dufte):
+
+    # Override gridline and label colors to black
+    plt.rcParams.update({
+        'grid.color': 'black',  # Set gridlines to black
+        'xtick.color': 'black',  # Set x-axis tick labels to black
+        'ytick.color': 'black',  # Set y-axis tick labels to black
+        'axes.labelcolor': 'black',  # Set axis labels to black
+        'axes.edgecolor': 'black'  # Set the axis edge color to black
+    })
+    
     x = np.arange(0, .1, 0.001)
     # x = np.append(x, 1)
 
