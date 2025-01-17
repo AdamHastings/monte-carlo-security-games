@@ -67,6 +67,17 @@ def plot_sensitivity_analysis():
     assert(len(baseline_vals) == len(percentage_vars) + len(non_percentage_vars))
 
     with plt.style.context(matplotx.styles.dufte):
+
+        # Override gridline and label colors to black
+        plt.rcParams.update({
+            'grid.color': 'black',  # Set gridlines to black
+            'xtick.color': 'black',  # Set x-axis tick labels to black
+            'ytick.color': 'black',  # Set y-axis tick labels to black
+            'axes.labelcolor': 'black',  # Set axis labels to black
+            'axes.edgecolor': 'black',  # Set the axis edge color to black
+            'text.color': 'black'  # Default text color
+        })
+        
         plt.figure(figsize=(5,3))
 
         plt.rcParams['text.usetex'] = True

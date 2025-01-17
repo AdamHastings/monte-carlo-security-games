@@ -61,6 +61,15 @@ def choices(df):
 
     with plt.style.context(matplotx.styles.dufte):
 
+        # Override gridline and label colors to black
+        plt.rcParams.update({
+            'grid.color': 'black',  # Set gridlines to black
+            'xtick.color': 'black',  # Set x-axis tick labels to black
+            'ytick.color': 'black',  # Set y-axis tick labels to black
+            'axes.labelcolor': 'black',  # Set axis labels to black
+            'axes.edgecolor': 'black',  # Set the axis edge color to black
+            'text.color': 'black'  # Default text color
+        })
 
         if "mandatory_insurance" in df['folder'][0]:
             print(" --- skipping insurance choices (mandatory)")

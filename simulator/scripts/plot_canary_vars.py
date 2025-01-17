@@ -106,7 +106,7 @@ def plot_p_attacks(df):
     plt.clf()
 
     attack_ps = [
-        ('p_pairing', '% paired', g, '-'),
+        ('p_pairing', '% targeted', g, '-'),
         ('p_attacked', '% attacked', r, '-'),
         ('p_looted', '% ransomed', k, '-'),
         # ('insurer_estimate_p_pairing', 'I\'s est. p_attack', y, '-'),
@@ -115,7 +115,18 @@ def plot_p_attacks(df):
     ]
 
     with plt.style.context(matplotx.styles.dufte):
-        plt.figure(figsize=(6,4))
+
+        # Override gridline and label colors to black
+        plt.rcParams.update({
+            'grid.color': 'black',  # Set gridlines to black
+            'xtick.color': 'black',  # Set x-axis tick labels to black
+            'ytick.color': 'black',  # Set y-axis tick labels to black
+            'axes.labelcolor': 'black',  # Set axis labels to black
+            'axes.edgecolor': 'black',  # Set the axis edge color to black
+            'text.color': 'black'  # Default text color
+        })
+
+        plt.figure(figsize=(6,3))
         for key, label, color, linestyle in attack_ps:
 
             length = int(df[key].map(lambda x : len(x)).median())

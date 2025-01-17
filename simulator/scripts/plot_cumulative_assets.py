@@ -24,6 +24,16 @@ def plot_cumulative_assets(df):
 
     with plt.style.context(matplotx.styles.dufte):
 
+        # Override gridline and label colors to black
+        plt.rcParams.update({
+            'grid.color': 'black',  # Set gridlines to black
+            'xtick.color': 'black',  # Set x-axis tick labels to black
+            'ytick.color': 'black',  # Set y-axis tick labels to black
+            'axes.labelcolor': 'black',  # Set axis labels to black
+            'axes.edgecolor': 'black',  # Set the axis edge color to black
+            'text.color': 'black'  # Default text color
+        })
+
         # plt.figure(figsize=(7,2))
         fig, ax = plt.subplots()
         # plt.figure(figsize=(4,3))
