@@ -88,7 +88,19 @@ def plot_cumulative_assets(df):
         ]
 
         # Creating custom legend labels
-        plt.legend(custom_handles, ['Defenders', 'Attackers', 'Insurers'], loc='upper left', framealpha=1.0)
+        loc = 'upper left'
+        if (df['folder'][0] == "fullsize_short_selfless_insurers") or (df['folder'][0] == "fullsize_short"):
+            print(" -- adjusting legend loc")
+            loc = 'center'
+            bbox=(0.7, 0.3)
+            plt.legend(custom_handles, ['Defenders', 'Attackers', 'Insurers'], loc=loc, bbox_to_anchor=bbox, framealpha=1.0)
+        elif  (df['folder'][0] == "fullsize_short_with_asset_growth_GROWTH_RATE=0.001"):
+            print(" -- adjusting legend loc")
+            loc = 'center'
+            bbox=(0.7, 0.4)
+            plt.legend(custom_handles, ['Defenders', 'Attackers', 'Insurers'], loc=loc, bbox_to_anchor=bbox, framealpha=1.0)
+        else:
+            plt.legend(custom_handles, ['Defenders', 'Attackers', 'Insurers'], loc=loc, framealpha=1.0)
         # ax.set_xticks(np.arange(0,5000,1000))
 
         basetitle = "cumulative_assets"
