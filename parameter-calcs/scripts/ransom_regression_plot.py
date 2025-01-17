@@ -46,7 +46,7 @@ with plt.style.context(matplotx.styles.dufte):
 
     fig, ax = plt.subplots()
 
-    fig.set_size_inches(6,5)
+    fig.set_size_inches(6,4.5)
     
 
     ax.scatter(revenues[1:], ransom_payments, label="median ransom payment", color='red', marker="o")
