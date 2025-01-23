@@ -9,20 +9,11 @@ print('matplotlib: {}'.format(matplotlib.__version__))
 
 df = pd.read_csv("../data/ransom_payments.csv")
 
-# print(df)
-
 median_ransom = df['Median ransom payment'].to_numpy()
 revenue = df['Annual Revenue (lower bound)'].to_numpy()
 
 
 revenue = revenue.reshape(-1, 1)
-# revenue = revenue[:, np.newaxis, 2]
-
-
-# print(median_ransom)
-# print(revenue)
-
-# TODO this data really looks like it'd be better fit by a power series 
 
 reg = LinearRegression().fit(revenue, median_ransom)
 print(reg.coef_)
@@ -36,9 +27,7 @@ print("r2 = ", r2)
 
 
 samples = np.linspace(0,5*10**9, 1000)
-# samples_outputs = samples * reg.coef_
-# plt.plot(samples, samples_outputs)
-# plt.show()
+
 
 plt.plot(revenue, median_ransom)
 plt.plot(samples, samples * reg.coef_ + reg.intercept_)

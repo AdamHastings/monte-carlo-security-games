@@ -274,8 +274,8 @@ def asset_flow_sankey(df):
   # fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
   fig.write_image(path + '/' + basetitle + '.png')
   fig.write_image(path + '/' + basetitle + '.pdf')
+  fig.write_html(path + '/' + basetitle + '.html')
 
-  
 
 
 if __name__=="__main__":

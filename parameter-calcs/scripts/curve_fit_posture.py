@@ -9,9 +9,6 @@ from scipy.optimize import curve_fit
 
 df = pd.read_csv("../data/posture_by_industry.csv")
 
-# for row in df.rows():
-#     print(row)
-
 
 postures = []
 
