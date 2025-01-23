@@ -123,8 +123,6 @@ int64_t Defender::ransom_cost(int64_t _assets) {
     assert(_assets >= 0);
     double dransom = ransom_b0 + (_assets * ransom_b1);
     int64_t ransom = std::round(dransom);
-    // ransom = std::min(ransom, _assets);
-    // ransom = std::max(ransom, (int64_t) 0);
     assert(std::round(ransom) >= std::round(ransom_b0));
     // assert(ransom <= _assets); // Not necessarily true! In linear ransom price, even assets = 0 will cause a ransom_b0 ransom
     return ransom;
@@ -138,7 +136,7 @@ int64_t Defender::recovery_cost(int64_t _assets) {
     rec = std::min(rec, _assets);
     // rec = std::max(rec, (int64_t) 0);
     assert(rec >= 0);
-    // assert(rec <= _assets);
+    // assert(rec <= _assets); // we don't want this assertion so that our optimization techniques can explore  without triggering assertion failures
     return rec;
 }
 
@@ -161,7 +159,6 @@ int64_t Defender::expected_loss_given_investment(int64_t investment, int64_t ass
 }
 
 // yields the expected posture if a defender were to invest investment into security
-// TODO add default value for expected value vs random draw?
 double Defender::posture_if_investment(int64_t investment, int64_t assets_, int64_t capex_) {
     double investment_pct = (double) investment / (double) assets_;
     assert(investment_pct >= 0);
@@ -310,8 +307,6 @@ double Defender::gsl_find_minimum() {
         // likely no minimum for gsl to find
         return 0;
     }
-    
-
 
     // std::cout << "using" <<  gsl_min_fminimizer_name(s) << " method" << std::endl;
     // printf("%5s [%9s, %9s] %9s %9s\n", "iter", "lower", "upper", "min", "err(est)");
@@ -469,8 +464,6 @@ void Defender::default_experiment() {
     assert(expected_loss_with_optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment <= assets);
 
-    // TODO consider possibility that players can choose both
-    // TODO consider cases where insurer tells defender how much to invest 
 
     if (insurable && (expected_loss_with_insurance < expected_loss_with_optimal_investment) ) {
         purchase_insurance_policy(best_insurer, best_policy);

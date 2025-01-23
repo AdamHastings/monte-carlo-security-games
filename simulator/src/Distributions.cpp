@@ -121,7 +121,7 @@ double Sinusoid::mean() {
 }
 
 double Sinusoid::draw() {
-    double angular_frequency = 2 * M_PI * period; // figure this out
+    double angular_frequency = 2 * M_PI * period; 
     double draw =  amplitude * sin(iter * angular_frequency + phase) + vertical_offset;
     return draw;
 }

@@ -89,7 +89,7 @@ PolicyType Insurer::provide_a_quote(int64_t assets, double estimated_posture) {
     assert(p_one_attacker_has_enough_to_attack >= 0);
     assert(p_one_attacker_has_enough_to_attack <= 1);
 
-    double p_at_least_one_attacker_has_enough_to_attack = 1 - pow((1 - p_one_attacker_has_enough_to_attack), *Insurer::ATTACKS_PER_EPOCH);   // TODO shouldn't this be expected number of attacks, and not ATTACKS_PER_EPOCH?? 
+    double p_at_least_one_attacker_has_enough_to_attack = 1 - pow((1 - p_one_attacker_has_enough_to_attack), *Insurer::ATTACKS_PER_EPOCH);
     assert(p_at_least_one_attacker_has_enough_to_attack >= 0);
     assert(p_at_least_one_attacker_has_enough_to_attack <= 1);
 

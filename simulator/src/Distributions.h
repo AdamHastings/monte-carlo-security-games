@@ -90,7 +90,7 @@ class Sinusoid : public Distribution {
         double amplitude;
         double phase;
         double vertical_offset;
-        int period; // how many epochs is one cycle?
+        int period; 
         Sinusoid(double _amplitude, double _period, double _phase, double _vertical_offset);
         double draw();
         double mean() override;
@@ -105,7 +105,7 @@ class Sawtooth : public Distribution {
         double amplitude;
         double phase;
         double vertical_offset;
-        int period; // how many epochs is one cycle?
+        int period; 
         Sawtooth(double _amplitude, double _period, double _phase, double _vertical_offset);
         double draw();
         double mean() override;

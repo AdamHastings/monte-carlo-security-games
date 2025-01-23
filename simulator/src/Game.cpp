@@ -125,9 +125,9 @@ std::string Game::get_sweepval(std::string sweepvar) {
     } else if (sweepvar == "RECOVERY_COST_EXP" ) {
         return std::to_string(Defender::recovery_exp);
     } else if (sweepvar == "POSTURE") {
-        return std::to_string(p.POSTURE_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(p.POSTURE_distribution->mean()); 
     } else if (sweepvar == "POSTURE_NOISE") {
-        return std::to_string(p.POSTURE_NOISE_distribution->mean()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(p.POSTURE_NOISE_distribution->mean()); 
     } else if (sweepvar == "NUM_QUOTES") {
         return std::to_string(Defender::NUM_QUOTES);
     } else if (sweepvar == "LOSS_RATIO") {
@@ -139,9 +139,9 @@ std::string Game::get_sweepval(std::string sweepvar) {
     } else if (sweepvar == "CTA_SCALING_FACTOR") {
         return std::to_string(CTA_SCALING_FACTOR);
     } else if (sweepvar == "DEPRECIATION") {
-        return std::to_string(p.DEPRECIATION_distribution->draw()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(p.DEPRECIATION_distribution->draw()); 
     } else if (sweepvar == "INVESTMENT_SCALING_FACTOR") {
-        return std::to_string(p.INVESTMENT_SCALING_FACTOR_distribution->draw()); // TODO needs to be game variable so that it can be consistent across games
+        return std::to_string(p.INVESTMENT_SCALING_FACTOR_distribution->draw()); 
     } else {
         assert(false); // shouldn't reach this point
         return "error";
@@ -307,7 +307,6 @@ bool Game::equilibrium_reached() {
         consecutiveNoAttacks = 0;
     }
 
-    // TODO think about what value DELTA should be
     return (consecutiveNoAttacks >= DELTA);
 }
 

@@ -69,7 +69,7 @@ class Game {
         uint32_t round_loots = 0;
 
         double p_paired = 0;
-        double p_attacked = 0.59; // Give defenders an initial non-zero guess // TODO justify this hard-coded number
+        double p_attacked = 0.59; // Give defenders an initial non-zero guess 
         double p_looted = 0;
         std::vector<float> cumulative_p_pairing;
         std::vector<float> cumulative_p_attacked;
