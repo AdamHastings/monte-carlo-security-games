@@ -247,7 +247,7 @@ def asset_flow_sankey(df):
   labels = [l.replace("Recovery costs", 'Recovery<br>costs') for l in labels]
   
   fig = go.Figure(go.Sankey(
-      arrangement='snap',
+      arrangement='freeform',
       node = dict(
         pad = 50,
         thickness = 20,
@@ -270,6 +270,11 @@ def asset_flow_sankey(df):
   
   if not os.path.isdir(path):
       os.mkdir(path)
+
+  # Adjust layout to remove whitespace
+  fig.update_layout(
+      margin=dict(l=10, r=10, t=10, b=10)  # Left, right, top, bottom margins
+  )
 
   # fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
   fig.write_image(path + '/' + basetitle + '.png')
