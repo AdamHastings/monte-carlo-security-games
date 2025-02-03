@@ -114,7 +114,7 @@ def plot_cumulative_assets(df):
         plt.gca().xaxis.grid(True)
         plt.tight_layout()
 
-        plt.axhline(1 * 10**11, 0, 3000)
+        # plt.axhline(1 * 10**11, 0, 3000)
 
         # plt.show()
         plt.savefig(path + '/' + basetitle + '.png')
