@@ -1,4 +1,4 @@
-CXX=/usr/bin/g++-10
+CXX=/usr/bin/g++-11
 CPPFLAGS=-Wall -Werror -std=c++20 -fno-builtin-memset
 INCLUDES=
 LDLIBS=-lgsl -lgslcblas -lm
