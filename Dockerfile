@@ -11,6 +11,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
     g++ \
+    texlive-fonts-recommended \
+    texlive-fonts-extra \
+    cm-super \
+    dvipng \
     python3 \
     python3-pip \
     python3-numpy \
@@ -20,6 +24,11 @@ RUN apt-get update && apt-get install -y \
     libgsl-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install powerlaw 
+RUN pip3 install matplotx 
+RUN pip3 install kaleido 
+RUN pip install --upgrade plotly kaleido
 
 COPY parameter-calcs/ /root/parameter-calcs/
 COPY simulator/ /root/simulator/
