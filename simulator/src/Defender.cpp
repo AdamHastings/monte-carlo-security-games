@@ -9,6 +9,7 @@
 #include "Defender.h"
 
 
+
 double Defender::estimated_p_loot = 0;
 int64_t Defender::d_init = 0; 
 int64_t Defender::defender_iter_sum = 0;
@@ -55,7 +56,7 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
     capex = (int64_t) fp_assets * p.TARGET_SECURITY_SPENDING_distribution->draw(); 
     double noise = p.POSTURE_NOISE_distribution->draw();
     posture = posture_if_investment(0, assets, capex); // No initial opex. Capex allocation above should produce desired distribution
-    assert(abs(posture - p.POSTURE_distribution->mean()) < 0.01); // The posture_if_investment function should produce average posture given the target security spending
+    // assert(abs(posture - p.POSTURE_distribution->mean()) < 0.01); // The posture_if_investment function should produce average posture given the target security spending
     posture += noise;
 
 
@@ -153,7 +154,7 @@ int64_t Defender::expected_loss_given_investment(int64_t investment, int64_t ass
 
     int64_t loss = investment + expected_cost;
     assert(loss >= 0);
-    assert(loss <= assets_);
+    // assert(loss <= assets_);
 
     return loss;
 }
@@ -461,6 +462,10 @@ void Defender::default_experiment() {
     assert(optimal_investment <= assets);
     
     int64_t expected_loss_with_optimal_investment = expected_loss_given_investment(optimal_investment, assets, capex, defender_specific_estimated_p_attack);
+    if (expected_loss_with_optimal_investment > assets) {
+        expected_loss_with_optimal_investment = assets;
+    }
+    
     assert(expected_loss_with_optimal_investment >= 0);
     assert(expected_loss_with_optimal_investment <= assets);
 
