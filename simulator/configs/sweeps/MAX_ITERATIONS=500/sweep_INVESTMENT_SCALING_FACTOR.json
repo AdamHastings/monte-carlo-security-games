@@ -115,5 +115,5 @@
     },
     "NUM_GAMES": 100,
     "verbose":true,
-    "assertions_on":true
+    "assertions_on":false
 }

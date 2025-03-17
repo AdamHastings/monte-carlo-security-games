@@ -56,7 +56,7 @@ Defender::Defender(int id_in, Params &p) : Player(p) {
     capex = (int64_t) fp_assets * p.TARGET_SECURITY_SPENDING_distribution->draw(); 
     double noise = p.POSTURE_NOISE_distribution->draw();
     posture = posture_if_investment(0, assets, capex); // No initial opex. Capex allocation above should produce desired distribution
-    // assert(abs(posture - p.POSTURE_distribution->mean()) < 0.01); // The posture_if_investment function should produce average posture given the target security spending
+    if (p.assertions_on) {assert(abs(posture - p.POSTURE_distribution->mean()) < 0.01);} // The posture_if_investment function should produce average posture given the target security spending
     posture += noise;
 
 
