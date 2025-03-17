@@ -4,13 +4,15 @@ FROM ubuntu:22.04
 # Set noninteractive mode for apt-get to avoid prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
+
+
 # Update package lists and install development tools:
 # - build-essential: provides gcc, g++, make, etc.
 # - g++: the GNU C++ compiler (ensure it's recent enough for C++20)
 # - python3 and python3-pip: for running Python code and managing packages
 RUN apt-get update && apt-get install -y \
     build-essential \
-    g++ \
+    g++-10 \
     texlive-fonts-recommended \
     texlive-fonts-extra \
     cm-super \
