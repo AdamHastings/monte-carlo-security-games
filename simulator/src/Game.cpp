@@ -494,9 +494,13 @@ void Game::conclude_round() {
             }
         }
     }
-    if (p.GROWTH_RATE_distribution != nullptr) {
-        p.GROWTH_RATE_distribution->step();
-    }
+    
+    // Oscillating growth is partially supported in the codebase but never actually used in any of the exerpiments in this paper
+    // Hence this code is commented out
+    // These lines were never used in any of the experiments in the paper
+    // if (p.GROWTH_RATE_distribution != nullptr) {
+    //     p.GROWTH_RATE_distribution->step();
+    // }
     
     alive_attackers_indices.clear();
     for (Attacker &a : attackers) {
